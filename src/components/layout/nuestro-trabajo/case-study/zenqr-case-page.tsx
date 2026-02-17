@@ -1,6 +1,7 @@
 import { Link } from 'wouter';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'motion/react';
+import { FaGlobe } from 'react-icons/fa';
 import { CenterContainer } from '@/components/layout/CenterContainer';
 import { ProjectHero } from '@/components/layout/nuestro-trabajo/ProjectHero';
 import {
@@ -13,54 +14,42 @@ import {
   type CategoryKey,
 } from '@/components/layout/nuestro-trabajo/ourWorkProjects';
 import { useLocale } from '@/hooks/useLocale';
-import type { ProjectHeroProps } from '@/components/layout/nuestro-trabajo/ProjectHero';
 
-export type CaseStudySection = {
-  label: string;
-  title: string;
-  /** Recibe el componente Accent para resaltar texto con el color del proyecto */
-  content: (Accent: React.ComponentType<{ children: React.ReactNode }>) => React.ReactNode;
-  imageSrc?: string;
-  imageAlt?: string;
-  reverse?: boolean;
-};
+const ZENQR_ACCENT = '#10b981';
 
-export type ProjectCaseStudyConfig = {
-  /** Id del proyecto (ej: 'zenqur') para filtrar en "Otros casos de uso" */
-  projectId: string;
-  hero: Omit<ProjectHeroProps, 'backHref' | 'backLabel'>;
-  stack: ProjectStackItem[];
-  accentColor: string;
-  sections: CaseStudySection[];
-};
+const ZENQR_STACK: ProjectStackItem[] = [
+  { name: 'Vue', icon: 'vue' },
+  { name: 'TypeScript', icon: 'typescript' },
+  { name: 'Node.js', icon: 'node-js' },
+  { name: 'NestJS', icon: 'nestjs' },
+  { name: 'Figma', icon: 'figma' },
+  { name: 'Digital Ocean', icon: 'digital-ocean' },
+  { name: 'Stripe', icon: 'stripe' },
+];
 
-function CaseSection({
+function ZenqrCaseSection({
   label,
   title,
   children,
-  imageSrc,
-  imageAlt,
-  reverse = false,
-  accentColor,
+  reverse,
 }: {
   label: string;
   title: string;
   children: React.ReactNode;
-  imageSrc?: string;
-  imageAlt?: string;
   reverse?: boolean;
-  accentColor?: string;
 }) {
   return (
     <section className="py-12 md:py-16 lg:py-20">
-      <CenterContainer>
+      <CenterContainer className="lg:px-0">
         <div
-          className={`flex flex-col gap-10 lg:gap-16 ${imageSrc ? (reverse ? 'lg:flex-row-reverse' : 'lg:flex-row') : ''} w-full lg:items-center`}
+          className={`flex w-full flex-col gap-10 lg:items-center lg:gap-16 ${
+            reverse ? 'lg:flex-row-reverse' : 'lg:flex-row'
+          }`}
         >
           <div className="flex-1 space-y-4">
             <span
-              className={`text-sm font-semibold tracking-wider uppercase ${!accentColor ? 'text-primary' : ''}`}
-              style={accentColor ? { color: accentColor } : undefined}
+              className="text-sm font-semibold tracking-wider uppercase"
+              style={{ color: ZENQR_ACCENT }}
             >
               {label}
             </span>
@@ -71,23 +60,16 @@ function CaseSection({
               {children}
             </div>
           </div>
-          {imageSrc && (
-            <div className="flex flex-1 justify-center lg:max-w-md">
-              <div className="bg-muted/50 ring-border/50 relative overflow-hidden rounded-2xl shadow-lg ring-1">
-                <img src={imageSrc} alt={imageAlt ?? ''} className="h-auto w-full object-cover" />
-              </div>
-            </div>
-          )}
         </div>
       </CenterContainer>
     </section>
   );
 }
 
-function OtherCasesSection({ projectId, accentColor }: { projectId: string; accentColor: string }) {
+function ZenqrOtherCases() {
   const { t } = useTranslation();
   const { path } = useLocale();
-  const otherProjects = OUR_WORK_PROJECTS.filter((p) => p.id !== projectId);
+  const otherProjects = OUR_WORK_PROJECTS.filter((p) => p.id !== 'zenqr');
 
   return (
     <section className="border-border bg-muted/30 border-t py-16 md:py-24">
@@ -96,7 +78,7 @@ function OtherCasesSection({ projectId, accentColor }: { projectId: string; acce
           <header className="max-w-2xl">
             <span
               className="mb-2 block text-xs font-semibold tracking-[0.2em] uppercase"
-              style={{ color: accentColor }}
+              style={{ color: ZENQR_ACCENT }}
             >
               Más trabajo
             </span>
@@ -152,7 +134,9 @@ function OtherCasesSection({ projectId, accentColor }: { projectId: string; acce
                         transition={{ duration: 0.25 }}
                       />
                       <span
-                        className={`absolute top-3 right-3 rounded-md px-2.5 py-1 text-xs font-medium tracking-wide text-white shadow-sm ${project.badgeColor ? '' : BADGE_COLORS[project.categoryKey as CategoryKey]}`}
+                        className={`absolute top-3 right-3 rounded-md px-2.5 py-1 text-xs font-medium tracking-wide text-white shadow-sm ${
+                          project.badgeColor ? '' : BADGE_COLORS[project.categoryKey as CategoryKey]
+                        }`}
                         style={
                           project.badgeColor ? { backgroundColor: project.badgeColor } : undefined
                         }
@@ -196,38 +180,91 @@ function OtherCasesSection({ projectId, accentColor }: { projectId: string; acce
   );
 }
 
-export function ProjectCaseStudyTemplate({ config }: { config: ProjectCaseStudyConfig }) {
+export function ZenqurCasePage() {
   const { t } = useTranslation();
   const { path } = useLocale();
-  const { projectId, hero, stack, accentColor, sections } = config;
-
-  const Accent = ({ children }: { children: React.ReactNode }) => (
-    <span className="font-semibold" style={{ color: accentColor }}>
-      {children}
-    </span>
-  );
 
   return (
     <article className="bg-background">
-      <ProjectHero backHref={path('/nuestro-trabajo')} backLabel={t('nav.ourWork')} {...hero} />
+      <ProjectHero
+        backHref={path('/nuestro-trabajo')}
+        backLabel={t('nav.ourWork')}
+        logoSrc="/brands/zenqr.svg"
+        logoAlt="ZenQR"
+        title="Una nueva forma de crear códigos QR"
+        description="Plataforma de códigos QR con personalización, métricas en tiempo real e integraciones para eventos y pagos."
+        cta={{
+          href: 'https://zenqr.app',
+          label: 'Visitar sitio web',
+          ariaLabel: 'Visitar sitio web de ZenQR',
+          icon: <FaGlobe className="size-4 shrink-0" />,
+        }}
+        heroImageSrc="/projects/zenQR/zenqr_hero.png"
+        heroImageAlt="ZenQR - Dashboard y app"
+        backgroundColor={ZENQR_ACCENT}
+      />
 
-      <ProjectStack items={stack} variant="logos-row" accentColor={accentColor} label="Stack" />
+      <ProjectStack
+        items={ZENQR_STACK}
+        variant="logos-row"
+        accentColor={ZENQR_ACCENT}
+        label="Stack"
+      />
 
-      {sections.map((section, index) => (
-        <CaseSection
-          key={index}
-          label={section.label}
-          title={section.title}
-          accentColor={accentColor}
-          imageSrc={section.imageSrc}
-          imageAlt={section.imageAlt}
-          reverse={section.reverse}
-        >
-          {section.content(Accent)}
-        </CaseSection>
-      ))}
+      <ZenqrCaseSection
+        label="Overview"
+        title="Plataforma SaaS para gestión de códigos QR dinámicos con analítica"
+      >
+        <p>
+          ZenQR se construyó para convertir los códigos QR en una herramienta de negocio:
+          personalizable, medible y administrable desde un panel. Conecta experiencias físicas
+          (menús, empaques, carteles) con acciones digitales y analítica en tiempo real.
+        </p>
+      </ZenqrCaseSection>
 
-      <OtherCasesSection projectId={projectId} accentColor={accentColor} />
+      <ZenqrCaseSection label="Challenge" title="El reto" reverse>
+        <p>El cliente quería ir mucho más allá de generar códigos básicos, buscaba:</p>
+        <ul className="list-inside list-disc space-y-2 pl-2">
+          <li>Personalización de códigos QR</li>
+          <li>Soporte para distintos tipos de información</li>
+          <li>Estadísticas de uso</li>
+          <li>Integraciones con sistemas externos (pagos / boletaje)</li>
+        </ul>
+        <p>Todo con una experiencia visual clara, fluida y moderna.</p>
+        <p>
+          Además, el reto de fondo era transformar lo físico en digital medible y editable en tiempo
+          real.
+        </p>
+      </ZenqrCaseSection>
+
+      <ZenqrCaseSection label="Solution" title="La solución">
+        <p>
+          El enfoque incluyó analizar a fondo herramientas existentes para detectar oportunidades y
+          construir una hoja de ruta alineada a necesidades reales.
+        </p>
+        <p>
+          Luego desarrollamos una plataforma con interfaz minimalista que permite empezar a crear
+          códigos incluso sin registrarse y con navegación directa.
+        </p>
+        <p className="text-foreground font-medium">La plataforma incluye:</p>
+        <ul className="list-inside list-disc space-y-2 pl-2">
+          <li>Soporte para distintos tipos de contenido</li>
+          <li>Personalización con colores, logos y plantillas</li>
+          <li>Métricas en tiempo real</li>
+          <li>QR estáticos y dinámicos</li>
+          <li>Integración con herramientas externas para eventos y pagos</li>
+        </ul>
+      </ZenqrCaseSection>
+
+      <ZenqrCaseSection label="Results" title="Resultados" reverse>
+        <p>
+          El resultado fue una plataforma eficiente y fácil de usar, construida en colaboración
+          estrecha con el cliente para validar, ajustar y entregar un producto con claridad,
+          funcionalidad y diseño, lista para operar como alternativa competitiva en su mercado.
+        </p>
+      </ZenqrCaseSection>
+
+      <ZenqrOtherCases />
     </article>
   );
 }

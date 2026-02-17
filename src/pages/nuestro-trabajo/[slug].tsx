@@ -3,17 +3,36 @@ import { useTranslation } from 'react-i18next';
 import { PageTitle } from '@/components/PageTitle';
 import MainLayout from '@/components/layout/MainLayout';
 import { useLocale } from '@/hooks/useLocale';
-import { ProjectCaseStudyTemplate } from '@/components/layout/nuestro-trabajo/ProjectCaseStudyTemplate';
-import { getCaseStudyConfig } from '@/components/layout/nuestro-trabajo/caseStudyConfigs';
+import { ZenqurCasePage } from '@/components/layout/nuestro-trabajo/case-study/zenqr-case-page';
+import { SenderoCasePage } from '@/components/layout/nuestro-trabajo/case-study/sendero-case-page';
+import { EbmCasePage } from '@/components/layout/nuestro-trabajo/case-study/ebm-case-page';
+import { DigitalRanchCasePage } from '@/components/layout/nuestro-trabajo/case-study/digitalRanch-case-page';
+import { EasySalesCasePage } from '@/components/layout/nuestro-trabajo/case-study/easySales-case-page';
+import { CipresesCasePage } from '@/components/layout/nuestro-trabajo/case-study/cipreses-case-page';
+import { MaggioreCasePage } from '@/components/layout/nuestro-trabajo/case-study/maggiore-case-page';
+import { WashappCasePage } from '@/components/layout/nuestro-trabajo/case-study/washapp-case-page';
 
 const KNOWN_SLUGS = [
-  'zenqur',
+  'zenqr',
+  'sendero',
   'ebm',
   'digitalRanch',
-  'cipreses',
-  'sendero',
   'easySales',
+  'cipreses',
+  'maggiore',
+  'washapp',
 ] as const;
+
+const CASE_COMPONENTS: Record<(typeof KNOWN_SLUGS)[number], React.ComponentType> = {
+  zenqr: ZenqurCasePage,
+  sendero: SenderoCasePage,
+  ebm: EbmCasePage,
+  digitalRanch: DigitalRanchCasePage,
+  easySales: EasySalesCasePage,
+  cipreses: CipresesCasePage,
+  maggiore: MaggioreCasePage,
+  washapp: WashappCasePage,
+};
 
 export default function NuestroTrabajoProject() {
   const params = useParams<{ slug?: string }>();
@@ -23,7 +42,7 @@ export default function NuestroTrabajoProject() {
 
   const isValid = KNOWN_SLUGS.includes(slug as (typeof KNOWN_SLUGS)[number]);
   const projectKey = isValid ? (slug as (typeof KNOWN_SLUGS)[number]) : null;
-  const caseStudyConfig = getCaseStudyConfig(slug, t);
+  const CaseComponent = projectKey ? CASE_COMPONENTS[projectKey] : null;
 
   return (
     <>
@@ -35,8 +54,8 @@ export default function NuestroTrabajoProject() {
         }
       />
       <MainLayout>
-        {caseStudyConfig ? (
-          <ProjectCaseStudyTemplate config={caseStudyConfig} />
+        {CaseComponent ? (
+          <CaseComponent />
         ) : (
           <div className="bg-muted/40 py-12 md:py-16">
             <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">

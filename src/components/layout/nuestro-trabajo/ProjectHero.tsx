@@ -38,6 +38,10 @@ export type ProjectHeroProps = {
   logoNode?: React.ReactNode;
   title: string;
   description: string;
+  /** Detalle opcional del tipo de industria (ej. "Restaurantes, retail y eventos") */
+  industry?: string;
+  /** Detalle opcional del tipo de solución (ej. "Plataforma SaaS") */
+  solutionType?: string;
   /** CTA opcional (ej: "Visitar sitio web") */
   cta?: ProjectHeroCta;
   /** Links a App Store y/o Google Play (opcional) */
@@ -57,6 +61,8 @@ export function ProjectHero({
   logoNode,
   title,
   description,
+  industry,
+  solutionType,
   cta,
   storeLinks,
   heroImageSrc,
@@ -132,6 +138,20 @@ export function ProjectHero({
                 {title}
               </h1>
               <p className="max-w-xl text-base text-white/90 md:text-lg">{description}</p>
+              {(industry || solutionType) && (
+                <div className="mt-2 flex flex-wrap gap-2 text-sm text-white/90">
+                  {industry && (
+                    <span className="border-white/40 bg-white/10 text-white/95 inline-flex items-center gap-1 rounded-full border px-3 py-1">
+                      <span className="font-semibold">Industria:</span> {industry}
+                    </span>
+                  )}
+                  {solutionType && (
+                    <span className="border-white/40 bg-white/10 text-white/95 inline-flex items-center gap-1 rounded-full border px-3 py-1">
+                      <span className="font-semibold">Solución:</span> {solutionType}
+                    </span>
+                  )}
+                </div>
+              )}
             </motion.div>
             <motion.div
               className="flex flex-wrap items-center gap-4"

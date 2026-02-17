@@ -26,7 +26,7 @@ const DEFAULT_STACK: ProjectStackItem[] = [
 ];
 
 const ACCENT_COLORS: Record<string, string> = {
-  zenqur: '#10b981',
+  zenqr: '#10b981',
   sendero: '#27bfad',
   ebm: '#1e446f',
   digitalRanch: '#00681c',
@@ -113,25 +113,23 @@ function placeholderSections(projectTitle: string): CaseStudySection[] {
 
 /** Config completo para ZenQR (contenido real) */
 function zenqrConfig(_t: TFunction): ProjectCaseStudyConfig {
-  const accentColor = ACCENT_COLORS.zenqur ?? '#10b981';
+  const accentColor = ACCENT_COLORS.zenqr ?? '#10b981';
   return {
-    projectId: 'zenqur',
+    projectId: 'zenqr',
     accentColor,
     hero: {
       logoSrc: '/brands/zenqr.svg',
       logoAlt: 'ZenQR',
-      title: 'Una nueva forma de crear códigos QR',
+      title: 'Plataforma SaaS para gestión de códigos QR dinámicos',
       description:
-        'Plataforma de códigos QR con personalización, métricas en tiempo real e integraciones para eventos y pagos.',
+        'ZenQR se construyó para convertir los códigos QR en una herramienta de negocio: personalizable, medible y administrable desde un panel. Conecta experiencias físicas (menús, empaques, carteles) con acciones digitales y analítica en tiempo real.',
+      industry: 'Restaurantes, retail y eventos',
+      solutionType: 'Plataforma SaaS de códigos QR dinámicos',
       cta: {
         href: ZENQR_LINKS.website,
         label: 'Visitar sitio web',
         ariaLabel: 'Visitar sitio web de ZenQR',
         icon: <FaGlobe className="size-4 shrink-0" />,
-      },
-      storeLinks: {
-        appStoreUrl: ZENQR_LINKS.appStore,
-        playStoreUrl: ZENQR_LINKS.playStore,
       },
       heroImageSrc: '/projects/zenQR/zenqr_hero.png',
       heroImageAlt: 'ZenQR - Dashboard y app',
@@ -148,99 +146,89 @@ function zenqrConfig(_t: TFunction): ProjectCaseStudyConfig {
     ],
     sections: [
       {
-        label: 'Caso de uso',
+        label: 'Overview',
+        title: 'Plataforma SaaS para gestión de códigos QR dinámicos con analítica',
+        content: (_Accent) => (
+          <>
+            <p>
+              ZenQR se construyó para convertir los códigos QR en una herramienta de negocio:
+              personalizable, medible y administrable desde un panel. Conecta experiencias físicas
+              (menús, empaques, carteles) con acciones digitales y analítica en tiempo real.
+            </p>
+          </>
+        ),
+      },
+      {
+        label: 'Challenge',
         title: 'El reto',
-        content: (Accent) => (
-          <>
-            <p>
-              Los códigos QR se han convertido en una <Accent>herramienta clave</Accent> para
-              compartir información de forma práctica y rápida. Desde mostrar el menú en un
-              restaurante hasta compartir datos de contacto o una contraseña de Wi-Fi, escanear un
-              código es mucho más sencillo que escribir enlaces o datos largos.
-            </p>
-            <p>
-              ZenQR llegó a Vado con una idea clara: crear una plataforma que ofreciera mucho más
-              que la generación básica de códigos. Necesitaban una solución que permitiera a los
-              usuarios <Accent>personalizar</Accent> sus códigos QR, almacenar distintos tipos de
-              información, acceder a <Accent>estadísticas de uso</Accent> y conectar la herramienta
-              con sistemas externos como pagos o boletaje de eventos. Todo esto, en una experiencia
-              visual <Accent>clara, fluida y moderna</Accent>.
-            </p>
-          </>
-        ),
-      },
-      {
-        label: 'Estrategia',
-        title: 'Nuestra estrategia',
         reverse: true,
-        content: (Accent) => (
+        content: (_Accent) => (
           <>
             <p>
-              El punto de partida fue analizar a fondo ocho herramientas de generación de códigos QR
-              ya existentes. Esto nos ayudó a detectar <Accent>oportunidades de mejora</Accent>{' '}
-              tanto en funcionalidad como en experiencia de usuario, lo que nos permitió trazar una
-              hoja de ruta enfocada en las necesidades reales del público.
+              El cliente quería ir mucho más allá de generar códigos básicos, buscaba:
             </p>
+            <ul className="list-inside list-disc space-y-2 pl-2">
+              <li>Personalización de códigos QR</li>
+              <li>Soporte para distintos tipos de información</li>
+              <li>Estadísticas de uso</li>
+              <li>Integraciones con sistemas externos (pagos / boletaje)</li>
+            </ul>
+            <p>Todo con una experiencia visual clara, fluida y moderna.</p>
             <p>
-              Además de desarrollar la plataforma, creamos una identidad visual que reflejara la
-              esencia del producto: <Accent>orden, calma y sencillez</Accent>. El logo de ZenQR
-              representa un espacio digital equilibrado, limpio y sin ruido — justo como debía
-              sentirse la experiencia dentro de la app.
-            </p>
-            <p>
-              A través de sesiones colaborativas de diseño, exploramos distintas ideas con un
-              enfoque <Accent>flexible y humano</Accent>. Nuestro objetivo siempre fue mantener una
-              experiencia clara, accesible y, sobre todo, útil.
+              Además, el reto de fondo era transformar lo físico en digital medible y editable en
+              tiempo real.
             </p>
           </>
         ),
       },
       {
-        label: 'Solución',
+        label: 'Solution',
         title: 'La solución',
-        content: (Accent) => (
+        content: (_Accent) => (
           <>
             <p>
-              Diseñamos una interfaz <Accent>minimalista</Accent> que permite a los usuarios
-              comenzar a crear códigos QR incluso <Accent>sin registrarse</Accent>. La navegación es
-              libre y directa, eliminando pasos innecesarios o procesos rígidos.
+              El enfoque incluyó analizar a fondo herramientas existentes para detectar
+              oportunidades y construir una hoja de ruta alineada a necesidades reales.
+            </p>
+            <p>
+              Luego desarrollamos una plataforma con interfaz minimalista que permite empezar a
+              crear códigos incluso sin registrarse y con navegación directa.
             </p>
             <p className="text-foreground font-medium">La plataforma incluye:</p>
             <ul className="list-inside list-disc space-y-2 pl-2">
               <li>Soporte para distintos tipos de contenido</li>
-              <li>
-                <Accent>Personalización</Accent> con colores, logos y plantillas
-              </li>
-              <li>
-                <Accent>Métricas en tiempo real</Accent> para conocer el rendimiento de cada código
-              </li>
-              <li>
-                Códigos QR <Accent>estáticos y dinámicos</Accent>
-              </li>
-              <li>
-                <Accent>Integración</Accent> con herramientas externas para eventos y pagos
-              </li>
+              <li>Personalización con colores, logos y plantillas</li>
+              <li>Métricas en tiempo real</li>
+              <li>QR estáticos y dinámicos</li>
+              <li>Integración con herramientas externas para eventos y pagos</li>
             </ul>
           </>
         ),
       },
       {
-        label: 'Impacto',
+        label: 'Results',
         title: 'Resultados',
         reverse: true,
-        content: (Accent) => (
+        content: (_Accent) => (
           <>
             <p>
-              ZenQR es hoy una plataforma <Accent>eficiente y fácil de usar</Accent>, que responde
-              tanto a las necesidades técnicas como a las expectativas de una experiencia ágil y
-              moderna. A lo largo del proceso trabajamos en estrecha <Accent>colaboración</Accent>{' '}
-              con el cliente, validando ideas, ajustando funcionalidades y construyendo cada parte
-              del producto con una visión compartida.
+              El resultado fue una plataforma eficiente y fácil de usar, construida en colaboración
+              estrecha con el cliente para validar, ajustar y entregar un producto con claridad,
+              funcionalidad y diseño, listo para operar como alternativa competitiva en su mercado.
             </p>
+          </>
+        ),
+      },
+      {
+        label: 'CTA',
+        title: 'CTA',
+        content: (_Accent) => (
+          <>
             <p>
-              El resultado combina funcionalidad, claridad y diseño — y posiciona a ZenQR como una{' '}
-              <Accent>alternativa innovadora</Accent> en el mercado de códigos QR.
+              Si estás construyendo un producto digital y necesitas que sea claro para el usuario y
+              escalable para el negocio, podemos ayudarte a desarrollarlo a la medida.
             </p>
+            <p>Contáctanos</p>
           </>
         ),
       },
@@ -439,7 +427,7 @@ function genericProjectConfig(projectId: string, t: TFunction): ProjectCaseStudy
 }
 
 const CASE_STUDY_SLUGS = [
-  'zenqur',
+  'zenqr',
   'sendero',
   'ebm',
   'digitalRanch',
@@ -453,7 +441,7 @@ export const getCaseStudyConfig = (slug: string, t: TFunction): ProjectCaseStudy
   if (!CASE_STUDY_SLUGS.includes(slug as (typeof CASE_STUDY_SLUGS)[number])) {
     return null;
   }
-  if (slug === 'zenqur') {
+  if (slug === 'zenqr') {
     return zenqrConfig(t);
   }
   if (slug === 'sendero') {

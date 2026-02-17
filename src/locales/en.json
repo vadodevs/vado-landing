@@ -24,11 +24,11 @@
       "cta": "Contact us"
     },
     "projects": {
-      "zenqur": {
+      "zenqr": {
         "category": "Web application",
         "title": "ZenQR",
         "subtitle": "SaaS platform for QR codes",
-        "description": "Adaptability (on the other side) We adapt to change and overcome any obstacle."
+        "description": "QR code platform with customization, real-time metrics, and integrations for events and payments."
       },
       "ebm": {
         "category": "Platform",

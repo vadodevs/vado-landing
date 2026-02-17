@@ -22,7 +22,7 @@ export const OUR_WORK_PROJECTS: OurWorkProject[] = [
   { id: 'sendero', image: 'sendero.png', categoryKey: 'crm' },
   { id: 'ebm', image: 'ebm.png', categoryKey: 'platform' },
   { id: 'digitalRanch', image: 'digital-ranch.png', categoryKey: 'webApp' },
-  { id: 'zenqur', image: 'zenqur.png', categoryKey: 'webApp' },
+  { id: 'zenqr', image: 'zenqur.png', categoryKey: 'webApp' },
   { id: 'easySales', image: 'easy-sales.png', categoryKey: 'ecommerce' },
   { id: 'cipreses', image: 'cipreses.png', categoryKey: 'website' },
   { id: 'maggiore', image: 'cipreses.png', categoryKey: 'platform', badgeColor: '#3390ff' },
