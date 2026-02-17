@@ -76,7 +76,7 @@ function placeholderSections(projectTitle: string): CaseStudySection[] {
     {
       label: 'Solución',
       title: 'La solución',
-      content: (Accent) => (
+      content: (_Accent) => (
         <>
           <p>
             Desarrollamos una solución a la medida que integra funcionalidad, usabilidad y
@@ -112,7 +112,7 @@ function placeholderSections(projectTitle: string): CaseStudySection[] {
 }
 
 /** Config completo para ZenQR (contenido real) */
-function zenqrConfig(t: TFunction): ProjectCaseStudyConfig {
+function zenqrConfig(_t: TFunction): ProjectCaseStudyConfig {
   const accentColor = ACCENT_COLORS.zenqur ?? '#10b981';
   return {
     projectId: 'zenqur',
@@ -511,7 +511,7 @@ export const CASE_STUDY_CONFIG_TEMPLATE = (
       label: 'Estrategia',
       title: 'Nuestra estrategia',
       reverse: true,
-      content: (Accent) => (
+      content: (_Accent) => (
         <>
           <p>Describe la estrategia y el enfoque.</p>
         </>
@@ -520,7 +520,7 @@ export const CASE_STUDY_CONFIG_TEMPLATE = (
     {
       label: 'Solución',
       title: 'La solución',
-      content: (Accent) => (
+      content: (_Accent) => (
         <>
           <p>Qué se construyó y cómo.</p>
         </>
@@ -530,7 +530,7 @@ export const CASE_STUDY_CONFIG_TEMPLATE = (
       label: 'Impacto',
       title: 'Resultados',
       reverse: true,
-      content: (Accent) => (
+      content: (_Accent) => (
         <>
           <p>Resultados e impacto del proyecto.</p>
         </>

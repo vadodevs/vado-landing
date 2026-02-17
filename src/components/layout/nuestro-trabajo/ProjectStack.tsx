@@ -22,7 +22,7 @@ export type ProjectStackProps = {
   label?: string;
 };
 
-function StackIcon({ icon, name, size = 'default' }: { icon: string; name: string; size?: 'sm' | 'default' | 'lg' | 'xl' }) {
+function StackIcon({ icon, name: _name, size = 'default' }: { icon: string; name: string; size?: 'sm' | 'default' | 'lg' | 'xl' }) {
   const sizeClasses =
     size === 'sm'
       ? 'h-6 w-6'
