@@ -17,6 +17,14 @@ import { useLocale } from '@/hooks/useLocale';
 
 const ZENQR_ACCENT = '#10b981';
 
+function Accent({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="font-semibold" style={{ color: ZENQR_ACCENT }}>
+      {children}
+    </span>
+  );
+}
+
 const ZENQR_STACK: ProjectStackItem[] = [
   { name: 'Vue', icon: 'vue' },
   { name: 'TypeScript', icon: 'typescript' },
@@ -80,13 +88,13 @@ function ZenqrOtherCases() {
               className="mb-2 block text-xs font-semibold tracking-[0.2em] uppercase"
               style={{ color: ZENQR_ACCENT }}
             >
-              Más trabajo
+              {t('ourWork.caseStudy.zenqr.otherCases.label')}
             </span>
             <h2 className="text-foreground text-2xl font-bold tracking-tight md:text-3xl">
-              Otros casos de uso
+              {t('ourWork.caseStudy.zenqr.otherCases.title')}
             </h2>
             <p className="text-muted-foreground mt-3 text-base leading-relaxed">
-              Conoce otros proyectos que hemos desarrollado junto a nuestros clientes.
+              {t('ourWork.caseStudy.zenqr.otherCases.description')}
             </p>
           </header>
 
@@ -171,7 +179,7 @@ function ZenqrOtherCases() {
               href={path('/nuestro-trabajo')}
               className="text-muted-foreground hover:text-foreground inline-flex items-center gap-2 text-sm font-medium transition-colors"
             >
-              <span aria-hidden>←</span> Volver a Nuestro trabajo
+              <span aria-hidden>←</span> {t('ourWork.caseStudy.zenqr.otherCases.backLink')}
             </Link>
           </div>
         </div>
@@ -191,16 +199,16 @@ export function ZenqurCasePage() {
         backLabel={t('nav.ourWork')}
         logoSrc="/brands/zenqr.svg"
         logoAlt="ZenQR"
-        title="Una nueva forma de crear códigos QR"
-        description="Plataforma de códigos QR con personalización, métricas en tiempo real e integraciones para eventos y pagos."
+        title={t('ourWork.caseStudy.zenqr.hero.title')}
+        description={t('ourWork.caseStudy.zenqr.hero.description')}
         cta={{
           href: 'https://zenqr.app',
-          label: 'Visitar sitio web',
-          ariaLabel: 'Visitar sitio web de ZenQR',
+          label: t('ourWork.caseStudy.zenqr.hero.ctaLabel'),
+          ariaLabel: t('ourWork.caseStudy.zenqr.hero.ctaAriaLabel'),
           icon: <FaGlobe className="size-4 shrink-0" />,
         }}
         heroImageSrc="/projects/zenQR/zenqr_hero.png"
-        heroImageAlt="ZenQR - Dashboard y app"
+        heroImageAlt={t('ourWork.caseStudy.zenqr.hero.heroImageAlt')}
         backgroundColor={ZENQR_ACCENT}
       />
 
@@ -216,13 +224,19 @@ export function ZenqurCasePage() {
         title="Plataforma SaaS para gestión de códigos QR dinámicos con analítica"
       >
         <p>
-          ZenQR se construyó para convertir los códigos QR en una herramienta de negocio:
-          personalizable, medible y administrable desde un panel. Conecta experiencias físicas
-          (menús, empaques, carteles) con acciones digitales y analítica en tiempo real.
+          ZenQR se construyó para convertir los códigos QR en una{' '}
+          <Accent>herramienta de negocio</Accent>: <Accent>personalizable</Accent>,{' '}
+          <Accent>medible</Accent> y administrable desde un panel. Conecta experiencias físicas
+          (menús, empaques, carteles) con acciones digitales y{' '}
+          <Accent>analítica en tiempo real</Accent>.
         </p>
       </ZenqrCaseSection>
 
-      <ZenqrCaseSection label="Challenge" title="El reto" reverse>
+      <ZenqrCaseSection
+        label="Challenge"
+        title="El reto"
+        reverse
+      >
         <p>El cliente quería ir mucho más allá de generar códigos básicos, buscaba:</p>
         <ul className="list-inside list-disc space-y-2 pl-2">
           <li>Personalización de códigos QR</li>
@@ -230,21 +244,28 @@ export function ZenqurCasePage() {
           <li>Estadísticas de uso</li>
           <li>Integraciones con sistemas externos (pagos / boletaje)</li>
         </ul>
-        <p>Todo con una experiencia visual clara, fluida y moderna.</p>
         <p>
-          Además, el reto de fondo era transformar lo físico en digital medible y editable en tiempo
-          real.
+          Todo con una experiencia visual <Accent>clara</Accent>, <Accent>fluida</Accent> y{' '}
+          <Accent>moderna</Accent>.
+        </p>
+        <p>
+          Además, el reto de fondo era transformar lo físico en{' '}
+          <Accent>digital medible y editable en tiempo real</Accent>.
         </p>
       </ZenqrCaseSection>
 
-      <ZenqrCaseSection label="Solution" title="La solución">
+      <ZenqrCaseSection
+        label="Solution"
+        title="La solución"
+      >
         <p>
-          El enfoque incluyó analizar a fondo herramientas existentes para detectar oportunidades y
-          construir una hoja de ruta alineada a necesidades reales.
+          El enfoque incluyó <Accent>analizar a fondo</Accent> herramientas existentes para
+          detectar oportunidades y construir una hoja de ruta alineada a necesidades reales.
         </p>
         <p>
-          Luego desarrollamos una plataforma con interfaz minimalista que permite empezar a crear
-          códigos incluso sin registrarse y con navegación directa.
+          Luego desarrollamos una plataforma con interfaz <Accent>minimalista</Accent> que permite
+          empezar a crear códigos incluso <Accent>sin registrarse</Accent> y con navegación
+          directa.
         </p>
         <p className="text-foreground font-medium">La plataforma incluye:</p>
         <ul className="list-inside list-disc space-y-2 pl-2">
@@ -256,11 +277,16 @@ export function ZenqurCasePage() {
         </ul>
       </ZenqrCaseSection>
 
-      <ZenqrCaseSection label="Results" title="Resultados" reverse>
+      <ZenqrCaseSection
+        label="Results"
+        title="Resultados"
+        reverse
+      >
         <p>
-          El resultado fue una plataforma eficiente y fácil de usar, construida en colaboración
-          estrecha con el cliente para validar, ajustar y entregar un producto con claridad,
-          funcionalidad y diseño, lista para operar como alternativa competitiva en su mercado.
+          El resultado fue una plataforma <Accent>eficiente y fácil de usar</Accent>, construida en{' '}
+          <Accent>colaboración estrecha</Accent> con el cliente para validar, ajustar y entregar un
+          producto con claridad, funcionalidad y diseño, lista para operar como{' '}
+          <Accent>alternativa competitiva</Accent> en su mercado.
         </p>
       </ZenqrCaseSection>
 

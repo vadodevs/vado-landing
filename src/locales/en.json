@@ -72,6 +72,56 @@
         "subtitle": "",
         "description": "On-demand car wash at your location."
       }
+    },
+    "caseStudy": {
+      "zenqr": {
+        "hero": {
+          "title": "A new way to create QR codes",
+          "description": "QR code platform with customization, real-time metrics, and integrations for events and payments.",
+          "ctaLabel": "Visit website",
+          "ctaAriaLabel": "Visit ZenQR website",
+          "heroImageAlt": "ZenQR - Dashboard and app"
+        },
+        "overview": {
+          "label": "Overview",
+          "title": "SaaS platform for dynamic QR code management with analytics",
+          "paragraph": "ZenQR was built to turn QR codes into a <accent>business tool</accent>: <accent>customizable</accent>, <accent>measurable</accent>, and manageable from a single panel. It connects physical experiences (menus, packaging, posters) with digital actions and <accent>real-time analytics</accent>."
+        },
+        "challenge": {
+          "label": "Challenge",
+          "title": "The challenge",
+          "intro": "The client wanted to go far beyond generating basic codes; they were looking for:",
+          "list1": "QR code customization",
+          "list2": "Support for different types of information",
+          "list3": "Usage statistics",
+          "list4": "Integrations with external systems (payments / ticketing)",
+          "afterList": "All with a <accent>clear</accent>, <accent>fluid</accent>, and <accent>modern</accent> visual experience.",
+          "closing": "Furthermore, the underlying challenge was to transform the physical into <accent>measurable and real-time editable digital</accent>."
+        },
+        "solution": {
+          "label": "Solution",
+          "title": "The solution",
+          "paragraph1": "The approach included <accent>thoroughly analyzing</accent> existing tools to identify opportunities and build a roadmap aligned with real needs.",
+          "paragraph2": "We then developed a platform with a <accent>minimalist</accent> interface that allows users to start creating codes <accent>without even signing up</accent> and with direct navigation.",
+          "listTitle": "The platform includes:",
+          "list1": "Support for different types of content",
+          "list2": "Customization with colors, logos, and templates",
+          "list3": "Real-time metrics",
+          "list4": "Static and dynamic QR codes",
+          "list5": "Integration with external tools for events and payments"
+        },
+        "results": {
+          "label": "Results",
+          "title": "Results",
+          "paragraph": "The result was an <accent>efficient and easy-to-use</accent> platform, built in <accent>close collaboration</accent> with the client to validate, adjust, and deliver a product with clarity, functionality, and design, ready to operate as a <accent>competitive alternative</accent> in its market."
+        },
+        "otherCases": {
+          "label": "More work",
+          "title": "Other case studies",
+          "description": "Discover other projects we have developed with our clients.",
+          "backLink": "Back to Our work"
+        }
+      }
     }
   },
   "insightsPage": {

@@ -72,6 +72,56 @@
         "subtitle": "",
         "description": "Lavado de carros a domicilio."
       }
+    },
+    "caseStudy": {
+      "zenqr": {
+        "hero": {
+          "title": "Una nueva forma de crear códigos QR",
+          "description": "Plataforma de códigos QR con personalización, métricas en tiempo real e integraciones para eventos y pagos.",
+          "ctaLabel": "Visitar sitio web",
+          "ctaAriaLabel": "Visitar sitio web de ZenQR",
+          "heroImageAlt": "ZenQR - Dashboard y app"
+        },
+        "overview": {
+          "label": "Overview",
+          "title": "Plataforma SaaS para gestión de códigos QR dinámicos con analítica",
+          "paragraph": "ZenQR se construyó para convertir los códigos QR en una <accent>herramienta de negocio</accent>: <accent>personalizable</accent>, <accent>medible</accent> y administrable desde un panel. Conecta experiencias físicas (menús, empaques, carteles) con acciones digitales y <accent>analítica en tiempo real</accent>."
+        },
+        "challenge": {
+          "label": "Challenge",
+          "title": "El reto",
+          "intro": "El cliente quería ir mucho más allá de generar códigos básicos, buscaba:",
+          "list1": "Personalización de códigos QR",
+          "list2": "Soporte para distintos tipos de información",
+          "list3": "Estadísticas de uso",
+          "list4": "Integraciones con sistemas externos (pagos / boletaje)",
+          "afterList": "Todo con una experiencia visual <accent>clara</accent>, <accent>fluida</accent> y <accent>moderna</accent>.",
+          "closing": "Además, el reto de fondo era transformar lo físico en <accent>digital medible y editable en tiempo real</accent>."
+        },
+        "solution": {
+          "label": "Solution",
+          "title": "La solución",
+          "paragraph1": "El enfoque incluyó <accent>analizar a fondo</accent> herramientas existentes para detectar oportunidades y construir una hoja de ruta alineada a necesidades reales.",
+          "paragraph2": "Luego desarrollamos una plataforma con interfaz <accent>minimalista</accent> que permite empezar a crear códigos incluso <accent>sin registrarse</accent> y con navegación directa.",
+          "listTitle": "La plataforma incluye:",
+          "list1": "Soporte para distintos tipos de contenido",
+          "list2": "Personalización con colores, logos y plantillas",
+          "list3": "Métricas en tiempo real",
+          "list4": "QR estáticos y dinámicos",
+          "list5": "Integración con herramientas externas para eventos y pagos"
+        },
+        "results": {
+          "label": "Results",
+          "title": "Resultados",
+          "paragraph": "El resultado fue una plataforma <accent>eficiente y fácil de usar</accent>, construida en <accent>colaboración estrecha</accent> con el cliente para validar, ajustar y entregar un producto con claridad, funcionalidad y diseño, lista para operar como <accent>alternativa competitiva</accent> en su mercado."
+        },
+        "otherCases": {
+          "label": "Más trabajo",
+          "title": "Otros casos de uso",
+          "description": "Conoce otros proyectos que hemos desarrollado junto a nuestros clientes.",
+          "backLink": "Volver a Nuestro trabajo"
+        }
+      }
     }
   },
   "insightsPage": {
