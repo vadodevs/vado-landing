@@ -113,7 +113,16 @@
         "description": "Remote work has transformed how companies acquire talent. Geographic limitations are fading. Learn how organizations are redefining hiring...",
         "imageAlt": "Remote work and talent"
       },
-      "noResults": "No articles found."
+      "noResults": "No articles found.",
+      "viewMore": "View more"
+    },
+    "stayUpdated": {
+      "topLine": "THE VADO TEAM",
+      "titleLine1": "STAY UPDATED WITH",
+      "titleLine2": "OUR LATEST INNOVATIONS",
+      "emailLabel": "Email",
+      "emailPlaceholder": "your@email.com",
+      "subscribeButton": "SUBSCRIBE"
     }
   },
   "home": {

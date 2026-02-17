@@ -3,6 +3,9 @@ import { PageTitle } from '@/components/PageTitle';
 import MainLayout from '@/components/layout/MainLayout';
 import { InsightsHero } from '@/components/layout/compania/InsightsHero';
 import { InsightsArticlesSection } from '@/components/layout/compania/InsightsArticlesSection';
+import { InsightsStayUpdatedSection } from '@/components/layout/compania/InsightsStayUpdatedSection';
+import { CtaContactSection } from '@/components/layout/home/cta-contact/CtaContactSection';
+import { FAQSection } from '@/components/layout/home/faq/FAQSection';
 
 export default function VadoInsights() {
   const { t } = useTranslation();
@@ -19,6 +22,9 @@ export default function VadoInsights() {
           cta={t('insightsPage.hero.cta')}
         />
         <InsightsArticlesSection />
+        <InsightsStayUpdatedSection />
+        <FAQSection />
+        <CtaContactSection />
       </MainLayout>
     </>
   );

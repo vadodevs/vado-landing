@@ -1,13 +1,17 @@
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'wouter';
 import { Search } from 'lucide-react';
 import { CenterContainer } from '@/components/layout/CenterContainer';
+import { Button } from '@/components/ui/button';
 import { InsightsArticleCard } from './InsightsArticleCard';
+import { useLocale } from '@/hooks/useLocale';
 
 const ARTICLE_IDS = ['article1', 'article2', 'article3', 'article4'] as const;
 
 export function InsightsArticlesSection() {
   const { t } = useTranslation();
+  const { path } = useLocale();
   const [searchQuery, setSearchQuery] = useState('');
 
   const articles = useMemo(() => {
@@ -75,6 +79,14 @@ export function InsightsArticlesSection() {
             {t('insightsPage.articles.noResults')}
           </p>
         )}
+
+        <div className="mt-10 flex justify-center">
+          <Button variant="outline" className="border-primary text-primary" asChild>
+            <Link href={path('/compania/vado-insights')}>
+              {t('insightsPage.articles.viewMore')}
+            </Link>
+          </Button>
+        </div>
       </CenterContainer>
     </section>
   );
