@@ -1,8 +1,18 @@
 import { Link } from 'wouter';
+import { motion } from 'motion/react';
 import { CenterContainer } from '@/components/layout/CenterContainer';
 import { AppStoreButtons } from '@/components/ui/AppStoreButtons';
 
 const DIAGONAL_CLIP = 'polygon(0 0, 100% 0, 100% 82%, 0 100%)';
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 20 },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, delay: 0.08 * i, ease: [0.25, 0.46, 0.45, 0.94] },
+  }),
+};
 
 export type ProjectHeroCta = {
   href: string;
@@ -53,7 +63,12 @@ export function ProjectHero({
   backgroundColor,
 }: ProjectHeroProps) {
   return (
-    <header className="relative overflow-visible py-10 md:py-12 lg:py-14">
+    <motion.header
+      className="relative overflow-visible py-10 md:py-12 lg:py-14"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.4 }}
+    >
       {/* Fondo con corte diagonal (solo estos layers se cortan) */}
       <div
         className="absolute inset-0 z-0"
@@ -74,16 +89,25 @@ export function ProjectHero({
         style={{ clipPath: DIAGONAL_CLIP }}
       />
       <CenterContainer className="relative z-10">
-        <Link
-          href={backHref}
-          className="mb-4 inline-flex items-center gap-2 text-sm font-medium text-white/80 transition-colors hover:text-white"
-        >
-          <span aria-hidden>←</span> {backLabel}
-        </Link>
+        <motion.div custom={0} initial="hidden" animate="visible" variants={fadeUp}>
+          <Link
+            href={backHref}
+            className="mb-4 inline-flex items-center gap-2 text-sm font-medium text-white/80 transition-colors hover:text-white"
+          >
+            <span aria-hidden>←</span> {backLabel}
+          </Link>
+        </motion.div>
         <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between lg:gap-8">
           {/* Texto a la izquierda */}
           <div className="flex-1 space-y-4 text-left">
-            <div className="flex h-16 w-auto max-w-[180px] items-center md:h-20 md:max-w-[200px]" aria-hidden={!!logoNode}>
+            <motion.div
+              className="flex h-16 w-auto max-w-[180px] items-center md:h-20 md:max-w-[200px]"
+              aria-hidden={!!logoNode}
+              custom={1}
+              initial="hidden"
+              animate="visible"
+              variants={fadeUp}
+            >
               {logoNode ? (
                 <div className="h-full w-full [&_svg]:h-full [&_svg]:w-full [&_svg]:object-contain [&_svg]:object-left">
                   {logoNode}
@@ -95,14 +119,26 @@ export function ProjectHero({
                   className="h-full w-full object-contain object-left brightness-0 invert"
                 />
               ) : null}
-            </div>
-            <div className="space-y-3">
+            </motion.div>
+            <motion.div
+              className="space-y-3"
+              custom={2}
+              initial="hidden"
+              animate="visible"
+              variants={fadeUp}
+            >
               <h1 className="text-2xl font-bold tracking-tight text-white md:text-3xl lg:text-4xl">
                 {title}
               </h1>
               <p className="max-w-xl text-base text-white/90 md:text-lg">{description}</p>
-            </div>
-            <div className="flex flex-wrap items-center gap-4">
+            </motion.div>
+            <motion.div
+              className="flex flex-wrap items-center gap-4"
+              custom={3}
+              initial="hidden"
+              animate="visible"
+              variants={fadeUp}
+            >
               {cta && (
                 <a
                   href={cta.href}
@@ -127,18 +163,23 @@ export function ProjectHero({
                   variant="dark"
                 />
               )}
-            </div>
+            </motion.div>
           </div>
           {/* Imagen a la derecha (sin clip, se ve completa) */}
-          <div className="flex flex-1 justify-center lg:justify-end">
+          <motion.div
+            className="flex flex-1 justify-center lg:justify-end"
+            initial={{ opacity: 0, x: 24 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }}
+          >
             <img
               src={heroImageSrc}
               alt={heroImageAlt}
               className="h-auto max-h-[240px] w-full max-w-lg object-contain object-right md:max-h-[280px] lg:max-h-[320px]"
             />
-          </div>
+          </motion.div>
         </div>
       </CenterContainer>
-    </header>
+    </motion.header>
   );
 }

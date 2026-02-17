@@ -111,6 +111,10 @@ function LangSwitcher({ className }: { className?: string }) {
 function MobileMenuContent({ onLinkClick }: { onLinkClick?: () => void }) {
   const { t } = useTranslation();
   const { path } = useLocale();
+  const [location] = useLocation();
+  const loc = location.replace(/\/$/, '') || '/';
+  const isServiciosActive = loc.startsWith(path('/servicios'));
+  const isCompaniaActive = loc.startsWith(path('/compania'));
 
   return (
     <nav className="flex flex-1 flex-col overflow-y-auto">
@@ -125,7 +129,12 @@ function MobileMenuContent({ onLinkClick }: { onLinkClick?: () => void }) {
 
         <Accordion type="single" collapsible className="w-full px-0">
           <AccordionItem value="servicios" className="border-border border-b">
-            <AccordionTrigger className="text-foreground hover:text-primary [&[data-state=open]]:text-primary py-3.5 text-base font-medium hover:no-underline">
+            <AccordionTrigger
+              className={cn(
+                'text-foreground hover:text-primary data-[state=open]:text-primary py-3.5 text-base font-medium hover:no-underline',
+                isServiciosActive && 'text-primary font-semibold',
+              )}
+            >
               {t('nav.services')}
             </AccordionTrigger>
             <AccordionContent>
@@ -158,7 +167,12 @@ function MobileMenuContent({ onLinkClick }: { onLinkClick?: () => void }) {
 
         <Accordion type="single" collapsible className="w-full px-0">
           <AccordionItem value="compania" className="border-border border-b">
-            <AccordionTrigger className="text-foreground hover:text-primary [&[data-state=open]]:text-primary py-3.5 text-base font-medium hover:no-underline">
+            <AccordionTrigger
+              className={cn(
+                'text-foreground hover:text-primary data-[state=open]:text-primary py-3.5 text-base font-medium hover:no-underline',
+                isCompaniaActive && 'text-primary font-semibold',
+              )}
+            >
               {t('nav.company')}
             </AccordionTrigger>
             <AccordionContent>
@@ -196,8 +210,18 @@ export function Navbar() {
   const { t } = useTranslation();
   const { path } = useLocale();
   const [location] = useLocation();
+  const loc = location.replace(/\/$/, '') || '/';
   const homePath = path('');
-  const isHomeActive = location === homePath || location === homePath + '/';
+  const isHomeActive = loc === homePath.replace(/\/$/, '') || loc === '/';
+  const nuestroTrabajoPath = path('/nuestro-trabajo');
+  const isNuestroTrabajoActive =
+    loc === nuestroTrabajoPath || loc.startsWith(nuestroTrabajoPath + '/');
+  const serviciosBase = path('/servicios');
+  const isServiciosActive = loc.startsWith(serviciosBase);
+  const companiaBase = path('/compania');
+  const isCompaniaActive = loc.startsWith(companiaBase);
+  const contactoPath = path('/contacto');
+  const isContactoActive = loc === contactoPath;
 
   return (
     <header className="bg-background sticky top-0 z-40 w-full border-b p-3">
@@ -247,7 +271,6 @@ export function Navbar() {
                 <NavigationMenuLink asChild>
                   <Link
                     href={homePath}
-                    {...(isHomeActive && { 'data-active': true })}
                     className={cn(
                       'text-foreground hover:text-primary focus:text-primary focus-visible:ring-ring/50 inline-flex h-9 w-max items-center justify-center rounded-lg bg-transparent px-4 py-2 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
                       isHomeActive && 'text-primary font-semibold',
@@ -258,23 +281,35 @@ export function Navbar() {
                 </NavigationMenuLink>
               </NavigationMenuItem>
               <NavigationMenuItem>
-                <NavigationMenuTrigger className="hover:bg-transparent focus:bg-transparent data-[state=open]:bg-transparent">
+                <NavigationMenuTrigger
+                  className={cn(
+                    'hover:bg-transparent focus:bg-transparent data-[state=open]:bg-transparent data-[state=open]:text-primary',
+                    isServiciosActive && 'text-primary font-semibold',
+                  )}
+                >
                   {t('nav.services')}
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
                   <ul className="grid min-w-56 gap-0.5 px-2 py-1">
-                    {serviciosPaths.map(({ path: p, labelKey }) => (
-                      <li key={p}>
-                        <NavigationMenuLink asChild>
-                          <Link
-                            href={path(p)}
-                            className="text-foreground hover:text-primary focus:text-primary block rounded-lg px-3 py-2 text-sm no-underline transition-colors outline-none select-none focus:outline-none"
-                          >
-                            {t(labelKey)}
-                          </Link>
-                        </NavigationMenuLink>
-                      </li>
-                    ))}
+                    {serviciosPaths.map(({ path: p, labelKey }) => {
+                      const href = path(p);
+                      const isActive = loc === href || loc.startsWith(href + '/');
+                      return (
+                        <li key={p}>
+                          <NavigationMenuLink asChild>
+                            <Link
+                              href={href}
+                              className={cn(
+                                'text-foreground hover:text-primary focus:text-primary block rounded-lg px-3 py-2 text-sm no-underline transition-colors outline-none select-none focus:outline-none',
+                                isActive && 'text-primary font-semibold',
+                              )}
+                            >
+                              {t(labelKey)}
+                            </Link>
+                          </NavigationMenuLink>
+                        </li>
+                      );
+                    })}
                   </ul>
                 </NavigationMenuContent>
               </NavigationMenuItem>
@@ -282,37 +317,57 @@ export function Navbar() {
                 <NavigationMenuLink asChild>
                   <Link
                     href={path('/nuestro-trabajo')}
-                    className="text-foreground hover:text-primary focus:text-primary focus-visible:ring-ring/50 inline-flex h-9 w-max items-center justify-center rounded-lg bg-transparent px-4 py-2 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+                    className={cn(
+                      'text-foreground hover:text-primary focus:text-primary focus-visible:ring-ring/50 inline-flex h-9 w-max items-center justify-center rounded-lg bg-transparent px-4 py-2 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
+                      isNuestroTrabajoActive && 'text-primary font-semibold',
+                    )}
                   >
                     {t('nav.ourWork')}
                   </Link>
                 </NavigationMenuLink>
               </NavigationMenuItem>
               <NavigationMenuItem>
-                <NavigationMenuTrigger className="hover:bg-transparent focus:bg-transparent data-[state=open]:bg-transparent">
+                <NavigationMenuTrigger
+                  className={cn(
+                    'hover:bg-transparent focus:bg-transparent data-[state=open]:bg-transparent data-[state=open]:text-primary',
+                    isCompaniaActive && 'text-primary font-semibold',
+                  )}
+                >
                   {t('nav.company')}
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
                   <ul className="grid min-w-40 gap-0.5 px-2 py-1">
-                    {companiaPaths.map(({ path: p, labelKey }) => (
-                      <li key={p}>
-                        <NavigationMenuLink asChild>
-                          <Link
-                            href={path(p)}
-                            className="text-foreground hover:text-primary focus:text-primary block rounded-lg px-3 py-2 text-sm no-underline transition-colors outline-none select-none focus:outline-none"
-                          >
-                            {t(labelKey)}
-                          </Link>
-                        </NavigationMenuLink>
-                      </li>
-                    ))}
+                    {companiaPaths.map(({ path: p, labelKey }) => {
+                      const href = path(p);
+                      const isActive = loc === href || loc.startsWith(href + '/');
+                      return (
+                        <li key={p}>
+                          <NavigationMenuLink asChild>
+                            <Link
+                              href={href}
+                              className={cn(
+                                'text-foreground hover:text-primary focus:text-primary block rounded-lg px-3 py-2 text-sm no-underline transition-colors outline-none select-none focus:outline-none',
+                                isActive && 'text-primary font-semibold',
+                              )}
+                            >
+                              {t(labelKey)}
+                            </Link>
+                          </NavigationMenuLink>
+                        </li>
+                      );
+                    })}
                   </ul>
                 </NavigationMenuContent>
               </NavigationMenuItem>
             </NavigationMenuList>
           </NavigationMenu>
           <LangSwitcher className="ml-1 shrink-0" />
-          <Button asChild size="default" className="ml-2 shrink-0">
+          <Button
+            asChild
+            size="default"
+            variant={isContactoActive ? 'outline' : 'default'}
+            className={cn('ml-2 shrink-0', isContactoActive && 'border-primary text-primary')}
+          >
             <Link href={path('/contacto')}>{t('nav.contactUs')}</Link>
           </Button>
         </div>
