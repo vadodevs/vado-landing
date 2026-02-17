@@ -4,13 +4,14 @@ import { CenterContainer } from '@/components/layout/CenterContainer';
 import { AppStoreButtons } from '@/components/ui/AppStoreButtons';
 
 const DIAGONAL_CLIP = 'polygon(0 0, 100% 0, 100% 82%, 0 100%)';
+const EASING: [number, number, number, number] = [0.25, 0.46, 0.45, 0.94];
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { duration: 0.5, delay: 0.08 * i, ease: [0.25, 0.46, 0.45, 0.94] },
+    transition: { duration: 0.5, delay: 0.08 * i, ease: EASING },
   }),
 };
 

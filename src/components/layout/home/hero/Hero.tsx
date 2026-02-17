@@ -9,6 +9,8 @@ import { Button } from '@/components/ui/button';
 import { useLocale } from '@/hooks/useLocale';
 import { CenterContainer } from '@/components/layout/CenterContainer';
 
+const EASING: [number, number, number, number] = [0.25, 0.46, 0.45, 0.94];
+
 const fadeUp = {
   hidden: { opacity: 0, y: 28 },
   visible: (i: number) => ({
@@ -17,7 +19,7 @@ const fadeUp = {
     transition: {
       duration: 0.6,
       delay: 0.08 * i,
-      ease: [0.25, 0.46, 0.45, 0.94],
+      ease: EASING,
     },
   }),
 };
@@ -66,7 +68,7 @@ export function Hero() {
               aria-hidden
               initial={{ scale: 1.08, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 1, ease: [0.25, 0.46, 0.45, 0.94] }}
+              transition={{ duration: 1, ease: EASING }}
             />
             <motion.div
               className="absolute inset-0 bg-black/40"
@@ -105,7 +107,7 @@ export function Hero() {
                     transition={{
                       duration: 0.55,
                       delay: 0.28,
-                      ease: [0.25, 0.46, 0.45, 0.94],
+                      ease: EASING,
                     }}
                   >
                     {t('home.heroTagline')}
@@ -116,7 +118,7 @@ export function Hero() {
                     transition={{
                       duration: 0.5,
                       delay: 0.4,
-                      ease: [0.25, 0.46, 0.45, 0.94],
+                      ease: EASING,
                     }}
                   >
                     <Link href={path('/contacto')}>

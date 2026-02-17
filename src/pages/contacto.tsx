@@ -5,6 +5,8 @@ import MainLayout from '@/components/layout/MainLayout';
 import { CenterContainer } from '@/components/layout/CenterContainer';
 import { ContactForm } from '@/components/layout/home/cta-contact/ContactForm';
 
+const EASING: [number, number, number, number] = [0.25, 0.46, 0.45, 0.94];
+
 const BENEFIT_KEYS = [
   'home.ctaContact.benefit1',
   'home.ctaContact.benefit2',
@@ -16,7 +18,7 @@ const fadeUp = {
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { duration: 0.5, delay: 0.08 * i, ease: [0.25, 0.46, 0.45, 0.94] },
+    transition: { duration: 0.5, delay: 0.08 * i, ease: EASING },
   }),
 };
 

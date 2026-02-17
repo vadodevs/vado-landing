@@ -8,6 +8,8 @@ import {
   BADGE_COLORS,
 } from '@/components/layout/nuestro-trabajo/ourWorkProjects';
 
+const EASING: [number, number, number, number] = [0.25, 0.46, 0.45, 0.94];
+
 const container = {
   hidden: { opacity: 0 },
   visible: {
@@ -26,7 +28,7 @@ const card = {
     y: 0,
     transition: {
       duration: 0.4,
-      ease: [0.25, 0.46, 0.45, 0.94],
+      ease: EASING,
     },
   },
 };

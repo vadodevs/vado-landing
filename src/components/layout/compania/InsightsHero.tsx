@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button';
 import { CenterContainer } from '@/components/layout/CenterContainer';
 import { useLocale } from '@/hooks/useLocale';
 
+const EASING: [number, number, number, number] = [0.25, 0.46, 0.45, 0.94];
+
 export type InsightsHeroProps = {
   titleLine1: string;
   titleLine2: string;
@@ -21,7 +23,7 @@ const fadeUp = {
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { duration: 0.5, delay: 0.1 * i, ease: [0.25, 0.46, 0.45, 0.94] },
+    transition: { duration: 0.5, delay: 0.1 * i, ease: EASING },
   }),
 };
 
@@ -52,7 +54,7 @@ export function InsightsHero({
         aria-hidden
         initial={{ scale: 1.05 }}
         animate={{ scale: 1 }}
-        transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
+        transition={{ duration: 0.8, ease: EASING }}
       />
       <div className="absolute inset-0 z-10 flex items-center pb-8">
         <CenterContainer className="w-full">

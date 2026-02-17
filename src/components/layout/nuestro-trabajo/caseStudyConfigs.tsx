@@ -256,6 +256,7 @@ const SENDERO_STACK: ProjectStackItem[] = [
   { name: 'NestJS', icon: 'nestjs' },
   { name: 'Figma', icon: 'figma' },
   { name: 'Digital Ocean', icon: 'digital-ocean' },
+  { name: 'Meta', icon: 'meta' },
   { name: 'OpenAI', icon: 'openai' },
 ];
 
