@@ -5,10 +5,7 @@ import { FaGlobe } from 'react-icons/fa';
 import { CenterContainer } from '@/components/layout/CenterContainer';
 import { Button } from '@/components/ui/button';
 import { ProjectHero } from '@/components/layout/nuestro-trabajo/ProjectHero';
-import {
-  ProjectStack,
-  type ProjectStackItem,
-} from '@/components/layout/nuestro-trabajo/ProjectStack';
+import { type ProjectStackItem } from '@/components/layout/nuestro-trabajo/ProjectStack';
 import {
   OUR_WORK_PROJECTS,
   BADGE_COLORS,
@@ -33,7 +30,7 @@ const ZENQR_STACK: ProjectStackItem[] = [
   { name: 'NestJS', icon: 'nestjs' },
   { name: 'Figma', icon: 'figma' },
   { name: 'Digital Ocean', icon: 'digital-ocean' },
-  { name: 'Stripe', icon: 'stripe' },
+  { name: 'Stripe', icon: 'stripe-favicon' },
 ];
 
 function ZenqrCaseSection({
@@ -93,10 +90,10 @@ function ZenqrCtaSection() {
   const { path } = useLocale();
 
   return (
-    <section className="relative overflow-hidden py-16 md:py-20 lg:py-24">
-      <CenterContainer className="flex justify-start">
+    <section className="relative py-16 md:py-20 lg:py-24">
+      <CenterContainer className="md flex justify-start">
         <motion.div
-          className="max-w-2xl text-left"
+          className="max-w-3xl text-left"
           initial={{ opacity: 0, y: 12 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-40px' }}
@@ -133,6 +130,90 @@ function ZenqrCtaSection() {
         </motion.div>
       </CenterContainer>
     </section>
+  );
+}
+
+const STACK_BASE = '/stack';
+
+function ZenqrProjectSidebar() {
+  const { t } = useTranslation();
+
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-white shadow-md lg:sticky lg:top-24">
+      {/* Header sin fondo verde */}
+      <div className="border-border border-b px-5 py-4">
+        <h3 className="text-sm font-bold tracking-wider text-slate-700 uppercase">
+          {t('ourWork.caseStudy.zenqr.sidebar.title')}
+        </h3>
+      </div>
+
+      <div className="divide-y divide-slate-100 px-5 py-4">
+        <dl className="space-y-4 text-sm">
+          <div>
+            <dt className="text-muted-foreground mb-1 text-xs font-semibold tracking-wider uppercase">
+              {t('ourWork.heroBadge.industry')}
+            </dt>
+            <dd className="font-medium text-slate-700">
+              {t('ourWork.caseStudy.zenqr.hero.industry')}
+            </dd>
+          </div>
+          <div className="pt-3">
+            <dt className="text-muted-foreground mb-1 text-xs font-semibold tracking-wider uppercase">
+              {t('ourWork.heroBadge.solutionType')}
+            </dt>
+            <dd className="font-medium text-slate-700">
+              {t('ourWork.caseStudy.zenqr.hero.solutionType')}
+            </dd>
+          </div>
+          <div className="pt-3">
+            <dt className="text-muted-foreground mb-1 text-xs font-semibold tracking-wider uppercase">
+              {t('ourWork.caseStudy.zenqr.sidebar.productType')}
+            </dt>
+            <dd className="font-medium text-slate-700">
+              {t('ourWork.caseStudy.zenqr.sidebar.productTypeWeb')}
+            </dd>
+          </div>
+        </dl>
+
+        {/* Stack: badges con icono SVG (sin fondo verde) */}
+        <div className="pt-4">
+          <p className="text-muted-foreground mb-3 text-xs font-semibold tracking-wider uppercase">
+            {t('ourWork.caseStudy.zenqr.stackLabel')}
+          </p>
+          <ul className="flex flex-wrap gap-2" role="list">
+            {ZENQR_STACK.map((item) => (
+              <li key={item.icon}>
+                <span
+                  className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-medium text-slate-700"
+                  title={item.name}
+                >
+                  <img
+                    src={`${STACK_BASE}/${item.icon}.svg`}
+                    alt=""
+                    aria-hidden
+                    className="h-6 w-6 shrink-0 object-contain"
+                  />
+                  <span>{item.name}</span>
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      <div className="p-4 pt-0">
+        <a
+          href="https://zenqr.app"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3.5 text-sm font-semibold text-white shadow-sm transition-all hover:opacity-95 hover:shadow-md"
+          style={{ backgroundColor: ZENQR_ACCENT }}
+        >
+          <FaGlobe className="size-4 shrink-0" />
+          {t('ourWork.caseStudy.zenqr.sidebar.visitWebsite')}
+        </a>
+      </div>
+    </div>
   );
 }
 
@@ -187,14 +268,14 @@ function ZenqrOtherCases() {
                   className="focus-visible:ring-primary group focus-visible:ring-offset-background block focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
                 >
                   <motion.article
-                    className="bg-background ring-border/50 overflow-hidden rounded-2xl shadow-sm ring-1"
+                    className="bg-background ring-border/50 rounded-2xl shadow-sm ring-1"
                     whileHover={{
                       y: -4,
                       transition: { duration: 0.2 },
                     }}
                     transition={{ type: 'tween', duration: 0.2 }}
                   >
-                    <div className="bg-muted/40 relative aspect-4/3 overflow-hidden">
+                    <div className="bg-muted/40 relative aspect-4/3">
                       <motion.img
                         src={`/projects/${project.image}`}
                         alt=""
@@ -252,13 +333,10 @@ function ZenqrOtherCases() {
 
 export function ZenqurCasePage() {
   const { t } = useTranslation();
-  const { path } = useLocale();
 
   return (
-    <article className="bg-background">
+    <article className="bg-background relative">
       <ProjectHero
-        backHref={path('/nuestro-trabajo')}
-        backLabel={t('nav.ourWork')}
         logoSrc="/brands/zenqr.svg"
         logoAlt="ZenQR"
         title={t('ourWork.caseStudy.zenqr.hero.title')}
@@ -274,96 +352,96 @@ export function ZenqurCasePage() {
         backgroundColor={ZENQR_ACCENT}
       />
 
-      <ProjectStack
-        items={ZENQR_STACK}
-        variant="logos-row"
-        accentColor={ZENQR_ACCENT}
-        label={t('ourWork.caseStudy.zenqr.stackLabel')}
-      />
+      <CenterContainer className="flex flex-col gap-10 lg:flex-row lg:items-start lg:gap-12">
+        <main className="min-w-0 flex-1">
+          <ZenqrCaseSection
+            label={t('ourWork.caseStudy.zenqr.overview.label')}
+            title={t('ourWork.caseStudy.zenqr.overview.title')}
+          >
+            <p>
+              <Trans
+                i18nKey="ourWork.caseStudy.zenqr.overview.paragraph"
+                components={{ accent: <Accent>{''}</Accent> }}
+              />
+            </p>
+          </ZenqrCaseSection>
 
-      <ZenqrCaseSection
-        label={t('ourWork.caseStudy.zenqr.overview.label')}
-        title={t('ourWork.caseStudy.zenqr.overview.title')}
-      >
-        <p>
-          <Trans
-            i18nKey="ourWork.caseStudy.zenqr.overview.paragraph"
-            components={{ accent: <Accent>{''}</Accent> }}
-          />
-        </p>
-      </ZenqrCaseSection>
+          <ZenqrCaseSection
+            label={t('ourWork.caseStudy.zenqr.challenge.label')}
+            title={t('ourWork.caseStudy.zenqr.challenge.title')}
+            reverse
+            variant="minimal"
+          >
+            <p>{t('ourWork.caseStudy.zenqr.challenge.intro')}</p>
+            <ul className="list-inside list-disc space-y-2 pl-2">
+              <li>{t('ourWork.caseStudy.zenqr.challenge.list1')}</li>
+              <li>{t('ourWork.caseStudy.zenqr.challenge.list2')}</li>
+              <li>{t('ourWork.caseStudy.zenqr.challenge.list3')}</li>
+              <li>{t('ourWork.caseStudy.zenqr.challenge.list4')}</li>
+            </ul>
+            <p>
+              <Trans
+                i18nKey="ourWork.caseStudy.zenqr.challenge.afterList"
+                components={{ accent: <Accent>{''}</Accent> }}
+              />
+            </p>
+            <p>
+              <Trans
+                i18nKey="ourWork.caseStudy.zenqr.challenge.closing"
+                components={{ accent: <Accent>{''}</Accent> }}
+              />
+            </p>
+          </ZenqrCaseSection>
 
-      <ZenqrCaseSection
-        label={t('ourWork.caseStudy.zenqr.challenge.label')}
-        title={t('ourWork.caseStudy.zenqr.challenge.title')}
-        reverse
-        variant="minimal"
-      >
-        <p>{t('ourWork.caseStudy.zenqr.challenge.intro')}</p>
-        <ul className="list-inside list-disc space-y-2 pl-2">
-          <li>{t('ourWork.caseStudy.zenqr.challenge.list1')}</li>
-          <li>{t('ourWork.caseStudy.zenqr.challenge.list2')}</li>
-          <li>{t('ourWork.caseStudy.zenqr.challenge.list3')}</li>
-          <li>{t('ourWork.caseStudy.zenqr.challenge.list4')}</li>
-        </ul>
-        <p>
-          <Trans
-            i18nKey="ourWork.caseStudy.zenqr.challenge.afterList"
-            components={{ accent: <Accent>{''}</Accent> }}
-          />
-        </p>
-        <p>
-          <Trans
-            i18nKey="ourWork.caseStudy.zenqr.challenge.closing"
-            components={{ accent: <Accent>{''}</Accent> }}
-          />
-        </p>
-      </ZenqrCaseSection>
+          <ZenqrCaseSection
+            label={t('ourWork.caseStudy.zenqr.solution.label')}
+            title={t('ourWork.caseStudy.zenqr.solution.title')}
+            variant="minimal"
+          >
+            <p>
+              <Trans
+                i18nKey="ourWork.caseStudy.zenqr.solution.paragraph1"
+                components={{ accent: <Accent>{''}</Accent> }}
+              />
+            </p>
+            <p>
+              <Trans
+                i18nKey="ourWork.caseStudy.zenqr.solution.paragraph2"
+                components={{ accent: <Accent>{''}</Accent> }}
+              />
+            </p>
+            <p className="font-medium text-slate-700">
+              {t('ourWork.caseStudy.zenqr.solution.listTitle')}
+            </p>
+            <ul className="list-inside list-disc space-y-2 pl-2">
+              <li>{t('ourWork.caseStudy.zenqr.solution.list1')}</li>
+              <li>{t('ourWork.caseStudy.zenqr.solution.list2')}</li>
+              <li>{t('ourWork.caseStudy.zenqr.solution.list3')}</li>
+              <li>{t('ourWork.caseStudy.zenqr.solution.list4')}</li>
+              <li>{t('ourWork.caseStudy.zenqr.solution.list5')}</li>
+            </ul>
+          </ZenqrCaseSection>
 
-      <ZenqrCaseSection
-        label={t('ourWork.caseStudy.zenqr.solution.label')}
-        title={t('ourWork.caseStudy.zenqr.solution.title')}
-        variant="minimal"
-      >
-        <p>
-          <Trans
-            i18nKey="ourWork.caseStudy.zenqr.solution.paragraph1"
-            components={{ accent: <Accent>{''}</Accent> }}
-          />
-        </p>
-        <p>
-          <Trans
-            i18nKey="ourWork.caseStudy.zenqr.solution.paragraph2"
-            components={{ accent: <Accent>{''}</Accent> }}
-          />
-        </p>
-        <p className="font-medium text-slate-700">
-          {t('ourWork.caseStudy.zenqr.solution.listTitle')}
-        </p>
-        <ul className="list-inside list-disc space-y-2 pl-2">
-          <li>{t('ourWork.caseStudy.zenqr.solution.list1')}</li>
-          <li>{t('ourWork.caseStudy.zenqr.solution.list2')}</li>
-          <li>{t('ourWork.caseStudy.zenqr.solution.list3')}</li>
-          <li>{t('ourWork.caseStudy.zenqr.solution.list4')}</li>
-          <li>{t('ourWork.caseStudy.zenqr.solution.list5')}</li>
-        </ul>
-      </ZenqrCaseSection>
+          <ZenqrCaseSection
+            label={t('ourWork.caseStudy.zenqr.results.label')}
+            title={t('ourWork.caseStudy.zenqr.results.title')}
+            reverse
+            variant="minimal"
+          >
+            <p>
+              <Trans
+                i18nKey="ourWork.caseStudy.zenqr.results.paragraph"
+                components={{ accent: <Accent>{''}</Accent> }}
+              />
+            </p>
+          </ZenqrCaseSection>
 
-      <ZenqrCaseSection
-        label={t('ourWork.caseStudy.zenqr.results.label')}
-        title={t('ourWork.caseStudy.zenqr.results.title')}
-        reverse
-        variant="minimal"
-      >
-        <p>
-          <Trans
-            i18nKey="ourWork.caseStudy.zenqr.results.paragraph"
-            components={{ accent: <Accent>{''}</Accent> }}
-          />
-        </p>
-      </ZenqrCaseSection>
-
-      <ZenqrCtaSection />
+          <ZenqrCtaSection />
+        </main>
+        <aside className="w-full shrink-0 lg:w-80 lg:self-stretch">
+          <ZenqrProjectSidebar />
+        </aside>
+      </CenterContainer>
 
       <ZenqrOtherCases />
     </article>

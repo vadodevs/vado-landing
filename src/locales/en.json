@@ -17,6 +17,10 @@
     "closeMenu": "Close menu"
   },
   "ourWork": {
+    "heroBadge": {
+      "industry": "Industry",
+      "solutionType": "Solution type"
+    },
     "hero": {
       "titleLine1": "FROM CHALLENGE",
       "titleLine2": "TO RESULT",
@@ -79,6 +83,8 @@
         "hero": {
           "title": "A new way to create QR codes",
           "description": "QR code platform with customization, real-time metrics, and integrations for events and payments.",
+          "industry": "Retail, events & packaging",
+          "solutionType": "SaaS platform",
           "ctaLabel": "Visit website",
           "ctaAriaLabel": "Visit ZenQR website",
           "heroImageAlt": "ZenQR - Dashboard and app"
@@ -117,11 +123,18 @@
           "paragraph": "The result was an <accent>efficient and easy-to-use</accent> platform, built in <accent>close collaboration</accent> with the client to validate, adjust, and deliver a product with clarity, functionality, and design, ready to operate as a <accent>competitive alternative</accent> in its market."
         },
         "cta": {
-          "subtitle": "LET'S WORK TOGETHER",
-          "titleLine1": "IF YOU'RE BUILDING A DIGITAL PRODUCT",
-          "titleLine2": "WE DEVELOP IT TO YOUR MEASURE",
-          "description": "If you're building a digital product and need it to be clear for the user and scalable for the business, we can help you develop it to your needs.",
+          "subtitle": "Our work",
+          "titleLine1": "We turn ideas into",
+          "titleLine2": "real solutions",
+          "description": "Discover some of the projects we have developed with our clients. Learn about the challenges they faced, how we supported them, and the digital solutions we built to address real needs.",
           "ctaLabel": "Contact us"
+        },
+        "sidebar": {
+          "title": "Project details",
+          "productType": "Product type",
+          "productTypeWeb": "Web application",
+          "productTypeMobile": "Mobile app",
+          "visitWebsite": "Visit website"
         },
         "otherCases": {
           "label": "More work",
