@@ -116,6 +116,13 @@
           "title": "Results",
           "paragraph": "The result was an <accent>efficient and easy-to-use</accent> platform, built in <accent>close collaboration</accent> with the client to validate, adjust, and deliver a product with clarity, functionality, and design, ready to operate as a <accent>competitive alternative</accent> in its market."
         },
+        "cta": {
+          "subtitle": "LET'S WORK TOGETHER",
+          "titleLine1": "IF YOU'RE BUILDING A DIGITAL PRODUCT",
+          "titleLine2": "WE DEVELOP IT TO YOUR MEASURE",
+          "description": "If you're building a digital product and need it to be clear for the user and scalable for the business, we can help you develop it to your needs.",
+          "ctaLabel": "Contact us"
+        },
         "otherCases": {
           "label": "More work",
           "title": "Other case studies",

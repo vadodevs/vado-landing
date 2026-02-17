@@ -116,6 +116,13 @@
           "title": "Resultados",
           "paragraph": "El resultado fue una plataforma <accent>eficiente y fácil de usar</accent>, construida en <accent>colaboración estrecha</accent> con el cliente para validar, ajustar y entregar un producto con claridad, funcionalidad y diseño, lista para operar como <accent>alternativa competitiva</accent> en su mercado."
         },
+        "cta": {
+          "subtitle": "TRABAJEMOS JUNTOS",
+          "titleLine1": "SI ESTÁS CONSTRUYENDO UN PRODUCTO DIGITAL",
+          "titleLine2": "DESARROLLAMOS A LA MEDIDA",
+          "description": "Si estás construyendo un producto digital y necesitas que sea claro para el usuario y escalable para el negocio, podemos ayudarte a desarrollarlo a la medida.",
+          "ctaLabel": "Contáctanos"
+        },
         "otherCases": {
           "label": "Más trabajo",
           "title": "Otros casos de uso",
