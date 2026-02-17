@@ -341,14 +341,23 @@
         }
       }
     },
+    "ctaContactEmbed": {
+      "titlePart1": "STRENGTHEN",
+      "titlePart2": "YOUR TEAM!",
+      "description": "We offer free consulting to explore how Vado Devs can boost your project.",
+      "benefit1": "Free assessment of talent and needs",
+      "benefit2": "Personalized strategy for your project",
+      "benefit3": "Direct access to Vado specialists"
+    },
     "ctaContact": {
-      "titlePart1": "TOGETHER WE DIGITIZE",
-      "titlePart2": "YOUR IDEA!",
-      "description": "We offer free consulting to explore how Vado Devs can drive your project.",
-      "benefit1": "Free consulting to define scope and feasibility of your idea.",
-      "benefit2": "Specialized team in software development and AI.",
-      "benefit3": "Support from idea to launch.",
-      "formTitle": "CONTACT US",
+      "titlePart1": "EVERY GREAT RELATIONSHIP",
+      "titlePart2": "STARTS WITH A",
+      "titlePart3": "CONVERSATION!",
+      "description": "Our promise to you is a reliable, high-quality and fully personalized service. Delivering results that make a difference.",
+      "benefit1": "Quick and personalized attention",
+      "benefit2": "100% tailor-made solutions",
+      "benefit3": "Continuous and close support",
+      "formTitle": "Contact Us",
       "subject": "Subject",
       "subjectPlaceholder": "Select",
       "subjectOptions": {

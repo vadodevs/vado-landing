@@ -341,14 +341,23 @@
         }
       }
     },
-    "ctaContact": {
-      "titlePart1": "¡JUNTOS DIGITALIZAMOS",
-      "titlePart2": "TU IDEA!",
+    "ctaContactEmbed": {
+      "titlePart1": "¡REFUERZA",
+      "titlePart2": "TU EQUIPO!",
       "description": "Ofrecemos consultoría gratuita para explorar cómo Vado Devs puede impulsar tu proyecto.",
-      "benefit1": "Consultoría gratuita para definir alcance y viabilidad de tu idea.",
-      "benefit2": "Equipo especializado en desarrollo de software e IA.",
-      "benefit3": "Acompañamiento desde la idea hasta el lanzamiento.",
-      "formTitle": "CONTÁCTANOS",
+      "benefit1": "Evaluación gratuita de talento y necesidades",
+      "benefit2": "Estrategia personalizada para tu proyecto",
+      "benefit3": "Acceso directo a especialistas Vado"
+    },
+    "ctaContact": {
+      "titlePart1": "¡TODA GRAN RELACIÓN",
+      "titlePart2": "COMIENZA CON UNA",
+      "titlePart3": "CONVERSACIÓN!",
+      "description": "Nuestra promesa para ti es un servicio confiable, de alta calidad y totalmente personalizado. Dando resultados que marcan la diferencia.",
+      "benefit1": "Atención rápida y personalizada",
+      "benefit2": "Soluciones 100% a la medida",
+      "benefit3": "Soporte continuo y cercano",
+      "formTitle": "Contáctanos",
       "subject": "Asunto",
       "subjectPlaceholder": "Seleccionar",
       "subjectOptions": {
