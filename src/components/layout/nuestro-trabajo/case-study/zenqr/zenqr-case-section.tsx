@@ -15,13 +15,14 @@ export function ZenqrCaseSection({
   reverse,
   variant = 'default',
 }: {
-  label: string;
-  title: string;
+  label?: string;
+  title?: string;
   children: React.ReactNode;
   reverse?: boolean;
-  variant?: 'default' | 'minimal';
+  variant?: 'default' | 'minimal' | 'contentOnly';
 }) {
   const titleClass = 'text-xl font-bold tracking-tight text-slate-700 md:text-2xl lg:text-2xl';
+  const showHeader = variant !== 'contentOnly' && (label || title);
   return (
     <section className="w-full py-12 md:py-16 lg:py-20">
       <div className="w-full min-w-0">
@@ -31,21 +32,26 @@ export function ZenqrCaseSection({
           }`}
         >
           <div className="min-w-0 flex-1 space-y-4">
-            {variant === 'default' ? (
-              <>
-                <span
-                  className="text-sm font-semibold tracking-wider uppercase"
-                  style={{ color: ZENQR_ACCENT }}
-                >
-                  {label}
-                </span>
-                <h2 className={titleClass}>{title}</h2>
-              </>
-            ) : (
-              <h2 className={`border-l-4 pl-4 ${titleClass}`} style={{ borderColor: ZENQR_ACCENT }}>
-                {title}
-              </h2>
-            )}
+            {showHeader &&
+              (variant === 'default' ? (
+                <>
+                  {label && (
+                    <span
+                      className="text-sm font-semibold tracking-wider uppercase"
+                      style={{ color: ZENQR_ACCENT }}
+                    >
+                      {label}
+                    </span>
+                  )}
+                  {title && <h2 className={titleClass}>{title}</h2>}
+                </>
+              ) : (
+                title && (
+                  <h2 className={`border-l-4 pl-4 ${titleClass}`} style={{ borderColor: ZENQR_ACCENT }}>
+                    {title}
+                  </h2>
+                )
+              ))}
             <div className="text-muted-foreground min-w-0 space-y-4 text-base leading-relaxed md:text-lg">
               {children}
             </div>

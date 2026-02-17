@@ -5,8 +5,8 @@ export function ZenqrOverviewSection() {
   const { t } = useTranslation();
   return (
     <ZenqrCaseSection
-      label={t('ourWork.caseStudy.zenqr.overview.label')}
-      title={t('ourWork.caseStudy.zenqr.overview.title')}
+      title={t('ourWork.caseStudy.zenqr.overview.label')}
+      variant="minimal"
     >
       <p>
         <Trans
