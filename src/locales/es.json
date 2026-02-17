@@ -74,6 +74,48 @@
       }
     }
   },
+  "insightsPage": {
+    "hero": {
+      "titleLine1": "VADO KNOWLEDGE",
+      "titleLine2": "HUB",
+      "subtitle": "Trabajo remoto",
+      "description": "El futuro del trabajo sin fronteras: una década de transformación.",
+      "cta": "Explorar artículos"
+    },
+    "articles": {
+      "sectionTitle": "Artículos",
+      "searchPlaceholder": "Buscar",
+      "article1": {
+        "date": "18 de septiembre, 2025",
+        "tag": "RECIENTE",
+        "title": "Digitalización en Retail: Innovación, Eficiencia y Experiencia al Cliente",
+        "description": "La digitalización en el sector retail está transformando la forma de operar y conectar con los clientes, permitiendo una experiencia más eficiente, personalizada y...",
+        "imageAlt": "Digitalización en retail"
+      },
+      "article2": {
+        "date": "18 de septiembre, 2025",
+        "tag": "THE VADO TEAM",
+        "title": "How Technology is Transforming the Restaurant Industry",
+        "description": "The competitive food and beverage industry is evolving. Technology is reshaping operations, from reservations to delivery. Data from CANIRAC in Mexico shows...",
+        "imageAlt": "Tecnología en restaurantes"
+      },
+      "article3": {
+        "date": "18 de septiembre, 2025",
+        "tag": "THE VADO TEAM",
+        "title": "AI Across Borders: Bridging Gaps in a Globalized World",
+        "description": "AI is facilitating global operations and bridging gaps between countries, cultures, and economies. Discover how organizations are leveraging AI...",
+        "imageAlt": "IA sin fronteras"
+      },
+      "article4": {
+        "date": "18 de septiembre, 2025",
+        "tag": "THE VADO TEAM",
+        "title": "The Evolution of Workforce Flexibility: How Remote Work is Redefining Talent Acquisition",
+        "description": "Remote work has transformed how companies acquire talent. Geographic limitations are fading. Learn how organizations are redefining hiring...",
+        "imageAlt": "Trabajo remoto y talento"
+      },
+      "noResults": "No se encontraron artículos."
+    }
+  },
   "home": {
     "title": "Vado | Home",
     "heading": "Hola Mundo",

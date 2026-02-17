@@ -6,6 +6,7 @@ import SolucionesIA from '@/pages/servicios/soluciones-ia'
 import AmpliacionDePersonal from '@/pages/servicios/ampliacion-de-personal'
 import NuestroTrabajo from '@/pages/nuestro-trabajo'
 import NuestroTrabajoProject from '@/pages/nuestro-trabajo/[slug]'
+import VadoInsights from '@/pages/compania/vado-insights'
 import { NotFound } from '@/pages/not-found'
 import { withLocale } from '@/app/withLocale'
 
@@ -22,6 +23,7 @@ export function Router() {
       <Route path="/:lang/servicios/ampliacion-de-personal" component={withLocale(AmpliacionDePersonal)} />
       <Route path="/:lang/nuestro-trabajo/:slug" component={withLocale(NuestroTrabajoProject)} />
       <Route path="/:lang/nuestro-trabajo" component={withLocale(NuestroTrabajo)} />
+      <Route path="/:lang/compania/vado-insights" component={withLocale(VadoInsights)} />
       <Route path="/:lang" component={withLocale(Home)} />
       <Route path="/:lang/*" component={withLocale(NotFound)} />
       <Route component={NotFound} />

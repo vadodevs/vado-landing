@@ -74,6 +74,48 @@
       }
     }
   },
+  "insightsPage": {
+    "hero": {
+      "titleLine1": "VADO KNOWLEDGE",
+      "titleLine2": "HUB",
+      "subtitle": "Remote Work",
+      "description": "The Future of Work Across Borders: A Decade of Transformation.",
+      "cta": "Explore articles"
+    },
+    "articles": {
+      "sectionTitle": "Articles",
+      "searchPlaceholder": "Search",
+      "article1": {
+        "date": "September 18, 2025",
+        "tag": "RECENT",
+        "title": "Digitalization in Retail: Innovation, Efficiency and Customer Experience",
+        "description": "Digitalization in the retail sector is transforming the way we operate and connect with customers, enabling a more efficient, personalized experience and...",
+        "imageAlt": "Retail digitalization"
+      },
+      "article2": {
+        "date": "September 18, 2025",
+        "tag": "THE VADO TEAM",
+        "title": "How Technology is Transforming the Restaurant Industry",
+        "description": "The competitive food and beverage industry is evolving. Technology is reshaping operations, from reservations to delivery. Data from CANIRAC in Mexico shows...",
+        "imageAlt": "Technology in restaurants"
+      },
+      "article3": {
+        "date": "September 18, 2025",
+        "tag": "THE VADO TEAM",
+        "title": "AI Across Borders: Bridging Gaps in a Globalized World",
+        "description": "AI is facilitating global operations and bridging gaps between countries, cultures, and economies. Discover how organizations are leveraging AI...",
+        "imageAlt": "AI across borders"
+      },
+      "article4": {
+        "date": "September 18, 2025",
+        "tag": "THE VADO TEAM",
+        "title": "The Evolution of Workforce Flexibility: How Remote Work is Redefining Talent Acquisition",
+        "description": "Remote work has transformed how companies acquire talent. Geographic limitations are fading. Learn how organizations are redefining hiring...",
+        "imageAlt": "Remote work and talent"
+      },
+      "noResults": "No articles found."
+    }
+  },
   "home": {
     "title": "Vado | Home",
     "heading": "Hello World",
