@@ -125,6 +125,38 @@
       "subscribeButton": "SUBSCRIBE"
     }
   },
+  "cultureYTalentoPage": {
+    "hero": {
+      "titleLine1": "WHERE IDEAS",
+      "titleLine2": "TURN INTO ACTION",
+      "description": "We are a community that shares challenges, celebrates achievements, and supports each other to grow. Our culture combines collaboration, constant learning, and autonomy, in an environment where everyone contributes with purpose.",
+      "cta": "Learn about the 5 V's of Vado"
+    },
+    "fiveVs": {
+      "subtitle": "VADO CULTURE",
+      "title": "The 5 V's of Vado",
+      "v1": {
+        "title": "Vision",
+        "description": "To be the key technology ally for companies, creating customized digital solutions that drive growth."
+      },
+      "v2": {
+        "title": "Versatility",
+        "description": "We work with hybrid and flexible models to adapt to your needs and maximize productivity."
+      },
+      "v3": {
+        "title": "Value",
+        "description": "We boost your career with training, certifications, and projects that challenge your limits."
+      },
+      "v4": {
+        "title": "Visible Impact",
+        "description": "Your work transforms processes and helps companies become more efficient and competitive."
+      },
+      "v5": {
+        "title": "Vital Bonds",
+        "description": "More than a team, we are a community that shares knowledge and celebrates achievements together."
+      }
+    }
+  },
   "home": {
     "title": "Vado | Home",
     "heading": "Hello World",
