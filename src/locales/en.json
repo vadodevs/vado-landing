@@ -364,9 +364,11 @@
         "softwareALaMedida": "Custom Software",
         "ampliacionPersonal": "Staff Augmentation",
         "solucionesIA": "AI Solutions",
-        "soyDesarrollador": "I am a Developer",
+        "quieroPostularme": "I want to apply",
         "otros": "Others"
       },
+      "applyMessage": "We are always looking for talented people to join our team.",
+      "applyNow": "Apply Now",
       "fullName": "Full Name",
       "fullNamePlaceholder": "e.g. John Doe",
       "email": "Email",

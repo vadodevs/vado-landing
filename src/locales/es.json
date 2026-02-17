@@ -364,9 +364,11 @@
         "softwareALaMedida": "Software a la medida",
         "ampliacionPersonal": "Ampliación de Personal",
         "solucionesIA": "Soluciones de IA",
-        "soyDesarrollador": "Soy un Desarrollador",
+        "quieroPostularme": "Quiero postularme",
         "otros": "Otros"
       },
+      "applyMessage": "Siempre estamos buscando talento para unirse a nuestro equipo.",
+      "applyNow": "Aplica Ahora",
       "fullName": "Nombre Completo",
       "fullNamePlaceholder": "Ej. Juan Pérez",
       "email": "Correo",
