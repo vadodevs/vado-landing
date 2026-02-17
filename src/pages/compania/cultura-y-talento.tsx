@@ -3,6 +3,12 @@ import { PageTitle } from '@/components/PageTitle';
 import MainLayout from '@/components/layout/MainLayout';
 import { CulturaYTalentoHero } from '@/components/layout/compania/CulturaYTalentoHero';
 import { FiveVsSection } from '@/components/layout/compania/FiveVsSection';
+import { CoreValuesSection } from '@/components/layout/compania/CoreValuesSection';
+import { GrowTalentCtaSection } from '@/components/layout/compania/GrowTalentCtaSection';
+import { LeadershipSection } from '@/components/layout/compania/LeadershipSection';
+import { TeamVadoSection } from '@/components/layout/compania/TeamVadoSection';
+import { FAQSection } from '@/components/layout/home/faq/FAQSection';
+import { CtaContactSection } from '@/components/layout/home/cta-contact/CtaContactSection';
 
 export default function CulturaYTalento() {
   const { t } = useTranslation();
@@ -18,6 +24,12 @@ export default function CulturaYTalento() {
           cta={t('cultureYTalentoPage.hero.cta')}
         />
         <FiveVsSection />
+        <CoreValuesSection />
+        <TeamVadoSection />
+        <LeadershipSection />
+        <GrowTalentCtaSection />
+        <FAQSection />
+        <CtaContactSection />
       </MainLayout>
     </>
   );

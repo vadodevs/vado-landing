@@ -155,6 +155,38 @@
         "title": "Vínculo Humano",
         "description": "Más que un equipo, somos una comunidad que comparte conocimientos y celebra logros juntos."
       }
+    },
+    "coreValues": {
+      "title": "Valores fundamentales",
+      "adaptabilidad": {
+        "title": "Adaptabilidad",
+        "backDescription": "Nos ajustamos al cambio y superamos cualquier obstáculo."
+      },
+      "excelencia": {
+        "title": "Excelencia",
+        "backDescription": "Damos lo mejor y buscamos superar expectativas."
+      },
+      "transparencia": {
+        "title": "Transparencia",
+        "backDescription": "Nos comunicamos con honestidad y claridad."
+      }
+    },
+    "teamVado": {
+      "title": "Equipo Vado",
+      "description": "Somos un equipo comprometido, enfocado en resolver problemas reales y en construir soluciones que generan valor. Nos une una forma de trabajar donde la colaboración y el aprendizaje constante son parte del día a día. Cada proyecto representa una oportunidad para adaptarnos, mejorar y seguir afinando lo que mejor sabemos hacer: soluciones tecnológicas funcionales."
+    },
+    "leadership": {
+      "title": "Liderazgo Empresarial",
+      "person1": { "name": "Nombre" },
+      "person2": { "name": "Nombre" },
+      "person3": { "name": "Nombre" },
+      "person4": { "name": "Nombre" }
+    },
+    "growTalentCta": {
+      "titleDark": "Haz crecer ",
+      "titleBlue": "tu talento y tu carrera",
+      "subtitle": "Únete y sé parte de una comunidad que crea, aprende y evoluciona cada día.",
+      "cta": "Aplicar Ahora"
     }
   },
   "home": {

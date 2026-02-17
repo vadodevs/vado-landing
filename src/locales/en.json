@@ -155,6 +155,38 @@
         "title": "Vital Bonds",
         "description": "More than a team, we are a community that shares knowledge and celebrates achievements together."
       }
+    },
+    "coreValues": {
+      "title": "Core Values",
+      "adaptabilidad": {
+        "title": "Adaptability",
+        "backDescription": "We adapt to change and overcome any obstacle."
+      },
+      "excelencia": {
+        "title": "Excellence",
+        "backDescription": "We give our best and seek to exceed expectations."
+      },
+      "transparencia": {
+        "title": "Transparency",
+        "backDescription": "We communicate with honesty and clarity."
+      }
+    },
+    "teamVado": {
+      "title": "Vado Team",
+      "description": "We are a committed team, focused on solving real problems and building solutions that create value. We share a way of working where collaboration and constant learning are part of everyday life. Each project is an opportunity to adapt, improve, and keep refining what we do best: functional technology solutions."
+    },
+    "leadership": {
+      "title": "Business Leadership",
+      "person1": { "name": "Name" },
+      "person2": { "name": "Name" },
+      "person3": { "name": "Name" },
+      "person4": { "name": "Name" }
+    },
+    "growTalentCta": {
+      "titleDark": "Grow your ",
+      "titleBlue": "talent and your career",
+      "subtitle": "Join and be part of a community that creates, learns, and evolves every day.",
+      "cta": "Apply Now"
     }
   },
   "home": {
