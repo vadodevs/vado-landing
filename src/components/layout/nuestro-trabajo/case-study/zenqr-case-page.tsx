@@ -70,10 +70,7 @@ function ZenqrCaseSection({
                 <h2 className={titleClass}>{title}</h2>
               </>
             ) : (
-              <h2
-                className={`border-l-4 pl-4 ${titleClass}`}
-                style={{ borderColor: ZENQR_ACCENT }}
-              >
+              <h2 className={`border-l-4 pl-4 ${titleClass}`} style={{ borderColor: ZENQR_ACCENT }}>
                 {title}
               </h2>
             )}
@@ -190,7 +187,7 @@ function ZenqrOtherCases() {
           <div className="flex justify-center pt-4">
             <Link
               href={path('/nuestro-trabajo')}
-              className="text-muted-foreground hover:text-slate-700 inline-flex items-center gap-2 text-sm font-medium transition-colors"
+              className="text-muted-foreground inline-flex items-center gap-2 text-sm font-medium transition-colors hover:text-slate-700"
             >
               <span aria-hidden>←</span> {t('ourWork.caseStudy.zenqr.otherCases.backLink')}
             </Link>
@@ -274,6 +271,7 @@ export function ZenqurCasePage() {
       <ZenqrCaseSection
         label={t('ourWork.caseStudy.zenqr.solution.label')}
         title={t('ourWork.caseStudy.zenqr.solution.title')}
+        variant="minimal"
       >
         <p>
           <Trans
