@@ -13,13 +13,14 @@ const ZENQR_STACK: ProjectStackItem[] = [
   { name: 'Figma', icon: 'figma' },
   { name: 'Digital Ocean', icon: 'digital-ocean' },
   { name: 'Stripe', icon: 'stripe-favicon' },
+  { name: 'SendGrid', icon: 'sengrid' },
 ];
 
 export function ZenqrProjectSidebar() {
   const { t } = useTranslation();
 
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white shadow-md lg:sticky lg:top-24">
+    <div className="rounded-2xl border border-slate-200 bg-white shadow-md">
       <div className="border-border border-b px-5 py-4">
         <h3 className="flex items-center gap-2 text-sm font-bold tracking-wider text-slate-700 uppercase">
           <FaClipboardList className="size-4 shrink-0" style={{ color: ZENQR_ACCENT }} />

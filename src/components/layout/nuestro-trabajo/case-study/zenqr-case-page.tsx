@@ -27,7 +27,7 @@ export function ZenqurCasePage() {
         backgroundColor={ZENQR_ACCENT}
       />
 
-      <CenterContainer className="flex flex-col gap-4 lg:flex-row lg:items-start">
+      <CenterContainer className="flex flex-col gap-10 lg:flex-row lg:items-start lg:gap-12">
         <main className="min-w-0 flex-1">
           <ZenqrOverviewSection />
           <img src="/case-studies/zenqr/image-test.webp" alt="" />
