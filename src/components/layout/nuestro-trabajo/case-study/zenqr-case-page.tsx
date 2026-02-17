@@ -40,12 +40,16 @@ function ZenqrCaseSection({
   title,
   children,
   reverse,
+  variant = 'default',
 }: {
   label: string;
   title: string;
   children: React.ReactNode;
   reverse?: boolean;
+  variant?: 'default' | 'minimal';
 }) {
+  const titleClass =
+    'text-2xl font-bold tracking-tight text-slate-700 md:text-3xl lg:text-[1.75rem]';
   return (
     <section className="py-12 md:py-16 lg:py-20">
       <CenterContainer className="lg:px-0">
@@ -55,15 +59,24 @@ function ZenqrCaseSection({
           }`}
         >
           <div className="flex-1 space-y-4">
-            <span
-              className="text-sm font-semibold tracking-wider uppercase"
-              style={{ color: ZENQR_ACCENT }}
-            >
-              {label}
-            </span>
-            <h2 className="text-foreground text-2xl font-bold tracking-tight md:text-3xl lg:text-[1.75rem]">
-              {title}
-            </h2>
+            {variant === 'default' ? (
+              <>
+                <span
+                  className="text-sm font-semibold tracking-wider uppercase"
+                  style={{ color: ZENQR_ACCENT }}
+                >
+                  {label}
+                </span>
+                <h2 className={titleClass}>{title}</h2>
+              </>
+            ) : (
+              <h2
+                className={`border-l-4 pl-4 ${titleClass}`}
+                style={{ borderColor: ZENQR_ACCENT }}
+              >
+                {title}
+              </h2>
+            )}
             <div className="text-muted-foreground space-y-4 text-base leading-relaxed md:text-lg">
               {children}
             </div>
@@ -90,7 +103,7 @@ function ZenqrOtherCases() {
             >
               {t('ourWork.caseStudy.zenqr.otherCases.label')}
             </span>
-            <h2 className="text-foreground text-2xl font-bold tracking-tight md:text-3xl">
+            <h2 className="text-2xl font-bold tracking-tight text-slate-700 md:text-3xl">
               {t('ourWork.caseStudy.zenqr.otherCases.title')}
             </h2>
             <p className="text-muted-foreground mt-3 text-base leading-relaxed">
@@ -153,12 +166,12 @@ function ZenqrOtherCases() {
                       </span>
                     </div>
                     <div className="border-border flex flex-col gap-0.5 border-x-0 border-t border-b-0 px-5 py-4">
-                      <h3 className="text-foreground font-bold tracking-tight group-hover:underline">
+                      <h3 className="font-bold tracking-tight text-slate-700 group-hover:underline">
                         {t(`ourWork.projects.${project.id}.title`)}
                         {t(`ourWork.projects.${project.id}.subtitle`) && (
                           <>
                             <span className="text-muted-foreground font-normal"> · </span>
-                            <span className="text-foreground/90">
+                            <span className="text-slate-600">
                               {t(`ourWork.projects.${project.id}.subtitle`)}
                             </span>
                           </>
@@ -177,7 +190,7 @@ function ZenqrOtherCases() {
           <div className="flex justify-center pt-4">
             <Link
               href={path('/nuestro-trabajo')}
-              className="text-muted-foreground hover:text-foreground inline-flex items-center gap-2 text-sm font-medium transition-colors"
+              className="text-muted-foreground hover:text-slate-700 inline-flex items-center gap-2 text-sm font-medium transition-colors"
             >
               <span aria-hidden>←</span> {t('ourWork.caseStudy.zenqr.otherCases.backLink')}
             </Link>
@@ -235,6 +248,7 @@ export function ZenqurCasePage() {
         label={t('ourWork.caseStudy.zenqr.challenge.label')}
         title={t('ourWork.caseStudy.zenqr.challenge.title')}
         reverse
+        variant="minimal"
       >
         <p>{t('ourWork.caseStudy.zenqr.challenge.intro')}</p>
         <ul className="list-inside list-disc space-y-2 pl-2">
@@ -273,7 +287,7 @@ export function ZenqurCasePage() {
             components={{ accent: <Accent>{''}</Accent> }}
           />
         </p>
-        <p className="text-foreground font-medium">
+        <p className="font-medium text-slate-700">
           {t('ourWork.caseStudy.zenqr.solution.listTitle')}
         </p>
         <ul className="list-inside list-disc space-y-2 pl-2">
@@ -289,6 +303,7 @@ export function ZenqurCasePage() {
         label={t('ourWork.caseStudy.zenqr.results.label')}
         title={t('ourWork.caseStudy.zenqr.results.title')}
         reverse
+        variant="minimal"
       >
         <p>
           <Trans
