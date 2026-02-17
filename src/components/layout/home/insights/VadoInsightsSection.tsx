@@ -40,7 +40,7 @@ export function VadoInsightsSection() {
   ];
 
   return (
-    <section className="bg-background py-12 md:py-16 lg:py-20">
+    <section className="bg-background h-full py-12 md:py-16 lg:py-20">
       <CenterContainer>
         <p className="text-muted-foreground mb-2 text-xs font-medium tracking-wider uppercase md:text-sm">
           {t('home.vadoInsights.label')}

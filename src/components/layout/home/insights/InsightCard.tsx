@@ -36,7 +36,7 @@ export function InsightCard({
         <p className="text-primary mb-3 px-6 text-xs font-semibold tracking-wider uppercase">
           {category}
         </p>
-        <div className="flex min-h-0 w-full flex-1 gap-4">
+        <div className="flex min-h-0 w-full flex-1 gap-4 pr-6">
           <span className="bg-primary mr-1 w-1 shrink-0 self-stretch rounded-full" aria-hidden />
           <h3 className="min-w-0 text-sm leading-snug font-bold text-[#19314c] uppercase md:text-base">
             {title}
