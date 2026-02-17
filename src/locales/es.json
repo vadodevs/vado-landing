@@ -75,6 +75,7 @@
     },
     "caseStudy": {
       "zenqr": {
+        "stackLabel": "Stack",
         "hero": {
           "title": "Una nueva forma de crear códigos QR",
           "description": "Plataforma de códigos QR con personalización, métricas en tiempo real e integraciones para eventos y pagos.",

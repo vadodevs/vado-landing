@@ -1,5 +1,5 @@
 import { Link } from 'wouter';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 import { motion } from 'motion/react';
 import { FaGlobe } from 'react-icons/fa';
 import { CenterContainer } from '@/components/layout/CenterContainer';
@@ -216,77 +216,85 @@ export function ZenqurCasePage() {
         items={ZENQR_STACK}
         variant="logos-row"
         accentColor={ZENQR_ACCENT}
-        label="Stack"
+        label={t('ourWork.caseStudy.zenqr.stackLabel')}
       />
 
       <ZenqrCaseSection
-        label="Overview"
-        title="Plataforma SaaS para gestión de códigos QR dinámicos con analítica"
+        label={t('ourWork.caseStudy.zenqr.overview.label')}
+        title={t('ourWork.caseStudy.zenqr.overview.title')}
       >
         <p>
-          ZenQR se construyó para convertir los códigos QR en una{' '}
-          <Accent>herramienta de negocio</Accent>: <Accent>personalizable</Accent>,{' '}
-          <Accent>medible</Accent> y administrable desde un panel. Conecta experiencias físicas
-          (menús, empaques, carteles) con acciones digitales y{' '}
-          <Accent>analítica en tiempo real</Accent>.
+          <Trans
+            i18nKey="ourWork.caseStudy.zenqr.overview.paragraph"
+            components={{ accent: <Accent>{''}</Accent> }}
+          />
         </p>
       </ZenqrCaseSection>
 
       <ZenqrCaseSection
-        label="Challenge"
-        title="El reto"
+        label={t('ourWork.caseStudy.zenqr.challenge.label')}
+        title={t('ourWork.caseStudy.zenqr.challenge.title')}
         reverse
       >
-        <p>El cliente quería ir mucho más allá de generar códigos básicos, buscaba:</p>
+        <p>{t('ourWork.caseStudy.zenqr.challenge.intro')}</p>
         <ul className="list-inside list-disc space-y-2 pl-2">
-          <li>Personalización de códigos QR</li>
-          <li>Soporte para distintos tipos de información</li>
-          <li>Estadísticas de uso</li>
-          <li>Integraciones con sistemas externos (pagos / boletaje)</li>
+          <li>{t('ourWork.caseStudy.zenqr.challenge.list1')}</li>
+          <li>{t('ourWork.caseStudy.zenqr.challenge.list2')}</li>
+          <li>{t('ourWork.caseStudy.zenqr.challenge.list3')}</li>
+          <li>{t('ourWork.caseStudy.zenqr.challenge.list4')}</li>
         </ul>
         <p>
-          Todo con una experiencia visual <Accent>clara</Accent>, <Accent>fluida</Accent> y{' '}
-          <Accent>moderna</Accent>.
+          <Trans
+            i18nKey="ourWork.caseStudy.zenqr.challenge.afterList"
+            components={{ accent: <Accent>{''}</Accent> }}
+          />
         </p>
         <p>
-          Además, el reto de fondo era transformar lo físico en{' '}
-          <Accent>digital medible y editable en tiempo real</Accent>.
+          <Trans
+            i18nKey="ourWork.caseStudy.zenqr.challenge.closing"
+            components={{ accent: <Accent>{''}</Accent> }}
+          />
         </p>
       </ZenqrCaseSection>
 
       <ZenqrCaseSection
-        label="Solution"
-        title="La solución"
+        label={t('ourWork.caseStudy.zenqr.solution.label')}
+        title={t('ourWork.caseStudy.zenqr.solution.title')}
       >
         <p>
-          El enfoque incluyó <Accent>analizar a fondo</Accent> herramientas existentes para
-          detectar oportunidades y construir una hoja de ruta alineada a necesidades reales.
+          <Trans
+            i18nKey="ourWork.caseStudy.zenqr.solution.paragraph1"
+            components={{ accent: <Accent>{''}</Accent> }}
+          />
         </p>
         <p>
-          Luego desarrollamos una plataforma con interfaz <Accent>minimalista</Accent> que permite
-          empezar a crear códigos incluso <Accent>sin registrarse</Accent> y con navegación
-          directa.
+          <Trans
+            i18nKey="ourWork.caseStudy.zenqr.solution.paragraph2"
+            components={{ accent: <Accent>{''}</Accent> }}
+          />
         </p>
-        <p className="text-foreground font-medium">La plataforma incluye:</p>
+        <p className="text-foreground font-medium">
+          {t('ourWork.caseStudy.zenqr.solution.listTitle')}
+        </p>
         <ul className="list-inside list-disc space-y-2 pl-2">
-          <li>Soporte para distintos tipos de contenido</li>
-          <li>Personalización con colores, logos y plantillas</li>
-          <li>Métricas en tiempo real</li>
-          <li>QR estáticos y dinámicos</li>
-          <li>Integración con herramientas externas para eventos y pagos</li>
+          <li>{t('ourWork.caseStudy.zenqr.solution.list1')}</li>
+          <li>{t('ourWork.caseStudy.zenqr.solution.list2')}</li>
+          <li>{t('ourWork.caseStudy.zenqr.solution.list3')}</li>
+          <li>{t('ourWork.caseStudy.zenqr.solution.list4')}</li>
+          <li>{t('ourWork.caseStudy.zenqr.solution.list5')}</li>
         </ul>
       </ZenqrCaseSection>
 
       <ZenqrCaseSection
-        label="Results"
-        title="Resultados"
+        label={t('ourWork.caseStudy.zenqr.results.label')}
+        title={t('ourWork.caseStudy.zenqr.results.title')}
         reverse
       >
         <p>
-          El resultado fue una plataforma <Accent>eficiente y fácil de usar</Accent>, construida en{' '}
-          <Accent>colaboración estrecha</Accent> con el cliente para validar, ajustar y entregar un
-          producto con claridad, funcionalidad y diseño, lista para operar como{' '}
-          <Accent>alternativa competitiva</Accent> en su mercado.
+          <Trans
+            i18nKey="ourWork.caseStudy.zenqr.results.paragraph"
+            components={{ accent: <Accent>{''}</Accent> }}
+          />
         </p>
       </ZenqrCaseSection>
 
