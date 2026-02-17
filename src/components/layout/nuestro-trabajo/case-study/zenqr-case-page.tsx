@@ -1,5 +1,4 @@
 import { useTranslation } from 'react-i18next';
-import { FaGlobe } from 'react-icons/fa';
 import { CenterContainer } from '@/components/layout/CenterContainer';
 import { ProjectHero } from '@/components/layout/nuestro-trabajo/ProjectHero';
 import {
@@ -23,12 +22,6 @@ export function ZenqurCasePage() {
         logoAlt="ZenQR"
         title={t('ourWork.caseStudy.zenqr.hero.title')}
         description={t('ourWork.caseStudy.zenqr.hero.description')}
-        cta={{
-          href: 'https://zenqr.app',
-          label: t('ourWork.caseStudy.zenqr.hero.ctaLabel'),
-          ariaLabel: t('ourWork.caseStudy.zenqr.hero.ctaAriaLabel'),
-          icon: <FaGlobe className="size-4 shrink-0" />,
-        }}
         heroImageSrc="/projects/zenQR/zenqr_hero.png"
         heroImageAlt={t('ourWork.caseStudy.zenqr.hero.heroImageAlt')}
         backgroundColor={ZENQR_ACCENT}
