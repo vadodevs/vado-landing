@@ -21,8 +21,7 @@ export function ZenqrCaseSection({
   reverse?: boolean;
   variant?: 'default' | 'minimal';
 }) {
-  const titleClass =
-    'text-2xl font-bold tracking-tight text-slate-700 md:text-3xl lg:text-[1.75rem]';
+  const titleClass = 'text-xl font-bold tracking-tight text-slate-700 md:text-2xl lg:text-2xl';
   return (
     <section className="w-full py-12 md:py-16 lg:py-20">
       <div className="w-full min-w-0">
