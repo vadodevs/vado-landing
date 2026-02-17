@@ -1,0 +1,528 @@
+{
+  "nav": {
+    "home": "Home",
+    "services": "Services",
+    "customSoftware": "Custom software",
+    "aiSolutions": "AI solutions",
+    "staffAugmentation": "Staff augmentation",
+    "ourWork": "Our work",
+    "company": "Company",
+    "vadoInsights": "Vado Insights",
+    "cultureAndTalent": "Culture and Talent",
+    "aboutUs": "About us",
+    "contact": "Contact",
+    "contactUs": "Contact us",
+    "menu": "Menu",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
+  },
+  "ourWork": {
+    "hero": {
+      "titleLine1": "FROM CHALLENGE",
+      "titleLine2": "TO RESULT",
+      "tagline": "Discover some of the projects we have developed with our clients, where we combine technology, design and strategy to achieve real results.",
+      "cta": "Contact us"
+    },
+    "projects": {
+      "zenqur": {
+        "category": "Web application",
+        "title": "ZenQR",
+        "subtitle": "Code Generator",
+        "description": "Adaptability (on the other side) We adapt to change and overcome any obstacle."
+      },
+      "ebm": {
+        "category": "Platform",
+        "title": "EBM",
+        "subtitle": "Marine management",
+        "description": "Adaptability (on the other side) We adapt to change and overcome any obstacle."
+      },
+      "digitalRanch": {
+        "category": "Web application",
+        "title": "Digital Ranch",
+        "subtitle": "",
+        "description": "Adaptability (on the other side) We adapt to change and overcome any obstacle."
+      },
+      "cipreses": {
+        "category": "Website",
+        "title": "Criadero Los Cipreses",
+        "subtitle": "",
+        "description": "Adaptability (on the other side) We adapt to change and overcome any obstacle."
+      },
+      "sendero": {
+        "category": "CRM",
+        "title": "Sendero",
+        "subtitle": "",
+        "description": "Adaptability (on the other side) We adapt to change and overcome any obstacle."
+      },
+      "easySales": {
+        "category": "E-commerce",
+        "title": "Easy Sales",
+        "subtitle": "",
+        "description": "Adaptability (on the other side) We adapt to change and overcome any obstacle."
+      },
+      "maggiore": {
+        "category": "Token system",
+        "title": "Maggiore",
+        "subtitle": "",
+        "description": "Token system and digital management."
+      },
+      "washapp": {
+        "category": "Mobile app",
+        "title": "WashApp",
+        "subtitle": "",
+        "description": "On-demand car wash at your location."
+      }
+    }
+  },
+  "home": {
+    "title": "Vado | Home",
+    "heading": "Hello World",
+    "heroTitleLine1": "YOUR ALLY IN",
+    "heroTitleLine2": "DIGITAL INNOVATION",
+    "heroTagline": "Choose Vado and turn your ideas into digital solutions",
+    "heroSubheading": "We turn ideas into digital solutions",
+    "heroCta": "Contact us",
+    "trustedBrandsTitle": "Brands that trust Vado",
+    "digitalProducts": {
+      "label": "Digital product development",
+      "titlePart1": "Discover how to",
+      "titlePart2": "digitize your processes",
+      "description": "We optimize processes, drive innovation and maximize your return on investment.",
+      "card1Title": "Personalized Solutions and Continuous Support",
+      "card1Description": "Our custom products are designed to boost your company's competitiveness. We specialize in making your processes simpler and more efficient.",
+      "card2Title": "Ready-to-Use Solutions That Generate Impact",
+      "card2Description": "Our personalized software is designed to grow and integrate with you. We simplify your processes and support the evolution of your business with scalable, efficient solutions ready to work.",
+      "card3Title": "Innovative Technology with Guaranteed Protection",
+      "card3Description": "High-performance software with built-in security to protect your business.",
+      "moreInfo": "More Information",
+      "bgAlt": "Decorative background"
+    },
+    "aiSolutions": {
+      "label": "AI SOLUTIONS",
+      "title": "AI solutions that adapt to your business",
+      "description": "We drive your business with artificial intelligence solutions designed to automate tasks, improve customer service, analyze large volumes of data and make smarter decisions.",
+      "moreInfo": "More Information",
+      "startProject": "Let's start your project",
+      "bgAlt": "Decorative background"
+    },
+    "techStack": {
+      "titlePart1": "Technologies that drive",
+      "titlePart2": "growth",
+      "description": "We stand out as your ideal partner, combining experience and technology to create scalable and secure solutions.",
+      "cta": "Let's start your project"
+    },
+    "clients": {
+      "label": "OUR CLIENTS",
+      "titlePart1": "Real stories",
+      "titlePart2": "Real impact",
+      "moreInfo": "More Information",
+      "startProject": "Let's start your project",
+      "items": {
+        "1": {
+          "name": "Javier Barceló",
+          "role": "ICSSA",
+          "quote": "Vado excels in developer matching and seamless collaboration, enabling the team to focus on growth. With minimal time zone differences, coordination is efficient.",
+          "image": ""
+        },
+        "2": {
+          "name": "Alek Hagopian",
+          "role": "CEO, SolidlyAI",
+          "quote": "Vado excels in developer matching and seamless collaboration, enabling the SolidlyAI team to concentrate on growth. With minimal time zone differences, coordination is efficient.",
+          "image": ""
+        },
+        "3": {
+          "name": "Company name",
+          "role": "",
+          "quote": "The team delivered our system on time and with quality. Communication was excellent at every stage of the project.",
+          "image": ""
+        }
+      }
+    },
+    "staffAugmentation": {
+      "label": "STAFF AUGMENTATION",
+      "title": "Strengthen your team with specialized talent",
+      "description": "We offer staff augmentation solutions designed for your unique needs.",
+      "moreInfo": "More information",
+      "startProject": "Let's start your project",
+      "imageAlt": "Team working in coworking space"
+    },
+    "cultureAndTalent": {
+      "label": "CULTURE AND TALENT",
+      "titlePart1": "Where ideas",
+      "titlePart2": "turn into action",
+      "description1": "We are a community that shares challenges, celebrates achievements, and supports each other to grow.",
+      "description2": "Our culture combines collaboration, constant learning, and autonomy, in an environment where everyone contributes with purpose.",
+      "cta": "Learn about the 5 V's of Vado",
+      "imageAlt": "Vado team and culture"
+    },
+    "vadoInsights": {
+      "label": "VADO INSIGHTS",
+      "titlePart1": "Stay up to date with our",
+      "titlePart2": "latest articles",
+      "viewMore": "View more",
+      "author": "The Vado Team",
+      "article1": {
+        "date": "September 18, 2025",
+        "category": "NEARSHORE",
+        "title": "10 REASONS NEARSHORE OUTSOURCING SPELLS SUCCESS FOR BUSINESS",
+        "imageAlt": "Article about nearshore"
+      },
+      "article2": {
+        "date": "September 18, 2025",
+        "category": "TALENT",
+        "title": "LAND YOUR DREAM JOB: ACING THE SOFTWARE DEVELOPMENT INTERVIEW",
+        "imageAlt": "Article about talent"
+      },
+      "article3": {
+        "date": "September 18, 2025",
+        "category": "NEARSHORE",
+        "title": "UNLOCKING THE POTENTIAL: EXPLORING THE BENEFITS OF NEARSHORE ENGINEERING",
+        "imageAlt": "Article about nearshore engineering"
+      }
+    },
+    "whyVado": {
+      "preHeading": "WHY VADO?",
+      "titlePart1": "Technology solutions",
+      "titlePart2": "aligned with your goals",
+      "description": "We integrate with your way of working so you get results without complications. From understanding your needs, implementing them, and providing support. When we're done, the code belongs to you, giving you full control over your solution.",
+      "moreInfo": "More Information",
+      "startProject": "Let's start your project",
+      "mainIconAlt": "Partnership and collaboration",
+      "sub1IconAlt": "Evolution and continuous improvement",
+      "sub1Description": "We constantly evolve our tools and processes to offer you functional, secure, and future-ready technology solutions.",
+      "sub2IconAlt": "Strategy and results",
+      "sub2Description": "We are your strategic partner to turn ideas into real results. Our commitment is clear: quality at every step and solutions that grow your business."
+    },
+    "faq": {
+      "label": "GOT QUESTIONS?",
+      "titlePart1": "We have",
+      "titlePart2": "answers!",
+      "description": "We offer staff augmentation solutions designed for your unique needs.",
+      "cta": "Contact us",
+      "questions": {
+        "q1": {
+          "question": "What types of solutions does Vado offer?",
+          "answer": "We offer custom software development, AI solutions, and staff augmentation with specialized talent."
+        },
+        "q2": {
+          "question": "How do you work with clients?",
+          "answer": "We integrate with your way of working: we understand your needs, implement the solution, and provide ongoing support. When we're done, the code belongs to you."
+        },
+        "q3": {
+          "question": "What technologies are you specialized in?",
+          "answer": "We work with a modern, scalable stack: React, Node.js, Python, cloud (AWS, GCP), and AI tools, adapting to each project."
+        },
+        "q4": {
+          "question": "Do you offer support after the project?",
+          "answer": "Yes. We offer ongoing support, maintenance, and evolution of solutions so they continue to grow with your business."
+        },
+        "q5": {
+          "question": "How can I start a project with Vado?",
+          "answer": "Contact us through our contact page. We'll discuss your needs, define scope, and propose the next steps."
+        },
+        "q6": {
+          "question": "Do you work with companies outside my country?",
+          "answer": "Yes. We work with clients in different regions, with clear communication and schedules that adapt for effective collaboration."
+        }
+      }
+    },
+    "ctaContact": {
+      "titlePart1": "TOGETHER WE DIGITIZE",
+      "titlePart2": "YOUR IDEA!",
+      "description": "We offer free consulting to explore how Vado Devs can drive your project.",
+      "benefit1": "Free consulting to define scope and feasibility of your idea.",
+      "benefit2": "Specialized team in software development and AI.",
+      "benefit3": "Support from idea to launch.",
+      "formTitle": "CONTACT US",
+      "subject": "Subject",
+      "subjectPlaceholder": "Select",
+      "subjectOptions": {
+        "general": "General inquiry",
+        "project": "Project",
+        "support": "Support"
+      },
+      "fullName": "Full Name",
+      "fullNamePlaceholder": "e.g. John Doe",
+      "email": "Email",
+      "emailPlaceholder": "email@example.com",
+      "companyName": "Company name",
+      "companyPlaceholder": "e.g. My Company",
+      "phone": "Phone",
+      "phonePlaceholder": "e.g. 1234567890",
+      "message": "Message",
+      "messagePlaceholder": "Hello, I would like to know...",
+      "privacyLabel": "I agree with the",
+      "privacyPolicy": "Vado Privacy Policy",
+      "and": "and",
+      "termsOfService": "Vado Terms of Service",
+      "newsletterLabel": "I agree to receive newsletters, updates and special offers by email.",
+      "submit": "Send"
+    }
+  },
+  "notFound": {
+    "title": "404 - Page not found | Vado",
+    "code": "404",
+    "titlePart1": "PAGE",
+    "titlePart2": "NOT FOUND",
+    "description": "Sorry, we couldn't find the page you're looking for.",
+    "cta": "Go back home"
+  },
+  "footer": {
+    "stayConnected": "Stay Connected",
+    "policiesHeading": "Policies and conditions",
+    "terms": "Terms of Service",
+    "privacy": "Privacy Policy",
+    "cookies": "Cookies",
+    "contactHeading": "Contact",
+    "languageHeading": "Language",
+    "copyright": "Copyright © Vado Devs. {{year}}"
+  },
+  "services": {
+    "aiSolutions": {
+      "hero": {
+        "titleLine1": "Boost your business",
+        "titleLine2": "with AI solutions",
+        "tagline": "We integrate innovative artificial intelligence into your projects.",
+        "cta": "Integrate AI"
+      },
+      "solutions": {
+        "label": "Our AI solutions",
+        "titlePart1": "We drive your business",
+        "titlePart2": "with intelligent solutions",
+        "description": "We integrate AI into key processes to help you innovate, scale and make better decisions.",
+        "cta": "Let's start your project",
+        "tabs": {
+          "aprendizajeInteligente": {
+            "label": "Intelligent Learning",
+            "title": "Intelligent Learning",
+            "description": "Automate repetitive tasks and make data-driven decisions to optimize your operations."
+          },
+          "visionComputadora": {
+            "label": "Computer Vision",
+            "title": "Computer Vision",
+            "description": "Recognize images, faces and objects to improve security, quality and user experience."
+          },
+          "nlp": {
+            "label": "Natural Language Processing (NLP)",
+            "title": "Natural Language Processing (NLP)",
+            "description": "Improve customer service and interaction using virtual assistants, text analysis, and chatbots."
+          },
+          "analisisPredicciones": {
+            "label": "Analysis and Predictions",
+            "title": "Analysis and Predictions",
+            "description": "Anticipate market trends, analyze large amounts of data and get predictions to make better decisions."
+          },
+          "automatizacionProcesos": {
+            "label": "Process Automation",
+            "title": "Process Automation",
+            "description": "Do more with less effort. Streamline internal processes and reduce manual tasks so your business runs without interruptions."
+          }
+        }
+      },
+      "process": {
+        "label": "Our process",
+        "title": "How we carry out your AI project",
+        "subtitle": "from idea to impact",
+        "steps": {
+          "step1": {
+            "title": "Discovery and Planning",
+            "description": "We define objectives, scope and requirements together to ensure clarity from the start."
+          },
+          "step2": {
+            "title": "Development",
+            "description": "We design and build AI solutions tailored to you with the latest technologies."
+          },
+          "step3": {
+            "title": "Practical Integration",
+            "description": "We incorporate AI without interrupting your current processes."
+          },
+          "step4": {
+            "title": "Testing and Quality",
+            "description": "We review every detail so your AI solutions are functional, secure and reliable."
+          },
+          "step5": {
+            "title": "Launch and Continuous Support",
+            "description": "We provide continuous post-implementation support and updates to ensure sustained success."
+          }
+        }
+      },
+      "whyVado": {
+        "preHeading": "Why Vado?",
+        "titlePart1": "AI that",
+        "titlePart2": "adapts",
+        "description": "We develop useful artificial intelligence, applicable and aligned with each company's objectives.",
+        "descriptionPart2": "Each development starts with an analysis of your processes and goals. We create models and flows that truly help improve your operation.",
+        "startProject": "Integrate AI",
+        "mainIconAlt": "Partnership and collaboration",
+        "sub1IconAlt": "Adapted AI tools",
+        "sub1Description": "We choose and integrate AI tools that adapt to your industry, data and specific needs.",
+        "sub2IconAlt": "Technical and strategic support",
+        "sub2Description": "From opportunity identification to implementation and continuous improvement, we support you with a technical and strategic team."
+      }
+    },
+    "customSoftware": {
+      "hero": {
+        "titleLine1": "Build the future",
+        "titleLine2": "with custom digital solutions",
+        "tagline": "We create digital products that work the way you need them to.",
+        "cta": "Let's start your project"
+      },
+      "products": {
+        "label": "Our products",
+        "titlePart1": "Custom applications and systems",
+        "titlePart2": "tailored to you",
+        "description": "We create applications and systems that adapt 100% to your business needs, helping you optimize processes, save time and improve results."
+      },
+      "tabs": {
+        "appsMvps": {
+          "label": "Apps & MVPs",
+          "title": "Apps & MVPs",
+          "description": "We design and develop platforms, mobile apps, innovative tools and initial product versions (MVPs). So you can test ideas fast and get to market before the competition."
+        },
+        "sitiosWeb": {
+          "label": "Websites",
+          "title": "Websites",
+          "description": "We build modern, fast websites that work on every device. From landing pages to corporate portals and e-commerce."
+        },
+        "crm": {
+          "label": "CRM",
+          "title": "CRM",
+          "description": "Custom CRM systems. Automate sales, follow-up and reporting so your team closes more and better."
+        },
+        "digitalizacion": {
+          "label": "Process Digitalization",
+          "title": "Process Digitalization",
+          "description": "We turn manual processes into digital flows. Less paper, fewer errors and more real-time control."
+        },
+        "erp": {
+          "label": "ERP",
+          "title": "ERP",
+          "description": "Integrated enterprise resource planning. Inventory, finance, purchasing and operations in one platform."
+        },
+        "metaMensajeria": {
+          "label": "Meta & Messaging Integration",
+          "title": "Meta & Messaging Integration",
+          "description": "We integrate WhatsApp, Messenger and other channels into your operations. Customer service, sales and notifications from one place."
+        }
+      },
+      "process": {
+        "label": "Our process",
+        "title": "From idea to reality",
+        "steps": {
+          "step1": {
+            "title": "Discovery and Planning",
+            "description": "We define objectives, scope and requirements together to ensure clarity from the start."
+          },
+          "step2": {
+            "title": "Design and Prototyping",
+            "description": "We create functional and attractive designs, along with interactive prototypes so you can test them and give us your feedback."
+          },
+          "step3": {
+            "title": "Development",
+            "description": "Our team turns ideas into reality using modern technology and agile, efficient work methods."
+          },
+          "step4": {
+            "title": "Testing and Quality",
+            "description": "We review every detail so your software is functional, secure and reliable."
+          },
+          "step5": {
+            "title": "Launch and Continuous Support",
+            "description": "We launch your software and offer post-implementation support to ensure optimal performance."
+          }
+        }
+      },
+      "whyVado": {
+        "preHeading": "Why Vado?",
+        "titlePart1": "Technology solutions",
+        "titlePart2": "with purpose",
+        "description": "We are with you throughout the entire process: from the idea to growth. We analyze your processes, identify opportunities and create what your company needs.",
+        "startProject": "Let's start your project",
+        "mainIconAlt": "Partnership and collaboration",
+        "sub1IconAlt": "Deliveries and continuous validation",
+        "sub1Description": "We divide development into stages with constant deliveries and continuous validation so you can have visibility of project progress.",
+        "sub2IconAlt": "Follow-up and support",
+        "sub2Description": "Our work doesn't end with delivery; we provide follow-up, maintenance and support."
+      },
+      "testimonials": {
+        "label": "Our clients",
+        "titlePart1": "Real stories",
+        "titlePart2": "Real impact",
+        "moreInfo": "More information",
+        "startProject": "Let's start your project",
+        "insightsLabel": "Vado Insights",
+        "items": {
+          "1": {
+            "name": "Javier Barceló",
+            "role": "ICSSA",
+            "quote": "Vado excels in developer matching and seamless collaboration, enabling the team to focus on growth. With minimal time zone differences, coordination is efficient.",
+            "image": ""
+          },
+          "2": {
+            "name": "Alek Hagopian",
+            "role": "CEO, SolidlyAI",
+            "quote": "Vado excels in developer matching and seamless collaboration, enabling the SolidlyAI team to concentrate on growth. With minimal time zone differences, coordination is efficient.",
+            "image": ""
+          },
+          "3": {
+            "name": "Company name",
+            "role": "",
+            "quote": "The team delivered our system on time and with quality. Communication was excellent at every stage of the project.",
+            "image": ""
+          }
+        }
+      }
+    },
+    "staffAugmentation": {
+      "hero": {
+        "titleLine1": "Empower your company with",
+        "titleLine2": "reliable developers",
+        "tagline": "Hire the best remote talent from Latin America and strengthen your team to achieve greater milestones.",
+        "cta": "Hire Talent"
+      },
+      "intro": {
+        "label": "STAFF AUGMENTATION",
+        "titlePart1": "Qualified experts to",
+        "titlePart2": "develop your projects",
+        "subheadline": "Strategic Talent for Your Team",
+        "description": "Staff augmentation is a flexible strategy that allows you to add specialized talent to your projects without hiring internally. We adapt the profile to the requirements and objectives of your project.",
+        "cta": "Strengthen your team"
+      },
+      "process": {
+        "label": "OUR PROCESS",
+        "titlePart1": "How does our",
+        "titlePart2": "staff augmentation work?",
+        "steps": {
+          "step1": {
+            "title": "Careful Review",
+            "description": "We analyze each profile in detail to find the ideal candidates for each project."
+          },
+          "step2": {
+            "title": "Skills Test",
+            "description": "We evaluate knowledge and technical skills to ensure that each person adds value from day one."
+          },
+          "step3": {
+            "title": "Cultural Fit",
+            "description": "We conduct in-depth interviews to confirm they share our values and fit with each client's way of working."
+          },
+          "step4": {
+            "title": "Guided Integration",
+            "description": "Once approved, the new talent joins your team efficiently and with Vado's support at all times."
+          }
+        }
+      },
+      "whyVado": {
+        "preHeading": "Why Vado?",
+        "titlePart1": "Specialized talent to",
+        "titlePart2": "achieve results",
+        "description": "We focus on finding the right profile and integrating it into your team.",
+        "descriptionPart2": "We look for talent with proven experience and skills aligned with your project.",
+        "startProject": "Strengthen your team",
+        "mainIconAlt": "Partnership and collaboration",
+        "sub1IconAlt": "Adaptation and integration",
+        "sub1Description": "We adapt to your way of working without interfering with your operation or delaying your processes.",
+        "sub2IconAlt": "Follow-up and monitoring",
+        "sub2Description": "We monitor the performance of assigned talent and stay in contact to adjust whatever is necessary."
+      }
+    }
+  }
+}
