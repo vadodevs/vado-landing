@@ -359,11 +359,13 @@
       "benefit3": "Continuous and close support",
       "formTitle": "Contact Us",
       "subject": "Subject",
-      "subjectPlaceholder": "Select",
+      "subjectPlaceholder": "Select one...",
       "subjectOptions": {
-        "general": "General inquiry",
-        "project": "Project",
-        "support": "Support"
+        "softwareALaMedida": "Custom Software",
+        "ampliacionPersonal": "Staff Augmentation",
+        "solucionesIA": "AI Solutions",
+        "soyDesarrollador": "I am a Developer",
+        "otros": "Others"
       },
       "fullName": "Full Name",
       "fullNamePlaceholder": "e.g. John Doe",

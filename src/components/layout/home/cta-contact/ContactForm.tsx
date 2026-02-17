@@ -36,9 +36,11 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
             )}
           >
             <option value="">{t('home.ctaContact.subjectPlaceholder')}</option>
-            <option value="general">{t('home.ctaContact.subjectOptions.general')}</option>
-            <option value="project">{t('home.ctaContact.subjectOptions.project')}</option>
-            <option value="support">{t('home.ctaContact.subjectOptions.support')}</option>
+            <option value="software-a-la-medida">{t('home.ctaContact.subjectOptions.softwareALaMedida')}</option>
+            <option value="ampliacion-personal">{t('home.ctaContact.subjectOptions.ampliacionPersonal')}</option>
+            <option value="soluciones-ia">{t('home.ctaContact.subjectOptions.solucionesIA')}</option>
+            <option value="soy-desarrollador">{t('home.ctaContact.subjectOptions.soyDesarrollador')}</option>
+            <option value="otros">{t('home.ctaContact.subjectOptions.otros')}</option>
           </select>
         </div>
         <div className="space-y-2">

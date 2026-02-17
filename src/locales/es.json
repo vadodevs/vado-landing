@@ -359,11 +359,13 @@
       "benefit3": "Soporte continuo y cercano",
       "formTitle": "Contáctanos",
       "subject": "Asunto",
-      "subjectPlaceholder": "Seleccionar",
+      "subjectPlaceholder": "Selecciona uno...",
       "subjectOptions": {
-        "general": "Consulta general",
-        "project": "Proyecto",
-        "support": "Soporte"
+        "softwareALaMedida": "Software a la medida",
+        "ampliacionPersonal": "Ampliación de Personal",
+        "solucionesIA": "Soluciones de IA",
+        "soyDesarrollador": "Soy un Desarrollador",
+        "otros": "Otros"
       },
       "fullName": "Nombre Completo",
       "fullNamePlaceholder": "Ej. Juan Pérez",
