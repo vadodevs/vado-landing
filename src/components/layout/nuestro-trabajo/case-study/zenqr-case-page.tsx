@@ -30,11 +30,23 @@ export function ZenqurCasePage() {
       <CenterContainer className="flex flex-col gap-10 lg:flex-row lg:items-start lg:gap-12">
         <main className="min-w-0 flex-1">
           <ZenqrOverviewSection />
-          <img src="/case-studies/zenqr/image-test.webp" alt="" />
+          <img
+            src="/case-studies/zenqr/image-test.webp"
+            alt={t('ourWork.caseStudy.zenqr.slides.slide1Alt')}
+            className="h-auto w-full rounded-2xl object-cover"
+          />
           <ZenqrChallengeSection />
-          <img src="/case-studies/zenqr/image-test.webp" alt="" />
+          <img
+            src="/case-studies/zenqr/image-test.webp"
+            alt={t('ourWork.caseStudy.zenqr.slides.slide2Alt')}
+            className="h-auto w-full rounded-2xl object-cover"
+          />
           <ZenqrSolutionSection />
-          <img src="/case-studies/zenqr/image-test.webp" alt="" />
+          <img
+            src="/case-studies/zenqr/image-test.webp"
+            alt={t('ourWork.caseStudy.zenqr.slides.slide3Alt')}
+            className="h-auto w-full rounded-2xl object-cover"
+          />
           <ZenqrResultsSection />
           <ZenqrCtaSection />
         </main>

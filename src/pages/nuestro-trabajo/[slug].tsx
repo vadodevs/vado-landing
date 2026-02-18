@@ -1,8 +1,10 @@
 import { useParams, Link } from 'wouter';
 import { useTranslation } from 'react-i18next';
 import { PageTitle } from '@/components/PageTitle';
+import { PageMeta } from '@/components/PageMeta';
 import MainLayout from '@/components/layout/MainLayout';
 import { useLocale } from '@/hooks/useLocale';
+import { OUR_WORK_PROJECTS } from '@/components/layout/nuestro-trabajo/ourWorkProjects';
 import { ZenqurCasePage } from '@/components/layout/nuestro-trabajo/case-study/zenqr-case-page';
 import { SenderoCasePage } from '@/components/layout/nuestro-trabajo/case-study/sendero-case-page';
 import { EbmCasePage } from '@/components/layout/nuestro-trabajo/case-study/ebm-case-page';
@@ -11,6 +13,8 @@ import { EasySalesCasePage } from '@/components/layout/nuestro-trabajo/case-stud
 import { CipresesCasePage } from '@/components/layout/nuestro-trabajo/case-study/cipreses-case-page';
 import { MaggioreCasePage } from '@/components/layout/nuestro-trabajo/case-study/maggiore-case-page';
 import { WashappCasePage } from '@/components/layout/nuestro-trabajo/case-study/washapp-case-page';
+
+const CASE_STUDY_SEO_SLUGS = ['sendero', 'zenqr', 'ebm'] as const;
 
 const KNOWN_SLUGS = [
   'zenqr',
@@ -44,15 +48,26 @@ export default function NuestroTrabajoProject() {
   const projectKey = isValid ? (slug as (typeof KNOWN_SLUGS)[number]) : null;
   const CaseComponent = projectKey ? CASE_COMPONENTS[projectKey] : null;
 
+  const isCaseStudySeo = projectKey && CASE_STUDY_SEO_SLUGS.includes(projectKey as (typeof CASE_STUDY_SEO_SLUGS)[number]);
+  const pageTitle = projectKey
+    ? `${t(`ourWork.projects.${projectKey}.title`)} | ${t('nav.ourWork')}`
+    : t('nav.ourWork');
+  const project = projectKey ? OUR_WORK_PROJECTS.find((p) => p.id === projectKey) : null;
+  const ogImage = project?.image?.startsWith('/') ? project.image : project ? `/projects/${project.image}` : undefined;
+  const canonicalPath = projectKey ? path(`/nuestro-trabajo/${projectKey}`) : undefined;
+
   return (
     <>
-      <PageTitle
-        title={
-          projectKey
-            ? `${t(`ourWork.projects.${projectKey}.title`)} | ${t('nav.ourWork')}`
-            : t('nav.ourWork')
-        }
-      />
+      {isCaseStudySeo && projectKey ? (
+        <PageMeta
+          title={pageTitle}
+          description={t(`ourWork.caseStudy.${projectKey}.hero.description`)}
+          image={ogImage}
+          canonicalPath={canonicalPath}
+        />
+      ) : (
+        <PageTitle title={pageTitle} />
+      )}
       <MainLayout>
         {CaseComponent ? (
           <CaseComponent />
