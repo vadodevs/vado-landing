@@ -14,7 +14,7 @@ import { CipresesCasePage } from '@/components/layout/nuestro-trabajo/case-study
 import { MaggioreCasePage } from '@/components/layout/nuestro-trabajo/case-study/maggiore-case-page';
 import { WashappCasePage } from '@/components/layout/nuestro-trabajo/case-study/washapp-case-page';
 
-const CASE_STUDY_SEO_SLUGS = ['sendero', 'zenqr', 'ebm'] as const;
+const CASE_STUDY_SEO_SLUGS = ['sendero', 'zenqr', 'ebm', 'digitalRanch'] as const;
 
 const KNOWN_SLUGS = [
   'zenqr',

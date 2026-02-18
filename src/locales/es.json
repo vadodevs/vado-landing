@@ -293,6 +293,74 @@
           "slide2Alt": "Funcionalidades de gestión náutica EBM",
           "slide3Alt": "EBM en uso"
         }
+      },
+      "digitalRanch": {
+        "stackLabel": "Stack",
+        "hero": {
+          "title": "Digital Ranch | App móvil",
+          "description": "Aplicación móvil que conecta la operación en campo con el registro digital, simplificando la gestión y el seguimiento.",
+          "industry": "Operaciones de campo y gestión",
+          "solutionType": "App móvil multiplataforma",
+          "heroImageAlt": "Digital Ranch - App móvil"
+        },
+        "overview": {
+          "label": "Overview",
+          "title": "App móvil para operaciones en campo",
+          "paragraph": "Digital Ranch se construyó como una <accent>herramienta de campo</accent>: <accent>móvil</accent>, <accent>sincronizada</accent> y adaptable a la operación. Conecta el trabajo en terreno con el registro digital en un solo lugar con <accent>visibilidad en tiempo real</accent>."
+        },
+        "challenge": {
+          "label": "Challenge",
+          "title": "El reto",
+          "intro": "El cliente necesitaba una aplicación móvil que conectara la operación en campo con el registro digital, con:",
+          "list1": "Registro y seguimiento en terreno",
+          "list2": "Sincronización offline y en línea",
+          "list3": "Gestión de tareas y reportes",
+          "list4": "Uso en iOS y Android",
+          "afterList": "Todo con una experiencia <accent>clara</accent> y <accent>orientada al día a día</accent> del equipo en campo.",
+          "closing": "El reto era tener <accent>una sola fuente de verdad</accent> entre campo y oficina, sin depender de planillas ni herramientas dispersas."
+        },
+        "solution": {
+          "label": "Solution",
+          "title": "La solución",
+          "paragraph1": "El enfoque incluyó <accent>mapear los flujos</accent> del equipo en campo y definir una hoja de ruta alineada a la operación real.",
+          "paragraph2": "Desarrollamos una app con interfaz <accent>intuitiva</accent> para registro, tareas y seguimiento, con <accent>soporte multiplataforma</accent> y sincronización.",
+          "listTitle": "La plataforma incluye:",
+          "list1": "App móvil (iOS y Android)",
+          "list2": "Registro y fotos en campo",
+          "list3": "Sincronización y trabajo offline",
+          "list4": "Panel de gestión y reportes",
+          "list5": "Integración con flujos existentes"
+        },
+        "results": {
+          "label": "Results",
+          "title": "Resultados",
+          "paragraph": "El resultado fue una app <accent>adaptada a la operación en campo</accent>, construida en <accent>colaboración con el cliente</accent> para validar flujos y entregar una herramienta que el equipo adopta en terreno, con claridad y trazabilidad."
+        },
+        "cta": {
+          "subtitle": "Desarrollo a la medida",
+          "titleLine1": "Claridad para el usuario.",
+          "titleLine2": "Escalabilidad para el negocio.",
+          "description": "Si estás construyendo un producto digital y necesitas que sea claro para el usuario y escalable para el negocio, podemos ayudarte a desarrollarlo a la medida.",
+          "ctaLabel": "Contáctanos"
+        },
+        "sidebar": {
+          "title": "Detalles del proyecto",
+          "productType": "Tipo de producto",
+          "productTypeWeb": "Aplicación web",
+          "productTypeMobile": "App móvil",
+          "visitWebsite": "Visitar sitio web"
+        },
+        "otherCases": {
+          "label": "Más trabajo",
+          "title": "Otros casos de uso",
+          "description": "Conoce otros proyectos que hemos desarrollado junto a nuestros clientes.",
+          "backLink": "Volver a Nuestro trabajo"
+        },
+        "slides": {
+          "slide1Alt": "Captura de la app Digital Ranch",
+          "slide2Alt": "Funcionalidades de Digital Ranch",
+          "slide3Alt": "Digital Ranch en uso"
+        }
       }
     }
   },
