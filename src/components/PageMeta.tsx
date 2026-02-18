@@ -11,7 +11,7 @@ export type PageMetaProps = {
   canonicalPath?: string;
 };
 
-const OG_IMAGE_DEFAULT = '/og-default.png';
+const OG_IMAGE_DEFAULT = '/case-studies/ebm/ebm-cover-card.png';
 
 /**
  * Actualiza título, meta description y Open Graph para SEO y redes sociales.
@@ -38,6 +38,7 @@ export function PageMeta({ title, description, image, canonicalPath }: PageMetaP
     setMeta('og:title', title, true);
     setMeta('og:description', description, true);
     setMeta('og:type', 'article', true);
+    setMeta('og:site_name', 'Vado', true);
 
     const imageUrl = image
       ? image.startsWith('http')
@@ -45,10 +46,20 @@ export function PageMeta({ title, description, image, canonicalPath }: PageMetaP
         : `${origin}${image}`
       : `${origin}${OG_IMAGE_DEFAULT}`;
     setMeta('og:image', imageUrl, true);
+    setMeta('og:image:width', '1200', true);
+    setMeta('og:image:height', '630', true);
 
     const canonicalUrl = canonicalPath ? `${origin}${canonicalPath}` : undefined;
     if (canonicalUrl) {
       setMeta('og:url', canonicalUrl, true);
+    }
+
+    setMeta('twitter:card', 'summary_large_image', false);
+    setMeta('twitter:title', title, false);
+    setMeta('twitter:description', description, false);
+    setMeta('twitter:image', imageUrl, false);
+    if (canonicalUrl) {
+      setMeta('twitter:url', canonicalUrl, false);
       let link = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
       if (!link) {
         link = document.createElement('link');

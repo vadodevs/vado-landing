@@ -14,8 +14,6 @@ import { CipresesCasePage } from '@/components/layout/nuestro-trabajo/case-study
 import { MaggioreCasePage } from '@/components/layout/nuestro-trabajo/case-study/maggiore-case-page';
 import { WashappCasePage } from '@/components/layout/nuestro-trabajo/case-study/washapp-case-page';
 
-const CASE_STUDY_SEO_SLUGS = ['sendero', 'zenqr', 'ebm', 'digitalRanch'] as const;
-
 const KNOWN_SLUGS = [
   'zenqr',
   'sendero',
@@ -48,20 +46,28 @@ export default function NuestroTrabajoProject() {
   const projectKey = isValid ? (slug as (typeof KNOWN_SLUGS)[number]) : null;
   const CaseComponent = projectKey ? CASE_COMPONENTS[projectKey] : null;
 
-  const isCaseStudySeo = projectKey && CASE_STUDY_SEO_SLUGS.includes(projectKey as (typeof CASE_STUDY_SEO_SLUGS)[number]);
   const pageTitle = projectKey
     ? `${t(`ourWork.projects.${projectKey}.title`)} | ${t('nav.ourWork')}`
     : t('nav.ourWork');
   const project = projectKey ? OUR_WORK_PROJECTS.find((p) => p.id === projectKey) : null;
   const ogImage = project?.image?.startsWith('/') ? project.image : project ? `/projects/${project.image}` : undefined;
   const canonicalPath = projectKey ? path(`/nuestro-trabajo/${projectKey}`) : undefined;
+  const caseStudyDesc = projectKey ? t(`ourWork.caseStudy.${projectKey}.hero.description`) : '';
+  const metaDescription =
+    projectKey &&
+    caseStudyDesc &&
+    !caseStudyDesc.startsWith('ourWork.caseStudy')
+      ? caseStudyDesc
+      : projectKey
+        ? t(`ourWork.projects.${projectKey}.description`)
+        : undefined;
 
   return (
     <>
-      {isCaseStudySeo && projectKey ? (
+      {projectKey ? (
         <PageMeta
           title={pageTitle}
-          description={t(`ourWork.caseStudy.${projectKey}.hero.description`)}
+          description={metaDescription ?? ''}
           image={ogImage}
           canonicalPath={canonicalPath}
         />
