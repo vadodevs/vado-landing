@@ -34,11 +34,23 @@ export function SenderoCasePage() {
       <CenterContainer className="flex flex-col gap-10 lg:flex-row lg:items-start lg:gap-12">
         <main className="min-w-0 flex-1">
           <SenderoOverviewSection />
-          <img src="/case-studies/sendero-crm/sendero-slide1.png" alt="" />
+          <img
+            src="/case-studies/sendero-crm/sendero-slide1.png"
+            alt={t('ourWork.caseStudy.sendero.slides.slide1Alt')}
+            className="h-auto w-full rounded-2xl object-cover"
+          />
           <SenderoChallengeSection />
-          <img src="/case-studies/sendero-crm/sendero-slide2.png" alt="" />
+          <img
+            src="/case-studies/sendero-crm/sendero-slide2.png"
+            alt={t('ourWork.caseStudy.sendero.slides.slide2Alt')}
+            className="h-auto w-full rounded-2xl object-cover"
+          />
           <SenderoSolutionSection />
-          <img src="/case-studies/sendero-crm/sendero-slide3.png" alt="" />
+          <img
+            src="/case-studies/sendero-crm/sendero-slide3.png"
+            alt={t('ourWork.caseStudy.sendero.slides.slide3Alt')}
+            className="h-auto w-full rounded-2xl object-cover"
+          />
           <SenderoResultsSection />
           <SenderoCtaSection />
         </main>

@@ -21,6 +21,13 @@
       "industry": "Industry",
       "solutionType": "Solution type"
     },
+    "stackCategories": {
+      "frontend": "Frontend",
+      "backend": "Backend",
+      "design": "Design",
+      "deploy": "Deploy",
+      "others": "Others"
+    },
     "hero": {
       "titleLine1": "FROM CHALLENGE",
       "titleLine2": "TO RESULT",
@@ -141,6 +148,11 @@
           "title": "Other case studies",
           "description": "Discover other projects we have developed with our clients.",
           "backLink": "Back to Our work"
+        },
+        "slides": {
+          "slide1Alt": "ZenQR platform screenshot",
+          "slide2Alt": "ZenQR features",
+          "slide3Alt": "ZenQR in use"
         }
       },
       "sendero": {
@@ -207,6 +219,79 @@
           "title": "Other case studies",
           "description": "Discover other projects we have developed with our clients.",
           "backLink": "Back to Our work"
+        },
+        "slides": {
+          "slide1Alt": "Sendero CRM platform screenshot",
+          "slide2Alt": "Sendero CRM features",
+          "slide3Alt": "Sendero CRM in use"
+        }
+      },
+      "ebm": {
+        "stackLabel": "Stack",
+        "hero": {
+          "title": "EBM | Nautical management",
+          "description": "Platform for nautical management and operations, with centralized visibility and control.",
+          "industry": "Nautical and maritime sector",
+          "solutionType": "Mobile and web platform",
+          "heroImageAlt": "EBM - Nautical management"
+        },
+        "overview": {
+          "label": "Overview",
+          "title": "Nautical management platform",
+          "paragraph": "EBM was built as a <accent>management tool</accent> for the nautical sector: <accent>centralized</accent> and adaptable to operations. It connects vessels, crew, and activities in one place with <accent>real-time visibility</accent>."
+        },
+        "challenge": {
+          "label": "Challenge",
+          "title": "The challenge",
+          "intro": "The client needed to modernize and digitize their nautical operation, with:",
+          "list1": "Vessel and crew management",
+          "list2": "Activity and maintenance tracking",
+          "list3": "Reports and traceability",
+          "list4": "Mobile and web access",
+          "afterList": "All with a <accent>clear</accent> experience <accent>focused on the team's day-to-day</accent>.",
+          "closing": "The challenge was to have <accent>a single source of truth</accent> for nautical operations, without relying on spreadsheets or scattered tools."
+        },
+        "solution": {
+          "label": "Solution",
+          "title": "The solution",
+          "paragraph1": "The approach included <accent>mapping the client's processes</accent> and defining a roadmap aligned with real nautical operations.",
+          "paragraph2": "We developed a platform with an <accent>intuitive</accent> interface for vessel, crew, and activity management, with <accent>mobile app and web panel</accent>.",
+          "listTitle": "The platform includes:",
+          "list1": "Vessel and crew management",
+          "list2": "Activities and maintenance",
+          "list3": "Reports and dashboards",
+          "list4": "Mobile app (iOS and Android)",
+          "list5": "Web panel for administration"
+        },
+        "results": {
+          "label": "Results",
+          "title": "Results",
+          "paragraph": "The result was a platform <accent>tailored to the nautical sector</accent>, built in <accent>collaboration with the client</accent> to validate flows and deliver a tool the team adopts in their daily operation, with clarity and traceability."
+        },
+        "cta": {
+          "subtitle": "Custom development",
+          "titleLine1": "Clarity for the user.",
+          "titleLine2": "Scalability for the business.",
+          "description": "If you're building a digital product and need it to be clear for the user and scalable for the business, we can help you develop it to your needs.",
+          "ctaLabel": "Contact us"
+        },
+        "sidebar": {
+          "title": "Project details",
+          "productType": "Product type",
+          "productTypeWeb": "Web application",
+          "productTypeMobile": "Mobile app",
+          "visitWebsite": "Visit website"
+        },
+        "otherCases": {
+          "label": "More work",
+          "title": "Other case studies",
+          "description": "Discover other projects we have developed with our clients.",
+          "backLink": "Back to Our work"
+        },
+        "slides": {
+          "slide1Alt": "EBM platform screenshot",
+          "slide2Alt": "EBM nautical management features",
+          "slide3Alt": "EBM in use"
         }
       }
     }

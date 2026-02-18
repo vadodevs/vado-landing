@@ -21,6 +21,13 @@
       "industry": "Industria",
       "solutionType": "Tipo de solución"
     },
+    "stackCategories": {
+      "frontend": "Frontend",
+      "backend": "Backend",
+      "design": "Diseño",
+      "deploy": "Deploy",
+      "others": "Otros"
+    },
     "hero": {
       "titleLine1": "DEL RETO AL",
       "titleLine2": "RESULTADO",
@@ -141,6 +148,11 @@
           "title": "Otros casos de uso",
           "description": "Conoce otros proyectos que hemos desarrollado junto a nuestros clientes.",
           "backLink": "Volver a Nuestro trabajo"
+        },
+        "slides": {
+          "slide1Alt": "Captura de la plataforma ZenQR",
+          "slide2Alt": "Funcionalidades de ZenQR",
+          "slide3Alt": "ZenQR en uso"
         }
       },
       "sendero": {
@@ -207,6 +219,79 @@
           "title": "Otros casos de uso",
           "description": "Conoce otros proyectos que hemos desarrollado junto a nuestros clientes.",
           "backLink": "Volver a Nuestro trabajo"
+        },
+        "slides": {
+          "slide1Alt": "Captura de la plataforma Sendero CRM",
+          "slide2Alt": "Funcionalidades del CRM Sendero",
+          "slide3Alt": "Sendero CRM en uso"
+        }
+      },
+      "ebm": {
+        "stackLabel": "Stack",
+        "hero": {
+          "title": "EBM | Gestión náutica",
+          "description": "Plataforma para gestión y operación náutica, con visibilidad y control centralizado.",
+          "industry": "Sector náutico y marítimo",
+          "solutionType": "Plataforma móvil y web",
+          "heroImageAlt": "EBM - Gestión náutica"
+        },
+        "overview": {
+          "label": "Overview",
+          "title": "Plataforma de gestión náutica",
+          "paragraph": "EBM se construyó como una <accent>herramienta de gestión</accent> para el sector náutico: <accent>centralizada</accent> y adaptable a la operación. Conecta embarcaciones, tripulación y actividades en un solo lugar con <accent>visibilidad en tiempo real</accent>."
+        },
+        "challenge": {
+          "label": "Challenge",
+          "title": "El reto",
+          "intro": "El cliente necesitaba modernizar y digitalizar su operación náutica, con:",
+          "list1": "Gestión de embarcaciones y tripulación",
+          "list2": "Seguimiento de actividades y mantenimiento",
+          "list3": "Reportes y trazabilidad",
+          "list4": "Acceso desde móvil y web",
+          "afterList": "Todo con una experiencia <accent>clara</accent> y <accent>orientada al día a día</accent> del equipo.",
+          "closing": "El reto era tener <accent>una sola fuente de verdad</accent> para la operación náutica, sin depender de planillas ni herramientas dispersas."
+        },
+        "solution": {
+          "label": "Solution",
+          "title": "La solución",
+          "paragraph1": "El enfoque incluyó <accent>mapear los procesos</accent> del cliente y definir una hoja de ruta alineada a la operación náutica real.",
+          "paragraph2": "Desarrollamos una plataforma con interfaz <accent>intuitiva</accent> para gestión de embarcaciones, tripulación y actividades, con <accent>app móvil y panel web</accent>.",
+          "listTitle": "La plataforma incluye:",
+          "list1": "Gestión de embarcaciones y tripulación",
+          "list2": "Actividades y mantenimiento",
+          "list3": "Reportes y dashboards",
+          "list4": "App móvil (iOS y Android)",
+          "list5": "Panel web para administración"
+        },
+        "results": {
+          "label": "Results",
+          "title": "Resultados",
+          "paragraph": "El resultado fue una plataforma <accent>adaptada al sector náutico</accent>, construida en <accent>colaboración con el cliente</accent> para validar flujos y entregar una herramienta que el equipo adopta en su operación diaria, con claridad y trazabilidad."
+        },
+        "cta": {
+          "subtitle": "Desarrollo a la medida",
+          "titleLine1": "Claridad para el usuario.",
+          "titleLine2": "Escalabilidad para el negocio.",
+          "description": "Si estás construyendo un producto digital y necesitas que sea claro para el usuario y escalable para el negocio, podemos ayudarte a desarrollarlo a la medida.",
+          "ctaLabel": "Contáctanos"
+        },
+        "sidebar": {
+          "title": "Detalles del proyecto",
+          "productType": "Tipo de producto",
+          "productTypeWeb": "Aplicación web",
+          "productTypeMobile": "App móvil",
+          "visitWebsite": "Visitar sitio web"
+        },
+        "otherCases": {
+          "label": "Más trabajo",
+          "title": "Otros casos de uso",
+          "description": "Conoce otros proyectos que hemos desarrollado junto a nuestros clientes.",
+          "backLink": "Volver a Nuestro trabajo"
+        },
+        "slides": {
+          "slide1Alt": "Captura de la plataforma EBM",
+          "slide2Alt": "Funcionalidades de gestión náutica EBM",
+          "slide3Alt": "EBM en uso"
         }
       }
     }
