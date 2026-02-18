@@ -293,6 +293,74 @@
           "slide2Alt": "EBM nautical management features",
           "slide3Alt": "EBM in use"
         }
+      },
+      "digitalRanch": {
+        "stackLabel": "Stack",
+        "hero": {
+          "title": "Digital Ranch | Mobile app",
+          "description": "Mobile app that connects field operations with digital records, simplifying management and follow-up.",
+          "industry": "Field operations and management",
+          "solutionType": "Cross-platform mobile app",
+          "heroImageAlt": "Digital Ranch - Mobile app"
+        },
+        "overview": {
+          "label": "Overview",
+          "title": "Mobile app for field operations",
+          "paragraph": "Digital Ranch was built as a <accent>field tool</accent>: <accent>mobile</accent>, <accent>synced</accent>, and adaptable to operations. It connects field work with digital records in one place with <accent>real-time visibility</accent>."
+        },
+        "challenge": {
+          "label": "Challenge",
+          "title": "The challenge",
+          "intro": "The client needed a mobile app that connected field operations with digital records, with:",
+          "list1": "Field registration and tracking",
+          "list2": "Offline and online sync",
+          "list3": "Task and report management",
+          "list4": "iOS and Android support",
+          "afterList": "All with a <accent>clear</accent> experience <accent>focused on the field team's day-to-day</accent>.",
+          "closing": "The challenge was to have <accent>a single source of truth</accent> between field and office, without relying on spreadsheets or scattered tools."
+        },
+        "solution": {
+          "label": "Solution",
+          "title": "The solution",
+          "paragraph1": "The approach included <accent>mapping the field team's flows</accent> and defining a roadmap aligned with real operations.",
+          "paragraph2": "We developed an app with an <accent>intuitive</accent> interface for registration, tasks, and follow-up, with <accent>cross-platform support</accent> and sync.",
+          "listTitle": "The platform includes:",
+          "list1": "Mobile app (iOS and Android)",
+          "list2": "Field registration and photos",
+          "list3": "Sync and offline support",
+          "list4": "Management panel and reports",
+          "list5": "Integration with existing flows"
+        },
+        "results": {
+          "label": "Results",
+          "title": "Results",
+          "paragraph": "The result was an app <accent>tailored to field operations</accent>, built in <accent>collaboration with the client</accent> to validate flows and deliver a tool the team adopts in the field, with clarity and traceability."
+        },
+        "cta": {
+          "subtitle": "Custom development",
+          "titleLine1": "Clarity for the user.",
+          "titleLine2": "Scalability for the business.",
+          "description": "If you're building a digital product and need it to be clear for the user and scalable for the business, we can help you develop it to your needs.",
+          "ctaLabel": "Contact us"
+        },
+        "sidebar": {
+          "title": "Project details",
+          "productType": "Product type",
+          "productTypeWeb": "Web application",
+          "productTypeMobile": "Mobile app",
+          "visitWebsite": "Visit website"
+        },
+        "otherCases": {
+          "label": "More work",
+          "title": "Other case studies",
+          "description": "Discover other projects we have developed with our clients.",
+          "backLink": "Back to Our work"
+        },
+        "slides": {
+          "slide1Alt": "Digital Ranch app screenshot",
+          "slide2Alt": "Digital Ranch features",
+          "slide3Alt": "Digital Ranch in use"
+        }
       }
     }
   },
