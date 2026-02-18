@@ -144,7 +144,7 @@ function OtherCasesSection({ projectId, accentColor }: { projectId: string; acce
                   >
                     <div className="bg-muted/40 relative aspect-4/3 overflow-hidden">
                       <motion.img
-                        src={`/projects/${project.image}`}
+                        src={project.image.startsWith('/') ? project.image : `/projects/${project.image}`}
                         alt=""
                         className="size-full object-contain object-center p-6"
                         loading="lazy"

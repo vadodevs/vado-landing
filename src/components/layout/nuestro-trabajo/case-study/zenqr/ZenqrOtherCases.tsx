@@ -56,7 +56,7 @@ export function ZenqrOtherCases() {
                 >
                   <div className="bg-muted/40 relative aspect-4/3">
                     <motion.img
-                      src={`/projects/${project.image}`}
+                      src={project.image.startsWith('/') ? project.image : `/projects/${project.image}`}
                       alt=""
                       className="size-full object-contain object-center p-6"
                       loading="lazy"
