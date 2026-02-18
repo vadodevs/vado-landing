@@ -361,6 +361,74 @@
           "slide2Alt": "Funcionalidades de Digital Ranch",
           "slide3Alt": "Digital Ranch en uso"
         }
+      },
+      "easySales": {
+        "stackLabel": "Stack",
+        "hero": {
+          "title": "Easy Sales | E-commerce",
+          "description": "Plataforma de e-commerce que conecta inventario, pagos y operación diaria en un solo flujo digital.",
+          "industry": "E-commerce y retail",
+          "solutionType": "Plataforma web",
+          "heroImageAlt": "Easy Sales - E-commerce"
+        },
+        "overview": {
+          "label": "Overview",
+          "title": "Plataforma de e-commerce a la medida",
+          "paragraph": "Easy Sales se construyó como una <accent>herramienta de ventas</accent>: <accent>integrada</accent> con inventario, pagos y operación. Conecta catálogo, carrito y gestión en un solo lugar con <accent>visibilidad y control</accent>."
+        },
+        "challenge": {
+          "label": "Challenge",
+          "title": "El reto",
+          "intro": "El cliente necesitaba una solución de e-commerce que conectara inventario, pagos y operación diaria, con:",
+          "list1": "Catálogo y gestión de productos",
+          "list2": "Pagos integrados (Stripe)",
+          "list3": "Inventario y órdenes",
+          "list4": "Panel de administración",
+          "afterList": "Todo con una experiencia <accent>clara</accent> para el comprador y <accent>escalable</accent> para el negocio.",
+          "closing": "El reto era tener <accent>una sola plataforma</accent> que uniera venta, cobro y operación, sin depender de herramientas dispersas."
+        },
+        "solution": {
+          "label": "Solution",
+          "title": "La solución",
+          "paragraph1": "El enfoque incluyó <accent>mapear los flujos</accent> de venta y operación del cliente y definir una hoja de ruta alineada al e-commerce real.",
+          "paragraph2": "Desarrollamos una plataforma con interfaz <accent>intuitiva</accent> para catálogo, carrito y checkout, con <accent>integración con Stripe</accent> y panel de gestión.",
+          "listTitle": "La plataforma incluye:",
+          "list1": "Tienda web y catálogo",
+          "list2": "Checkout y pagos (Stripe)",
+          "list3": "Gestión de inventario y órdenes",
+          "list4": "Panel de administración",
+          "list5": "Despliegue en la nube"
+        },
+        "results": {
+          "label": "Results",
+          "title": "Resultados",
+          "paragraph": "El resultado fue una plataforma <accent>adaptada al e-commerce</accent>, construida en <accent>colaboración con el cliente</accent> para validar flujos y entregar una herramienta que unifica venta, cobro y operación con claridad y trazabilidad."
+        },
+        "cta": {
+          "subtitle": "Desarrollo a la medida",
+          "titleLine1": "Claridad para el usuario.",
+          "titleLine2": "Escalabilidad para el negocio.",
+          "description": "Si estás construyendo un producto digital y necesitas que sea claro para el usuario y escalable para el negocio, podemos ayudarte a desarrollarlo a la medida.",
+          "ctaLabel": "Contáctanos"
+        },
+        "sidebar": {
+          "title": "Detalles del proyecto",
+          "productType": "Tipo de producto",
+          "productTypeWeb": "Aplicación web",
+          "productTypeMobile": "App móvil",
+          "visitWebsite": "Visitar sitio web"
+        },
+        "otherCases": {
+          "label": "Más trabajo",
+          "title": "Otros casos de uso",
+          "description": "Conoce otros proyectos que hemos desarrollado junto a nuestros clientes.",
+          "backLink": "Volver a Nuestro trabajo"
+        },
+        "slides": {
+          "slide1Alt": "Captura de la plataforma Easy Sales",
+          "slide2Alt": "Funcionalidades de Easy Sales",
+          "slide3Alt": "Easy Sales en uso"
+        }
       }
     }
   },

@@ -361,6 +361,74 @@
           "slide2Alt": "Digital Ranch features",
           "slide3Alt": "Digital Ranch in use"
         }
+      },
+      "easySales": {
+        "stackLabel": "Stack",
+        "hero": {
+          "title": "Easy Sales | E-commerce",
+          "description": "E-commerce platform that connects inventory, payments and daily operations in a single digital flow.",
+          "industry": "E-commerce and retail",
+          "solutionType": "Web platform",
+          "heroImageAlt": "Easy Sales - E-commerce"
+        },
+        "overview": {
+          "label": "Overview",
+          "title": "Custom e-commerce platform",
+          "paragraph": "Easy Sales was built as a <accent>sales tool</accent>: <accent>integrated</accent> with inventory, payments and operations. It connects catalog, cart and management in one place with <accent>visibility and control</accent>."
+        },
+        "challenge": {
+          "label": "Challenge",
+          "title": "The challenge",
+          "intro": "The client needed an e-commerce solution that connected inventory, payments and daily operations, with:",
+          "list1": "Catalog and product management",
+          "list2": "Integrated payments (Stripe)",
+          "list3": "Inventory and orders",
+          "list4": "Admin panel",
+          "afterList": "All with a <accent>clear</accent> experience for the buyer and <accent>scalable</accent> for the business.",
+          "closing": "The challenge was to have <accent>a single platform</accent> that unified sales, payments and operations, without relying on scattered tools."
+        },
+        "solution": {
+          "label": "Solution",
+          "title": "The solution",
+          "paragraph1": "The approach included <accent>mapping the client's sales and operations flows</accent> and defining a roadmap aligned with real e-commerce needs.",
+          "paragraph2": "We developed a platform with an <accent>intuitive</accent> interface for catalog, cart and checkout, with <accent>Stripe integration</accent> and management panel.",
+          "listTitle": "The platform includes:",
+          "list1": "Web store and catalog",
+          "list2": "Checkout and payments (Stripe)",
+          "list3": "Inventory and order management",
+          "list4": "Admin panel",
+          "list5": "Cloud deployment"
+        },
+        "results": {
+          "label": "Results",
+          "title": "Results",
+          "paragraph": "The result was a platform <accent>tailored to e-commerce</accent>, built in <accent>collaboration with the client</accent> to validate flows and deliver a tool that unifies sales, payments and operations with clarity and traceability."
+        },
+        "cta": {
+          "subtitle": "Custom development",
+          "titleLine1": "Clarity for the user.",
+          "titleLine2": "Scalability for the business.",
+          "description": "If you're building a digital product and need it to be clear for the user and scalable for the business, we can help you develop it to your needs.",
+          "ctaLabel": "Contact us"
+        },
+        "sidebar": {
+          "title": "Project details",
+          "productType": "Product type",
+          "productTypeWeb": "Web application",
+          "productTypeMobile": "Mobile app",
+          "visitWebsite": "Visit website"
+        },
+        "otherCases": {
+          "label": "More work",
+          "title": "Other case studies",
+          "description": "Discover other projects we have developed with our clients.",
+          "backLink": "Back to Our work"
+        },
+        "slides": {
+          "slide1Alt": "Easy Sales platform screenshot",
+          "slide2Alt": "Easy Sales features",
+          "slide3Alt": "Easy Sales in use"
+        }
       }
     }
   },
