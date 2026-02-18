@@ -19,7 +19,7 @@ export type OurWorkProject = {
 };
 
 export const OUR_WORK_PROJECTS: OurWorkProject[] = [
-  { id: 'sendero', image: 'sendero.png', categoryKey: 'crm' },
+  { id: 'sendero', image: '/case-studies/sendero-crm/bg-cover-card.png', categoryKey: 'crm' },
   { id: 'ebm', image: 'ebm.png', categoryKey: 'platform' },
   { id: 'digitalRanch', image: 'digital-ranch.png', categoryKey: 'webApp' },
   { id: 'zenqr', image: 'zenqur.png', categoryKey: 'webApp' },

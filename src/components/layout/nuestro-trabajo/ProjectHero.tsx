@@ -1,4 +1,5 @@
 import { Link } from 'wouter';
+import { useTranslation } from 'react-i18next';
 import { motion } from 'motion/react';
 import { CenterContainer } from '@/components/layout/CenterContainer';
 import { AppStoreButtons } from '@/components/ui/AppStoreButtons';
@@ -28,9 +29,9 @@ export type ProjectHeroStoreLinks = {
 };
 
 export type ProjectHeroProps = {
-  /** Enlace y texto del breadcrumb (ej: "← Nuestro trabajo") */
-  backHref: string;
-  backLabel: React.ReactNode;
+  /** Enlace y texto del breadcrumb (ej: "← Nuestro trabajo"). Omitir para no mostrar. */
+  backHref?: string;
+  backLabel?: React.ReactNode;
   /** Logo del proyecto como imagen (se muestra en blanco con invert). Omitir si usas logoNode. */
   logoSrc?: string;
   logoAlt: string;
@@ -69,6 +70,7 @@ export function ProjectHero({
   heroImageAlt,
   backgroundColor,
 }: ProjectHeroProps) {
+  const { t } = useTranslation();
   return (
     <motion.header
       className="relative overflow-visible py-10 md:py-12 lg:py-14"
@@ -92,18 +94,20 @@ export function ProjectHero({
         }}
       />
       <div
-        className="absolute bottom-0 left-0 right-0 z-0 h-px bg-linear-to-r from-transparent via-white/20 to-transparent"
+        className="absolute right-0 bottom-0 left-0 z-0 h-px bg-linear-to-r from-transparent via-white/20 to-transparent"
         style={{ clipPath: DIAGONAL_CLIP }}
       />
       <CenterContainer className="relative z-10">
-        <motion.div custom={0} initial="hidden" animate="visible" variants={fadeUp}>
-          <Link
-            href={backHref}
-            className="mb-4 inline-flex items-center gap-2 text-sm font-medium text-white/80 transition-colors hover:text-white"
-          >
-            <span aria-hidden>←</span> {backLabel}
-          </Link>
-        </motion.div>
+        {backHref != null && backLabel != null && (
+          <motion.div custom={0} initial="hidden" animate="visible" variants={fadeUp}>
+            <Link
+              href={backHref}
+              className="mb-4 inline-flex items-center gap-2 text-sm font-medium text-white/80 transition-colors hover:text-white"
+            >
+              <span aria-hidden>←</span> {backLabel}
+            </Link>
+          </motion.div>
+        )}
         <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between lg:gap-8">
           {/* Texto a la izquierda */}
           <div className="flex-1 space-y-4 text-left">
@@ -141,13 +145,15 @@ export function ProjectHero({
               {(industry || solutionType) && (
                 <div className="mt-2 flex flex-wrap gap-2 text-sm text-white/90">
                   {industry && (
-                    <span className="border-white/40 bg-white/10 text-white/95 inline-flex items-center gap-1 rounded-full border px-3 py-1">
-                      <span className="font-semibold">Industria:</span> {industry}
+                    <span className="inline-flex items-center gap-1 rounded-full border border-white/40 bg-white/10 px-3 py-1 text-white/95">
+                      <span className="font-semibold">{t('ourWork.heroBadge.industry')}:</span>{' '}
+                      {industry}
                     </span>
                   )}
                   {solutionType && (
-                    <span className="border-white/40 bg-white/10 text-white/95 inline-flex items-center gap-1 rounded-full border px-3 py-1">
-                      <span className="font-semibold">Solución:</span> {solutionType}
+                    <span className="inline-flex items-center gap-1 rounded-full border border-white/40 bg-white/10 px-3 py-1 text-white/95">
+                      <span className="font-semibold">{t('ourWork.heroBadge.solutionType')}:</span>{' '}
+                      {solutionType}
                     </span>
                   )}
                 </div>

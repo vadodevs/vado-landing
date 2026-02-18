@@ -76,7 +76,7 @@ export function OurWorkProjectsSection() {
                 >
                   <div className="flex items-center justify-center px-6 py-6 md:p-4">
                     <img
-                      src={`/projects/${project.image}`}
+                      src={project.image.startsWith('/') ? project.image : `/projects/${project.image}`}
                       alt=""
                       className="h-auto w-full object-contain"
                       loading="lazy"

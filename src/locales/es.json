@@ -17,6 +17,10 @@
     "closeMenu": "Cerrar menú"
   },
   "ourWork": {
+    "heroBadge": {
+      "industry": "Industria",
+      "solutionType": "Tipo de solución"
+    },
     "hero": {
       "titleLine1": "DEL RETO AL",
       "titleLine2": "RESULTADO",
@@ -77,8 +81,10 @@
       "zenqr": {
         "stackLabel": "Stack",
         "hero": {
-          "title": "Una nueva forma de crear códigos QR",
+          "title": "ZenQR | Plataforma SaaS de códigos QR",
           "description": "Plataforma de códigos QR con personalización, métricas en tiempo real e integraciones para eventos y pagos.",
+          "industry": "Retail, eventos y packaging",
+          "solutionType": "Plataforma SaaS",
           "ctaLabel": "Visitar sitio web",
           "ctaAriaLabel": "Visitar sitio web de ZenQR",
           "heroImageAlt": "ZenQR - Dashboard y app"
@@ -115,6 +121,20 @@
           "label": "Results",
           "title": "Resultados",
           "paragraph": "El resultado fue una plataforma <accent>eficiente y fácil de usar</accent>, construida en <accent>colaboración estrecha</accent> con el cliente para validar, ajustar y entregar un producto con claridad, funcionalidad y diseño, lista para operar como <accent>alternativa competitiva</accent> en su mercado."
+        },
+        "cta": {
+          "subtitle": "Desarrollo a la medida",
+          "titleLine1": "Claridad para el usuario.",
+          "titleLine2": "Escalabilidad para el negocio.",
+          "description": "Si estás construyendo un producto digital y necesitas que sea claro para el usuario y escalable para el negocio, podemos ayudarte a desarrollarlo a la medida.",
+          "ctaLabel": "Contáctanos"
+        },
+        "sidebar": {
+          "title": "Detalles del proyecto",
+          "productType": "Tipo de producto",
+          "productTypeWeb": "Aplicación web",
+          "productTypeMobile": "App móvil",
+          "visitWebsite": "Visitar sitio web"
         },
         "otherCases": {
           "label": "Más trabajo",
