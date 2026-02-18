@@ -197,8 +197,6 @@ function OtherCasesSection({ projectId, accentColor }: { projectId: string; acce
 }
 
 export function ProjectCaseStudyTemplate({ config }: { config: ProjectCaseStudyConfig }) {
-  const { t } = useTranslation();
-  const { path } = useLocale();
   const { projectId, hero, stack, accentColor, sections } = config;
 
   const Accent = ({ children }: { children: React.ReactNode }) => (
@@ -209,7 +207,7 @@ export function ProjectCaseStudyTemplate({ config }: { config: ProjectCaseStudyC
 
   return (
     <article className="bg-background">
-      <ProjectHero backHref={path('/nuestro-trabajo')} backLabel={t('nav.ourWork')} {...hero} />
+      <ProjectHero {...hero} />
 
       <ProjectStack items={stack} variant="logos-row" accentColor={accentColor} label="Stack" />
 

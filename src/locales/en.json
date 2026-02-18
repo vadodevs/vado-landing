@@ -142,6 +142,72 @@
           "description": "Discover other projects we have developed with our clients.",
           "backLink": "Back to Our work"
         }
+      },
+      "sendero": {
+        "stackLabel": "Stack",
+        "hero": {
+          "title": "Sendero | CRM",
+          "description": "Custom CRM for customer relationship management, sales pipeline, and follow-up.",
+          "industry": "Sales and commercial management",
+          "solutionType": "CRM platform",
+          "ctaLabel": "Visit website",
+          "ctaAriaLabel": "Visit Sendero website",
+          "heroImageAlt": "Sendero CRM"
+        },
+        "overview": {
+          "label": "Overview",
+          "title": "CRM for customer and sales pipeline management",
+          "paragraph": "Sendero was built as a <accent>commercial management tool</accent>: <accent>centralized</accent>, <accent>measurable</accent>, and adaptable to the team's processes. It connects opportunities, contacts, and activities in one place with <accent>real-time visibility</accent>."
+        },
+        "challenge": {
+          "label": "Challenge",
+          "title": "The challenge",
+          "intro": "The client needed a CRM that fit their way of selling, with:",
+          "list1": "Pipeline and sales stage management",
+          "list2": "Contact and activity tracking",
+          "list3": "Reports and business metrics",
+          "list4": "Integration with existing tools",
+          "afterList": "All with a <accent>clear</accent> experience <accent>focused on the sales team's day-to-day</accent>.",
+          "closing": "The challenge was to have <accent>a single source of truth</accent> for opportunities and customers, without relying on spreadsheets or scattered tools."
+        },
+        "solution": {
+          "label": "Solution",
+          "title": "The solution",
+          "paragraph1": "The approach included <accent>mapping the team's processes</accent> and defining a roadmap aligned to their real tracking and closing needs.",
+          "paragraph2": "We developed a platform with an <accent>intuitive</accent> interface that allows managing contacts, opportunities, and activities in one place, with <accent>integrated reports</accent>.",
+          "listTitle": "The platform includes:",
+          "list1": "Configurable sales pipeline",
+          "list2": "Contact and company management",
+          "list3": "Activities and reminders",
+          "list4": "Reports and dashboards",
+          "list5": "Integrations and API to extend functionality"
+        },
+        "results": {
+          "label": "Results",
+          "title": "Results",
+          "paragraph": "The result was a CRM <accent>tailored to the business</accent>, built in <accent>collaboration with the client</accent> to validate flows and deliver a tool the sales team adopts day to day, with clarity and pipeline traceability."
+        },
+        "cta": {
+          "subtitle": "Custom development",
+          "titleLine1": "Clarity for the user.",
+          "titleLine2": "Scalability for the business.",
+          "description": "If you're building a digital product and need it to be clear for the user and scalable for the business, we can help you develop it to your needs.",
+          "ctaLabel": "Contact us"
+        },
+        "sidebar": {
+          "title": "Project details",
+          "productType": "Product type",
+          "productTypeWeb": "Web application",
+          "productTypeMobile": "Mobile app",
+          "visitWebsite": "Visit website",
+          "websiteUrl": "#"
+        },
+        "otherCases": {
+          "label": "More work",
+          "title": "Other case studies",
+          "description": "Discover other projects we have developed with our clients.",
+          "backLink": "Back to Our work"
+        }
       }
     }
   },
