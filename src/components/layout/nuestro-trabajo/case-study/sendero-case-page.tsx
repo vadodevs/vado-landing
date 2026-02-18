@@ -1,93 +1,53 @@
 import { useTranslation } from 'react-i18next';
 import { CenterContainer } from '@/components/layout/CenterContainer';
 import { ProjectHero } from '@/components/layout/nuestro-trabajo/ProjectHero';
-import { ProjectStack, type ProjectStackItem } from '@/components/layout/nuestro-trabajo/ProjectStack';
-import { useLocale } from '@/hooks/useLocale';
-
-const SENDERO_ACCENT = '#27bfad';
-
-const SENDERO_STACK: ProjectStackItem[] = [
-  { name: 'TypeScript', icon: 'typescript' },
-  { name: 'Stripe', icon: 'stripe' },
-  { name: 'React', icon: 'react' },
-  { name: 'Node.js', icon: 'node-js' },
-  { name: 'NestJS', icon: 'nestjs' },
-  { name: 'Figma', icon: 'figma' },
-  { name: 'Digital Ocean', icon: 'digital-ocean' },
-  { name: 'Meta', icon: 'meta' },
-  { name: 'OpenAI', icon: 'openai' },
-];
-
-function SenderoSection({
-  label,
-  title,
-  children,
-}: {
-  label: string;
-  title: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <section className="py-12 md:py-16 lg:py-20">
-      <CenterContainer className="lg:px-0">
-        <div className="flex w-full flex-col gap-10 lg:gap-16 lg:items-center">
-          <div className="flex-1 space-y-4">
-            <span
-              className="text-sm font-semibold tracking-wider uppercase"
-              style={{ color: SENDERO_ACCENT }}
-            >
-              {label}
-            </span>
-            <h2 className="text-foreground text-2xl font-bold tracking-tight md:text-3xl lg:text-[1.75rem]">
-              {title}
-            </h2>
-            <div className="text-muted-foreground space-y-4 text-base leading-relaxed md:text-lg">
-              {children}
-            </div>
-          </div>
-        </div>
-      </CenterContainer>
-    </section>
-  );
-}
+import { SenderoLogo } from '@/assets/brands/sendero';
+import {
+  SENDERO_ACCENT,
+  SenderoOverviewSection,
+  SenderoChallengeSection,
+  SenderoSolutionSection,
+  SenderoResultsSection,
+  SenderoCtaSection,
+  SenderoProjectSidebar,
+  SenderoOtherCases,
+} from './sendero';
 
 export function SenderoCasePage() {
   const { t } = useTranslation();
-  const { path } = useLocale();
-  const title = t('ourWork.projects.sendero.title');
 
   return (
-    <article className="bg-background">
+    <article className="bg-background relative">
       <ProjectHero
-        backHref={path('/nuestro-trabajo')}
-        backLabel={t('nav.ourWork')}
-        logoAlt={title}
-        logoNode={null}
-        title={title}
-        description={t('ourWork.projects.sendero.description')}
-        heroImageSrc="/projects/zenQR/zenqr_hero.png"
-        heroImageAlt={title}
+        logoNode={
+          <SenderoLogo color="white" className="h-full w-full object-contain object-left" />
+        }
+        logoAlt={t('ourWork.projects.sendero.title')}
+        title={t('ourWork.caseStudy.sendero.hero.title')}
+        description={t('ourWork.caseStudy.sendero.hero.description')}
+        heroImageSrc="/case-studies/sendero-crm/bg-hero.png"
+        heroImageAlt={t('ourWork.caseStudy.sendero.hero.heroImageAlt')}
         backgroundColor={SENDERO_ACCENT}
+        backgroundImageSrc="/case-studies/sendero-crm/bg-hero-sendero.png"
       />
 
-      <ProjectStack
-        items={SENDERO_STACK}
-        variant="logos-row"
-        accentColor={SENDERO_ACCENT}
-        label="Stack"
-      />
+      <CenterContainer className="flex flex-col gap-10 lg:flex-row lg:items-start lg:gap-12">
+        <main className="min-w-0 flex-1">
+          <SenderoOverviewSection />
+          <img src="/case-studies/sendero-crm/sendero-slide1.png" alt="" />
+          <SenderoChallengeSection />
+          <img src="/case-studies/sendero-crm/sendero-slide2.png" alt="" />
+          <SenderoSolutionSection />
+          <img src="/case-studies/sendero-crm/sendero-slide3.png" alt="" />
+          <SenderoResultsSection />
+          <SenderoCtaSection />
+        </main>
+        <aside className="w-full shrink-0 pb-4 lg:w-80 lg:self-stretch">
+          <SenderoProjectSidebar />
+        </aside>
+      </CenterContainer>
 
-      <SenderoSection label="Caso de uso" title="El reto">
-        <p>
-          El cliente {title} llegó a Vado con un reto claro: necesitaba una solución digital que se
-          adaptara a sus necesidades y las de sus usuarios.
-        </p>
-        <p>
-          Trabajamos en estrecha colaboración para definir objetivos, alcance y una hoja de ruta que
-          permitiera entregar valor de forma iterativa.
-        </p>
-      </SenderoSection>
+      <SenderoOtherCases />
     </article>
   );
 }
-

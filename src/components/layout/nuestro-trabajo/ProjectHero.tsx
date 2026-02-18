@@ -52,6 +52,8 @@ export type ProjectHeroProps = {
   heroImageAlt: string;
   /** Color principal del proyecto para fondo y acentos (ej: #10b981) */
   backgroundColor: string;
+  /** Imagen de fondo del contenedor del hero (opcional; se aplica dentro del corte diagonal) */
+  backgroundImageSrc?: string;
 };
 
 export function ProjectHero({
@@ -69,6 +71,7 @@ export function ProjectHero({
   heroImageSrc,
   heroImageAlt,
   backgroundColor,
+  backgroundImageSrc,
 }: ProjectHeroProps) {
   const { t } = useTranslation();
   return (
@@ -80,12 +83,28 @@ export function ProjectHero({
     >
       {/* Fondo con corte diagonal (solo estos layers se cortan) */}
       <div
-        className="absolute inset-0 z-0"
+        className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundColor,
-          clipPath: DIAGONAL_CLIP,
+          ...(backgroundImageSrc
+            ? {
+                backgroundImage: `url(${backgroundImageSrc})`,
+                clipPath: DIAGONAL_CLIP,
+              }
+            : {
+                backgroundColor,
+                clipPath: DIAGONAL_CLIP,
+              }),
         }}
       />
+      {backgroundImageSrc && (
+        <div
+          className="absolute inset-0 z-0 opacity-60"
+          style={{
+            backgroundColor,
+            clipPath: DIAGONAL_CLIP,
+          }}
+        />
+      )}
       <div
         className="absolute inset-0 z-0"
         style={{

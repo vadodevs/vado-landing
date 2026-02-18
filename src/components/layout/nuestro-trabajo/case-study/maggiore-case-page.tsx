@@ -2,7 +2,6 @@ import { useTranslation } from 'react-i18next';
 import { CenterContainer } from '@/components/layout/CenterContainer';
 import { ProjectHero } from '@/components/layout/nuestro-trabajo/ProjectHero';
 import { ProjectStack, type ProjectStackItem } from '@/components/layout/nuestro-trabajo/ProjectStack';
-import { useLocale } from '@/hooks/useLocale';
 
 const MAGGIORE_ACCENT = '#3390ff';
 
@@ -49,14 +48,11 @@ function MaggioreSection({
 
 export function MaggioreCasePage() {
   const { t } = useTranslation();
-  const { path } = useLocale();
   const title = t('ourWork.projects.maggiore.title');
 
   return (
     <article className="bg-background">
       <ProjectHero
-        backHref={path('/nuestro-trabajo')}
-        backLabel={t('nav.ourWork')}
         logoAlt={title}
         title={title}
         description={t('ourWork.projects.maggiore.description')}

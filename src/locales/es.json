@@ -142,6 +142,72 @@
           "description": "Conoce otros proyectos que hemos desarrollado junto a nuestros clientes.",
           "backLink": "Volver a Nuestro trabajo"
         }
+      },
+      "sendero": {
+        "stackLabel": "Stack",
+        "hero": {
+          "title": "Sendero | CRM",
+          "description": "Sistema CRM a la medida para gestión de relaciones con clientes, pipeline de ventas y seguimiento.",
+          "industry": "Ventas y gestión comercial",
+          "solutionType": "Plataforma CRM",
+          "ctaLabel": "Visitar sitio web",
+          "ctaAriaLabel": "Visitar sitio web de Sendero",
+          "heroImageAlt": "Sendero CRM"
+        },
+        "overview": {
+          "label": "Overview",
+          "title": "CRM para gestión de clientes y pipeline de ventas",
+          "paragraph": "Sendero se construyó como una <accent>herramienta de gestión comercial</accent>: <accent>centralizada</accent>, <accent>medible</accent> y adaptable a los procesos del equipo. Conecta oportunidades, contactos y actividades en un solo lugar con <accent>visibilidad en tiempo real</accent>."
+        },
+        "challenge": {
+          "label": "Challenge",
+          "title": "El reto",
+          "intro": "El cliente necesitaba un CRM que se adaptara a su forma de vender, con:",
+          "list1": "Gestión de pipeline y etapas de venta",
+          "list2": "Seguimiento de contactos y actividades",
+          "list3": "Reportes y métricas de negocio",
+          "list4": "Integración con herramientas existentes",
+          "afterList": "Todo con una experiencia <accent>clara</accent> y <accent>orientada al día a día</accent> del equipo comercial.",
+          "closing": "El reto era tener <accent>una sola fuente de verdad</accent> para oportunidades y clientes, sin depender de hojas de cálculo ni herramientas dispersas."
+        },
+        "solution": {
+          "label": "Solution",
+          "title": "La solución",
+          "paragraph1": "El enfoque incluyó <accent>mapear los procesos</accent> del equipo y definir una hoja de ruta alineada a sus necesidades reales de seguimiento y cierre.",
+          "paragraph2": "Desarrollamos una plataforma con interfaz <accent>intuitiva</accent> que permite gestionar contactos, oportunidades y actividades desde un mismo lugar, con <accent>reportes integrados</accent>.",
+          "listTitle": "La plataforma incluye:",
+          "list1": "Pipeline de ventas configurable",
+          "list2": "Gestión de contactos y empresas",
+          "list3": "Actividades y recordatorios",
+          "list4": "Reportes y dashboards",
+          "list5": "Integraciones y API para extender funcionalidad"
+        },
+        "results": {
+          "label": "Results",
+          "title": "Resultados",
+          "paragraph": "El resultado fue un CRM <accent>adaptado al negocio</accent>, construido en <accent>colaboración con el cliente</accent> para validar flujos y entregar una herramienta que el equipo comercial adopta día a día, con claridad y trazabilidad del pipeline."
+        },
+        "cta": {
+          "subtitle": "Desarrollo a la medida",
+          "titleLine1": "Claridad para el usuario.",
+          "titleLine2": "Escalabilidad para el negocio.",
+          "description": "Si estás construyendo un producto digital y necesitas que sea claro para el usuario y escalable para el negocio, podemos ayudarte a desarrollarlo a la medida.",
+          "ctaLabel": "Contáctanos"
+        },
+        "sidebar": {
+          "title": "Detalles del proyecto",
+          "productType": "Tipo de producto",
+          "productTypeWeb": "Aplicación web",
+          "productTypeMobile": "App móvil",
+          "visitWebsite": "Visitar sitio web",
+          "websiteUrl": "#"
+        },
+        "otherCases": {
+          "label": "Más trabajo",
+          "title": "Otros casos de uso",
+          "description": "Conoce otros proyectos que hemos desarrollado junto a nuestros clientes.",
+          "backLink": "Volver a Nuestro trabajo"
+        }
       }
     }
   },
