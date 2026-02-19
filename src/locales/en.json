@@ -877,32 +877,28 @@
       "label": "GOT QUESTIONS?",
       "titlePart1": "We have",
       "titlePart2": "answers!",
-      "description": "We offer staff augmentation solutions designed for your unique needs.",
+      "description": "We answer the most common questions about our services and how we work.",
       "cta": "Contact us",
       "questions": {
         "q1": {
-          "question": "What types of solutions does Vado offer?",
-          "answer": "We offer custom software development, AI solutions, and staff augmentation with specialized talent."
+          "question": "What types of solutions and services does Vado offer?",
+          "answer": "Vado offers a wide range of solutions, including web applications, mobile applications, enterprise systems and cloud-based platforms, all customized to your business requirements."
         },
         "q2": {
-          "question": "How do you work with clients?",
-          "answer": "We integrate with your way of working: we understand your needs, implement the solution, and provide ongoing support. When we're done, the code belongs to you."
+          "question": "What is custom software development?",
+          "answer": "Custom software development is the creation of software solutions tailored to the specific needs and goals of a company or individual, as opposed to standard, off-the-shelf software."
         },
         "q3": {
-          "question": "What technologies are you specialized in?",
-          "answer": "We work with a modern, scalable stack: React, Node.js, Python, cloud (AWS, GCP), and AI tools, adapting to each project."
+          "question": "How can software development benefit my business?",
+          "answer": "Software development can benefit your business by improving efficiency, automating processes and providing unique tools to solve the specific challenges of your operations."
         },
         "q4": {
-          "question": "Do you offer support after the project?",
-          "answer": "Yes. We offer ongoing support, maintenance, and evolution of solutions so they continue to grow with your business."
+          "question": "How long does it take to develop a custom solution?",
+          "answer": "The time to develop a custom solution varies depending on complexity and requirements, but it generally ranges from a few weeks to several months."
         },
         "q5": {
-          "question": "How can I start a project with Vado?",
-          "answer": "Contact us through our contact page. We'll discuss your needs, define scope, and propose the next steps."
-        },
-        "q6": {
-          "question": "Do you work with companies outside my country?",
-          "answer": "Yes. We work with clients in different regions, with clear communication and schedules that adapt for effective collaboration."
+          "question": "What kind of support does Vado offer after service implementation?",
+          "answer": "Vado provides comprehensive post-implementation support, including continuous monitoring, updates, incident resolution and ongoing optimization to ensure your solution remains effective."
         }
       }
     },

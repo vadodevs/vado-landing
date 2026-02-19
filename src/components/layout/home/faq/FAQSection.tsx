@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/accordion';
 import { useLocale } from '@/hooks/useLocale';
 
-const FAQ_KEYS = ['q1', 'q2', 'q3', 'q4', 'q5', 'q6'] as const;
+const FAQ_KEYS = ['q1', 'q2', 'q3', 'q4', 'q5'] as const;
 
 export function FAQSection() {
   const { t } = useTranslation();

@@ -877,32 +877,28 @@
       "label": "¿TIENES PREGUNTAS?",
       "titlePart1": "¡Tenemos",
       "titlePart2": "respuestas!",
-      "description": "Ofrecemos soluciones de ampliación de personal diseñadas para tus necesidades únicas.",
+      "description": "Resolvemos las dudas más comunes sobre nuestros servicios y forma de trabajo.",
       "cta": "Contáctanos",
       "questions": {
         "q1": {
-          "question": "¿Qué tipos de soluciones ofrece Vado?",
-          "answer": "Ofrecemos desarrollo de software a la medida, soluciones de inteligencia artificial y ampliación de personal con talento especializado."
+          "question": "¿Qué tipos de soluciones y servicios ofrece Vado?",
+          "answer": "Vado ofrece una amplia gama de soluciones, incluyendo aplicaciones web, aplicaciones móviles, sistemas empresariales y plataformas basadas en la nube, todas personalizadas según los requisitos de tu negocio."
         },
         "q2": {
-          "question": "¿Cómo trabajan con los clientes?",
-          "answer": "Nos integramos con tu forma de trabajar: entendemos tu necesidad, implementamos la solución y damos soporte continuo. Al finalizar, el código te pertenece."
+          "question": "¿Qué es el desarrollo de software a medida?",
+          "answer": "El desarrollo de software a medida se refiere a la creación de soluciones de software personalizadas que satisfacen las necesidades y objetivos específicos de una empresa o individuo, a diferencia del software estándar."
         },
         "q3": {
-          "question": "¿En qué tecnologías están especializados?",
-          "answer": "Trabajamos con un stack moderno y escalable: React, Node.js, Python, cloud (AWS, GCP) y herramientas de IA, adaptándonos a cada proyecto."
+          "question": "¿Cómo puede el desarrollo beneficiar a mi negocio?",
+          "answer": "El desarrollo puede beneficiar a tu negocio mejorando la eficiencia, automatizando procesos y proporcionando herramientas únicas para resolver desafíos específicos de tus operaciones."
         },
         "q4": {
-          "question": "¿Ofrecen soporte después del proyecto?",
-          "answer": "Sí. Ofrecemos soporte continuo, mantenimiento y evolución de las soluciones para que sigan creciendo con tu negocio."
+          "question": "¿Cuánto tiempo lleva desarrollar una solución personalizada?",
+          "answer": "El tiempo para desarrollar una solución personalizada varía según la complejidad y los requisitos, pero generalmente toma desde unas pocas semanas hasta varios meses."
         },
         "q5": {
-          "question": "¿Cómo puedo empezar un proyecto con Vado?",
-          "answer": "Contáctanos por la página de contacto. Conversamos sobre tu necesidad, definimos alcance y te proponemos los siguientes pasos."
-        },
-        "q6": {
-          "question": "¿Trabajan con empresas fuera de mi país?",
-          "answer": "Sí. Trabajamos con clientes en distintas regiones, con comunicación fluida y horarios que se adaptan para una colaboración efectiva."
+          "question": "¿Qué tipo de soporte ofrece Vado después de la implementación del servicio?",
+          "answer": "Vado ofrece un soporte integral post-implementación, que incluye monitoreo continuo, actualizaciones, resolución de incidencias y optimización continua para asegurar que tu solución siga siendo efectiva."
         }
       }
     },
