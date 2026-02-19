@@ -28,6 +28,8 @@ export interface AppStoreButtonsProps {
   appStoreUrl?: string;
   playStoreUrl?: string;
   variant?: AppStoreButtonsVariant;
+  /** Si true, el contenedor y cada botón ocupan el 100% del ancho (útil en sidebars/cards). */
+  fullWidth?: boolean;
   className?: string;
 }
 
@@ -48,6 +50,7 @@ export function AppStoreButtons({
   appStoreUrl,
   playStoreUrl,
   variant = 'light',
+  fullWidth = false,
   className,
 }: AppStoreButtonsProps) {
   const hasAny = appStoreUrl || playStoreUrl;
@@ -55,8 +58,9 @@ export function AppStoreButtons({
 
   const isLight = variant === 'light';
   const linkClass = cn(
-    'inline-flex items-center gap-3 rounded-xl border px-4 py-2.5 transition-all',
+    'inline-flex items-center justify-center gap-3 rounded-xl border px-4 py-2.5 transition-all',
     'hover:scale-[1.02] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
+    fullWidth && 'w-full',
     isLight
       ? 'border-black/20 bg-white text-black hover:border-black/30 hover:shadow-md focus-visible:ring-foreground/30'
       : 'border-white/30 bg-white/95 text-black hover:bg-white hover:border-white/50 hover:shadow-lg focus-visible:ring-white/50',
@@ -65,7 +69,7 @@ export function AppStoreButtons({
   return (
     <div
       className={cn(
-        'inline-flex flex-nowrap items-stretch gap-3',
+        fullWidth ? 'flex w-full flex-col gap-2' : 'inline-flex flex-nowrap items-stretch gap-3',
         className,
       )}
       role="group"
@@ -80,7 +84,7 @@ export function AppStoreButtons({
           aria-label="Descargar en Google Play"
         >
           <StoreIcon src={STORE_ICONS.googlePlay} />
-          <div className="flex flex-col items-start leading-tight">
+          <div className="flex flex-col items-center leading-tight">
             <span className="text-[10px] font-medium uppercase tracking-wide opacity-90">
               Get it on
             </span>
@@ -97,7 +101,7 @@ export function AppStoreButtons({
           aria-label="Descargar en App Store"
         >
           <StoreIcon src={STORE_ICONS.apple} />
-          <div className="flex flex-col items-start leading-tight">
+          <div className="flex flex-col items-center leading-tight">
             <span className="text-[10px] font-medium uppercase tracking-wide opacity-90">
               Download on the
             </span>

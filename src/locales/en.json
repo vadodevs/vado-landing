@@ -212,7 +212,7 @@
           "productTypeWeb": "Web application",
           "productTypeMobile": "Mobile app",
           "visitWebsite": "Visit website",
-          "websiteUrl": "#"
+          "websiteUrl": "https://sendero-crm.com"
         },
         "otherCases": {
           "label": "More work",
@@ -485,7 +485,8 @@
           "productTypeWeb": "Web application",
           "productTypeWebsite": "Website",
           "productTypeMobile": "Mobile app",
-          "visitWebsite": "Visit website"
+          "visitWebsite": "Visit website",
+          "websiteUrl": "https://criaderocipreses.com"
         },
         "otherCases": {
           "label": "More work",
@@ -553,7 +554,8 @@
           "productTypeWeb": "Web application",
           "productTypePlatform": "Platform",
           "productTypeMobile": "Mobile app",
-          "visitWebsite": "Visit website"
+          "visitWebsite": "Visit website",
+          "websiteUrl": "https://maggiore.app"
         },
         "otherCases": {
           "label": "More work",

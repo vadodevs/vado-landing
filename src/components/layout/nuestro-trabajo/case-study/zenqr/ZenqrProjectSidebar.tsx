@@ -4,7 +4,6 @@ import { type ProjectStackItem } from '@/components/layout/nuestro-trabajo/Proje
 import { ZENQR_ACCENT } from './zenqr-case-section';
 
 const STACK_BASE = '/stack';
-
 const ZENQR_STACK: ProjectStackItem[] = [
   { name: 'Vue', icon: 'vue' },
   { name: 'TypeScript', icon: 'typescript' },
@@ -78,7 +77,7 @@ export function ZenqrProjectSidebar() {
 
       <div className="p-4 pt-0">
         <a
-          href="https://zenqr.app"
+          href="https://www.zenqr.com"
           target="_blank"
           rel="noopener noreferrer"
           className="flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3.5 text-sm font-semibold text-white shadow-sm transition-all hover:opacity-95 hover:shadow-md"

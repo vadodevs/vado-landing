@@ -212,7 +212,7 @@
           "productTypeWeb": "Aplicación web",
           "productTypeMobile": "App móvil",
           "visitWebsite": "Visitar sitio web",
-          "websiteUrl": "#"
+          "websiteUrl": "https://sendero-crm.com"
         },
         "otherCases": {
           "label": "Más trabajo",
@@ -485,7 +485,8 @@
           "productTypeWeb": "Aplicación web",
           "productTypeWebsite": "Sitio web",
           "productTypeMobile": "App móvil",
-          "visitWebsite": "Visitar sitio web"
+          "visitWebsite": "Visitar sitio web",
+          "websiteUrl": "https://criaderocipreses.com"
         },
         "otherCases": {
           "label": "Más trabajo",
@@ -553,7 +554,8 @@
           "productTypeWeb": "Aplicación web",
           "productTypePlatform": "Plataforma",
           "productTypeMobile": "App móvil",
-          "visitWebsite": "Visitar sitio web"
+          "visitWebsite": "Visitar sitio web",
+          "websiteUrl": "https://maggiore.app"
         },
         "otherCases": {
           "label": "Más trabajo",

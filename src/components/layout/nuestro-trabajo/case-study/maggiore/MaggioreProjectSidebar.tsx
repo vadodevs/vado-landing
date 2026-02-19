@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { FaClipboardList, FaIndustry, FaLaptop, FaCode } from 'react-icons/fa';
+import { FaClipboardList, FaIndustry, FaLaptop, FaCode, FaGlobe } from 'react-icons/fa';
 import { type ProjectStackItem } from '@/components/layout/nuestro-trabajo/ProjectStack';
 import { MAGGIORE_ACCENT } from './maggiore-case-section';
 
@@ -71,6 +71,19 @@ export function MaggioreProjectSidebar() {
             ))}
           </ul>
         </div>
+      </div>
+
+      <div className="p-4 pt-0">
+        <a
+          href={t('ourWork.caseStudy.maggiore.sidebar.websiteUrl')}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3.5 text-sm font-semibold text-white shadow-sm transition-all hover:opacity-95 hover:shadow-md"
+          style={{ backgroundColor: MAGGIORE_ACCENT }}
+        >
+          <FaGlobe className="size-4 shrink-0" />
+          {t('ourWork.caseStudy.maggiore.sidebar.visitWebsite')}
+        </a>
       </div>
     </div>
   );

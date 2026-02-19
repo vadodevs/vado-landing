@@ -1,7 +1,11 @@
 import { useTranslation } from 'react-i18next';
 import { FaClipboardList, FaIndustry, FaLaptop, FaCode } from 'react-icons/fa';
 import { type ProjectStackItem } from '@/components/layout/nuestro-trabajo/ProjectStack';
+import { AppStoreButtons } from '@/components/ui/AppStoreButtons';
 import { EBM_ACCENT } from './ebm-case-section';
+
+const EBM_APP_STORE_URL = 'https://apps.apple.com/co/app/easy-boat-management/id6747445332';
+const EBM_PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=com.easyboatmanagement.app';
 
 const STACK_BASE = '/stack';
 
@@ -13,7 +17,6 @@ const EBM_STACK: ProjectStackItem[] = [
   { name: 'TypeScript', icon: 'typescript' },
   { name: 'Node.js', icon: 'node-js' },
   { name: 'Android Studio', icon: 'android' },
-  { name: 'Swift', icon: 'swift' },
 ];
 
 export function EbmProjectSidebar() {
@@ -74,6 +77,15 @@ export function EbmProjectSidebar() {
             ))}
           </ul>
         </div>
+      </div>
+
+      <div className="p-4 pt-0">
+        <AppStoreButtons
+          appStoreUrl={EBM_APP_STORE_URL}
+          playStoreUrl={EBM_PLAY_STORE_URL}
+          variant="light"
+          fullWidth
+        />
       </div>
     </div>
   );

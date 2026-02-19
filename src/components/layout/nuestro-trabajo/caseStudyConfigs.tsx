@@ -13,7 +13,7 @@ import type { ProjectStackItem } from '@/components/layout/nuestro-trabajo/Proje
 import type { TFunction } from 'i18next';
 
 const ZENQR_LINKS = {
-  website: 'https://zenqr.app',
+  website: 'https://www.zenqr.com',
   appStore: 'https://apps.apple.com/app/zenqr/id0000000000',
   playStore: 'https://play.google.com/store/apps/details?id=app.zenqr',
 } as const;
@@ -256,7 +256,6 @@ const EBM_STACK: ProjectStackItem[] = [
   { name: 'TypeScript', icon: 'typescript' },
   { name: 'Node.js', icon: 'node-js' },
   { name: 'Android Studio', icon: 'android' },
-  { name: 'Swift', icon: 'swift' },
 ];
 
 const DIGITAL_RANCH_STACK: ProjectStackItem[] = [

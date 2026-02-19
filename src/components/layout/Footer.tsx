@@ -7,11 +7,11 @@ import { cn } from '@/lib/utils';
 import { useLocale } from '@/hooks/useLocale';
 
 const SOCIAL_LINKS = [
-  { Icon: FaFacebook, href: 'https://facebook.com', label: 'Facebook' },
-  { Icon: FaInstagram, href: 'https://instagram.com', label: 'Instagram' },
-  { Icon: FaLinkedin, href: 'https://linkedin.com', label: 'LinkedIn' },
-  { Icon: FaTiktok, href: 'https://tiktok.com', label: 'TikTok' },
-  { Icon: FaYoutube, href: 'https://youtube.com', label: 'YouTube' },
+  { Icon: FaFacebook, href: 'https://www.facebook.com/vadodevs', label: 'Facebook' },
+  { Icon: FaInstagram, href: 'https://www.instagram.com/vadodevs', label: 'Instagram' },
+  { Icon: FaLinkedin, href: 'https://www.linkedin.com/company/vado-devs', label: 'LinkedIn' },
+  { Icon: FaTiktok, href: 'https://www.tiktok.com/@vado.devs', label: 'TikTok' },
+  { Icon: FaYoutube, href: 'https://www.youtube.com/channel/UCDD5O0ACBG4_Q05eHDJSwxg', label: 'YouTube' },
 ] as const;
 
 export function Footer() {
