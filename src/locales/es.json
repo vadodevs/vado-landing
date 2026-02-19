@@ -943,6 +943,8 @@
         "rolePlaceholder": "Ej. Desarrollador, Diseñador, Marketing...",
         "continue": "Continuar >",
         "back": "Regresar",
+        "returnToSubject": "Devolver",
+        "changeSubject": "Cambiar asunto",
         "heardAbout": "¿Cómo te enteraste de Vado?",
         "currentlyWorking": "¿Actualmente estás trabajando?",
         "startDate": "¿Cuándo puedes empezar a trabajar?",

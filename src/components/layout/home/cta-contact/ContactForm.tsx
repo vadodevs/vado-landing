@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from 'motion/react';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from '@/hooks/useLocale';
 import { CheckCircle2, Info } from 'lucide-react';
+import { FaArrowLeft } from 'react-icons/fa';
 import { Button } from '@/components/ui/button';
 import {
   Tooltip,
@@ -394,15 +395,25 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
                   {t('thankYou.ctaHome')}
                 </Button>
               </Link>
-              <Link href={path('/contacto')}>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="border-primary text-primary hover:bg-primary/10 rounded-lg font-medium"
-                >
-                  {t('thankYou.ctaContact')}
-                </Button>
-              </Link>
+              <Button
+                type="button"
+                size="lg"
+                variant="outline"
+                className="border-primary text-primary hover:bg-primary/10 rounded-lg font-medium"
+                onClick={() => {
+                  setSubmitStatus('idle');
+                  setSubject('');
+                  setShowApplyForm(false);
+                  setApplyStep(1);
+                  setApplyStep1Data(null);
+                  setApplyCvFile(null);
+                  setSubmitError(null);
+                  setFieldErrors({});
+                  if (applyCvInputRef.current) applyCvInputRef.current.value = '';
+                }}
+              >
+                {t('thankYou.ctaContact')}
+              </Button>
             </div>
           </motion.div>
         ) : (
@@ -412,25 +423,25 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
             onSubmit={handleFormSubmit}
           >
         {!isInApplyFlow && (
-        <div className="space-y-2">
-          <Label htmlFor={`${idPrefix}subject`}>{t('home.ctaContact.subject')}</Label>
-          <select
-            id={`${idPrefix}subject`}
-            value={subject}
-            onChange={handleSubjectChange}
-            className={cn(
-              'border-input h-10 w-full rounded-lg border bg-transparent px-3 py-2 text-base',
-              'focus:border-primary focus:ring-primary/50 focus:ring-2 focus:outline-none md:text-sm',
-            )}
-          >
-            <option value="">{t('home.ctaContact.subjectPlaceholder')}</option>
-            <option value="software-a-la-medida">{t('home.ctaContact.subjectOptions.softwareALaMedida')}</option>
-            <option value="ampliacion-personal">{t('home.ctaContact.subjectOptions.ampliacionPersonal')}</option>
-            <option value="soluciones-ia">{t('home.ctaContact.subjectOptions.solucionesIA')}</option>
-            <option value={SUBJECT_POSTULARSE}>{t('home.ctaContact.subjectOptions.quieroPostularme')}</option>
-            <option value="otros">{t('home.ctaContact.subjectOptions.otros')}</option>
-          </select>
-        </div>
+          <div className="space-y-2">
+            <Label htmlFor={`${idPrefix}subject`}>{t('home.ctaContact.subject')}</Label>
+            <select
+              id={`${idPrefix}subject`}
+              value={subject}
+              onChange={handleSubjectChange}
+              className={cn(
+                'border-input h-10 w-full rounded-lg border bg-transparent px-3 py-2 text-base',
+                'focus:border-primary focus:ring-primary/50 focus:ring-2 focus:outline-none md:text-sm',
+              )}
+            >
+              <option value="">{t('home.ctaContact.subjectPlaceholder')}</option>
+              <option value="software-a-la-medida">{t('home.ctaContact.subjectOptions.softwareALaMedida')}</option>
+              <option value="ampliacion-personal">{t('home.ctaContact.subjectOptions.ampliacionPersonal')}</option>
+              <option value="soluciones-ia">{t('home.ctaContact.subjectOptions.solucionesIA')}</option>
+              <option value={SUBJECT_POSTULARSE}>{t('home.ctaContact.subjectOptions.quieroPostularme')}</option>
+              <option value="otros">{t('home.ctaContact.subjectOptions.otros')}</option>
+            </select>
+          </div>
         )}
         <AnimatePresence mode="wait">
           {isPostularse ? (
@@ -534,7 +545,25 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
                     }
                   />
                 </div>
-                <div className="flex justify-end">
+                <div className="flex flex-wrap justify-end gap-3">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="lg"
+                    className="border-input bg-background hover:bg-muted rounded-lg font-medium"
+                    onClick={() => {
+                      setSubject('');
+                      setShowApplyForm(false);
+                      setApplyStep(1);
+                      setApplyStep1Data(null);
+                      setApplyCvFile(null);
+                      setFieldErrors({});
+                      setSubmitError(null);
+                      if (applyCvInputRef.current) applyCvInputRef.current.value = '';
+                    }}
+                  >
+                    {t('home.ctaContact.applyForm.back')}
+                  </Button>
                   <Button
                     type="button"
                     size="lg"
@@ -786,29 +815,51 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
                     {submitError}
                   </p>
                 )}
-                <div className="flex justify-between gap-4 pt-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="lg"
-                    className="rounded-lg font-medium"
-                    onClick={() => {
-                    setFieldErrors({});
-                    setSubmitError(null);
-                    setApplyStep(1);
-                  }}
-                    disabled={submitStatus === 'loading'}
-                  >
-                    ← {t('home.ctaContact.applyForm.back')}
-                  </Button>
-                  <Button
-                    type="submit"
-                    size="lg"
-                    className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg font-medium"
-                    disabled={submitStatus === 'loading'}
-                  >
-                    {submitStatus === 'loading' ? t('home.ctaContact.sending') : t('home.ctaContact.submit')}
-                  </Button>
+                <div className="flex flex-col gap-3 pt-2">
+                  <div className="flex justify-between gap-4">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="lg"
+                      className="rounded-lg font-medium"
+                      onClick={() => {
+                        setFieldErrors({});
+                        setSubmitError(null);
+                        setApplyStep(1);
+                      }}
+                      disabled={submitStatus === 'loading'}
+                    >
+                      ← {t('home.ctaContact.applyForm.back')}
+                    </Button>
+                    <Button
+                      type="submit"
+                      size="lg"
+                      className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg font-medium"
+                      disabled={submitStatus === 'loading'}
+                    >
+                      {submitStatus === 'loading' ? t('home.ctaContact.sending') : t('home.ctaContact.submit')}
+                    </Button>
+                  </div>
+                  <div className="flex justify-center">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="text-muted-foreground hover:text-foreground"
+                      onClick={() => {
+                        setShowApplyForm(false);
+                        setApplyStep(1);
+                        setApplyStep1Data(null);
+                        setApplyCvFile(null);
+                        setFieldErrors({});
+                        setSubmitError(null);
+                        if (applyCvInputRef.current) applyCvInputRef.current.value = '';
+                      }}
+                    >
+                      <FaArrowLeft className="mr-1.5 size-3.5 shrink-0" aria-hidden />
+                      {t('home.ctaContact.applyForm.changeSubject')}
+                    </Button>
+                  </div>
                 </div>
               </motion.div>
               )
