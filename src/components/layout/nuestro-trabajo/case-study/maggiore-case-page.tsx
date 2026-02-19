@@ -19,7 +19,7 @@ export function MaggioreCasePage() {
   return (
     <article className="bg-background relative">
       <ProjectHero
-        logoNode={<MaggioreLogo />}
+        logoNode={<MaggioreLogo color="white" />}
         logoAlt={t('ourWork.projects.maggiore.title')}
         title={t('ourWork.caseStudy.maggiore.hero.title')}
         description={t('ourWork.caseStudy.maggiore.hero.description')}
