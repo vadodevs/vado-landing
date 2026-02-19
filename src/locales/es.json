@@ -429,6 +429,75 @@
           "slide2Alt": "Funcionalidades de Easy Sales",
           "slide3Alt": "Easy Sales en uso"
         }
+      },
+      "cipreses": {
+        "stackLabel": "Stack",
+        "hero": {
+          "title": "Criadero Los Cipreses | Sitio web",
+          "description": "Sitio web que comunica la propuesta de valor del criadero de forma clara, visual y confiable.",
+          "industry": "Agro y criaderos",
+          "solutionType": "Sitio web",
+          "heroImageAlt": "Criadero Los Cipreses - Sitio web"
+        },
+        "overview": {
+          "label": "Overview",
+          "title": "Sitio web para comunicar propuesta de valor",
+          "paragraph": "Criadero Los Cipreses se construyó como un <accent>sitio web</accent> que comunica la propuesta de valor del criadero: <accent>claro</accent>, <accent>visual</accent> y confiable para nuevos clientes. Conecta la identidad del negocio con la experiencia digital en un solo lugar."
+        },
+        "challenge": {
+          "label": "Challenge",
+          "title": "El reto",
+          "intro": "El cliente necesitaba un sitio web que comunicara su propuesta de valor de forma clara y confiable, con:",
+          "list1": "Identidad visual y mensaje claro",
+          "list2": "Información del criadero y servicios",
+          "list3": "Navegación sencilla",
+          "list4": "Confianza para nuevos clientes",
+          "afterList": "Todo con una experiencia <accent>clara</accent> y <accent>orientada a quien busca conocer el criadero</accent>.",
+          "closing": "El reto era transmitir <accent>confianza y profesionalismo</accent> en un solo sitio, sin dispersar la información."
+        },
+        "solution": {
+          "label": "Solution",
+          "title": "La solución",
+          "paragraph1": "El enfoque incluyó <accent>definir la estructura</accent> del sitio y el mensaje clave del criadero, alineado a su público.",
+          "paragraph2": "Desarrollamos un sitio con diseño <accent>limpio</accent> y navegación <accent>directa</accent>, con secciones para servicios, información y contacto.",
+          "listTitle": "El sitio incluye:",
+          "list1": "Home con propuesta de valor",
+          "list2": "Secciones de servicios e información",
+          "list3": "Diseño responsive",
+          "list4": "Contacto y llamadas a la acción",
+          "list5": "Optimización para buscadores"
+        },
+        "results": {
+          "label": "Results",
+          "title": "Resultados",
+          "paragraph": "El resultado fue un sitio <accent>adaptado al criadero</accent>, construido en <accent>colaboración con el cliente</accent> para comunicar su valor de forma clara y generar confianza en nuevos clientes."
+        },
+        "cta": {
+          "subtitle": "Desarrollo a la medida",
+          "titleLine1": "Claridad para el usuario.",
+          "titleLine2": "Escalabilidad para el negocio.",
+          "description": "Si estás construyendo un producto digital y necesitas que sea claro para el usuario y escalable para el negocio, podemos ayudarte a desarrollarlo a la medida.",
+          "ctaLabel": "Contáctanos"
+        },
+        "sidebar": {
+          "title": "Detalles del proyecto",
+          "productType": "Tipo de producto",
+          "productTypeWeb": "Aplicación web",
+          "productTypeWebsite": "Sitio web",
+          "productTypeMobile": "App móvil",
+          "visitWebsite": "Visitar sitio web"
+        },
+        "otherCases": {
+          "label": "Más trabajo",
+          "title": "Otros casos de uso",
+          "description": "Conoce otros proyectos que hemos desarrollado junto a nuestros clientes.",
+          "backLink": "Volver a Nuestro trabajo"
+        },
+        "slides": {
+          "slide1Alt": "Captura del sitio Criadero Los Cipreses",
+          "slide2Alt": "Secciones del sitio Criadero Los Cipreses",
+          "slide3Alt": "Criadero Los Cipreses en uso"
+        }
       }
     }
   },

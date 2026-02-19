@@ -429,6 +429,75 @@
           "slide2Alt": "Easy Sales features",
           "slide3Alt": "Easy Sales in use"
         }
+      },
+      "cipreses": {
+        "stackLabel": "Stack",
+        "hero": {
+          "title": "Criadero Los Cipreses | Website",
+          "description": "Website that communicates the nursery's value proposition clearly, visually and reliably.",
+          "industry": "Agro and nurseries",
+          "solutionType": "Website",
+          "heroImageAlt": "Criadero Los Cipreses - Website"
+        },
+        "overview": {
+          "label": "Overview",
+          "title": "Website to communicate value proposition",
+          "paragraph": "Criadero Los Cipreses was built as a <accent>website</accent> that communicates the nursery's value proposition: <accent>clear</accent>, <accent>visual</accent> and reliable for new clients. It connects the business identity with the digital experience in one place."
+        },
+        "challenge": {
+          "label": "Challenge",
+          "title": "The challenge",
+          "intro": "The client needed a website that communicated their value proposition clearly and reliably, with:",
+          "list1": "Visual identity and clear message",
+          "list2": "Nursery and services information",
+          "list3": "Simple navigation",
+          "list4": "Trust for new clients",
+          "afterList": "All with a <accent>clear</accent> experience <accent>oriented to those looking to learn about the nursery</accent>.",
+          "closing": "The challenge was to convey <accent>trust and professionalism</accent> in a single site, without scattering the information."
+        },
+        "solution": {
+          "label": "Solution",
+          "title": "The solution",
+          "paragraph1": "The approach included <accent>defining the site structure</accent> and the nursery's key message, aligned to their audience.",
+          "paragraph2": "We developed a site with <accent>clean</accent> design and <accent>direct</accent> navigation, with sections for services, information and contact.",
+          "listTitle": "The site includes:",
+          "list1": "Home with value proposition",
+          "list2": "Services and information sections",
+          "list3": "Responsive design",
+          "list4": "Contact and calls to action",
+          "list5": "Search engine optimization"
+        },
+        "results": {
+          "label": "Results",
+          "title": "Results",
+          "paragraph": "The result was a site <accent>tailored to the nursery</accent>, built in <accent>collaboration with the client</accent> to communicate their value clearly and build trust with new clients."
+        },
+        "cta": {
+          "subtitle": "Custom development",
+          "titleLine1": "Clarity for the user.",
+          "titleLine2": "Scalability for the business.",
+          "description": "If you're building a digital product and need it to be clear for the user and scalable for the business, we can help you develop it to your needs.",
+          "ctaLabel": "Contact us"
+        },
+        "sidebar": {
+          "title": "Project details",
+          "productType": "Product type",
+          "productTypeWeb": "Web application",
+          "productTypeWebsite": "Website",
+          "productTypeMobile": "Mobile app",
+          "visitWebsite": "Visit website"
+        },
+        "otherCases": {
+          "label": "More work",
+          "title": "Other case studies",
+          "description": "Discover other projects we have developed with our clients.",
+          "backLink": "Back to Our work"
+        },
+        "slides": {
+          "slide1Alt": "Criadero Los Cipreses site screenshot",
+          "slide2Alt": "Criadero Los Cipreses site sections",
+          "slide3Alt": "Criadero Los Cipreses in use"
+        }
       }
     }
   },
