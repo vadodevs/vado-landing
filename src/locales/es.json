@@ -656,35 +656,117 @@
       "sectionTitle": "Artículos",
       "searchPlaceholder": "Buscar",
       "article1": {
-        "date": "18 de septiembre, 2025",
-        "tag": "RECIENTE",
+        "date": "1 de abril de 2025",
+        "tag": "El Equipo de Vado",
         "title": "Digitalización en Retail: Innovación, Eficiencia y Experiencia al Cliente",
-        "description": "La digitalización en el sector retail está transformando la forma de operar y conectar con los clientes, permitiendo una experiencia más eficiente, personalizada y...",
-        "imageAlt": "Digitalización en retail"
+        "description": "La digitalización en el sector retail está transformando la forma de operar y conectar con los clientes, permitiendo una experiencia más eficiente, personalizada y competitiva. Desde herramientas tecnológicas hasta estrategias basadas en datos...",
+        "imageAlt": "Digitalización en retail",
+        "body": "La digitalización en el sector retail está transformando la forma de operar y conectar con los clientes, permitiendo una experiencia más eficiente, personalizada y competitiva. Desde herramientas tecnológicas hasta estrategias basadas en datos, las empresas están redefiniendo cómo interactúan con sus consumidores y optimizan sus operaciones."
       },
       "article2": {
-        "date": "18 de septiembre, 2025",
-        "tag": "THE VADO TEAM",
-        "title": "How Technology is Transforming the Restaurant Industry",
-        "description": "The competitive food and beverage industry is evolving. Technology is reshaping operations, from reservations to delivery. Data from CANIRAC in Mexico shows...",
-        "imageAlt": "Tecnología en restaurantes"
+        "date": "3 de febrero de 2025",
+        "tag": "El Equipo de Vado",
+        "title": "Cómo la Tecnología está Transformando la Industria Restaurantera",
+        "description": "La industria de alimentos y bebidas es un sector altamente competitivo. Según datos de la Cámara Nacional de la Industria de Restaurantes y Alimentos Condimentados (CANIRAC), tan solo en México existen más de 600,000 establecimientos. Por lo...",
+        "imageAlt": "Tecnología en restaurantes",
+        "body": "La industria de alimentos y bebidas es un sector altamente competitivo. Según datos de la Cámara Nacional de la Industria de Restaurantes y Alimentos Condimentados (CANIRAC), tan solo en México existen más de 600,000 establecimientos. La tecnología está reconfigurando las operaciones, desde reservaciones hasta delivery y gestión de inventario."
       },
       "article3": {
-        "date": "18 de septiembre, 2025",
-        "tag": "THE VADO TEAM",
-        "title": "AI Across Borders: Bridging Gaps in a Globalized World",
-        "description": "AI is facilitating global operations and bridging gaps between countries, cultures, and economies. Discover how organizations are leveraging AI...",
-        "imageAlt": "IA sin fronteras"
+        "date": "12 de septiembre de 2024",
+        "tag": "El Equipo de Vado",
+        "title": "IA sin Fronteras: Cerrando Brechas en un Mundo Globalizado",
+        "description": "En el mundo hiperconectado de hoy, la Inteligencia Artificial (IA) no es solo una maravilla tecnológica, sino una herramienta crucial para cerrar brechas entre países, culturas y economías. A medida que las empresas expanden su alcance más allá de...",
+        "imageAlt": "IA sin fronteras",
+        "body": "En el mundo hiperconectado de hoy, la Inteligencia Artificial (IA) no es solo una maravilla tecnológica, sino una herramienta crucial para cerrar brechas entre países, culturas y economías. A medida que las empresas expanden su alcance más allá de las fronteras, la IA facilita operaciones globales y redefine la colaboración."
       },
       "article4": {
-        "date": "18 de septiembre, 2025",
-        "tag": "THE VADO TEAM",
-        "title": "The Evolution of Workforce Flexibility: How Remote Work is Redefining Talent Acquisition",
-        "description": "Remote work has transformed how companies acquire talent. Geographic limitations are fading. Learn how organizations are redefining hiring...",
-        "imageAlt": "Trabajo remoto y talento"
+        "date": "30 de agosto de 2024",
+        "tag": "El Equipo de Vado",
+        "title": "La Evolución de la Flexibilidad Laboral: Cómo el Trabajo Remoto está Redefiniendo la Adquisición de Talento",
+        "description": "El cambio hacia el trabajo remoto ha transformado la manera en que las empresas abordan la adquisición de talento. Ya no están limitadas a contratar dentro de un área geográfica específica; ahora pueden acceder a una bolsa de talento...",
+        "imageAlt": "Trabajo remoto y talento",
+        "body": "El cambio hacia el trabajo remoto ha transformado la manera en que las empresas abordan la adquisición de talento. Ya no están limitadas a contratar dentro de un área geográfica específica; ahora pueden acceder a una bolsa de talento global y redefinir el hiring con criterios de flexibilidad y resultados."
+      },
+      "article5": {
+        "date": "15 de agosto de 2024",
+        "tag": "El Equipo de Vado",
+        "title": "Más allá de las Fronteras: Desbloqueando Bolsas de Talento Global para un Crecimiento Sostenible",
+        "description": "En el mundo acelerado e interconectado de hoy, los límites tradicionales de la adquisición de talento se están desvaneciendo. Las empresas ya no necesitan limitar su búsqueda de profesionales calificados a sus regiones locales...",
+        "imageAlt": "Talento global",
+        "body": "En el mundo acelerado e interconectado de hoy, los límites tradicionales de la adquisición de talento se están desvaneciendo. Las empresas ya no necesitan limitar su búsqueda de profesionales calificados a sus regiones locales; pueden acceder a bolsas de talento global para un crecimiento sostenible."
+      },
+      "article6": {
+        "date": "29 de julio de 2024",
+        "tag": "El Equipo de Vado",
+        "title": "Preparando tu Negocio para el Futuro: Aprovechando los Mercados de Talento en Línea",
+        "description": "En el panorama tecnológico en rápida evolución y las condiciones dinámicas del mercado actuales, preparar tu negocio para el futuro es esencial. Un enfoque estratégico para mantenerse a la vanguardia consiste en aprovechar los...",
+        "imageAlt": "Mercados de talento en línea",
+        "body": "En el panorama tecnológico en rápida evolución y las condiciones dinámicas del mercado actuales, preparar tu negocio para el futuro es esencial. Un enfoque estratégico para mantenerse a la vanguardia consiste en aprovechar los mercados de talento en línea."
+      },
+      "article7": {
+        "date": "15 de julio de 2024",
+        "tag": "El Equipo de Vado",
+        "title": "Cómo las Plataformas de Talento están Revolucionando el Crecimiento Empresarial",
+        "description": "En el acelerado entorno empresarial actual, la innovación, la eficiencia y la ventaja competitiva son más cruciales que nunca. Una solución que está ganando una tracción significativa es el uso de plataformas en línea para encontrar...",
+        "imageAlt": "Plataformas de talento",
+        "body": "En el acelerado entorno empresarial actual, la innovación, la eficiencia y la ventaja competitiva son más cruciales que nunca. Una solución que está ganando una tracción significativa es el uso de plataformas en línea para encontrar y gestionar talento, revolucionando el crecimiento empresarial."
+      },
+      "article8": {
+        "date": "8 de julio de 2024",
+        "tag": "El Equipo de Vado",
+        "title": "El Nuevo Paradigma Laboral: Adoptando el Talento Senior en la Era Digital",
+        "description": "En la era digital, las empresas reconocen cada vez más el enorme valor del talento senior: profesionales con amplia experiencia y profundo conocimiento de la industria. Estos expertos son esenciales para impulsar la innovación y navegar...",
+        "imageAlt": "Talento senior",
+        "body": "En la era digital, las empresas reconocen cada vez más el enorme valor del talento senior: profesionales con amplia experiencia y profundo conocimiento de la industria. Estos expertos son esenciales para impulsar la innovación y navegar la transformación."
+      },
+      "article9": {
+        "date": "23 de mayo de 2024",
+        "tag": "El Equipo de Vado",
+        "title": "10 Razones por las que el Nearshore Outsourcing Garantiza el Éxito de los Negocios",
+        "description": "El nearshore outsourcing se ha consolidado como una estrategia clave para empresas que buscan escalar con calidad y eficiencia. Descubre las razones por las que esta práctica garantiza el éxito en un mercado cada vez más competitivo...",
+        "imageAlt": "Nearshore outsourcing",
+        "body": "El nearshore outsourcing se ha consolidado como una estrategia clave para empresas que buscan escalar con calidad y eficiencia. La proximidad geográfica, el alineamiento cultural y la calidad del talento son algunas de las razones por las que esta práctica garantiza el éxito de los negocios."
+      },
+      "article10": {
+        "date": "10 de abril de 2024",
+        "tag": "El Equipo de Vado",
+        "title": "El Futuro del Trabajo a través de Fronteras: Una Década de Transformación",
+        "description": "El trabajo atraviesa una década de transformación sin precedentes. Las fronteras se desdibujan y las empresas adoptan modelos híbridos y remotos. Conoce cómo se redefine el futuro del trabajo a nivel global...",
+        "imageAlt": "Futuro del trabajo",
+        "body": "El trabajo atraviesa una década de transformación sin precedentes. Las fronteras se desdibujan y las empresas adoptan modelos híbridos y remotos. El futuro del trabajo se redefine a nivel global con equipos distribuidos y nuevas formas de colaboración."
+      },
+      "article11": {
+        "date": "25 de marzo de 2024",
+        "tag": "El Equipo de Vado",
+        "title": "Asegurando tu Pipeline CI/CD: Mejores Prácticas para Equipos DevOps",
+        "description": "Un pipeline CI/CD robusto es la columna vertebral del despliegue moderno. Descubre las mejores prácticas para que tu equipo DevOps mantenga la seguridad, la velocidad y la confiabilidad en cada release...",
+        "imageAlt": "Pipeline CI/CD DevOps",
+        "body": "Un pipeline CI/CD robusto es la columna vertebral del despliegue moderno. Las mejores prácticas para equipos DevOps incluyen automatización, pruebas continuas, seguridad integrada y monitoreo, garantizando releases rápidos y confiables."
+      },
+      "article12": {
+        "date": "15 de marzo de 2024",
+        "tag": "El Equipo de Vado",
+        "title": "Desbloqueando el Potencial: Explorando los Beneficios de la Ingeniería Nearshore",
+        "description": "La ingeniería nearshore combina la calidad y la cercanía para impulsar proyectos tecnológicos. Exploramos los beneficios que esta modalidad aporta a equipos y empresas en búsqueda de agilidad y talento especializado...",
+        "imageAlt": "Ingeniería nearshore",
+        "body": "La ingeniería nearshore combina la calidad y la cercanía para impulsar proyectos tecnológicos. Los beneficios incluyen zonas horarias alineadas, comunicación fluida, talento especializado y costos competitivos, desbloqueando el potencial de tu organización."
+      },
+      "article13": {
+        "date": "1 de febrero de 2024",
+        "tag": "El Equipo de Vado",
+        "title": "Consigue el Trabajo de tus Sueños: Domina la Entrevista de Desarrollo de Software",
+        "description": "El dinámico mundo del desarrollo de software está lleno de oportunidades emocionantes listas para descubrirse. Seas un desarrollador con experiencia o un recién graduado, navegar por el proceso de entrevista requiere una preparación...",
+        "imageAlt": "Entrevista desarrollo de software",
+        "body": "El dinámico mundo del desarrollo de software está lleno de oportunidades emocionantes listas para descubrirse. Seas un desarrollador con experiencia o un recién graduado, navegar por el proceso de entrevista requiere una preparación sólida. Domina las técnicas y preguntas clave para conseguir el trabajo de tus sueños."
       },
       "noResults": "No se encontraron artículos.",
-      "viewMore": "Ver más"
+      "viewMore": "Ver más",
+      "backToArticles": "Volver a Artículos",
+      "pagination": {
+        "previous": "Anterior",
+        "next": "Siguiente",
+        "ariaLabel": "Paginación de artículos"
+      }
     },
     "stayUpdated": {
       "topLine": "THE VADO TEAM",

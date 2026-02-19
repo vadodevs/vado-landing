@@ -656,35 +656,117 @@
       "sectionTitle": "Articles",
       "searchPlaceholder": "Search",
       "article1": {
-        "date": "September 18, 2025",
-        "tag": "RECENT",
+        "date": "April 1, 2025",
+        "tag": "The Vado Team",
         "title": "Digitalization in Retail: Innovation, Efficiency and Customer Experience",
-        "description": "Digitalization in the retail sector is transforming the way we operate and connect with customers, enabling a more efficient, personalized experience and...",
-        "imageAlt": "Retail digitalization"
+        "description": "Digitalization in the retail sector is transforming the way we operate and connect with customers, enabling a more efficient, personalized and competitive experience. From technology tools to data-driven strategies...",
+        "imageAlt": "Retail digitalization",
+        "body": "Digitalization in the retail sector is transforming the way we operate and connect with customers, enabling a more efficient, personalized and competitive experience. From technology tools to data-driven strategies, companies are redefining how they interact with consumers and optimize their operations."
       },
       "article2": {
-        "date": "September 18, 2025",
-        "tag": "THE VADO TEAM",
+        "date": "February 3, 2025",
+        "tag": "The Vado Team",
         "title": "How Technology is Transforming the Restaurant Industry",
-        "description": "The competitive food and beverage industry is evolving. Technology is reshaping operations, from reservations to delivery. Data from CANIRAC in Mexico shows...",
-        "imageAlt": "Technology in restaurants"
+        "description": "The food and beverage industry is highly competitive. According to data from the National Chamber of the Restaurant and Seasoned Food Industry (CANIRAC), there are more than 600,000 establishments in Mexico alone. Therefore...",
+        "imageAlt": "Technology in restaurants",
+        "body": "The food and beverage industry is highly competitive. According to data from the National Chamber of the Restaurant and Seasoned Food Industry (CANIRAC), there are more than 600,000 establishments in Mexico alone. Technology is reshaping operations, from reservations to delivery and inventory management."
       },
       "article3": {
-        "date": "September 18, 2025",
-        "tag": "THE VADO TEAM",
-        "title": "AI Across Borders: Bridging Gaps in a Globalized World",
-        "description": "AI is facilitating global operations and bridging gaps between countries, cultures, and economies. Discover how organizations are leveraging AI...",
-        "imageAlt": "AI across borders"
+        "date": "September 12, 2024",
+        "tag": "The Vado Team",
+        "title": "AI Without Borders: Closing Gaps in a Globalized World",
+        "description": "In today's hyperconnected world, Artificial Intelligence (AI) is not just a technological marvel, but a crucial tool for closing gaps between countries, cultures and economies. As companies expand their reach beyond...",
+        "imageAlt": "AI across borders",
+        "body": "In today's hyperconnected world, Artificial Intelligence (AI) is not just a technological marvel, but a crucial tool for closing gaps between countries, cultures and economies. As companies expand their reach beyond borders, AI is facilitating global operations and redefining collaboration."
       },
       "article4": {
-        "date": "September 18, 2025",
-        "tag": "THE VADO TEAM",
+        "date": "August 30, 2024",
+        "tag": "The Vado Team",
         "title": "The Evolution of Workforce Flexibility: How Remote Work is Redefining Talent Acquisition",
-        "description": "Remote work has transformed how companies acquire talent. Geographic limitations are fading. Learn how organizations are redefining hiring...",
-        "imageAlt": "Remote work and talent"
+        "description": "The shift towards remote work has transformed how companies approach talent acquisition. They are no longer limited to hiring within a specific geographical area; now they can access a talent pool...",
+        "imageAlt": "Remote work and talent",
+        "body": "The shift towards remote work has transformed how companies approach talent acquisition. They are no longer limited to hiring within a specific geographical area; now they can access a global talent pool and redefine hiring with flexibility and results-driven criteria."
+      },
+      "article5": {
+        "date": "August 15, 2024",
+        "tag": "The Vado Team",
+        "title": "Beyond Borders: Unlocking Global Talent Pools for Sustainable Growth",
+        "description": "In today's fast-paced, interconnected world, the traditional boundaries of talent acquisition are fading. Companies no longer need to limit their search for qualified professionals to their local regions...",
+        "imageAlt": "Global talent",
+        "body": "In today's fast-paced, interconnected world, the traditional boundaries of talent acquisition are fading. Companies no longer need to limit their search for qualified professionals to their local regions; they can access global talent pools for sustainable growth."
+      },
+      "article6": {
+        "date": "July 29, 2024",
+        "tag": "The Vado Team",
+        "title": "Preparing Your Business for the Future: Leveraging Online Talent Markets",
+        "description": "In the rapidly evolving technology landscape and current dynamic market conditions, preparing your business for the future is essential. A strategic approach to staying ahead is to leverage...",
+        "imageAlt": "Online talent markets",
+        "body": "In the rapidly evolving technology landscape and current dynamic market conditions, preparing your business for the future is essential. A strategic approach to staying ahead is to leverage online talent markets."
+      },
+      "article7": {
+        "date": "July 15, 2024",
+        "tag": "The Vado Team",
+        "title": "How Talent Platforms Are Revolutionizing Business Growth",
+        "description": "In today's fast-paced business environment, innovation, efficiency and competitive advantage are more crucial than ever. A solution that is gaining significant traction is the use of online platforms to find...",
+        "imageAlt": "Talent platforms",
+        "body": "In today's fast-paced business environment, innovation, efficiency and competitive advantage are more crucial than ever. A solution that is gaining significant traction is the use of online platforms to find and manage talent, revolutionizing business growth."
+      },
+      "article8": {
+        "date": "July 8, 2024",
+        "tag": "The Vado Team",
+        "title": "The New Labor Paradigm: Embracing Senior Talent in the Digital Age",
+        "description": "In the digital age, companies increasingly recognize the enormous value of senior talent: professionals with extensive experience and deep industry knowledge. These experts are essential to drive innovation and navigate...",
+        "imageAlt": "Senior talent",
+        "body": "In the digital age, companies increasingly recognize the enormous value of senior talent: professionals with extensive experience and deep industry knowledge. These experts are essential to drive innovation and navigate transformation."
+      },
+      "article9": {
+        "date": "May 23, 2024",
+        "tag": "The Vado Team",
+        "title": "10 Reasons Why Nearshore Outsourcing Guarantees Business Success",
+        "description": "Nearshore outsourcing has become a key strategy for companies looking to scale with quality and efficiency. Discover the reasons why this practice guarantees success in an increasingly competitive market...",
+        "imageAlt": "Nearshore outsourcing",
+        "body": "Nearshore outsourcing has become a key strategy for companies looking to scale with quality and efficiency. Geographic proximity, cultural alignment and talent quality are some of the reasons why this practice guarantees business success."
+      },
+      "article10": {
+        "date": "April 10, 2024",
+        "tag": "The Vado Team",
+        "title": "The Future of Work Across Borders: A Decade of Transformation",
+        "description": "Work is undergoing an unprecedented decade of transformation. Borders are blurring and companies are adopting hybrid and remote models. Learn how the future of work is being redefined globally...",
+        "imageAlt": "Future of work",
+        "body": "Work is undergoing an unprecedented decade of transformation. Borders are blurring and companies are adopting hybrid and remote models. The future of work is being redefined globally with distributed teams and new forms of collaboration."
+      },
+      "article11": {
+        "date": "March 25, 2024",
+        "tag": "The Vado Team",
+        "title": "Securing Your CI/CD Pipeline: Best Practices for DevOps Teams",
+        "description": "A robust CI/CD pipeline is the backbone of modern deployment. Discover best practices so your DevOps team can maintain security, speed and reliability with every release...",
+        "imageAlt": "CI/CD pipeline DevOps",
+        "body": "A robust CI/CD pipeline is the backbone of modern deployment. Best practices for DevOps teams include automation, continuous testing, integrated security and monitoring, ensuring fast and reliable releases."
+      },
+      "article12": {
+        "date": "March 15, 2024",
+        "tag": "The Vado Team",
+        "title": "Unlocking Potential: Exploring the Benefits of Nearshore Engineering",
+        "description": "Nearshore engineering combines quality and proximity to drive technology projects. We explore the benefits this model brings to teams and companies seeking agility and specialized talent...",
+        "imageAlt": "Nearshore engineering",
+        "body": "Nearshore engineering combines quality and proximity to drive technology projects. Benefits include aligned time zones, fluid communication, specialized talent and competitive costs, unlocking your organization's potential."
+      },
+      "article13": {
+        "date": "February 1, 2024",
+        "tag": "The Vado Team",
+        "title": "Get the Job of Your Dreams: Master the Software Development Interview",
+        "description": "The dynamic world of software development is full of exciting opportunities waiting to be discovered. Whether you're an experienced developer or a recent graduate, navigating the interview process requires preparation...",
+        "imageAlt": "Software development interview",
+        "body": "The dynamic world of software development is full of exciting opportunities waiting to be discovered. Whether you're an experienced developer or a recent graduate, navigating the interview process requires solid preparation. Master the key techniques and questions to get the job of your dreams."
       },
       "noResults": "No articles found.",
-      "viewMore": "View more"
+      "viewMore": "View more",
+      "backToArticles": "Back to Articles",
+      "pagination": {
+        "previous": "Previous",
+        "next": "Next",
+        "ariaLabel": "Articles pagination"
+      }
     },
     "stayUpdated": {
       "topLine": "THE VADO TEAM",
