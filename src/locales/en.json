@@ -829,10 +829,9 @@
     },
     "leadership": {
       "title": "Business Leadership",
-      "person1": { "name": "Name" },
-      "person2": { "name": "Name" },
-      "person3": { "name": "Name" },
-      "person4": { "name": "Name" }
+      "person1": { "name": "Carlos Ballesteros" },
+      "person2": { "name": "Fernanda Casanova" },
+      "person3": { "name": "Luis Montaño" }
     },
     "growTalentCta": {
       "titleDark": "Grow your ",

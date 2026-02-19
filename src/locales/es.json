@@ -829,10 +829,9 @@
     },
     "leadership": {
       "title": "Liderazgo Empresarial",
-      "person1": { "name": "Nombre" },
-      "person2": { "name": "Nombre" },
-      "person3": { "name": "Nombre" },
-      "person4": { "name": "Nombre" }
+      "person1": { "name": "Carlos Ballesteros" },
+      "person2": { "name": "Fernanda Casanova" },
+      "person3": { "name": "Luis Montaño" }
     },
     "growTalentCta": {
       "titleDark": "Haz crecer ",
