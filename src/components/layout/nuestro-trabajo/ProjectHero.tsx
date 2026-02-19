@@ -54,6 +54,8 @@ export type ProjectHeroProps = {
   backgroundColor: string;
   /** Imagen de fondo del contenedor del hero (opcional; se aplica dentro del corte diagonal) */
   backgroundImageSrc?: string;
+  /** Opacidad del overlay de color sobre la imagen de fondo (0–1). Por defecto 0.6. */
+  backgroundOverlayOpacity?: number;
 };
 
 export function ProjectHero({
@@ -72,6 +74,7 @@ export function ProjectHero({
   heroImageAlt,
   backgroundColor,
   backgroundImageSrc,
+  backgroundOverlayOpacity = 0.6,
 }: ProjectHeroProps) {
   const { t } = useTranslation();
   return (
@@ -98,9 +101,10 @@ export function ProjectHero({
       />
       {backgroundImageSrc && (
         <div
-          className="absolute inset-0 z-0 opacity-60"
+          className="absolute inset-0 z-0"
           style={{
             backgroundColor,
+            opacity: backgroundOverlayOpacity,
             clipPath: DIAGONAL_CLIP,
           }}
         />

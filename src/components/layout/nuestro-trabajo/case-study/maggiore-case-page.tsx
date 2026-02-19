@@ -27,6 +27,7 @@ export function MaggioreCasePage() {
         heroImageAlt={t('ourWork.caseStudy.maggiore.hero.heroImageAlt')}
         backgroundColor={MAGGIORE_ACCENT}
         backgroundImageSrc="/case-studies/maggiore/bg-hero-maggiore.png"
+        backgroundOverlayOpacity={0.12}
       />
 
       <CenterContainer className="flex flex-col gap-10 lg:flex-row lg:items-start lg:gap-12">
