@@ -9,6 +9,7 @@ import NuestroTrabajoProject from '@/pages/nuestro-trabajo/[slug]'
 import VadoInsights from '@/pages/compania/vado-insights'
 import CulturaYTalento from '@/pages/compania/cultura-y-talento'
 import Contacto from '@/pages/contacto'
+import Gracias from '@/pages/gracias'
 import { NotFound } from '@/pages/not-found'
 import { withLocale } from '@/app/withLocale'
 
@@ -28,6 +29,7 @@ export function Router() {
       <Route path="/:lang/compania/vado-insights" component={withLocale(VadoInsights)} />
       <Route path="/:lang/compania/cultura-y-talento" component={withLocale(CulturaYTalento)} />
       <Route path="/:lang/contacto" component={withLocale(Contacto)} />
+      <Route path="/:lang/gracias" component={withLocale(Gracias)} />
       <Route path="/:lang" component={withLocale(Home)} />
       <Route path="/:lang/*" component={withLocale(NotFound)} />
       <Route component={NotFound} />

@@ -976,8 +976,23 @@
       "and": "y los",
       "termsOfService": "Términos del Servicio de Vado",
       "newsletterLabel": "Estoy de acuerdo en recibir boletines, actualizaciones y ofertas especiales por correo electrónico.",
-      "submit": "Enviar"
+      "submit": "Enviar",
+      "sending": "Enviando...",
+      "successMessage": "Mensaje enviado correctamente. Nos pondremos en contacto contigo pronto.",
+      "errors": {
+        "privacyRequired": "Debes aceptar la política de privacidad y los términos del servicio.",
+        "fieldsRequired": "Completa todos los campos obligatorios.",
+        "apiNotConfigured": "El formulario no está configurado. Contacta al administrador.",
+        "generic": "No se pudo enviar el mensaje. Intenta de nuevo más tarde."
+      }
     }
+  },
+  "thankYou": {
+    "pageTitle": "Gracias | Vado",
+    "title": "¡Gracias por contactarnos!",
+    "message": "Hemos recibido tu mensaje correctamente. Nuestro equipo se pondrá en contacto contigo pronto.",
+    "ctaHome": "Volver al inicio",
+    "ctaContact": "Ir a contacto"
   },
   "notFound": {
     "title": "404 - Página no encontrada | Vado",

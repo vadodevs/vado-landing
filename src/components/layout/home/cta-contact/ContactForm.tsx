@@ -1,8 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
+import { Link } from 'wouter';
 import { AnimatePresence, motion } from 'motion/react';
 import { useTranslation } from 'react-i18next';
+import { useLocale } from '@/hooks/useLocale';
+import { CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -18,20 +21,128 @@ interface ContactFormProps {
 
 const SUBJECT_POSTULARSE = 'quiero-postularme';
 
+const LEADS_API_URL = import.meta.env.VITE_API_BASE_URL
+  ? `${String(import.meta.env.VITE_API_BASE_URL).replace(/\/$/, '')}/leads`
+  : '';
+
+function getUtmParams(): Record<string, string> {
+  if (typeof window === 'undefined') return {};
+  const params = new URLSearchParams(window.location.search);
+  const out: Record<string, string> = {};
+  const keys = ['utm_campaign', 'utm_term', 'utm_content', 'utm_source', 'utm_medium'];
+  keys.forEach((k) => {
+    const v = params.get(k);
+    if (v) out[k] = v;
+  });
+  return out;
+}
+
 export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) {
   const { t } = useTranslation();
+  const { path } = useLocale();
+  const formRef = useRef<HTMLFormElement>(null);
   const [subject, setSubject] = useState('');
   const [showApplyForm, setShowApplyForm] = useState(false);
   const [applyStep, setApplyStep] = useState<1 | 2>(1);
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const isPostularse = subject === SUBJECT_POSTULARSE;
   const isInApplyFlow = isPostularse && showApplyForm;
 
   const handleSubjectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;
     setSubject(value);
+    setSubmitStatus('idle');
+    setSubmitError(null);
     if (value !== SUBJECT_POSTULARSE) {
       setShowApplyForm(false);
       setApplyStep(1);
+    }
+  };
+
+  const handleContactSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (isInApplyFlow && applyStep === 2) return; // apply flow handled separately for now
+    if (isPostularse) return;
+
+    const form = formRef.current;
+    if (!form) return;
+
+    const privacyEl = form.querySelector(`[id="${idPrefix}privacy"]`);
+    const privacyChecked =
+      privacyEl?.getAttribute('data-state') === 'checked' ||
+      privacyEl?.getAttribute('aria-checked') === 'true';
+    if (!privacyChecked) {
+      setSubmitStatus('error');
+      setSubmitError(t('home.ctaContact.errors.privacyRequired'));
+      return;
+    }
+
+    if (!LEADS_API_URL) {
+      setSubmitStatus('error');
+      setSubmitError(t('home.ctaContact.errors.apiNotConfigured'));
+      return;
+    }
+
+    const fullName = (form.querySelector<HTMLInputElement>('[name="fullName"]')?.value ?? '').trim();
+    const email = (form.querySelector<HTMLInputElement>('[name="email"]')?.value ?? '').trim();
+    const company = (form.querySelector<HTMLInputElement>('[name="company"]')?.value ?? '').trim();
+    const phone = (form.querySelector<HTMLInputElement>('[name="phone"]')?.value ?? '').trim();
+    const message = (form.querySelector<HTMLTextAreaElement>('[name="projectDescription"]')?.value ?? '').trim();
+
+    if (!fullName || !email || !company || !phone || !message) {
+      setSubmitStatus('error');
+      setSubmitError(t('home.ctaContact.errors.fieldsRequired'));
+      return;
+    }
+
+    setSubmitStatus('loading');
+    setSubmitError(null);
+
+    const subjectLabel =
+      subject === 'software-a-la-medida'
+        ? t('home.ctaContact.subjectOptions.softwareALaMedida')
+        : subject === 'ampliacion-personal'
+          ? t('home.ctaContact.subjectOptions.ampliacionPersonal')
+          : subject === 'soluciones-ia'
+            ? t('home.ctaContact.subjectOptions.solucionesIA')
+            : subject === 'otros'
+              ? t('home.ctaContact.subjectOptions.otros')
+              : subject;
+    const projectDescription = subjectLabel
+      ? `${t('home.ctaContact.subject')}: ${subjectLabel}\n\n${message}`
+      : message;
+
+    const utm = getUtmParams();
+    const body = {
+      fullName,
+      email,
+      phoneNumber: phone,
+      company,
+      projectDescription,
+      userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : undefined,
+      utmCampaign: utm.utm_campaign,
+      utmTerm: utm.utm_term,
+      utmContent: utm.utm_content,
+    };
+
+    try {
+      const res = await fetch(LEADS_API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        const message = data?.message ?? data?.error ?? res.statusText;
+        throw new Error(message);
+      }
+      setSubmitStatus('success');
+      form.reset();
+      setSubject('');
+    } catch (err) {
+      setSubmitStatus('error');
+      setSubmitError(err instanceof Error ? err.message : t('home.ctaContact.errors.generic'));
     }
   };
 
@@ -45,7 +156,56 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
       <h3 className="text-primary mb-6 text-center text-xl font-bold md:text-2xl">
         {t('home.ctaContact.formTitle')}
       </h3>
-      <form className="flex flex-col gap-4" onSubmit={(e) => e.preventDefault()}>
+
+      <AnimatePresence mode="wait">
+        {submitStatus === 'success' ? (
+          <motion.div
+            key="thank-you"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
+            className="flex flex-col items-center gap-6 py-6 text-center"
+          >
+            <CheckCircle2
+              className="text-primary size-16 shrink-0 md:size-20"
+              strokeWidth={1.5}
+              aria-hidden
+            />
+            <div className="flex flex-col gap-2">
+              <h4 className="text-foreground text-xl font-bold md:text-2xl">
+                {t('thankYou.title')}
+              </h4>
+              <p className="text-muted-foreground text-base leading-relaxed md:text-lg">
+                {t('thankYou.message')}
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+              <Link href={path('')}>
+                <Button
+                  size="lg"
+                  className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg font-medium"
+                >
+                  {t('thankYou.ctaHome')}
+                </Button>
+              </Link>
+              <Link href={path('/contacto')}>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="border-primary text-primary hover:bg-primary/10 rounded-lg font-medium"
+                >
+                  {t('thankYou.ctaContact')}
+                </Button>
+              </Link>
+            </div>
+          </motion.div>
+        ) : (
+          <form
+            ref={formRef}
+            className="flex flex-col gap-4"
+            onSubmit={handleContactSubmit}
+          >
         {!isInApplyFlow && (
         <div className="space-y-2">
           <Label htmlFor={`${idPrefix}subject`}>{t('home.ctaContact.subject')}</Label>
@@ -353,45 +513,55 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
           <Label htmlFor={`${idPrefix}name`}>{t('home.ctaContact.fullName')}</Label>
           <Input
             id={`${idPrefix}name`}
+            name="fullName"
             type="text"
             placeholder={t('home.ctaContact.fullNamePlaceholder')}
             className="h-10 rounded-lg"
+            disabled={submitStatus === 'loading'}
           />
         </div>
         <div className="space-y-2">
           <Label htmlFor={`${idPrefix}email`}>{t('home.ctaContact.email')}</Label>
           <Input
             id={`${idPrefix}email`}
+            name="email"
             type="email"
             placeholder={t('home.ctaContact.emailPlaceholder')}
             className="h-10 rounded-lg"
+            disabled={submitStatus === 'loading'}
           />
         </div>
         <div className="space-y-2">
           <Label htmlFor={`${idPrefix}company`}>{t('home.ctaContact.companyName')}</Label>
           <Input
             id={`${idPrefix}company`}
+            name="company"
             type="text"
             placeholder={t('home.ctaContact.companyPlaceholder')}
             className="h-10 rounded-lg"
+            disabled={submitStatus === 'loading'}
           />
         </div>
         <div className="space-y-2">
           <Label htmlFor={`${idPrefix}phone`}>{t('home.ctaContact.phone')}</Label>
           <Input
             id={`${idPrefix}phone`}
+            name="phone"
             type="tel"
             placeholder={t('home.ctaContact.phonePlaceholder')}
             className="h-10 rounded-lg"
+            disabled={submitStatus === 'loading'}
           />
         </div>
         <div className="space-y-2">
           <Label htmlFor={`${idPrefix}message`}>{t('home.ctaContact.message')}</Label>
           <Textarea
             id={`${idPrefix}message`}
+            name="projectDescription"
             placeholder={t('home.ctaContact.messagePlaceholder')}
             rows={4}
             className="rounded-lg"
+            disabled={submitStatus === 'loading'}
           />
         </div>
         <div className="flex items-start gap-3">
@@ -425,17 +595,25 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
             {t('home.ctaContact.newsletterLabel')}
           </Label>
         </div>
+        {submitStatus === 'error' && submitError && (
+          <p className="text-destructive text-sm" role="alert">
+            {submitError}
+          </p>
+        )}
         <Button
           type="submit"
           size="lg"
           className="bg-primary text-primary-foreground hover:bg-primary/90 w-full rounded-lg font-medium"
+          disabled={submitStatus === 'loading'}
         >
-          {t('home.ctaContact.submit')}
+          {submitStatus === 'loading' ? t('home.ctaContact.sending') : t('home.ctaContact.submit')}
         </Button>
             </motion.div>
           )}
         </AnimatePresence>
-      </form>
+          </form>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

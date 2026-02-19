@@ -976,8 +976,23 @@
       "and": "and",
       "termsOfService": "Vado Terms of Service",
       "newsletterLabel": "I agree to receive newsletters, updates and special offers by email.",
-      "submit": "Send"
+      "submit": "Send",
+      "sending": "Sending...",
+      "successMessage": "Message sent successfully. We will get back to you soon.",
+      "errors": {
+        "privacyRequired": "You must accept the privacy policy and terms of service.",
+        "fieldsRequired": "Please fill in all required fields.",
+        "apiNotConfigured": "Form is not configured. Please contact the administrator.",
+        "generic": "Could not send message. Please try again later."
+      }
     }
+  },
+  "thankYou": {
+    "pageTitle": "Thank you | Vado",
+    "title": "Thank you for reaching out!",
+    "message": "We have received your message. Our team will get back to you soon.",
+    "ctaHome": "Back to home",
+    "ctaContact": "Go to contact"
   },
   "notFound": {
     "title": "404 - Page not found | Vado",
