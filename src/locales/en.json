@@ -84,6 +84,11 @@
         "description": "On-demand car wash at your location."
       }
     },
+    "pagination": {
+      "previous": "Previous",
+      "next": "Next",
+      "ariaLabel": "Use cases pagination"
+    },
     "caseStudy": {
       "zenqr": {
         "stackLabel": "Stack",

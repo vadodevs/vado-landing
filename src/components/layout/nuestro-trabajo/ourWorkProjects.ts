@@ -14,17 +14,37 @@ export type OurWorkProject = {
   id: string;
   image: string;
   categoryKey: CategoryKey;
-  /** Override badge background color (ej. #3390ff). Si no se define, se usa BADGE_COLORS[categoryKey]. */
   badgeColor?: string;
 };
 
 export const OUR_WORK_PROJECTS: OurWorkProject[] = [
   { id: 'sendero', image: '/case-studies/sendero-crm/bg-cover-card.png', categoryKey: 'crm' },
-  { id: 'ebm', image: '/case-studies/ebm/ebm-cover-card.png', categoryKey: 'platform' },
-  { id: 'digitalRanch', image: '/case-studies/digital-ranch/digital-cover-card.png', categoryKey: 'webApp' },
   { id: 'zenqr', image: '/case-studies/zenqr/bg-cover-card.png', categoryKey: 'webApp' },
-  { id: 'easySales', image: '/case-studies/easy-sales/bg-cover-card.png', categoryKey: 'ecommerce' },
-  { id: 'cipreses', image: '/case-studies/criadero-cipreses/bg-cover-card.png', categoryKey: 'website' },
-  { id: 'maggiore', image: '/case-studies/maggiore/bg-cover-card.png', categoryKey: 'platform', badgeColor: '#3390ff' },
-  { id: 'washapp', image: '/case-studies/washapp/bg-cover-card.png', categoryKey: 'webApp', badgeColor: '#3390ff' },
+  { id: 'ebm', image: '/case-studies/ebm/ebm-cover-card.png', categoryKey: 'platform' },
+  {
+    id: 'maggiore',
+    image: '/case-studies/maggiore/bg-cover-card.png',
+    categoryKey: 'platform',
+  },
+  {
+    id: 'digitalRanch',
+    image: '/case-studies/digital-ranch/digital-cover-card.png',
+    categoryKey: 'webApp',
+  },
+  {
+    id: 'washapp',
+    image: '/case-studies/washapp/bg-cover-card.png',
+    categoryKey: 'webApp',
+    badgeColor: '#3390ff',
+  },
+  {
+    id: 'easySales',
+    image: '/case-studies/easy-sales/bg-cover-card.png',
+    categoryKey: 'ecommerce',
+  },
+  {
+    id: 'cipreses',
+    image: '/case-studies/criadero-cipreses/bg-cover-card.png',
+    categoryKey: 'website',
+  },
 ];

@@ -84,6 +84,11 @@
         "description": "Lavado de carros a domicilio."
       }
     },
+    "pagination": {
+      "previous": "Anterior",
+      "next": "Siguiente",
+      "ariaLabel": "Paginación de casos de uso"
+    },
     "caseStudy": {
       "zenqr": {
         "stackLabel": "Stack",
