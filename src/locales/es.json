@@ -498,6 +498,142 @@
           "slide2Alt": "Secciones del sitio Criadero Los Cipreses",
           "slide3Alt": "Criadero Los Cipreses en uso"
         }
+      },
+      "maggiore": {
+        "stackLabel": "Stack",
+        "hero": {
+          "title": "Maggiore | Sistema de tokens y gestión digital",
+          "description": "Plataforma de tokens y gestión digital con interfaz clara y arquitectura robusta para administrar transacciones.",
+          "industry": "Tokens y gestión digital",
+          "solutionType": "Plataforma",
+          "heroImageAlt": "Maggiore - Sistema de tokens"
+        },
+        "overview": {
+          "title": "Plataforma de tokens y gestión digital",
+          "paragraph": "Maggiore se construyó como un <accent>sistema de tokens</accent> y <accent>gestión digital</accent>: interfaz clara y arquitectura robusta para administrar transacciones con <accent>visibilidad y control</accent>."
+        },
+        "challenge": {
+          "label": "Challenge",
+          "title": "El reto",
+          "intro": "El cliente necesitaba un sistema de tokens y gestión digital con:",
+          "list1": "Interfaz clara para usuarios",
+          "list2": "Arquitectura robusta para transacciones",
+          "list3": "Gestión y trazabilidad",
+          "list4": "Escalabilidad y seguridad",
+          "afterList": "Todo con una experiencia <accent>clara</accent> y <accent>orientada a la operación</accent>.",
+          "closing": "El reto era tener <accent>una plataforma confiable</accent> para tokens y gestión digital, sin depender de herramientas dispersas."
+        },
+        "solution": {
+          "label": "Solution",
+          "title": "La solución",
+          "paragraph1": "El enfoque incluyó <accent>mapear los procesos</accent> del cliente y definir una hoja de ruta alineada a la gestión de tokens y transacciones.",
+          "paragraph2": "Desarrollamos una plataforma con interfaz <accent>intuitiva</accent> y arquitectura <accent>robusta</accent>, con backend escalable y trazabilidad.",
+          "listTitle": "La plataforma incluye:",
+          "list1": "Sistema de tokens",
+          "list2": "Gestión de transacciones",
+          "list3": "Panel de administración",
+          "list4": "API y integraciones",
+          "list5": "Seguridad y auditoría"
+        },
+        "results": {
+          "label": "Results",
+          "title": "Resultados",
+          "paragraph": "El resultado fue una plataforma <accent>adaptada a la gestión de tokens</accent>, construida en <accent>colaboración con el cliente</accent> para validar flujos y entregar una herramienta con claridad, funcionalidad y diseño."
+        },
+        "cta": {
+          "subtitle": "Desarrollo a la medida",
+          "titleLine1": "Claridad para el usuario.",
+          "titleLine2": "Escalabilidad para el negocio.",
+          "description": "Si estás construyendo un producto digital y necesitas que sea claro para el usuario y escalable para el negocio, podemos ayudarte a desarrollarlo a la medida.",
+          "ctaLabel": "Contáctanos"
+        },
+        "sidebar": {
+          "title": "Detalles del proyecto",
+          "productType": "Tipo de producto",
+          "productTypeWeb": "Aplicación web",
+          "productTypePlatform": "Plataforma",
+          "productTypeMobile": "App móvil",
+          "visitWebsite": "Visitar sitio web"
+        },
+        "otherCases": {
+          "label": "Más trabajo",
+          "title": "Otros casos de uso",
+          "description": "Conoce otros proyectos que hemos desarrollado junto a nuestros clientes.",
+          "backLink": "Volver a Nuestro trabajo"
+        },
+        "slides": {
+          "slide1Alt": "Captura de la plataforma Maggiore",
+          "slide2Alt": "Funcionalidades de Maggiore",
+          "slide3Alt": "Maggiore en uso"
+        }
+      },
+      "washapp": {
+        "stackLabel": "Stack",
+        "hero": {
+          "title": "WashApp | App móvil",
+          "description": "App móvil de lavado de autos a domicilio con experiencia sencilla para usuarios y operadores en campo.",
+          "industry": "Servicios a domicilio",
+          "solutionType": "App móvil",
+          "heroImageAlt": "WashApp - Lavado de autos a domicilio"
+        },
+        "overview": {
+          "label": "Overview",
+          "title": "App móvil de lavado de autos a domicilio",
+          "paragraph": "WashApp se construyó como una <accent>app móvil</accent> que conecta a usuarios con <accent>lavado de autos a domicilio</accent>. Experiencia <accent>sencilla</accent> para quien agenda y para el operador en campo, con claridad y seguimiento."
+        },
+        "challenge": {
+          "label": "Challenge",
+          "title": "El reto",
+          "intro": "El cliente necesitaba una app de lavado de autos a domicilio con experiencia sencilla para usuarios y operadores, con:",
+          "list1": "Agendamiento y selección de servicio",
+          "list2": "Experiencia clara para el usuario",
+          "list3": "Flujo para operadores en campo",
+          "list4": "Seguimiento y cierre del servicio",
+          "afterList": "Todo con una experiencia <accent>sencilla</accent> y <accent>orientada al día a día</accent> de usuarios y operadores.",
+          "closing": "El reto era unificar <accent>agenda, operación y seguimiento</accent> en una sola app, sin fricciones."
+        },
+        "solution": {
+          "label": "Solution",
+          "title": "La solución",
+          "paragraph1": "El enfoque incluyó <accent>mapear los flujos</accent> de usuario y operador y definir una hoja de ruta alineada al servicio a domicilio.",
+          "paragraph2": "Desarrollamos una app con interfaz <accent>intuitiva</accent> para agendar, gestionar y dar seguimiento al lavado, con <accent>vista para el operador en campo</accent>.",
+          "listTitle": "La app incluye:",
+          "list1": "Agendamiento y tipos de servicio",
+          "list2": "Perfil de usuario y historial",
+          "list3": "Panel para operadores en campo",
+          "list4": "Seguimiento del servicio",
+          "list5": "Notificaciones y recordatorios"
+        },
+        "results": {
+          "label": "Results",
+          "title": "Resultados",
+          "paragraph": "El resultado fue una app <accent>adaptada al lavado a domicilio</accent>, construida en <accent>colaboración con el cliente</accent> para validar flujos y entregar una herramienta que usuarios y operadores adoptan con claridad."
+        },
+        "cta": {
+          "subtitle": "Desarrollo a la medida",
+          "titleLine1": "Claridad para el usuario.",
+          "titleLine2": "Escalabilidad para el negocio.",
+          "description": "Si estás construyendo un producto digital y necesitas que sea claro para el usuario y escalable para el negocio, podemos ayudarte a desarrollarlo a la medida.",
+          "ctaLabel": "Contáctanos"
+        },
+        "sidebar": {
+          "title": "Detalles del proyecto",
+          "productType": "Tipo de producto",
+          "productTypeWeb": "Aplicación web",
+          "productTypeMobile": "App móvil",
+          "visitWebsite": "Visitar sitio web"
+        },
+        "otherCases": {
+          "label": "Más trabajo",
+          "title": "Otros casos de uso",
+          "description": "Conoce otros proyectos que hemos desarrollado junto a nuestros clientes.",
+          "backLink": "Volver a Nuestro trabajo"
+        },
+        "slides": {
+          "slide1Alt": "Captura de la app WashApp",
+          "slide2Alt": "Funcionalidades de WashApp",
+          "slide3Alt": "WashApp en uso"
+        }
       }
     }
   },

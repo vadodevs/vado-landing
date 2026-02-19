@@ -1,80 +1,63 @@
 import { useTranslation } from 'react-i18next';
 import { CenterContainer } from '@/components/layout/CenterContainer';
 import { ProjectHero } from '@/components/layout/nuestro-trabajo/ProjectHero';
-import { ProjectStack, type ProjectStackItem } from '@/components/layout/nuestro-trabajo/ProjectStack';
-
-const MAGGIORE_ACCENT = '#3390ff';
-
-const MAGGIORE_STACK: ProjectStackItem[] = [
-  { name: 'TypeScript', icon: 'typescript' },
-  { name: 'React', icon: 'react' },
-  { name: 'Node.js', icon: 'node-js' },
-  { name: 'NestJS', icon: 'nestjs' },
-  { name: 'PostgreSQL', icon: 'postgresql' },
-];
-
-function MaggioreSection({
-  label,
-  title,
-  children,
-}: {
-  label: string;
-  title: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <section className="py-12 md:py-16 lg:py-20">
-      <CenterContainer className="lg:px-0">
-        <div className="flex w-full flex-col gap-10 lg:gap-16 lg:items-center">
-          <div className="flex-1 space-y-4">
-            <span
-              className="text-sm font-semibold tracking-wider uppercase"
-              style={{ color: MAGGIORE_ACCENT }}
-            >
-              {label}
-            </span>
-            <h2 className="text-foreground text-2xl font-bold tracking-tight md:text-3xl lg:text-[1.75rem]">
-              {title}
-            </h2>
-            <div className="text-muted-foreground space-y-4 text-base leading-relaxed md:text-lg">
-              {children}
-            </div>
-          </div>
-        </div>
-      </CenterContainer>
-    </section>
-  );
-}
+import { MaggioreLogo } from '@/assets/brands/maggiore';
+import {
+  MAGGIORE_ACCENT,
+  MaggioreOverviewSection,
+  MaggioreChallengeSection,
+  MaggioreSolutionSection,
+  MaggioreResultsSection,
+  MaggioreCtaSection,
+  MaggioreProjectSidebar,
+  MaggioreOtherCases,
+} from './maggiore';
 
 export function MaggioreCasePage() {
   const { t } = useTranslation();
-  const title = t('ourWork.projects.maggiore.title');
 
   return (
-    <article className="bg-background">
+    <article className="bg-background relative">
       <ProjectHero
-        logoAlt={title}
-        title={title}
-        description={t('ourWork.projects.maggiore.description')}
-        heroImageSrc="/projects/zenQR/zenqr_hero.png"
-        heroImageAlt={title}
+        logoNode={<MaggioreLogo />}
+        logoAlt={t('ourWork.projects.maggiore.title')}
+        title={t('ourWork.caseStudy.maggiore.hero.title')}
+        description={t('ourWork.caseStudy.maggiore.hero.description')}
+        heroImageSrc="/case-studies/maggiore/bg-hero.png"
+        heroImageAlt={t('ourWork.caseStudy.maggiore.hero.heroImageAlt')}
         backgroundColor={MAGGIORE_ACCENT}
+        backgroundImageSrc="/case-studies/maggiore/bg-hero-maggiore.png"
       />
 
-      <ProjectStack
-        items={MAGGIORE_STACK}
-        variant="logos-row"
-        accentColor={MAGGIORE_ACCENT}
-        label="Stack"
-      />
+      <CenterContainer className="flex flex-col gap-10 lg:flex-row lg:items-start lg:gap-12">
+        <main className="min-w-0 flex-1">
+          <MaggioreOverviewSection />
+          <img
+            src="/case-studies/maggiore/maggiore-slide1.png"
+            alt={t('ourWork.caseStudy.maggiore.slides.slide1Alt')}
+            className="h-auto w-full rounded-2xl object-cover"
+          />
+          <MaggioreChallengeSection />
+          <img
+            src="/case-studies/maggiore/maggiore-slide2.png"
+            alt={t('ourWork.caseStudy.maggiore.slides.slide2Alt')}
+            className="h-auto w-full rounded-2xl object-cover"
+          />
+          <MaggioreSolutionSection />
+          <img
+            src="/case-studies/maggiore/maggiore-slide3.png"
+            alt={t('ourWork.caseStudy.maggiore.slides.slide3Alt')}
+            className="h-auto w-full rounded-2xl object-cover"
+          />
+          <MaggioreResultsSection />
+          <MaggioreCtaSection />
+        </main>
+        <aside className="w-full shrink-0 pb-4 lg:w-80 lg:self-stretch">
+          <MaggioreProjectSidebar />
+        </aside>
+      </CenterContainer>
 
-      <MaggioreSection label="Caso de uso" title="El reto">
-        <p>
-          {title} es un sistema de tokens y gestión digital que requería una interfaz clara y una
-          arquitectura robusta para administrar transacciones.
-        </p>
-      </MaggioreSection>
+      <MaggioreOtherCases />
     </article>
   );
 }
-

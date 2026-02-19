@@ -498,6 +498,142 @@
           "slide2Alt": "Criadero Los Cipreses site sections",
           "slide3Alt": "Criadero Los Cipreses in use"
         }
+      },
+      "maggiore": {
+        "stackLabel": "Stack",
+        "hero": {
+          "title": "Maggiore | Token system and digital management",
+          "description": "Token and digital management platform with a clear interface and robust architecture for managing transactions.",
+          "industry": "Tokens and digital management",
+          "solutionType": "Platform",
+          "heroImageAlt": "Maggiore - Token system"
+        },
+        "overview": {
+          "title": "Token and digital management platform",
+          "paragraph": "Maggiore was built as a <accent>token system</accent> and <accent>digital management</accent> platform: clear interface and robust architecture to manage transactions with <accent>visibility and control</accent>."
+        },
+        "challenge": {
+          "label": "Challenge",
+          "title": "The challenge",
+          "intro": "The client needed a token and digital management system with:",
+          "list1": "Clear interface for users",
+          "list2": "Robust architecture for transactions",
+          "list3": "Management and traceability",
+          "list4": "Scalability and security",
+          "afterList": "All with a <accent>clear</accent> and <accent>operation-oriented</accent> experience.",
+          "closing": "The challenge was to have <accent>a reliable platform</accent> for tokens and digital management, without relying on scattered tools."
+        },
+        "solution": {
+          "label": "Solution",
+          "title": "The solution",
+          "paragraph1": "The approach included <accent>mapping the client's processes</accent> and defining a roadmap aligned with token and transaction management.",
+          "paragraph2": "We developed a platform with an <accent>intuitive</accent> interface and <accent>robust</accent> architecture, with a scalable backend and traceability.",
+          "listTitle": "The platform includes:",
+          "list1": "Token system",
+          "list2": "Transaction management",
+          "list3": "Admin panel",
+          "list4": "API and integrations",
+          "list5": "Security and audit"
+        },
+        "results": {
+          "label": "Results",
+          "title": "Results",
+          "paragraph": "The result was a platform <accent>adapted to token management</accent>, built in <accent>collaboration with the client</accent> to validate flows and deliver a tool with clarity, functionality and design."
+        },
+        "cta": {
+          "subtitle": "Custom development",
+          "titleLine1": "Clarity for the user.",
+          "titleLine2": "Scalability for the business.",
+          "description": "If you're building a digital product and need it to be clear for the user and scalable for the business, we can help you develop it to measure.",
+          "ctaLabel": "Contact us"
+        },
+        "sidebar": {
+          "title": "Project details",
+          "productType": "Product type",
+          "productTypeWeb": "Web application",
+          "productTypePlatform": "Platform",
+          "productTypeMobile": "Mobile app",
+          "visitWebsite": "Visit website"
+        },
+        "otherCases": {
+          "label": "More work",
+          "title": "Other case studies",
+          "description": "Discover other projects we have developed with our clients.",
+          "backLink": "Back to Our work"
+        },
+        "slides": {
+          "slide1Alt": "Maggiore platform screenshot",
+          "slide2Alt": "Maggiore features",
+          "slide3Alt": "Maggiore in use"
+        }
+      },
+      "washapp": {
+        "stackLabel": "Stack",
+        "hero": {
+          "title": "WashApp | Mobile app",
+          "description": "Mobile app for at-home car washing with a simple experience for users and field operators.",
+          "industry": "At-home services",
+          "solutionType": "Mobile app",
+          "heroImageAlt": "WashApp - At-home car washing"
+        },
+        "overview": {
+          "label": "Overview",
+          "title": "Mobile app for at-home car washing",
+          "paragraph": "WashApp was built as a <accent>mobile app</accent> that connects users with <accent>at-home car washing</accent>. <accent>Simple</accent> experience for who books and for the field operator, with clarity and follow-up."
+        },
+        "challenge": {
+          "label": "Challenge",
+          "title": "The challenge",
+          "intro": "The client needed a car washing app with a simple experience for users and operators, with:",
+          "list1": "Scheduling and service selection",
+          "list2": "Clear experience for the user",
+          "list3": "Flow for field operators",
+          "list4": "Service follow-up and completion",
+          "afterList": "All with a <accent>simple</accent> experience <accent>oriented to the day-to-day</accent> of users and operators.",
+          "closing": "The challenge was to unify <accent>scheduling, operations and follow-up</accent> in a single app, without friction."
+        },
+        "solution": {
+          "label": "Solution",
+          "title": "The solution",
+          "paragraph1": "The approach included <accent>mapping user and operator flows</accent> and defining a roadmap aligned to at-home service.",
+          "paragraph2": "We developed an app with an <accent>intuitive</accent> interface to schedule, manage and track washing, with <accent>view for the field operator</accent>.",
+          "listTitle": "The app includes:",
+          "list1": "Scheduling and service types",
+          "list2": "User profile and history",
+          "list3": "Panel for field operators",
+          "list4": "Service follow-up",
+          "list5": "Notifications and reminders"
+        },
+        "results": {
+          "label": "Results",
+          "title": "Results",
+          "paragraph": "The result was an app <accent>tailored to at-home washing</accent>, built in <accent>collaboration with the client</accent> to validate flows and deliver a tool that users and operators adopt with clarity."
+        },
+        "cta": {
+          "subtitle": "Custom development",
+          "titleLine1": "Clarity for the user.",
+          "titleLine2": "Scalability for the business.",
+          "description": "If you're building a digital product and need it to be clear for the user and scalable for the business, we can help you develop it to your needs.",
+          "ctaLabel": "Contact us"
+        },
+        "sidebar": {
+          "title": "Project details",
+          "productType": "Product type",
+          "productTypeWeb": "Web application",
+          "productTypeMobile": "Mobile app",
+          "visitWebsite": "Visit website"
+        },
+        "otherCases": {
+          "label": "More work",
+          "title": "Other case studies",
+          "description": "Discover other projects we have developed with our clients.",
+          "backLink": "Back to Our work"
+        },
+        "slides": {
+          "slide1Alt": "WashApp app screenshot",
+          "slide2Alt": "WashApp features",
+          "slide3Alt": "WashApp in use"
+        }
       }
     }
   },

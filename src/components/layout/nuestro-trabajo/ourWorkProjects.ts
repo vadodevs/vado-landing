@@ -25,6 +25,6 @@ export const OUR_WORK_PROJECTS: OurWorkProject[] = [
   { id: 'zenqr', image: '/case-studies/zenqr/bg-cover-card.png', categoryKey: 'webApp' },
   { id: 'easySales', image: '/case-studies/easy-sales/bg-cover-card.png', categoryKey: 'ecommerce' },
   { id: 'cipreses', image: '/case-studies/criadero-cipreses/bg-cover-card.png', categoryKey: 'website' },
-  { id: 'maggiore', image: 'cipreses.png', categoryKey: 'platform', badgeColor: '#3390ff' },
-  { id: 'washapp', image: 'cipreses.png', categoryKey: 'webApp', badgeColor: '#3390ff' },
+  { id: 'maggiore', image: '/case-studies/maggiore/bg-cover-card.png', categoryKey: 'platform', badgeColor: '#3390ff' },
+  { id: 'washapp', image: '/case-studies/washapp/bg-cover-card.png', categoryKey: 'webApp', badgeColor: '#3390ff' },
 ];
