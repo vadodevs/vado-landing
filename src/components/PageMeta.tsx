@@ -11,7 +11,7 @@ export type PageMetaProps = {
   canonicalPath?: string;
 };
 
-const OG_IMAGE_DEFAULT = '/case-studies/ebm/ebm-cover-card.png';
+const OG_IMAGE_DEFAULT = '/case-studies/ebm/ebm-cover-card.webp';
 
 /**
  * Actualiza título, meta description y Open Graph para SEO y redes sociales.

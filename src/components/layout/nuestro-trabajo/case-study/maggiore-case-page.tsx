@@ -23,10 +23,10 @@ export function MaggioreCasePage() {
         logoAlt={t('ourWork.projects.maggiore.title')}
         title={t('ourWork.caseStudy.maggiore.hero.title')}
         description={t('ourWork.caseStudy.maggiore.hero.description')}
-        heroImageSrc="/case-studies/maggiore/bg-hero.png"
+        heroImageSrc="/case-studies/maggiore/bg-hero.webp"
         heroImageAlt={t('ourWork.caseStudy.maggiore.hero.heroImageAlt')}
         backgroundColor={MAGGIORE_ACCENT}
-        backgroundImageSrc="/case-studies/maggiore/bg-hero-maggiore.png"
+        backgroundImageSrc="/case-studies/maggiore/bg-hero-maggiore.webp"
         backgroundOverlayOpacity={0.12}
       />
 
@@ -34,19 +34,19 @@ export function MaggioreCasePage() {
         <main className="min-w-0 flex-1">
           <MaggioreOverviewSection />
           <img
-            src="/case-studies/maggiore/maggiore-slide1.png"
+            src="/case-studies/maggiore/maggiore-slide1.webp"
             alt={t('ourWork.caseStudy.maggiore.slides.slide1Alt')}
             className="h-auto w-full rounded-2xl object-cover"
           />
           <MaggioreChallengeSection />
           <img
-            src="/case-studies/maggiore/maggiore-slide2.png"
+            src="/case-studies/maggiore/maggiore-slide2.webp"
             alt={t('ourWork.caseStudy.maggiore.slides.slide2Alt')}
             className="h-auto w-full rounded-2xl object-cover"
           />
           <MaggioreSolutionSection />
           <img
-            src="/case-studies/maggiore/maggiore-slide3.png"
+            src="/case-studies/maggiore/maggiore-slide3.webp"
             alt={t('ourWork.caseStudy.maggiore.slides.slide3Alt')}
             className="h-auto w-full rounded-2xl object-cover"
           />

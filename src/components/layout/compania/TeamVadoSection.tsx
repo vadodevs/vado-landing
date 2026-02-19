@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { CenterContainer } from '@/components/layout/CenterContainer';
 import { Marquee } from '@/components/ui/marquee';
 
-const TEAM_IMAGES = Array.from({ length: 18 }, (_, i) => `/team-vado/vado-team-${i + 1}.jpeg`);
+const TEAM_IMAGES = Array.from({ length: 18 }, (_, i) => `/team-vado/vado-team-${i + 1}.webp`);
 
 /** Rectangular y más grandes */
 const IMAGE_CLASS =

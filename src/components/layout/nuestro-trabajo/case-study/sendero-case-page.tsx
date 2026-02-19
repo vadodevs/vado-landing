@@ -25,29 +25,29 @@ export function SenderoCasePage() {
         logoAlt={t('ourWork.projects.sendero.title')}
         title={t('ourWork.caseStudy.sendero.hero.title')}
         description={t('ourWork.caseStudy.sendero.hero.description')}
-        heroImageSrc="/case-studies/sendero-crm/bg-hero.png"
+        heroImageSrc="/case-studies/sendero-crm/bg-hero.webp"
         heroImageAlt={t('ourWork.caseStudy.sendero.hero.heroImageAlt')}
         backgroundColor={SENDERO_ACCENT}
-        backgroundImageSrc="/case-studies/sendero-crm/bg-hero-sendero.png"
+        backgroundImageSrc="/case-studies/sendero-crm/bg-hero-sendero.webp"
       />
 
       <CenterContainer className="flex flex-col gap-10 lg:flex-row lg:items-start lg:gap-12">
         <main className="min-w-0 flex-1">
           <SenderoOverviewSection />
           <img
-            src="/case-studies/sendero-crm/sendero-slide1.png"
+            src="/case-studies/sendero-crm/sendero-slide1.webp"
             alt={t('ourWork.caseStudy.sendero.slides.slide1Alt')}
             className="h-auto w-full rounded-2xl object-cover"
           />
           <SenderoChallengeSection />
           <img
-            src="/case-studies/sendero-crm/sendero-slide2.png"
+            src="/case-studies/sendero-crm/sendero-slide2.webp"
             alt={t('ourWork.caseStudy.sendero.slides.slide2Alt')}
             className="h-auto w-full rounded-2xl object-cover"
           />
           <SenderoSolutionSection />
           <img
-            src="/case-studies/sendero-crm/sendero-slide3.png"
+            src="/case-studies/sendero-crm/sendero-slide3.webp"
             alt={t('ourWork.caseStudy.sendero.slides.slide3Alt')}
             className="h-auto w-full rounded-2xl object-cover"
           />

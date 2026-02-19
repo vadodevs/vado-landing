@@ -2,10 +2,10 @@ import { useTranslation } from 'react-i18next';
 import { CenterContainer } from '@/components/layout/CenterContainer';
 
 const LEADERSHIP_IMAGES = [
-  '/team-vado/vado-team-1.jpeg',
-  '/team-vado/vado-team-2.jpeg',
-  '/team-vado/vado-team-3.jpeg',
-  '/team-vado/vado-team-4.jpeg',
+  '/team-vado/vado-team-1.webp',
+  '/team-vado/vado-team-2.webp',
+  '/team-vado/vado-team-3.webp',
+  '/team-vado/vado-team-4.webp',
 ];
 
 const PERSON_KEYS = ['person1', 'person2', 'person3', 'person4'] as const;

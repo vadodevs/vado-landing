@@ -950,7 +950,9 @@
         "visaInfo": "Información sobre requisitos de visa",
         "travelAvailability": "Disponibilidad para viajar",
         "attachCV": "Adjuntar CV",
-        "attachCVHint": "Arrastra tu archivo o haz clic para subir (PDF, DOC)",
+        "attachCVHint": "Arrastra tu archivo PDF o haz clic para subir (máx. 10 MB)",
+        "fileSelected": "Archivo listo para enviar",
+        "removeFile": "Quitar archivo",
         "yes": "Sí",
         "no": "No",
         "immediately": "Inmediatamente",
@@ -959,7 +961,11 @@
         "moreThan3Months": "Más de 3 meses",
         "heardLinkedIn": "LinkedIn",
         "heardReferral": "Referido",
-        "heardWeb": "Sitio web"
+        "heardWeb": "Sitio web",
+        "errors": {
+          "cvRequired": "Debes subir tu CV para continuar.",
+          "cvInvalid": "El CV debe ser PDF y no superar 10 MB."
+        }
       },
       "fullName": "Nombre Completo",
       "fullNamePlaceholder": "Ej. Juan Pérez",
@@ -982,6 +988,8 @@
       "errors": {
         "privacyRequired": "Debes aceptar la política de privacidad y los términos del servicio.",
         "fieldsRequired": "Completa todos los campos obligatorios.",
+        "emailInvalid": "Ingresa un correo electrónico válido.",
+        "phoneInvalid": "Ingresa un número de teléfono válido (mínimo 10 dígitos).",
         "apiNotConfigured": "El formulario no está configurado. Contacta al administrador.",
         "generic": "No se pudo enviar el mensaje. Intenta de nuevo más tarde."
       }

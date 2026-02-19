@@ -18,33 +18,33 @@ export type OurWorkProject = {
 };
 
 export const OUR_WORK_PROJECTS: OurWorkProject[] = [
-  { id: 'sendero', image: '/case-studies/sendero-crm/bg-cover-card.png', categoryKey: 'crm' },
-  { id: 'zenqr', image: '/case-studies/zenqr/bg-cover-card.png', categoryKey: 'webApp' },
-  { id: 'ebm', image: '/case-studies/ebm/ebm-cover-card.png', categoryKey: 'platform' },
+  { id: 'sendero', image: '/case-studies/sendero-crm/bg-cover-card.webp', categoryKey: 'crm' },
+  { id: 'zenqr', image: '/case-studies/zenqr/bg-cover-card.webp', categoryKey: 'webApp' },
+  { id: 'ebm', image: '/case-studies/ebm/ebm-cover-card.webp', categoryKey: 'platform' },
   {
     id: 'maggiore',
-    image: '/case-studies/maggiore/bg-cover-card.png',
+    image: '/case-studies/maggiore/bg-cover-card.webp',
     categoryKey: 'platform',
   },
   {
     id: 'digitalRanch',
-    image: '/case-studies/digital-ranch/digital-cover-card.png',
+    image: '/case-studies/digital-ranch/digital-cover-card.webp',
     categoryKey: 'webApp',
   },
   {
     id: 'washapp',
-    image: '/case-studies/washapp/bg-cover-card.png',
+    image: '/case-studies/washapp/bg-cover-card.webp',
     categoryKey: 'webApp',
     badgeColor: '#3390ff',
   },
   {
     id: 'easySales',
-    image: '/case-studies/easy-sales/bg-cover-card.png',
+    image: '/case-studies/easy-sales/bg-cover-card.webp',
     categoryKey: 'ecommerce',
   },
   {
     id: 'cipreses',
-    image: '/case-studies/criadero-cipreses/bg-cover-card.png',
+    image: '/case-studies/criadero-cipreses/bg-cover-card.webp',
     categoryKey: 'website',
   },
 ];

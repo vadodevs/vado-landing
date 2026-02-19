@@ -23,29 +23,29 @@ export function WashappCasePage() {
         logoAlt={t('ourWork.projects.washapp.title')}
         title={t('ourWork.caseStudy.washapp.hero.title')}
         description={t('ourWork.caseStudy.washapp.hero.description')}
-        heroImageSrc="/case-studies/washapp/bg-hero.png"
+        heroImageSrc="/case-studies/washapp/bg-hero.webp"
         heroImageAlt={t('ourWork.caseStudy.washapp.hero.heroImageAlt')}
         backgroundColor={WASHAPP_ACCENT}
-        backgroundImageSrc="/case-studies/washapp/bg-hero-washapp.png"
+        backgroundImageSrc="/case-studies/washapp/bg-hero-washapp.webp"
       />
 
       <CenterContainer className="flex flex-col gap-10 lg:flex-row lg:items-start lg:gap-12">
         <main className="min-w-0 flex-1">
           <WashappOverviewSection />
           <img
-            src="/case-studies/washapp/washapp-slide1.png"
+            src="/case-studies/washapp/washapp-slide1.webp"
             alt={t('ourWork.caseStudy.washapp.slides.slide1Alt')}
             className="h-auto w-full rounded-2xl object-cover"
           />
           <WashappChallengeSection />
           <img
-            src="/case-studies/washapp/washapp-slide2.png"
+            src="/case-studies/washapp/washapp-slide2.webp"
             alt={t('ourWork.caseStudy.washapp.slides.slide2Alt')}
             className="h-auto w-full rounded-2xl object-cover"
           />
           <WashappSolutionSection />
           <img
-            src="/case-studies/washapp/washapp-slide3.png"
+            src="/case-studies/washapp/washapp-slide3.webp"
             alt={t('ourWork.caseStudy.washapp.slides.slide3Alt')}
             className="h-auto w-full rounded-2xl object-cover"
           />

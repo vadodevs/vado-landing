@@ -950,7 +950,9 @@
         "visaInfo": "Information about visa requirements",
         "travelAvailability": "Availability to travel",
         "attachCV": "Attach CV",
-        "attachCVHint": "Drag your file or click to upload (PDF, DOC)",
+        "attachCVHint": "Drag your PDF file or click to upload (max 10 MB)",
+        "fileSelected": "File ready to send",
+        "removeFile": "Remove file",
         "yes": "Yes",
         "no": "No",
         "immediately": "Immediately",
@@ -959,7 +961,11 @@
         "moreThan3Months": "More than 3 months",
         "heardLinkedIn": "LinkedIn",
         "heardReferral": "Referral",
-        "heardWeb": "Website"
+        "heardWeb": "Website",
+        "errors": {
+          "cvRequired": "You must upload your CV to continue.",
+          "cvInvalid": "CV must be PDF and not exceed 10 MB."
+        }
       },
       "fullName": "Full Name",
       "fullNamePlaceholder": "e.g. John Doe",
@@ -982,6 +988,8 @@
       "errors": {
         "privacyRequired": "You must accept the privacy policy and terms of service.",
         "fieldsRequired": "Please fill in all required fields.",
+        "emailInvalid": "Please enter a valid email address.",
+        "phoneInvalid": "Please enter a valid phone number (at least 10 digits).",
         "apiNotConfigured": "Form is not configured. Please contact the administrator.",
         "generic": "Could not send message. Please try again later."
       }
