@@ -2,13 +2,12 @@ import { useTranslation } from 'react-i18next';
 import { CenterContainer } from '@/components/layout/CenterContainer';
 
 const LEADERSHIP_IMAGES = [
-  '/team-vado/vado-team-1.webp',
-  '/team-vado/vado-team-2.webp',
-  '/team-vado/vado-team-3.webp',
-  '/team-vado/vado-team-4.webp',
+  '/team-vado/leadership/carlos.webp',
+  '/team-vado/leadership/fernanda.webp',
+  '/team-vado/leadership/luis.webp',
 ];
 
-const PERSON_KEYS = ['person1', 'person2', 'person3', 'person4'] as const;
+const PERSON_KEYS = ['person1', 'person2', 'person3'] as const;
 
 export function LeadershipSection() {
   const { t } = useTranslation();
@@ -28,13 +27,13 @@ export function LeadershipSection() {
           )}
         </h2>
 
-        <div className="grid grid-cols-2 gap-4 sm:gap-6 md:grid-cols-4 md:gap-6">
+        <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-3 md:gap-6">
           {PERSON_KEYS.map((key, index) => (
             <article key={key} className="flex aspect-square flex-col gap-0 bg-white">
               <div className="min-h-0 flex-1 overflow-hidden rounded-2xl">
                 <img
                   src={LEADERSHIP_IMAGES[index]}
-                  alt=""
+                  alt={t(`cultureYTalentoPage.leadership.${key}.name`)}
                   className="h-full w-full object-cover"
                   width={280}
                   height={280}
