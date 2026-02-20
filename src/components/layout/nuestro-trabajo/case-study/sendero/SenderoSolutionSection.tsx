@@ -15,12 +15,6 @@ export function SenderoSolutionSection() {
           components={{ accent: <Accent>{''}</Accent> }}
         />
       </p>
-      <p>
-        <Trans
-          i18nKey="ourWork.caseStudy.sendero.solution.paragraph2"
-          components={{ accent: <Accent>{''}</Accent> }}
-        />
-      </p>
       <p className="font-medium text-slate-700">
         {t('ourWork.caseStudy.sendero.solution.listTitle')}
       </p>
@@ -31,6 +25,12 @@ export function SenderoSolutionSection() {
         <li>{t('ourWork.caseStudy.sendero.solution.list4')}</li>
         <li>{t('ourWork.caseStudy.sendero.solution.list5')}</li>
       </ul>
+      <p>
+        <Trans
+          i18nKey="ourWork.caseStudy.sendero.solution.paragraph2"
+          components={{ accent: <Accent>{''}</Accent> }}
+        />
+      </p>
     </SenderoCaseSection>
   );
 }

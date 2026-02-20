@@ -29,59 +29,59 @@
       "others": "Otros"
     },
     "hero": {
-      "titleLine1": "DEL RETO AL",
-      "titleLine2": "RESULTADO",
-      "tagline": "Conoce algunos de los proyectos que hemos desarrollado junto a nuestros clientes, donde combinamos tecnología, diseño y estrategia para lograr resultados reales.",
+      "titleLine1": "TRANSFORMAMOS IDEAS EN",
+      "titleLine2": "SOLUCIONES REALES",
+      "tagline": "Conoce algunos de los proyectos que hemos desarrollado junto a nuestros clientes. Descubre los retos que enfrentaban, cómo los apoyamos y las soluciones digitales que construimos para resolver necesidades reales.",
       "cta": "Contáctanos"
     },
     "projects": {
       "zenqr": {
         "category": "Aplicación web",
         "title": "ZenQR",
-        "subtitle": "Plataforma SaaS de códigos QR",
-        "description": "Plataforma de códigos QR con personalización, métricas en tiempo real e integraciones para eventos y pagos."
+        "subtitle": "Plataforma SaaS para códigos QR",
+        "description": "Plataforma para crear y gestionar códigos QR con analítica, diseño personalizado e integraciones en un solo panel."
       },
       "ebm": {
         "category": "Plataforma",
         "title": "EBM",
-        "subtitle": "Gestión náutica",
-        "description": "Adaptabilidad (del otro lado) Nos ajustamos al cambio y superamos cualquier obstáculo."
+        "subtitle": "App para gestión de mantenimiento de yates",
+        "description": "Aplicación diseñada para centralizar tareas, servicios y suscripciones para optimizar la operación técnica y la comunicación con clientes."
       },
       "digitalRanch": {
         "category": "Aplicación web",
         "title": "Digital Ranch",
-        "subtitle": "",
-        "description": "Adaptabilidad (del otro lado) Nos ajustamos al cambio y superamos cualquier obstáculo."
+        "subtitle": "App para gestión ganadera",
+        "description": "Aplicación diseñada para registrar y controlar información ganadera en tiempo real, incluso en zonas sin conexión."
       },
       "cipreses": {
         "category": "Sitio web",
         "title": "Criadero Los Cipreses",
-        "subtitle": "",
-        "description": "Adaptabilidad (del otro lado) Nos ajustamos al cambio y superamos cualquier obstáculo."
+        "subtitle": "Sitio web para venta de caballos",
+        "description": "Sitio web desarrollado para presentar el catálogo de caballos y facilitar el contacto directo con clientes potenciales."
       },
       "sendero": {
         "category": "CRM",
         "title": "Sendero",
-        "subtitle": "",
-        "description": "Adaptabilidad (del otro lado) Nos ajustamos al cambio y superamos cualquier obstáculo."
+        "subtitle": "CRM con IA para la gestión comercial multicanal",
+        "description": "Plataforma que centraliza conversaciones y automatiza el seguimiento comercial para mejorar el control del proceso de ventas."
       },
       "easySales": {
         "category": "E-commerce",
-        "title": "Easy Sales",
-        "subtitle": "",
-        "description": "Adaptabilidad (del otro lado) Nos ajustamos al cambio y superamos cualquier obstáculo."
+        "title": "EasySales",
+        "subtitle": "Plataforma de delivery de productos",
+        "description": "Aplicación que conecta clientes, restaurantes y repartidores para gestionar pedidos y entregas en tiempo real."
       },
       "maggiore": {
         "category": "Sistema de tokens",
         "title": "Maggiore",
-        "subtitle": "",
-        "description": "Sistema de tokens y gestión digital."
+        "subtitle": "Sistema de gestión creativa por tokens",
+        "description": "Sistema digital que organiza solicitudes creativas, controla presupuestos y mejora la gestión operativa entre equipos."
       },
       "washapp": {
         "category": "App móvil",
         "title": "WashApp",
-        "subtitle": "",
-        "description": "Lavado de carros a domicilio."
+        "subtitle": "App para servicios de auto lavado",
+        "description": "Aplicación que permite solicitar servicios a domicilio y gestionar la operación, pagos y técnicos desde un solo sistema."
       }
     },
     "pagination": {
@@ -93,8 +93,8 @@
       "zenqr": {
         "stackLabel": "Stack",
         "hero": {
-          "title": "ZenQR | Plataforma SaaS de códigos QR",
-          "description": "Plataforma de códigos QR con personalización, métricas en tiempo real e integraciones para eventos y pagos.",
+          "title": "ZenQR | Plataforma SaaS para códigos QR",
+          "description": "Plataforma para crear y gestionar códigos QR con analítica, diseño personalizado e integraciones en un solo panel.",
           "industry": "Retail, eventos y packaging",
           "solutionType": "Plataforma SaaS",
           "ctaLabel": "Visitar sitio web",
@@ -138,8 +138,8 @@
           "subtitle": "Desarrollo a la medida",
           "titleLine1": "Claridad para el usuario.",
           "titleLine2": "Escalabilidad para el negocio.",
-          "description": "Si estás construyendo un producto digital y necesitas que sea claro para el usuario y escalable para el negocio, podemos ayudarte a desarrollarlo a la medida.",
-          "ctaLabel": "Contáctanos"
+          "description": "Si estás evaluando desarrollar una solución similar, podemos ayudarte a estructurarla y convertirla en un producto funcional y escalable.",
+          "ctaLabel": "Hablemos de tu proyecto"
         },
         "sidebar": {
           "title": "Detalles del proyecto",
@@ -163,8 +163,8 @@
       "sendero": {
         "stackLabel": "Stack",
         "hero": {
-          "title": "Sendero | CRM",
-          "description": "Sistema CRM a la medida para gestión de relaciones con clientes, pipeline de ventas y seguimiento.",
+          "title": "Sendero | CRM con IA para la gestión comercial multicanal",
+          "description": "Plataforma que centraliza conversaciones y automatiza el seguimiento comercial para mejorar el control del proceso de ventas.",
           "industry": "Ventas y gestión comercial",
           "solutionType": "Plataforma CRM",
           "ctaLabel": "Visitar sitio web",
@@ -174,42 +174,42 @@
         "overview": {
           "label": "Overview",
           "title": "CRM para gestión de clientes y pipeline de ventas",
-          "paragraph": "Sendero se construyó como una <accent>herramienta de gestión comercial</accent>: <accent>centralizada</accent>, <accent>medible</accent> y adaptable a los procesos del equipo. Conecta oportunidades, contactos y actividades en un solo lugar con <accent>visibilidad en tiempo real</accent>."
+          "paragraph": "Sendero se desarrolló con el objetivo de <accent>centralizar la gestión comercial</accent> en un solo sistema, permitiendo organizar conversaciones, mejorar el seguimiento de leads y facilitar la coordinación del equipo de ventas sin alterar su flujo de trabajo diario. El proyecto se enfocó en transformar un proceso disperso en un sistema <accent>más claro, estructurado y eficiente</accent>, incorporando <accent>automatización e inteligencia artificial</accent> para optimizar la operación."
         },
         "challenge": {
           "label": "Challenge",
           "title": "El reto",
-          "intro": "El cliente necesitaba un CRM que se adaptara a su forma de vender, con:",
-          "list1": "Gestión de pipeline y etapas de venta",
-          "list2": "Seguimiento de contactos y actividades",
-          "list3": "Reportes y métricas de negocio",
-          "list4": "Integración con herramientas existentes",
-          "afterList": "Todo con una experiencia <accent>clara</accent> y <accent>orientada al día a día</accent> del equipo comercial.",
-          "closing": "El reto era tener <accent>una sola fuente de verdad</accent> para oportunidades y clientes, sin depender de hojas de cálculo ni herramientas dispersas."
+          "intro": "El cliente enfrentaba un problema común en equipos comerciales: la gestión de ventas estaba <accent>distribuida entre varios canales</accent> como WhatsApp, redes sociales y correo electrónico, lo que dificultaba mantener orden y continuidad en el seguimiento. Esto generaba situaciones como:",
+          "list1": "Leads sin seguimiento claro",
+          "list2": "Conversaciones dispersas entre asesores",
+          "list3": "Falta de visibilidad sobre el avance del proceso comercial",
+          "list4": "Procesos manuales que consumían tiempo operativo",
+          "afterList": "",
+          "closing": "El reto principal era diseñar una solución que permitiera <accent>controlar el flujo completo de ventas</accent> sin agregar fricción ni complejidad al trabajo del equipo."
         },
         "solution": {
           "label": "Solution",
           "title": "La solución",
-          "paragraph1": "El enfoque incluyó <accent>mapear los procesos</accent> del equipo y definir una hoja de ruta alineada a sus necesidades reales de seguimiento y cierre.",
-          "paragraph2": "Desarrollamos una plataforma con interfaz <accent>intuitiva</accent> que permite gestionar contactos, oportunidades y actividades desde un mismo lugar, con <accent>reportes integrados</accent>.",
-          "listTitle": "La plataforma incluye:",
-          "list1": "Pipeline de ventas configurable",
-          "list2": "Gestión de contactos y empresas",
-          "list3": "Actividades y recordatorios",
-          "list4": "Reportes y dashboards",
-          "list5": "Integraciones y API para extender funcionalidad"
+          "paragraph1": "Para resolver este reto, desarrollamos un <accent>CRM multicanal</accent> que conecta distintos canales de comunicación en un solo sistema.",
+          "paragraph2": "Más que crear un sistema complejo, el objetivo fue desarrollar una herramienta <accent>intuitiva</accent> que ayudara al equipo a trabajar con mayor orden, rapidez y control.",
+          "listTitle": "La solución permite:",
+          "list1": "Centralizar conversaciones provenientes de distintos canales",
+          "list2": "Asignar leads automáticamente al equipo",
+          "list3": "Visualizar claramente el estatus de cada oportunidad",
+          "list4": "Ejecutar campañas dirigidas según el tipo de cliente",
+          "list5": "Apoyar el seguimiento mediante agentes de inteligencia artificial"
         },
         "results": {
           "label": "Results",
           "title": "Resultados",
-          "paragraph": "El resultado fue un CRM <accent>adaptado al negocio</accent>, construido en <accent>colaboración con el cliente</accent> para validar flujos y entregar una herramienta que el equipo comercial adopta día a día, con claridad y trazabilidad del pipeline."
+          "paragraph": "Al finalizar el proyecto, el cliente logró <accent>centralizar completamente</accent> su seguimiento comercial y obtener <accent>visibilidad total</accent> sobre sus conversaciones y oportunidades de venta. Esto permitió mejorar la organización interna, reducir tiempos operativos gracias a la automatización y optimizar el proceso comercial. Además, se alcanzó el seguimiento del <accent>100% de las conversaciones</accent> y una reducción aproximada del <accent>15% en costos operativos</accent>, derivada de una gestión más estructurada y eficiente. El resultado fue un flujo comercial más claro, ordenado y escalable."
         },
         "cta": {
-          "subtitle": "Desarrollo a la medida",
-          "titleLine1": "Claridad para el usuario.",
-          "titleLine2": "Escalabilidad para el negocio.",
-          "description": "Si estás construyendo un producto digital y necesitas que sea claro para el usuario y escalable para el negocio, podemos ayudarte a desarrollarlo a la medida.",
-          "ctaLabel": "Contáctanos"
+          "subtitle": "",
+          "titleLine1": "",
+          "titleLine2": "",
+          "description": "Si estás evaluando desarrollar una solución similar, podemos ayudarte a estructurarla y convertirla en un producto funcional y escalable.",
+          "ctaLabel": "Hablemos de tu proyecto"
         },
         "sidebar": {
           "title": "Detalles del proyecto",
@@ -234,8 +234,8 @@
       "ebm": {
         "stackLabel": "Stack",
         "hero": {
-          "title": "EBM | Gestión náutica",
-          "description": "Plataforma para gestión y operación náutica, con visibilidad y control centralizado.",
+          "title": "EBM | App para gestión de mantenimiento de yates",
+          "description": "Aplicación diseñada para centralizar tareas, servicios y suscripciones para optimizar la operación técnica y la comunicación con clientes.",
           "industry": "Sector náutico y marítimo",
           "solutionType": "Plataforma móvil y web",
           "heroImageAlt": "EBM - Gestión náutica"
@@ -277,8 +277,8 @@
           "subtitle": "Desarrollo a la medida",
           "titleLine1": "Claridad para el usuario.",
           "titleLine2": "Escalabilidad para el negocio.",
-          "description": "Si estás construyendo un producto digital y necesitas que sea claro para el usuario y escalable para el negocio, podemos ayudarte a desarrollarlo a la medida.",
-          "ctaLabel": "Contáctanos"
+          "description": "Si estás evaluando desarrollar una solución similar, podemos ayudarte a estructurarla y convertirla en un producto funcional y escalable.",
+          "ctaLabel": "Hablemos de tu proyecto"
         },
         "sidebar": {
           "title": "Detalles del proyecto",
@@ -302,8 +302,8 @@
       "digitalRanch": {
         "stackLabel": "Stack",
         "hero": {
-          "title": "Digital Ranch | App móvil",
-          "description": "Aplicación móvil que conecta la operación en campo con el registro digital, simplificando la gestión y el seguimiento.",
+          "title": "Digital Ranch | App para gestión ganadera",
+          "description": "Aplicación diseñada para registrar y controlar información ganadera en tiempo real, incluso en zonas sin conexión.",
           "industry": "Operaciones de campo y gestión",
           "solutionType": "App móvil multiplataforma",
           "heroImageAlt": "Digital Ranch - App móvil"
@@ -345,8 +345,8 @@
           "subtitle": "Desarrollo a la medida",
           "titleLine1": "Claridad para el usuario.",
           "titleLine2": "Escalabilidad para el negocio.",
-          "description": "Si estás construyendo un producto digital y necesitas que sea claro para el usuario y escalable para el negocio, podemos ayudarte a desarrollarlo a la medida.",
-          "ctaLabel": "Contáctanos"
+          "description": "Si estás evaluando desarrollar una solución similar, podemos ayudarte a estructurarla y convertirla en un producto funcional y escalable.",
+          "ctaLabel": "Hablemos de tu proyecto"
         },
         "sidebar": {
           "title": "Detalles del proyecto",
@@ -370,8 +370,8 @@
       "easySales": {
         "stackLabel": "Stack",
         "hero": {
-          "title": "Easy Sales | E-commerce",
-          "description": "Plataforma de e-commerce que conecta inventario, pagos y operación diaria en un solo flujo digital.",
+          "title": "EasySales | Plataforma de delivery de productos",
+          "description": "Aplicación que conecta clientes, restaurantes y repartidores para gestionar pedidos y entregas en tiempo real.",
           "industry": "E-commerce y retail",
           "solutionType": "Plataforma web",
           "heroImageAlt": "Easy Sales - E-commerce"
@@ -413,8 +413,8 @@
           "subtitle": "Desarrollo a la medida",
           "titleLine1": "Claridad para el usuario.",
           "titleLine2": "Escalabilidad para el negocio.",
-          "description": "Si estás construyendo un producto digital y necesitas que sea claro para el usuario y escalable para el negocio, podemos ayudarte a desarrollarlo a la medida.",
-          "ctaLabel": "Contáctanos"
+          "description": "Si estás evaluando desarrollar una solución similar, podemos ayudarte a estructurarla y convertirla en un producto funcional y escalable.",
+          "ctaLabel": "Hablemos de tu proyecto"
         },
         "sidebar": {
           "title": "Detalles del proyecto",
@@ -438,8 +438,8 @@
       "cipreses": {
         "stackLabel": "Stack",
         "hero": {
-          "title": "Criadero Los Cipreses | Sitio web",
-          "description": "Sitio web que comunica la propuesta de valor del criadero de forma clara, visual y confiable.",
+          "title": "Criadero Los Cipreses | Sitio web para venta de caballos",
+          "description": "Sitio web desarrollado para presentar el catálogo de caballos y facilitar el contacto directo con clientes potenciales.",
           "industry": "Agro y criaderos",
           "solutionType": "Sitio web",
           "heroImageAlt": "Criadero Los Cipreses - Sitio web"
@@ -481,8 +481,8 @@
           "subtitle": "Desarrollo a la medida",
           "titleLine1": "Claridad para el usuario.",
           "titleLine2": "Escalabilidad para el negocio.",
-          "description": "Si estás construyendo un producto digital y necesitas que sea claro para el usuario y escalable para el negocio, podemos ayudarte a desarrollarlo a la medida.",
-          "ctaLabel": "Contáctanos"
+          "description": "Si estás evaluando desarrollar una solución similar, podemos ayudarte a estructurarla y convertirla en un producto funcional y escalable.",
+          "ctaLabel": "Hablemos de tu proyecto"
         },
         "sidebar": {
           "title": "Detalles del proyecto",
@@ -508,8 +508,8 @@
       "maggiore": {
         "stackLabel": "Stack",
         "hero": {
-          "title": "Maggiore | Sistema de tokens y gestión digital",
-          "description": "Plataforma de tokens y gestión digital con interfaz clara y arquitectura robusta para administrar transacciones.",
+          "title": "Maggiore | Sistema de gestión creativa por tokens",
+          "description": "Sistema digital que organiza solicitudes creativas, controla presupuestos y mejora la gestión operativa entre equipos.",
           "industry": "Tokens y gestión digital",
           "solutionType": "Plataforma",
           "heroImageAlt": "Maggiore - Sistema de tokens"
@@ -550,8 +550,8 @@
           "subtitle": "Desarrollo a la medida",
           "titleLine1": "Claridad para el usuario.",
           "titleLine2": "Escalabilidad para el negocio.",
-          "description": "Si estás construyendo un producto digital y necesitas que sea claro para el usuario y escalable para el negocio, podemos ayudarte a desarrollarlo a la medida.",
-          "ctaLabel": "Contáctanos"
+          "description": "Si estás evaluando desarrollar una solución similar, podemos ayudarte a estructurarla y convertirla en un producto funcional y escalable.",
+          "ctaLabel": "Hablemos de tu proyecto"
         },
         "sidebar": {
           "title": "Detalles del proyecto",
@@ -577,8 +577,8 @@
       "washapp": {
         "stackLabel": "Stack",
         "hero": {
-          "title": "WashApp | App móvil",
-          "description": "App móvil de lavado de autos a domicilio con experiencia sencilla para usuarios y operadores en campo.",
+          "title": "WashApp | App para servicios de auto lavado",
+          "description": "Aplicación que permite solicitar servicios a domicilio y gestionar la operación, pagos y técnicos desde un solo sistema.",
           "industry": "Servicios a domicilio",
           "solutionType": "App móvil",
           "heroImageAlt": "WashApp - Lavado de autos a domicilio"
@@ -620,8 +620,8 @@
           "subtitle": "Desarrollo a la medida",
           "titleLine1": "Claridad para el usuario.",
           "titleLine2": "Escalabilidad para el negocio.",
-          "description": "Si estás construyendo un producto digital y necesitas que sea claro para el usuario y escalable para el negocio, podemos ayudarte a desarrollarlo a la medida.",
-          "ctaLabel": "Contáctanos"
+          "description": "Si estás evaluando desarrollar una solución similar, podemos ayudarte a estructurarla y convertirla en un producto funcional y escalable.",
+          "ctaLabel": "Hablemos de tu proyecto"
         },
         "sidebar": {
           "title": "Detalles del proyecto",
