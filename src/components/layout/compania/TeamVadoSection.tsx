@@ -2,11 +2,27 @@ import { useTranslation } from 'react-i18next';
 import { CenterContainer } from '@/components/layout/CenterContainer';
 import { Marquee } from '@/components/ui/marquee';
 
-const TEAM_IMAGES = Array.from({ length: 18 }, (_, i) => `/team-vado/vado-team-${i + 1}.webp`);
+// Solo vado-team-1 a vado-team-18. Elige qué números va en cada fila.
+const ROW1_IMAGE_NUMBERS: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+const ROW2_IMAGE_NUMBERS: number[] = [10, 11, 12, 13, 14, 15, 16, 17, 18];
 
-/** Rectangular y más grandes */
+const toPaths = (nums: number[]) => nums.map((n) => `/team-vado/vado-team-${n}.webp`);
+
+function shuffle<T>(arr: T[]): T[] {
+  const out = [...arr];
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [out[i], out[j]] = [out[j], out[i]];
+  }
+  return out;
+}
+
+const TEAM_IMAGES_ROW1 = shuffle(toPaths(ROW1_IMAGE_NUMBERS));
+const TEAM_IMAGES_ROW2 = shuffle(toPaths(ROW2_IMAGE_NUMBERS));
+
+/** Contenedores más altos y más largos para el carrusel */
 const IMAGE_CLASS =
-  'h-36 w-[14rem] shrink-0 overflow-hidden rounded-lg border border-border bg-muted object-cover sm:h-40 sm:w-56 md:h-44 md:w-64 lg:h-48 lg:w-72';
+  'h-48 w-[20rem] shrink-0 overflow-hidden rounded-xl border border-border bg-muted object-cover sm:h-52 sm:w-[22rem] md:h-56 md:w-[24rem] lg:h-60 lg:w-[28rem]';
 
 function TeamMarqueeRow({ images, direction }: { images: string[]; direction: 'left' | 'right' }) {
   return (
@@ -17,8 +33,8 @@ function TeamMarqueeRow({ images, direction }: { images: string[]; direction: 'l
           src={src}
           alt=""
           className={IMAGE_CLASS}
-          width={450}
-          height={350}
+          width={560}
+          height={380}
           loading="lazy"
         />
       ))}
@@ -53,8 +69,8 @@ export function TeamVadoSection() {
 
       <div className="bg-white py-6 md:py-8">
         <div className="flex flex-col gap-6 md:gap-8">
-          <TeamMarqueeRow images={TEAM_IMAGES} direction="left" />
-          <TeamMarqueeRow images={TEAM_IMAGES} direction="right" />
+          <TeamMarqueeRow images={TEAM_IMAGES_ROW1} direction="left" />
+          <TeamMarqueeRow images={TEAM_IMAGES_ROW2} direction="right" />
         </div>
       </div>
     </section>
