@@ -21,7 +21,6 @@ export default function SolucionesIA() {
           titleLine1={t('services.aiSolutions.hero.titleLine1')}
           titleLine2={t('services.aiSolutions.hero.titleLine2')}
           tagline={t('services.aiSolutions.hero.tagline')}
-          cta={t('services.aiSolutions.hero.cta')}
         />
         <AISolutionsTabsSection />
         <AIProcessSection />

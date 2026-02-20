@@ -23,7 +23,6 @@ export default function AmpliacionDePersonal() {
           titleLine1={t('services.staffAugmentation.hero.titleLine1')}
           titleLine2={t('services.staffAugmentation.hero.titleLine2')}
           tagline={t('services.staffAugmentation.hero.tagline')}
-          cta={t('services.staffAugmentation.hero.cta')}
         />
         {/* <TrustedBrands /> */}
         <StaffAugmentationIntroSection />

@@ -21,7 +21,6 @@ export default function CulturaYTalento() {
           titleLine1={t('cultureYTalentoPage.hero.titleLine1')}
           titleLine2={t('cultureYTalentoPage.hero.titleLine2')}
           description={t('cultureYTalentoPage.hero.description')}
-          cta={t('cultureYTalentoPage.hero.cta')}
         />
         <FiveVsSection />
         <CoreValuesSection />

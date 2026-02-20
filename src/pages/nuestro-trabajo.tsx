@@ -18,7 +18,6 @@ export default function NuestroTrabajo() {
           titleLine1={t('ourWork.hero.titleLine1')}
           titleLine2={t('ourWork.hero.titleLine2')}
           tagline={t('ourWork.hero.tagline')}
-          cta={t('ourWork.hero.cta')}
         />
         <OurWorkProjectsSection />
         <FAQSection />

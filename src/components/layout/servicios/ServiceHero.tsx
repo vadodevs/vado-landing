@@ -1,8 +1,5 @@
 import { motion } from 'motion/react';
-import { Link } from 'wouter';
-import { Button } from '@/components/ui/button';
 import { CenterContainer } from '@/components/layout/CenterContainer';
-import { useLocale } from '@/hooks/useLocale';
 
 const EASING: [number, number, number, number] = [0.25, 0.46, 0.45, 0.94];
 
@@ -12,11 +9,7 @@ export type ServiceHeroProps = {
   titleLine1: string;
   titleLine2: string;
   tagline: string;
-  cta: string;
-  ctaHref?: string;
 };
-
-const DEFAULT_CTA_HREF = '/contacto';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
@@ -32,10 +25,7 @@ export function ServiceHero({
   titleLine1,
   titleLine2,
   tagline,
-  cta,
-  ctaHref = DEFAULT_CTA_HREF,
 }: ServiceHeroProps) {
-  const { path } = useLocale();
 
   return (
     <motion.section
@@ -88,21 +78,6 @@ export function ServiceHero({
               >
                 {tagline}
               </motion.p>
-              <motion.div
-                className="mt-4"
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.45, ease: [0.25, 0.46, 0.45, 0.94] }}
-              >
-                <Link href={path(ctaHref)} className="inline-block">
-                  <Button
-                    size="lg"
-                    className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg px-5 py-4 text-sm font-bold"
-                  >
-                    {cta}
-                  </Button>
-                </Link>
-              </motion.div>
             </div>
           </div>
         </CenterContainer>

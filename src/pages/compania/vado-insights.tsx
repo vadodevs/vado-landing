@@ -19,7 +19,6 @@ export default function VadoInsights() {
           titleLine2={t('insightsPage.hero.titleLine2')}
           subtitle={t('insightsPage.hero.subtitle')}
           description={t('insightsPage.hero.description')}
-          cta={t('insightsPage.hero.cta')}
         />
         <InsightsArticlesSection />
         <InsightsStayUpdatedSection />

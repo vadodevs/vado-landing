@@ -10,7 +10,6 @@ export function SoftwareHero() {
       titleLine1={t('services.customSoftware.hero.titleLine1')}
       titleLine2={t('services.customSoftware.hero.titleLine2')}
       tagline={t('services.customSoftware.hero.tagline')}
-      cta={t('services.customSoftware.hero.cta')}
     />
   );
 }
