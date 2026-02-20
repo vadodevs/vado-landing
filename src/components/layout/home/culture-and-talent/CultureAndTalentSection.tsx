@@ -10,7 +10,7 @@ type CultureAndTalentSectionProps = {
 };
 
 export function CultureAndTalentSection({
-  imageSrc = '/sections-image/coworking.png',
+  imageSrc = '/team-vado/vado-team-3.webp',
   imageAlt,
 }: CultureAndTalentSectionProps) {
   const { t } = useTranslation();
@@ -20,21 +20,21 @@ export function CultureAndTalentSection({
     <section className="bg-background py-12 md:py-16 lg:py-20">
       <CenterContainer>
         <div className="flex flex-col items-center gap-10 lg:flex-row lg:items-center lg:gap-14">
-          {/* Left: image */}
           <div className="relative w-full flex-1 lg:max-w-[50%]">
-            <img
-              src={imageSrc}
-              alt={imageAlt ?? t('home.cultureAndTalent.imageAlt')}
-              className="w-full rounded-2xl object-cover shadow-md"
-            />
+            <div className="aspect-16/10 w-full overflow-hidden rounded-2xl shadow-md">
+              <img
+                src={imageSrc}
+                alt={imageAlt ?? t('home.cultureAndTalent.imageAlt')}
+                className="h-full w-full object-cover object-center"
+              />
+            </div>
           </div>
 
-          {/* Right: text + CTA */}
           <div className="flex max-w-xl flex-1 flex-col lg:max-w-[50%] lg:text-left">
-            <p className="text-muted-foreground mb-2 text-xs font-medium uppercase tracking-wider md:text-sm">
+            <p className="text-muted-foreground mb-2 text-xs font-medium tracking-wider uppercase md:text-sm">
               {t('home.cultureAndTalent.label')}
             </p>
-            <h2 className="mb-4 text-3xl font-bold leading-tight text-[#19314c] md:text-4xl">
+            <h2 className="mb-4 text-3xl leading-tight font-bold text-[#19314c] md:text-4xl">
               {t('home.cultureAndTalent.titlePart1')}{' '}
               <span className="text-primary">{t('home.cultureAndTalent.titlePart2')}</span>
             </h2>

@@ -9,7 +9,7 @@ export function StaffAugmentationSection() {
   const { path } = useLocale();
 
   return (
-    <section className="relative w-full overflow-hidden py-12 md:py-16 lg:py-20">
+    <section className="relative w-full overflow-hidden py-12 md:py-16 lg:py-30">
       <img
         src="/backgrounds/rectangles.png"
         alt=""
@@ -20,13 +20,15 @@ export function StaffAugmentationSection() {
       <CenterContainer className="relative">
         <div className="relative flex flex-col gap-4 lg:min-h-[400px]">
           <div className="flex w-full justify-center lg:absolute lg:top-1/2 lg:left-10 lg:z-0 lg:max-w-150 lg:-translate-y-1/2">
-            <img
-              src="/sections-image/coworking.png"
-              alt={t('home.staffAugmentation.imageAlt')}
-              className="w-full max-w-lg rounded-2xl object-cover shadow-xl"
-            />
+            <div className="aspect-16/10 w-full max-w-lg overflow-hidden rounded-2xl shadow-xl">
+              <img
+                src="/team-vado/vado-team-8.webp"
+                alt={t('home.staffAugmentation.imageAlt')}
+                className="h-full w-full object-cover object-center"
+              />
+            </div>
           </div>
-          <div className="flex w-full flex-col lg:absolute lg:top-80 lg:right-20 lg:z-10 lg:w-[58%] lg:-translate-y-1/2">
+          <div className="flex w-full flex-col lg:absolute lg:top-90 lg:right-0 lg:z-10 lg:w-[58%] lg:-translate-y-1/2">
             <div className="relative overflow-hidden rounded-2xl bg-[#203853] px-6 py-10 md:px-10 md:py-12 lg:px-12 lg:py-8">
               <img
                 src="/backgrounds/bg-decoration.svg"
