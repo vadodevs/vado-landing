@@ -7,7 +7,7 @@ import AmpliacionDePersonal from '@/pages/servicios/ampliacion-de-personal'
 import NuestroTrabajo from '@/pages/nuestro-trabajo'
 import NuestroTrabajoProject from '@/pages/nuestro-trabajo/[slug]'
 import VadoInsights from '@/pages/compania/vado-insights'
-import VadoInsightsArticle from '@/pages/compania/vado-insights/[slug]'
+import ArticleRouter from '@/pages/compania/articulos/ArticleRouter'
 import CulturaYTalento from '@/pages/compania/cultura-y-talento'
 import Contacto from '@/pages/contacto'
 import Gracias from '@/pages/gracias'
@@ -27,7 +27,7 @@ export function Router() {
       <Route path="/:lang/servicios/ampliacion-de-personal" component={withLocale(AmpliacionDePersonal)} />
       <Route path="/:lang/nuestro-trabajo/:slug" component={withLocale(NuestroTrabajoProject)} />
       <Route path="/:lang/nuestro-trabajo" component={withLocale(NuestroTrabajo)} />
-      <Route path="/:lang/compania/vado-insights/:slug" component={withLocale(VadoInsightsArticle)} />
+      <Route path="/:lang/compania/articulos/:articleName" component={withLocale(ArticleRouter)} />
       <Route path="/:lang/compania/vado-insights" component={withLocale(VadoInsights)} />
       <Route path="/:lang/compania/cultura-y-talento" component={withLocale(CulturaYTalento)} />
       <Route path="/:lang/contacto" component={withLocale(Contacto)} />

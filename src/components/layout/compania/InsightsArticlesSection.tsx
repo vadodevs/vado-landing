@@ -137,7 +137,7 @@ export function InsightsArticlesSection() {
                 tag={article.tag}
                 title={article.title}
                 description={article.description}
-                href={path(`/compania/vado-insights/${article.slug}`)}
+                href={path(`/compania/articulos/${article.slug}`)}
               />
             </motion.div>
           ))}

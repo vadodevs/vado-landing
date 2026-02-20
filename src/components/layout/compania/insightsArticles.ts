@@ -1,6 +1,6 @@
 /**
  * Ids and slugs for Vado Insights articles.
- * Slug is used in URL: /compania/vado-insights/:slug
+ * Slug is used in URL: /compania/articulos/:slug (one folder per article).
  */
 export const INSIGHTS_ARTICLE_IDS = [
   'article1',
