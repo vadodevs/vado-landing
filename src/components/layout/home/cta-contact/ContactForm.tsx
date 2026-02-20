@@ -629,7 +629,7 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
                   </p>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor={`${idPrefix}apply-name`}>{t('home.ctaContact.fullName')}<span className="text-red-500"> *</span></Label>
+                  <Label htmlFor={`${idPrefix}apply-name`}>{t('home.ctaContact.fullName')}<span> *</span></Label>
                   <Input
                     id={`${idPrefix}apply-name`}
                     type="text"
@@ -648,7 +648,7 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
                   )}
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor={`${idPrefix}apply-email`}>{t('home.ctaContact.email')}<span className="text-red-500"> *</span></Label>
+                  <Label htmlFor={`${idPrefix}apply-email`}>{t('home.ctaContact.email')}<span> *</span></Label>
                   <Input
                     id={`${idPrefix}apply-email`}
                     type="email"
@@ -667,7 +667,7 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
                   )}
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor={`${idPrefix}apply-phone`}>{t('home.ctaContact.phone')}<span className="text-red-500"> *</span></Label>
+                  <Label htmlFor={`${idPrefix}apply-phone`}>{t('home.ctaContact.phone')}<span> *</span></Label>
                   <Input
                     id={`${idPrefix}apply-phone`}
                     type="tel"
@@ -688,7 +688,7 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
                   )}
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor={`${idPrefix}apply-role`}>{t('home.ctaContact.applyForm.roleLabel')}<span className="text-red-500"> *</span></Label>
+                  <Label htmlFor={`${idPrefix}apply-role`}>{t('home.ctaContact.applyForm.roleLabel')}<span> *</span></Label>
                   <Input
                     id={`${idPrefix}apply-role`}
                     type="text"
@@ -902,7 +902,7 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
                 <div className="space-y-2">
                   <Label htmlFor={`${idPrefix}apply-cv`}>
                     {t('home.ctaContact.applyForm.attachCV')}
-                    <span className="text-destructive"> *</span>
+                    <span> *</span>
                   </Label>
                   <label
                     htmlFor={`${idPrefix}apply-cv`}
@@ -1061,7 +1061,7 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
               className="flex flex-col gap-4"
             >
         <div className="space-y-2">
-          <Label htmlFor={`${idPrefix}name`}>{t('home.ctaContact.fullName')}<span className="text-red-500"> *</span></Label>
+          <Label htmlFor={`${idPrefix}name`}>{t('home.ctaContact.fullName')}<span> *</span></Label>
           <Input
             id={`${idPrefix}name`}
             name="fullName"
@@ -1082,7 +1082,7 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
           )}
         </div>
         <div className="space-y-2">
-          <Label htmlFor={`${idPrefix}email`}>{t('home.ctaContact.email')}<span className="text-red-500"> *</span></Label>
+          <Label htmlFor={`${idPrefix}email`}>{t('home.ctaContact.email')}<span> *</span></Label>
           <Input
             id={`${idPrefix}email`}
             name="email"
@@ -1103,7 +1103,7 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
           )}
         </div>
         <div className="space-y-2">
-          <Label htmlFor={`${idPrefix}company`}>{t('home.ctaContact.companyName')}<span className="text-red-500"> *</span></Label>
+          <Label htmlFor={`${idPrefix}company`}>{t('home.ctaContact.companyName')}<span> *</span></Label>
           <Input
             id={`${idPrefix}company`}
             name="company"
@@ -1124,7 +1124,7 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
           )}
         </div>
         <div className="space-y-2">
-          <Label htmlFor={`${idPrefix}phone`}>{t('home.ctaContact.phone')}<span className="text-red-500"> *</span></Label>
+          <Label htmlFor={`${idPrefix}phone`}>{t('home.ctaContact.phone')}<span> *</span></Label>
           <Input
             id={`${idPrefix}phone`}
             name="phone"
@@ -1147,7 +1147,7 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
           )}
         </div>
         <div className="space-y-2">
-          <Label htmlFor={`${idPrefix}message`}>{t('home.ctaContact.message')}<span className="text-red-500"> *</span></Label>
+          <Label htmlFor={`${idPrefix}message`}>{t('home.ctaContact.message')}<span> *</span></Label>
           <Textarea
             id={`${idPrefix}message`}
             name="projectDescription"
