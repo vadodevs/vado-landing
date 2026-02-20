@@ -128,7 +128,7 @@ export function InsightsArticlesSection() {
           key={currentPage}
           className="grid gap-6 sm:grid-cols-2 lg:gap-8"
           variants={container}
-          initial="hidden"
+          initial="visible"
           animate="visible"
         >
           {paginatedArticles.map((article) => (
