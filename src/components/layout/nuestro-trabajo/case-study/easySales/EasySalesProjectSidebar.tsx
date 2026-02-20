@@ -37,7 +37,7 @@ export function EasySalesProjectSidebar() {
               {t('ourWork.caseStudy.easySales.sidebar.productType')}
             </dt>
             <dd className="font-medium text-slate-700">
-              {t('ourWork.caseStudy.easySales.sidebar.productTypeWeb')}
+              {t('ourWork.caseStudy.easySales.sidebar.productTypePlatform')}
             </dd>
           </div>
         </dl>

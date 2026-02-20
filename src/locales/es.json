@@ -96,7 +96,7 @@
           "title": "ZenQR | Plataforma SaaS para códigos QR",
           "description": "Plataforma para crear y gestionar códigos QR con analítica, diseño personalizado e integraciones en un solo panel.",
           "industry": "Retail, eventos y packaging",
-          "solutionType": "Plataforma SaaS",
+          "solutionType": "Plataforma",
           "ctaLabel": "Visitar sitio web",
           "ctaAriaLabel": "Visitar sitio web de ZenQR",
           "heroImageAlt": "ZenQR - Dashboard y app"
@@ -148,6 +148,7 @@
           "title": "Detalles del proyecto",
           "productType": "Tipo de producto",
           "productTypeWeb": "Aplicación web",
+          "productTypePlatform": "Plataforma",
           "productTypeMobile": "App móvil",
           "visitWebsite": "Visitar sitio web"
         },
@@ -169,7 +170,7 @@
           "title": "Sendero | CRM con IA para la gestión comercial multicanal",
           "description": "Plataforma que centraliza conversaciones y automatiza el seguimiento comercial para mejorar el control del proceso de ventas.",
           "industry": "Ventas y gestión comercial",
-          "solutionType": "Plataforma CRM",
+          "solutionType": "Plataforma",
           "ctaLabel": "Visitar sitio web",
           "ctaAriaLabel": "Visitar sitio web de Sendero",
           "heroImageAlt": "Sendero CRM"
@@ -220,6 +221,7 @@
           "title": "Detalles del proyecto",
           "productType": "Tipo de producto",
           "productTypeWeb": "Aplicación web",
+          "productTypePlatform": "Plataforma",
           "productTypeMobile": "App móvil",
           "visitWebsite": "Visitar sitio web",
           "websiteUrl": "https://sendero-crm.com"
@@ -242,7 +244,7 @@
           "title": "EBM | App para gestión de mantenimiento de yates",
           "description": "Aplicación diseñada para centralizar tareas, servicios y suscripciones para optimizar la operación técnica y la comunicación con clientes.",
           "industry": "Sector náutico y marítimo",
-          "solutionType": "Plataforma móvil y web",
+          "solutionType": "Plataforma",
           "heroImageAlt": "EBM - Gestión náutica"
         },
         "overview": {
@@ -292,6 +294,7 @@
           "title": "Detalles del proyecto",
           "productType": "Tipo de producto",
           "productTypeWeb": "Aplicación web",
+          "productTypePlatform": "Plataforma",
           "productTypeMobile": "App móvil",
           "visitWebsite": "Visitar sitio web"
         },
@@ -313,7 +316,7 @@
           "title": "Digital Ranch | App para gestión ganadera",
           "description": "Aplicación diseñada para registrar y controlar información ganadera en tiempo real, incluso en zonas sin conexión.",
           "industry": "Operaciones de campo y gestión",
-          "solutionType": "App móvil multiplataforma",
+          "solutionType": "App móvil",
           "heroImageAlt": "Digital Ranch - App móvil"
         },
         "overview": {
@@ -383,7 +386,7 @@
           "title": "EasySales | Plataforma de delivery de productos",
           "description": "Aplicación que conecta clientes, restaurantes y repartidores para gestionar pedidos y entregas en tiempo real.",
           "industry": "E-commerce y retail",
-          "solutionType": "Plataforma web",
+          "solutionType": "Plataforma",
           "heroImageAlt": "Easy Sales - E-commerce"
         },
         "overview": {
@@ -432,6 +435,7 @@
           "title": "Detalles del proyecto",
           "productType": "Tipo de producto",
           "productTypeWeb": "Aplicación web",
+          "productTypePlatform": "Plataforma",
           "productTypeMobile": "App móvil",
           "visitWebsite": "Visitar sitio web"
         },

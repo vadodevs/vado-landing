@@ -37,7 +37,7 @@ export function SenderoProjectSidebar() {
               {t('ourWork.caseStudy.sendero.sidebar.productType')}
             </dt>
             <dd className="font-medium text-slate-700">
-              {t('ourWork.caseStudy.sendero.sidebar.productTypeWeb')}
+              {t('ourWork.caseStudy.sendero.sidebar.productTypePlatform')}
             </dd>
           </div>
         </dl>

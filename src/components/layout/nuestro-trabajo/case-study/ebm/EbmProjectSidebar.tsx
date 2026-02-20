@@ -39,7 +39,7 @@ export function EbmProjectSidebar() {
               {t('ourWork.caseStudy.ebm.sidebar.productType')}
             </dt>
             <dd className="font-medium text-slate-700">
-              {t('ourWork.caseStudy.ebm.sidebar.productTypeMobile')}
+              {t('ourWork.caseStudy.ebm.sidebar.productTypePlatform')}
             </dd>
           </div>
         </dl>

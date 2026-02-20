@@ -96,7 +96,7 @@
           "title": "ZenQR - SaaS QR code platform",
           "description": "QR code platform with customization, real-time metrics, and integrations for events and payments.",
           "industry": "Retail, events & packaging",
-          "solutionType": "SaaS platform",
+          "solutionType": "Platform",
           "ctaLabel": "Visit website",
           "ctaAriaLabel": "Visit ZenQR website",
           "heroImageAlt": "ZenQR - Dashboard and app"
@@ -147,6 +147,7 @@
           "title": "Project details",
           "productType": "Product type",
           "productTypeWeb": "Web application",
+          "productTypePlatform": "Platform",
           "productTypeMobile": "Mobile app",
           "visitWebsite": "Visit website"
         },
@@ -168,7 +169,7 @@
           "title": "Sendero | CRM",
           "description": "Custom CRM for customer relationship management, sales pipeline, and follow-up.",
           "industry": "Sales and commercial management",
-          "solutionType": "CRM platform",
+          "solutionType": "Platform",
           "ctaLabel": "Visit website",
           "ctaAriaLabel": "Visit Sendero website",
           "heroImageAlt": "Sendero CRM"
@@ -219,6 +220,7 @@
           "title": "Project details",
           "productType": "Product type",
           "productTypeWeb": "Web application",
+          "productTypePlatform": "Platform",
           "productTypeMobile": "Mobile app",
           "visitWebsite": "Visit website",
           "websiteUrl": "https://sendero-crm.com"
@@ -241,7 +243,7 @@
           "title": "EBM | Nautical management",
           "description": "Platform for nautical management and operations, with centralized visibility and control.",
           "industry": "Nautical and maritime sector",
-          "solutionType": "Mobile and web platform",
+          "solutionType": "Platform",
           "heroImageAlt": "EBM - Nautical management"
         },
         "overview": {
@@ -290,6 +292,7 @@
           "title": "Project details",
           "productType": "Product type",
           "productTypeWeb": "Web application",
+          "productTypePlatform": "Platform",
           "productTypeMobile": "Mobile app",
           "visitWebsite": "Visit website"
         },
@@ -311,7 +314,7 @@
           "title": "Digital Ranch | Mobile app",
           "description": "Mobile app that connects field operations with digital records, simplifying management and follow-up.",
           "industry": "Field operations and management",
-          "solutionType": "Cross-platform mobile app",
+          "solutionType": "Mobile app",
           "heroImageAlt": "Digital Ranch - Mobile app"
         },
         "overview": {
@@ -381,7 +384,7 @@
           "title": "Easy Sales | E-commerce",
           "description": "E-commerce platform that connects inventory, payments and daily operations in a single digital flow.",
           "industry": "E-commerce and retail",
-          "solutionType": "Web platform",
+          "solutionType": "Platform",
           "heroImageAlt": "Easy Sales - E-commerce"
         },
         "overview": {
@@ -430,6 +433,7 @@
           "title": "Project details",
           "productType": "Product type",
           "productTypeWeb": "Web application",
+          "productTypePlatform": "Platform",
           "productTypeMobile": "Mobile app",
           "visitWebsite": "Visit website"
         },

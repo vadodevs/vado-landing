@@ -35,7 +35,7 @@ export function ZenqrProjectSidebar() {
               {t('ourWork.caseStudy.zenqr.sidebar.productType')}
             </dt>
             <dd className="font-medium text-slate-700">
-              {t('ourWork.caseStudy.zenqr.sidebar.productTypeWeb')}
+              {t('ourWork.caseStudy.zenqr.sidebar.productTypePlatform')}
             </dd>
           </div>
         </dl>
