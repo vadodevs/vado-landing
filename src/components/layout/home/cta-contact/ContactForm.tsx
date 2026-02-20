@@ -1,12 +1,13 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { Link } from 'wouter';
 import { AnimatePresence, motion } from 'motion/react';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from '@/hooks/useLocale';
 import { CheckCircle2, Info } from 'lucide-react';
 import { FaArrowLeft } from 'react-icons/fa';
+import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import {
   Tooltip,
@@ -18,6 +19,43 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
+
+/** Esquema Zod para el formulario de contacto (no postularse). Todos los campos obligatorios; teléfono solo dígitos, mínimo 10. */
+function buildContactSchema(messages: {
+  required: string;
+  emailInvalid: string;
+  phoneInvalid: string;
+}) {
+  return z.object({
+    fullName: z.string().min(1, messages.required),
+    email: z.string().min(1, messages.required).email(messages.emailInvalid),
+    company: z.string().min(1, messages.required),
+    phone: z
+      .string()
+      .min(1, messages.required)
+      .refine(
+        (val) => val.replace(/\D/g, '').length >= 10,
+        messages.phoneInvalid,
+      ),
+    message: z.string().min(1, messages.required),
+  });
+}
+
+type ContactFormValues = {
+  fullName: string;
+  email: string;
+  company: string;
+  phone: string;
+  message: string;
+};
+
+const initialContactValues: ContactFormValues = {
+  fullName: '',
+  email: '',
+  company: '',
+  phone: '',
+  message: '',
+};
 
 interface ContactFormProps {
   /** Prefijo para los ids de los campos (evita duplicados si hay varios formularios en la página). */
@@ -82,9 +120,64 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
   const applyCvInputRef = useRef<HTMLInputElement>(null);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const [fieldErrors, setFieldErrors] = useState<{ email?: string; phone?: string }>({});
+  const [fieldErrors, setFieldErrors] = useState<{
+    fullName?: string;
+    email?: string;
+    company?: string;
+    phone?: string;
+    message?: string;
+  }>({});
+  const [contactValues, setContactValues] = useState<ContactFormValues>(initialContactValues);
+  const [contactTouched, setContactTouched] = useState<Partial<Record<keyof ContactFormValues, boolean>>>({});
   const isPostularse = subject === SUBJECT_POSTULARSE;
   const isInApplyFlow = isPostularse && showApplyForm;
+
+  const contactSchema = buildContactSchema({
+    required: t('home.ctaContact.errors.fieldsRequired'),
+    emailInvalid: t('home.ctaContact.errors.emailInvalid'),
+    phoneInvalid: t('home.ctaContact.errors.phoneInvalid'),
+  });
+
+  const validateContactField = useCallback(
+    (field: keyof ContactFormValues, value: string): string | undefined => {
+      const payload = { ...contactValues, [field]: value };
+      const result = contactSchema.safeParse(payload);
+      if (result.success) return undefined;
+      const issue = result.error.issues.find((i) => i.path.includes(field));
+      return issue ? (issue.message as string) : undefined;
+    },
+    [contactValues, contactSchema],
+  );
+
+  const handleContactBlur = useCallback(
+    (field: keyof ContactFormValues) => {
+      setContactTouched((prev) => ({ ...prev, [field]: true }));
+      const value = contactValues[field];
+      const error = validateContactField(field, value);
+      setFieldErrors((prev) => ({ ...prev, [field]: error }));
+    },
+    [contactValues, validateContactField],
+  );
+
+  const handleContactChange = useCallback(
+    (field: keyof ContactFormValues, value: string) => {
+      setContactValues((prev) => ({ ...prev, [field]: value }));
+      if (contactTouched[field]) {
+        const error = validateContactField(field, value);
+        setFieldErrors((prev) => ({ ...prev, [field]: error }));
+      }
+    },
+    [contactTouched, validateContactField],
+  );
+
+  const handlePhoneInput = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const raw = e.target.value;
+      const digitsOnly = raw.replace(/\D/g, '');
+      handleContactChange('phone', digitsOnly);
+    },
+    [handleContactChange],
+  );
 
   const handleSubjectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;
@@ -92,6 +185,8 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
     setSubmitStatus('idle');
     setSubmitError(null);
     setFieldErrors({});
+    setContactValues(initialContactValues);
+    setContactTouched({});
     if (value !== SUBJECT_POSTULARSE) {
       setShowApplyForm(false);
       setApplyStep(1);
@@ -276,28 +371,28 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
       return;
     }
 
-    const fullName = (form.querySelector<HTMLInputElement>('[name="fullName"]')?.value ?? '').trim();
-    const email = (form.querySelector<HTMLInputElement>('[name="email"]')?.value ?? '').trim();
-    const company = (form.querySelector<HTMLInputElement>('[name="company"]')?.value ?? '').trim();
-    const phone = (form.querySelector<HTMLInputElement>('[name="phone"]')?.value ?? '').trim();
-    const message = (form.querySelector<HTMLTextAreaElement>('[name="projectDescription"]')?.value ?? '').trim();
+    const fullName = contactValues.fullName.trim();
+    const email = contactValues.email.trim();
+    const company = contactValues.company.trim();
+    const phone = contactValues.phone.trim();
+    const message = (contactValues.message ?? '').trim();
 
-    const errors: { email?: string; phone?: string } = {};
-    if (!isValidEmail(email)) errors.email = t('home.ctaContact.errors.emailInvalid');
-    if (!isValidPhone(phone)) errors.phone = t('home.ctaContact.errors.phoneInvalid');
-    if (Object.keys(errors).length > 0) {
+    const parseResult = contactSchema.safeParse({
+      fullName,
+      email,
+      company,
+      phone,
+      message,
+    });
+    if (!parseResult.success) {
+      const errors: typeof fieldErrors = {};
+      parseResult.error.issues.forEach((issue) => {
+        const key = issue.path[0] as keyof ContactFormValues;
+        if (key) errors[key] = issue.message as string;
+      });
       setFieldErrors(errors);
       setSubmitStatus('error');
-      setSubmitError(
-        errors.email && errors.phone
-          ? `${t('home.ctaContact.errors.emailInvalid')} ${t('home.ctaContact.errors.phoneInvalid')}`
-          : errors.email ?? errors.phone ?? t('home.ctaContact.errors.fieldsRequired'),
-      );
-      return;
-    }
-    if (!fullName || !company || !message) {
-      setSubmitStatus('error');
-      setSubmitError(t('home.ctaContact.errors.fieldsRequired'));
+      setSubmitError(parseResult.error.issues.map((i) => i.message).join(' '));
       return;
     }
 
@@ -346,6 +441,9 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
       setSubmitStatus('success');
       form.reset();
       setSubject('');
+      setContactValues(initialContactValues);
+      setContactTouched({});
+      setFieldErrors({});
     } catch (err) {
       setSubmitStatus('error');
       setSubmitError(err instanceof Error ? err.message : t('home.ctaContact.errors.generic'));
@@ -409,6 +507,8 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
                   setApplyCvFile(null);
                   setSubmitError(null);
                   setFieldErrors({});
+                  setContactValues(initialContactValues);
+                  setContactTouched({});
                   if (applyCvInputRef.current) applyCvInputRef.current.value = '';
                 }}
               >
@@ -896,28 +996,40 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
               className="flex flex-col gap-4"
             >
         <div className="space-y-2">
-          <Label htmlFor={`${idPrefix}name`}>{t('home.ctaContact.fullName')}</Label>
+          <Label htmlFor={`${idPrefix}name`}>{t('home.ctaContact.fullName')}<span className="text-red-500"> *</span></Label>
           <Input
             id={`${idPrefix}name`}
             name="fullName"
             type="text"
-            placeholder={t('home.ctaContact.fullName')}
-            className="h-10 rounded-lg"
+            placeholder={t('home.ctaContact.fullNamePlaceholder')}
+            className={cn('h-10 rounded-lg', fieldErrors.fullName && 'border-destructive focus-visible:ring-destructive')}
+            value={contactValues.fullName}
+            onChange={(e) => handleContactChange('fullName', e.target.value)}
+            onBlur={() => handleContactBlur('fullName')}
             disabled={submitStatus === 'loading'}
+            aria-invalid={!!fieldErrors.fullName}
+            aria-describedby={fieldErrors.fullName ? `${idPrefix}name-error` : undefined}
           />
+          {fieldErrors.fullName && (
+            <p id={`${idPrefix}name-error`} className="text-destructive text-sm" role="alert">
+              {fieldErrors.fullName}
+            </p>
+          )}
         </div>
         <div className="space-y-2">
-          <Label htmlFor={`${idPrefix}email`}>{t('home.ctaContact.email')}</Label>
+          <Label htmlFor={`${idPrefix}email`}>{t('home.ctaContact.email')}<span className="text-red-500"> *</span></Label>
           <Input
             id={`${idPrefix}email`}
             name="email"
             type="email"
-            placeholder={t('home.ctaContact.email')}
+            placeholder={t('home.ctaContact.emailPlaceholder')}
             className={cn('h-10 rounded-lg', fieldErrors.email && 'border-destructive focus-visible:ring-destructive')}
+            value={contactValues.email}
+            onChange={(e) => handleContactChange('email', e.target.value)}
+            onBlur={() => handleContactBlur('email')}
             disabled={submitStatus === 'loading'}
             aria-invalid={!!fieldErrors.email}
             aria-describedby={fieldErrors.email ? `${idPrefix}email-error` : undefined}
-            onInput={() => setFieldErrors((prev) => ({ ...prev, email: undefined }))}
           />
           {fieldErrors.email && (
             <p id={`${idPrefix}email-error`} className="text-destructive text-sm" role="alert">
@@ -926,28 +1038,42 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
           )}
         </div>
         <div className="space-y-2">
-          <Label htmlFor={`${idPrefix}company`}>{t('home.ctaContact.companyName')}</Label>
+          <Label htmlFor={`${idPrefix}company`}>{t('home.ctaContact.companyName')}<span className="text-red-500"> *</span></Label>
           <Input
             id={`${idPrefix}company`}
             name="company"
             type="text"
-            placeholder={t('home.ctaContact.companyName')}
-            className="h-10 rounded-lg"
+            placeholder={t('home.ctaContact.companyPlaceholder')}
+            className={cn('h-10 rounded-lg', fieldErrors.company && 'border-destructive focus-visible:ring-destructive')}
+            value={contactValues.company}
+            onChange={(e) => handleContactChange('company', e.target.value)}
+            onBlur={() => handleContactBlur('company')}
             disabled={submitStatus === 'loading'}
+            aria-invalid={!!fieldErrors.company}
+            aria-describedby={fieldErrors.company ? `${idPrefix}company-error` : undefined}
           />
+          {fieldErrors.company && (
+            <p id={`${idPrefix}company-error`} className="text-destructive text-sm" role="alert">
+              {fieldErrors.company}
+            </p>
+          )}
         </div>
         <div className="space-y-2">
-          <Label htmlFor={`${idPrefix}phone`}>{t('home.ctaContact.phone')}</Label>
+          <Label htmlFor={`${idPrefix}phone`}>{t('home.ctaContact.phone')}<span className="text-red-500"> *</span></Label>
           <Input
             id={`${idPrefix}phone`}
             name="phone"
             type="tel"
+            inputMode="numeric"
+            autoComplete="tel"
             placeholder={t('home.ctaContact.phonePlaceholder')}
             className={cn('h-10 rounded-lg', fieldErrors.phone && 'border-destructive focus-visible:ring-destructive')}
+            value={contactValues.phone}
+            onChange={handlePhoneInput}
+            onBlur={() => handleContactBlur('phone')}
             disabled={submitStatus === 'loading'}
             aria-invalid={!!fieldErrors.phone}
             aria-describedby={fieldErrors.phone ? `${idPrefix}phone-error` : undefined}
-            onInput={() => setFieldErrors((prev) => ({ ...prev, phone: undefined }))}
           />
           {fieldErrors.phone && (
             <p id={`${idPrefix}phone-error`} className="text-destructive text-sm" role="alert">
@@ -956,15 +1082,25 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
           )}
         </div>
         <div className="space-y-2">
-          <Label htmlFor={`${idPrefix}message`}>{t('home.ctaContact.message')}</Label>
+          <Label htmlFor={`${idPrefix}message`}>{t('home.ctaContact.message')}<span className="text-red-500"> *</span></Label>
           <Textarea
             id={`${idPrefix}message`}
             name="projectDescription"
             placeholder={t('home.ctaContact.messagePlaceholder')}
             rows={4}
-            className="rounded-lg"
+            className={cn('rounded-lg', fieldErrors.message && 'border-destructive focus-visible:ring-destructive')}
+            value={contactValues.message}
+            onChange={(e) => handleContactChange('message', e.target.value)}
+            onBlur={() => handleContactBlur('message')}
             disabled={submitStatus === 'loading'}
+            aria-invalid={!!fieldErrors.message}
+            aria-describedby={fieldErrors.message ? `${idPrefix}message-error` : undefined}
           />
+          {fieldErrors.message && (
+            <p id={`${idPrefix}message-error`} className="text-destructive text-sm" role="alert">
+              {fieldErrors.message}
+            </p>
+          )}
         </div>
         <div className="flex items-start gap-3">
           <Checkbox id={`${idPrefix}privacy`} className="border-primary/50 data-[state=checked]:border-primary data-[state=checked]:bg-primary" />
