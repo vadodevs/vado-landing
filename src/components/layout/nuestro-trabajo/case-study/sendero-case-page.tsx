@@ -2,13 +2,13 @@ import { useTranslation } from 'react-i18next';
 import { CenterContainer } from '@/components/layout/CenterContainer';
 import { ProjectHero } from '@/components/layout/nuestro-trabajo/ProjectHero';
 import { SenderoLogo } from '@/assets/brands/sendero';
+import { CaseStudyCtaSection } from '@/components/layout/nuestro-trabajo/case-study/CaseStudyCtaSection';
 import {
   SENDERO_ACCENT,
   SenderoOverviewSection,
   SenderoChallengeSection,
   SenderoSolutionSection,
   SenderoResultsSection,
-  SenderoCtaSection,
   SenderoProjectSidebar,
   SenderoOtherCases,
 } from './sendero';
@@ -52,7 +52,7 @@ export function SenderoCasePage() {
             className="h-auto w-full rounded-2xl object-cover"
           />
           <SenderoResultsSection />
-          <SenderoCtaSection />
+          <CaseStudyCtaSection caseStudyId="sendero" accentColor={SENDERO_ACCENT} />
         </main>
         <aside className="w-full shrink-0 pb-4 lg:w-80 lg:self-stretch">
           <SenderoProjectSidebar />

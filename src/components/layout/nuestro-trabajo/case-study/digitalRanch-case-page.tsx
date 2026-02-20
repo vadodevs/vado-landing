@@ -2,13 +2,13 @@ import { useTranslation } from 'react-i18next';
 import { CenterContainer } from '@/components/layout/CenterContainer';
 import { ProjectHero } from '@/components/layout/nuestro-trabajo/ProjectHero';
 import { DigitalRanchLogo } from '@/assets/brands/digital-ranch';
+import { CaseStudyCtaSection } from '@/components/layout/nuestro-trabajo/case-study/CaseStudyCtaSection';
 import {
   DIGITAL_RANCH_ACCENT,
   DigitalRanchOverviewSection,
   DigitalRanchChallengeSection,
   DigitalRanchSolutionSection,
   DigitalRanchResultsSection,
-  DigitalRanchCtaSection,
   DigitalRanchProjectSidebar,
   DigitalRanchOtherCases,
 } from './digitalRanch';
@@ -52,7 +52,7 @@ export function DigitalRanchCasePage() {
             className="h-auto w-full rounded-2xl object-cover"
           />
           <DigitalRanchResultsSection />
-          <DigitalRanchCtaSection />
+          <CaseStudyCtaSection caseStudyId="digitalRanch" accentColor={DIGITAL_RANCH_ACCENT} />
         </main>
         <aside className="w-full shrink-0 pb-4 lg:w-80 lg:self-stretch">
           <DigitalRanchProjectSidebar />

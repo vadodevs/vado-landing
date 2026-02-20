@@ -39,49 +39,49 @@
         "category": "Web application",
         "title": "ZenQR",
         "subtitle": "SaaS platform for QR codes",
-        "description": "QR code platform with customization, real-time metrics, and integrations for events and payments."
+        "description": "Platform to create and manage QR codes with analytics, custom design and integrations in a single panel."
       },
       "ebm": {
         "category": "Platform",
         "title": "EBM",
-        "subtitle": "Marine management",
-        "description": "Adaptability (on the other side) We adapt to change and overcome any obstacle."
+        "subtitle": "App for yacht maintenance management",
+        "description": "Application designed to centralize tasks, services and subscriptions to optimize technical operations and customer communication."
       },
       "digitalRanch": {
         "category": "Web application",
         "title": "Digital Ranch",
-        "subtitle": "",
-        "description": "Adaptability (on the other side) We adapt to change and overcome any obstacle."
+        "subtitle": "Livestock management app",
+        "description": "Application designed to record and control livestock information in real time, even in areas without connectivity."
       },
       "cipreses": {
         "category": "Website",
         "title": "Criadero Los Cipreses",
-        "subtitle": "",
-        "description": "Adaptability (on the other side) We adapt to change and overcome any obstacle."
+        "subtitle": "Website for horse sales",
+        "description": "Website developed to present the horse catalog and facilitate direct contact with potential customers."
       },
       "sendero": {
         "category": "CRM",
         "title": "Sendero",
-        "subtitle": "",
-        "description": "Adaptability (on the other side) We adapt to change and overcome any obstacle."
+        "subtitle": "AI CRM for multichannel sales management",
+        "description": "Platform that centralizes conversations and automates sales follow-up to improve control of the sales process."
       },
       "easySales": {
         "category": "E-commerce",
-        "title": "Easy Sales",
-        "subtitle": "",
-        "description": "Adaptability (on the other side) We adapt to change and overcome any obstacle."
+        "title": "EasySales",
+        "subtitle": "Product delivery platform",
+        "description": "Application that connects customers, restaurants and drivers to manage orders and deliveries in real time."
       },
       "maggiore": {
         "category": "Token system",
         "title": "Maggiore",
-        "subtitle": "",
-        "description": "Token system and digital management."
+        "subtitle": "Token-based creative management system",
+        "description": "Digital system that organizes creative requests, controls budgets and improves operational management between teams."
       },
       "washapp": {
         "category": "Mobile app",
         "title": "WashApp",
-        "subtitle": "",
-        "description": "On-demand car wash at your location."
+        "subtitle": "App for car wash services",
+        "description": "Application that allows requesting at-home services and managing operations, payments and technicians from a single system."
       }
     },
     "pagination": {
@@ -132,7 +132,9 @@
         "results": {
           "label": "Results",
           "title": "Results",
-          "paragraph": "The result was an <accent>efficient and easy-to-use</accent> platform, built in <accent>close collaboration</accent> with the client to validate, adjust, and deliver a product with clarity, functionality, and design, ready to operate as a <accent>competitive alternative</accent> in its market."
+          "paragraph1": "The result was an <accent>efficient and easy-to-use</accent> platform, built in <accent>close collaboration</accent> with the client to validate, adjust, and deliver a product with clarity, functionality, and design, ready to operate as a <accent>competitive alternative</accent> in its market.",
+          "paragraph2": "",
+          "paragraph3": ""
         },
         "cta": {
           "subtitle": "Custom development",
@@ -202,7 +204,9 @@
         "results": {
           "label": "Results",
           "title": "Results",
-          "paragraph": "The result was a CRM <accent>tailored to the business</accent>, built in <accent>collaboration with the client</accent> to validate flows and deliver a tool the sales team adopts day to day, with clarity and pipeline traceability."
+          "paragraph1": "The result was a CRM <accent>tailored to the business</accent>, built in <accent>collaboration with the client</accent> to validate flows and deliver a tool the sales team adopts day to day, with clarity and pipeline traceability.",
+          "paragraph2": "",
+          "paragraph3": ""
         },
         "cta": {
           "subtitle": "Custom development",
@@ -271,7 +275,9 @@
         "results": {
           "label": "Results",
           "title": "Results",
-          "paragraph": "The result was a platform <accent>tailored to the nautical sector</accent>, built in <accent>collaboration with the client</accent> to validate flows and deliver a tool the team adopts in their daily operation, with clarity and traceability."
+          "paragraph1": "The result was a platform <accent>tailored to the nautical sector</accent>, built in <accent>collaboration with the client</accent> to validate flows and deliver a tool the team adopts in their daily operation, with clarity and traceability.",
+          "paragraph2": "",
+          "paragraph3": ""
         },
         "cta": {
           "subtitle": "Custom development",
@@ -339,7 +345,9 @@
         "results": {
           "label": "Results",
           "title": "Results",
-          "paragraph": "The result was an app <accent>tailored to field operations</accent>, built in <accent>collaboration with the client</accent> to validate flows and deliver a tool the team adopts in the field, with clarity and traceability."
+          "paragraph1": "The result was an app <accent>tailored to field operations</accent>, built in <accent>collaboration with the client</accent> to validate flows and deliver a tool the team adopts in the field, with clarity and traceability.",
+          "paragraph2": "",
+          "paragraph3": ""
         },
         "cta": {
           "subtitle": "Custom development",
@@ -407,7 +415,9 @@
         "results": {
           "label": "Results",
           "title": "Results",
-          "paragraph": "The result was a platform <accent>tailored to e-commerce</accent>, built in <accent>collaboration with the client</accent> to validate flows and deliver a tool that unifies sales, payments and operations with clarity and traceability."
+          "paragraph1": "The result was a platform <accent>tailored to e-commerce</accent>, built in <accent>collaboration with the client</accent> to validate flows and deliver a tool that unifies sales, payments and operations with clarity and traceability.",
+          "paragraph2": "",
+          "paragraph3": ""
         },
         "cta": {
           "subtitle": "Custom development",
@@ -475,7 +485,9 @@
         "results": {
           "label": "Results",
           "title": "Results",
-          "paragraph": "The result was a site <accent>tailored to the nursery</accent>, built in <accent>collaboration with the client</accent> to communicate their value clearly and build trust with new clients."
+          "paragraph1": "The result was a site <accent>tailored to the nursery</accent>, built in <accent>collaboration with the client</accent> to communicate their value clearly and build trust with new clients.",
+          "paragraph2": "",
+          "paragraph3": ""
         },
         "cta": {
           "subtitle": "Custom development",
@@ -544,7 +556,9 @@
         "results": {
           "label": "Results",
           "title": "Results",
-          "paragraph": "The result was a platform <accent>adapted to token management</accent>, built in <accent>collaboration with the client</accent> to validate flows and deliver a tool with clarity, functionality and design."
+          "paragraph1": "The result was a platform <accent>adapted to token management</accent>, built in <accent>collaboration with the client</accent> to validate flows and deliver a tool with clarity, functionality and design.",
+          "paragraph2": "",
+          "paragraph3": ""
         },
         "cta": {
           "subtitle": "Custom development",
@@ -614,7 +628,9 @@
         "results": {
           "label": "Results",
           "title": "Results",
-          "paragraph": "The result was an app <accent>tailored to at-home washing</accent>, built in <accent>collaboration with the client</accent> to validate flows and deliver a tool that users and operators adopt with clarity."
+          "paragraph1": "The result was an app <accent>tailored to at-home washing</accent>, built in <accent>collaboration with the client</accent> to validate flows and deliver a tool that users and operators adopt with clarity.",
+          "paragraph2": "",
+          "paragraph3": ""
         },
         "cta": {
           "subtitle": "Custom development",

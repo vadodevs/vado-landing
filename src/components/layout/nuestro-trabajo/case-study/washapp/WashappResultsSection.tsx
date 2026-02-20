@@ -11,7 +11,13 @@ export function WashappResultsSection() {
       variant="minimal"
     >
       <p>
-        <Trans i18nKey="ourWork.caseStudy.washapp.results.paragraph" components={{ accent: <Accent>{''}</Accent> }} />
+        <Trans i18nKey="ourWork.caseStudy.washapp.results.paragraph1" components={{ accent: <Accent>{''}</Accent> }} />
+      </p>
+      <p>
+        <Trans i18nKey="ourWork.caseStudy.washapp.results.paragraph2" components={{ accent: <Accent>{''}</Accent> }} />
+      </p>
+      <p>
+        <Trans i18nKey="ourWork.caseStudy.washapp.results.paragraph3" components={{ accent: <Accent>{''}</Accent> }} />
       </p>
     </WashappCaseSection>
   );

@@ -15,12 +15,6 @@ export function EasySalesSolutionSection() {
           components={{ accent: <Accent>{''}</Accent> }}
         />
       </p>
-      <p>
-        <Trans
-          i18nKey="ourWork.caseStudy.easySales.solution.paragraph2"
-          components={{ accent: <Accent>{''}</Accent> }}
-        />
-      </p>
       <p className="font-medium text-slate-700">
         {t('ourWork.caseStudy.easySales.solution.listTitle')}
       </p>
@@ -31,6 +25,12 @@ export function EasySalesSolutionSection() {
         <li>{t('ourWork.caseStudy.easySales.solution.list4')}</li>
         <li>{t('ourWork.caseStudy.easySales.solution.list5')}</li>
       </ul>
+      <p>
+        <Trans
+          i18nKey="ourWork.caseStudy.easySales.solution.paragraph2"
+          components={{ accent: <Accent>{''}</Accent> }}
+        />
+      </p>
     </EasySalesCaseSection>
   );
 }

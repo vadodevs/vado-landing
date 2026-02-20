@@ -15,12 +15,6 @@ export function ZenqrSolutionSection() {
           components={{ accent: <Accent>{''}</Accent> }}
         />
       </p>
-      <p>
-        <Trans
-          i18nKey="ourWork.caseStudy.zenqr.solution.paragraph2"
-          components={{ accent: <Accent>{''}</Accent> }}
-        />
-      </p>
       <p className="font-medium text-slate-700">
         {t('ourWork.caseStudy.zenqr.solution.listTitle')}
       </p>
@@ -31,6 +25,14 @@ export function ZenqrSolutionSection() {
         <li>{t('ourWork.caseStudy.zenqr.solution.list4')}</li>
         <li>{t('ourWork.caseStudy.zenqr.solution.list5')}</li>
       </ul>
+      {t('ourWork.caseStudy.zenqr.solution.paragraph2') ? (
+        <p>
+          <Trans
+            i18nKey="ourWork.caseStudy.zenqr.solution.paragraph2"
+            components={{ accent: <Accent>{''}</Accent> }}
+          />
+        </p>
+      ) : null}
     </ZenqrCaseSection>
   );
 }

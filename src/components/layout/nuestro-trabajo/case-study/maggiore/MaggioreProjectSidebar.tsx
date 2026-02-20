@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { FaClipboardList, FaIndustry, FaLaptop, FaCode, FaGlobe } from 'react-icons/fa';
+import { FaClipboardList, FaLaptop, FaCode, FaGlobe } from 'react-icons/fa';
 import { type ProjectStackItem } from '@/components/layout/nuestro-trabajo/ProjectStack';
 import { MAGGIORE_ACCENT } from './maggiore-case-section';
 
@@ -28,15 +28,6 @@ export function MaggioreProjectSidebar() {
       <div className="divide-y divide-slate-100 px-5 py-4">
         <dl className="space-y-4 text-sm">
           <div>
-            <dt className="text-muted-foreground mb-1 flex items-center gap-2 text-xs font-semibold tracking-wider uppercase">
-              <FaIndustry className="size-3.5 shrink-0" style={{ color: MAGGIORE_ACCENT }} />
-              {t('ourWork.heroBadge.industry')}
-            </dt>
-            <dd className="font-medium text-slate-700">
-              {t('ourWork.caseStudy.maggiore.hero.industry')}
-            </dd>
-          </div>
-          <div className="pt-3">
             <dt className="text-muted-foreground mb-1 flex items-center gap-2 text-xs font-semibold tracking-wider uppercase">
               <FaLaptop className="size-3.5 shrink-0" style={{ color: MAGGIORE_ACCENT }} />
               {t('ourWork.caseStudy.maggiore.sidebar.productType')}

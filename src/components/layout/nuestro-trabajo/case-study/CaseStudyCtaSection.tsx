@@ -3,13 +3,28 @@ import { useTranslation } from 'react-i18next';
 import { motion } from 'motion/react';
 import { Button } from '@/components/ui/button';
 import { useLocale } from '@/hooks/useLocale';
-import { SENDERO_ACCENT } from './sendero-case-section';
 
-const CTA_TITLE_DARK = '#1A2F45';
+const CTA_TITLE_DARK = '#314158';
 
-export function SenderoCtaSection() {
+type CaseStudyId =
+  | 'sendero'
+  | 'zenqr'
+  | 'ebm'
+  | 'maggiore'
+  | 'digitalRanch'
+  | 'washapp'
+  | 'easySales'
+  | 'cipreses';
+
+interface CaseStudyCtaSectionProps {
+  caseStudyId: CaseStudyId;
+  accentColor: string;
+}
+
+export function CaseStudyCtaSection({ caseStudyId, accentColor }: CaseStudyCtaSectionProps) {
   const { t } = useTranslation();
   const { path } = useLocale();
+  const baseKey = `ourWork.caseStudy.${caseStudyId}.cta`;
 
   return (
     <section className="relative w-full py-16 md:py-20 lg:py-24">
@@ -21,27 +36,24 @@ export function SenderoCtaSection() {
           viewport={{ once: true, margin: '-40px' }}
           transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
         >
-          <h2 className="mb-4 text-2xl leading-tight font-bold tracking-tight uppercase md:text-3xl lg:text-4xl">
+          <h2 className="mb-8 text-lg leading-tight font-semibold tracking-tight uppercase md:text-xl lg:text-2xl">
             <span className="block" style={{ color: CTA_TITLE_DARK }}>
-              {t('ourWork.caseStudy.sendero.cta.titleLine1')}
+              {t(`${baseKey}.titleLine1`)}
             </span>
-            <span className="block" style={{ color: SENDERO_ACCENT }}>
-              {t('ourWork.caseStudy.sendero.cta.titleLine2')}
+            <span className="block" style={{ color: accentColor }}>
+              {t(`${baseKey}.titleLine2`)}
             </span>
           </h2>
-          <p className="text-muted-foreground mb-8 text-base leading-relaxed md:text-lg">
-            {t('ourWork.caseStudy.sendero.cta.description')}
-          </p>
           <Button
             size="lg"
-            className="rounded-xl px-8 py-6 text-base font-semibold shadow-md transition-all hover:shadow-lg"
+            className="rounded-xl px-8 py-6 text-base font-semibold shadow-lg transition-all hover:shadow-xl"
             style={{
-              backgroundColor: SENDERO_ACCENT,
+              backgroundColor: accentColor,
               color: 'white',
             }}
             asChild
           >
-            <Link href={path('/contacto')}>{t('ourWork.caseStudy.sendero.cta.ctaLabel')}</Link>
+            <Link href={path('/contacto')}>{t(`${baseKey}.ctaLabel`)}</Link>
           </Button>
         </motion.div>
       </div>

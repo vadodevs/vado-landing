@@ -1,4 +1,4 @@
-export const MAGGIORE_ACCENT = '#3390ff';
+export const MAGGIORE_ACCENT = '#205c76';
 
 export function Accent({ children }: { children: React.ReactNode }) {
   return (

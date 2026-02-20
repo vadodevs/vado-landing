@@ -2,13 +2,13 @@ import { useTranslation } from 'react-i18next';
 import { CenterContainer } from '@/components/layout/CenterContainer';
 import { ProjectHero } from '@/components/layout/nuestro-trabajo/ProjectHero';
 import { WashAppLogo } from '@/assets/brands/washapp';
+import { CaseStudyCtaSection } from '@/components/layout/nuestro-trabajo/case-study/CaseStudyCtaSection';
 import {
   WASHAPP_ACCENT,
   WashappOverviewSection,
   WashappChallengeSection,
   WashappSolutionSection,
   WashappResultsSection,
-  WashappCtaSection,
   WashappProjectSidebar,
   WashappOtherCases,
 } from './washapp';
@@ -50,7 +50,7 @@ export function WashappCasePage() {
             className="h-auto w-full rounded-2xl object-cover"
           />
           <WashappResultsSection />
-          <WashappCtaSection />
+          <CaseStudyCtaSection caseStudyId="washapp" accentColor={WASHAPP_ACCENT} />
         </main>
         <aside className="w-full shrink-0 pb-4 lg:w-80 lg:self-stretch">
           <WashappProjectSidebar />

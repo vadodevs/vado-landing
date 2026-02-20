@@ -11,7 +11,13 @@ export function MaggioreResultsSection() {
       variant="minimal"
     >
       <p>
-        <Trans i18nKey="ourWork.caseStudy.maggiore.results.paragraph" components={{ accent: <Accent>{''}</Accent> }} />
+        <Trans i18nKey="ourWork.caseStudy.maggiore.results.paragraph1" components={{ accent: <Accent>{''}</Accent> }} />
+      </p>
+      <p>
+        <Trans i18nKey="ourWork.caseStudy.maggiore.results.paragraph2" components={{ accent: <Accent>{''}</Accent> }} />
+      </p>
+      <p>
+        <Trans i18nKey="ourWork.caseStudy.maggiore.results.paragraph3" components={{ accent: <Accent>{''}</Accent> }} />
       </p>
     </MaggioreCaseSection>
   );

@@ -3,6 +3,5 @@ export { ZenqrOverviewSection } from './ZenqrOverviewSection';
 export { ZenqrChallengeSection } from './ZenqrChallengeSection';
 export { ZenqrSolutionSection } from './ZenqrSolutionSection';
 export { ZenqrResultsSection } from './ZenqrResultsSection';
-export { ZenqrCtaSection } from './ZenqrCtaSection';
 export { ZenqrProjectSidebar } from './ZenqrProjectSidebar';
 export { ZenqrOtherCases } from './ZenqrOtherCases';

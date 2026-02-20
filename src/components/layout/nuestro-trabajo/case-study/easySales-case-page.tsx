@@ -2,13 +2,13 @@ import { useTranslation } from 'react-i18next';
 import { CenterContainer } from '@/components/layout/CenterContainer';
 import { ProjectHero } from '@/components/layout/nuestro-trabajo/ProjectHero';
 import { EasySalesLogo } from '@/assets/brands/easy-sales';
+import { CaseStudyCtaSection } from '@/components/layout/nuestro-trabajo/case-study/CaseStudyCtaSection';
 import {
   EASY_SALES_ACCENT,
   EasySalesOverviewSection,
   EasySalesChallengeSection,
   EasySalesSolutionSection,
   EasySalesResultsSection,
-  EasySalesCtaSection,
   EasySalesProjectSidebar,
   EasySalesOtherCases,
 } from './easySales';
@@ -52,7 +52,7 @@ export function EasySalesCasePage() {
             className="h-auto w-full rounded-2xl object-cover"
           />
           <EasySalesResultsSection />
-          <EasySalesCtaSection />
+          <CaseStudyCtaSection caseStudyId="easySales" accentColor={EASY_SALES_ACCENT} />
         </main>
         <aside className="w-full shrink-0 pb-4 lg:w-80 lg:self-stretch">
           <EasySalesProjectSidebar />

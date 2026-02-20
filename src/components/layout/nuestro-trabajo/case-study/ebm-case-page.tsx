@@ -2,13 +2,13 @@ import { useTranslation } from 'react-i18next';
 import { CenterContainer } from '@/components/layout/CenterContainer';
 import { ProjectHero } from '@/components/layout/nuestro-trabajo/ProjectHero';
 import { EbmLogo } from '@/assets/brands/ebm';
+import { CaseStudyCtaSection } from '@/components/layout/nuestro-trabajo/case-study/CaseStudyCtaSection';
 import {
   EBM_ACCENT,
   EbmOverviewSection,
   EbmChallengeSection,
   EbmSolutionSection,
   EbmResultsSection,
-  EbmCtaSection,
   EbmProjectSidebar,
   EbmOtherCases,
 } from './ebm';
@@ -50,7 +50,7 @@ export function EbmCasePage() {
             className="h-auto w-full rounded-2xl object-cover"
           />
           <EbmResultsSection />
-          <EbmCtaSection />
+          <CaseStudyCtaSection caseStudyId="ebm" accentColor={EBM_ACCENT} />
         </main>
         <aside className="w-full shrink-0 pb-4 lg:w-80 lg:self-stretch">
           <EbmProjectSidebar />

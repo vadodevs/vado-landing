@@ -15,12 +15,6 @@ export function DigitalRanchSolutionSection() {
           components={{ accent: <Accent>{''}</Accent> }}
         />
       </p>
-      <p>
-        <Trans
-          i18nKey="ourWork.caseStudy.digitalRanch.solution.paragraph2"
-          components={{ accent: <Accent>{''}</Accent> }}
-        />
-      </p>
       <p className="font-medium text-slate-700">
         {t('ourWork.caseStudy.digitalRanch.solution.listTitle')}
       </p>
@@ -31,6 +25,12 @@ export function DigitalRanchSolutionSection() {
         <li>{t('ourWork.caseStudy.digitalRanch.solution.list4')}</li>
         <li>{t('ourWork.caseStudy.digitalRanch.solution.list5')}</li>
       </ul>
+      <p>
+        <Trans
+          i18nKey="ourWork.caseStudy.digitalRanch.solution.paragraph2"
+          components={{ accent: <Accent>{''}</Accent> }}
+        />
+      </p>
     </DigitalRanchCaseSection>
   );
 }

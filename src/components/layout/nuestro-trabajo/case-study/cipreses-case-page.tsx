@@ -2,13 +2,13 @@ import { useTranslation } from 'react-i18next';
 import { CenterContainer } from '@/components/layout/CenterContainer';
 import { ProjectHero } from '@/components/layout/nuestro-trabajo/ProjectHero';
 import { CipresesLogo } from '@/assets/brands/cipreses';
+import { CaseStudyCtaSection } from '@/components/layout/nuestro-trabajo/case-study/CaseStudyCtaSection';
 import {
   CIPRESES_ACCENT,
   CipresesOverviewSection,
   CipresesChallengeSection,
   CipresesSolutionSection,
   CipresesResultsSection,
-  CipresesCtaSection,
   CipresesProjectSidebar,
   CipresesOtherCases,
 } from './cipreses';
@@ -52,7 +52,7 @@ export function CipresesCasePage() {
             className="h-auto w-full rounded-2xl object-cover"
           />
           <CipresesResultsSection />
-          <CipresesCtaSection />
+          <CaseStudyCtaSection caseStudyId="cipreses" accentColor={CIPRESES_ACCENT} />
         </main>
         <aside className="w-full shrink-0 pb-4 lg:w-80 lg:self-stretch">
           <CipresesProjectSidebar />

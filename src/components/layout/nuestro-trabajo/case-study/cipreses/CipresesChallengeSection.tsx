@@ -10,7 +10,12 @@ export function CipresesChallengeSection() {
       reverse
       variant="minimal"
     >
-      <p>{t('ourWork.caseStudy.cipreses.challenge.intro')}</p>
+      <p>
+        <Trans
+          i18nKey="ourWork.caseStudy.cipreses.challenge.intro"
+          components={{ accent: <Accent>{''}</Accent> }}
+        />
+      </p>
       <ul className="list-inside list-disc space-y-2 pl-2">
         <li>{t('ourWork.caseStudy.cipreses.challenge.list1')}</li>
         <li>{t('ourWork.caseStudy.cipreses.challenge.list2')}</li>

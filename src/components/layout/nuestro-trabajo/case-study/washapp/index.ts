@@ -3,6 +3,5 @@ export { WashappOverviewSection } from './WashappOverviewSection';
 export { WashappChallengeSection } from './WashappChallengeSection';
 export { WashappSolutionSection } from './WashappSolutionSection';
 export { WashappResultsSection } from './WashappResultsSection';
-export { WashappCtaSection } from './WashappCtaSection';
 export { WashappProjectSidebar } from './WashappProjectSidebar';
 export { WashappOtherCases } from './WashappOtherCases';

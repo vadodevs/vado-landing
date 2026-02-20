@@ -10,12 +10,18 @@ export function EbmChallengeSection() {
       reverse
       variant="minimal"
     >
-      <p>{t('ourWork.caseStudy.ebm.challenge.intro')}</p>
+      <p>
+        <Trans
+          i18nKey="ourWork.caseStudy.ebm.challenge.intro"
+          components={{ accent: <Accent>{''}</Accent> }}
+        />
+      </p>
       <ul className="list-inside list-disc space-y-2 pl-2">
         <li>{t('ourWork.caseStudy.ebm.challenge.list1')}</li>
         <li>{t('ourWork.caseStudy.ebm.challenge.list2')}</li>
         <li>{t('ourWork.caseStudy.ebm.challenge.list3')}</li>
         <li>{t('ourWork.caseStudy.ebm.challenge.list4')}</li>
+        <li>{t('ourWork.caseStudy.ebm.challenge.list5')}</li>
       </ul>
       <p>
         <Trans

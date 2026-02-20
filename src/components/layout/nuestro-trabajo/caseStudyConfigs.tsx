@@ -32,7 +32,7 @@ const ACCENT_COLORS: Record<string, string> = {
   digitalRanch: '#00681c',
   easySales: '#fd7113',
   cipreses: '#cc8b33',
-  maggiore: '#3390ff',
+  maggiore: '#205c76',
   washapp: '#3390ff',
 };
 

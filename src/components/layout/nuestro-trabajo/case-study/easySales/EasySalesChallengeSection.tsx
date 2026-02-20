@@ -10,7 +10,12 @@ export function EasySalesChallengeSection() {
       reverse
       variant="minimal"
     >
-      <p>{t('ourWork.caseStudy.easySales.challenge.intro')}</p>
+      <p>
+        <Trans
+          i18nKey="ourWork.caseStudy.easySales.challenge.intro"
+          components={{ accent: <Accent>{''}</Accent> }}
+        />
+      </p>
       <ul className="list-inside list-disc space-y-2 pl-2">
         <li>{t('ourWork.caseStudy.easySales.challenge.list1')}</li>
         <li>{t('ourWork.caseStudy.easySales.challenge.list2')}</li>

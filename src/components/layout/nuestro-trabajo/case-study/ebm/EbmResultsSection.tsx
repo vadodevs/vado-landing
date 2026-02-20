@@ -12,7 +12,19 @@ export function EbmResultsSection() {
     >
       <p>
         <Trans
-          i18nKey="ourWork.caseStudy.ebm.results.paragraph"
+          i18nKey="ourWork.caseStudy.ebm.results.paragraph1"
+          components={{ accent: <Accent>{''}</Accent> }}
+        />
+      </p>
+      <p>
+        <Trans
+          i18nKey="ourWork.caseStudy.ebm.results.paragraph2"
+          components={{ accent: <Accent>{''}</Accent> }}
+        />
+      </p>
+      <p>
+        <Trans
+          i18nKey="ourWork.caseStudy.ebm.results.paragraph3"
           components={{ accent: <Accent>{''}</Accent> }}
         />
       </p>

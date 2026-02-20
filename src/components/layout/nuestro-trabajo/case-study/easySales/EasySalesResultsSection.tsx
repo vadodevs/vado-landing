@@ -12,10 +12,26 @@ export function EasySalesResultsSection() {
     >
       <p>
         <Trans
-          i18nKey="ourWork.caseStudy.easySales.results.paragraph"
+          i18nKey="ourWork.caseStudy.easySales.results.paragraph1"
           components={{ accent: <Accent>{''}</Accent> }}
         />
       </p>
+      {t('ourWork.caseStudy.easySales.results.paragraph2') ? (
+        <p>
+          <Trans
+            i18nKey="ourWork.caseStudy.easySales.results.paragraph2"
+            components={{ accent: <Accent>{''}</Accent> }}
+          />
+        </p>
+      ) : null}
+      {t('ourWork.caseStudy.easySales.results.paragraph3') ? (
+        <p>
+          <Trans
+            i18nKey="ourWork.caseStudy.easySales.results.paragraph3"
+            components={{ accent: <Accent>{''}</Accent> }}
+          />
+        </p>
+      ) : null}
     </EasySalesCaseSection>
   );
 }

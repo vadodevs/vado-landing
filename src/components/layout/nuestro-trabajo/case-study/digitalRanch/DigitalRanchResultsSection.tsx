@@ -12,7 +12,19 @@ export function DigitalRanchResultsSection() {
     >
       <p>
         <Trans
-          i18nKey="ourWork.caseStudy.digitalRanch.results.paragraph"
+          i18nKey="ourWork.caseStudy.digitalRanch.results.paragraph1"
+          components={{ accent: <Accent>{''}</Accent> }}
+        />
+      </p>
+      <p>
+        <Trans
+          i18nKey="ourWork.caseStudy.digitalRanch.results.paragraph2"
+          components={{ accent: <Accent>{''}</Accent> }}
+        />
+      </p>
+      <p>
+        <Trans
+          i18nKey="ourWork.caseStudy.digitalRanch.results.paragraph3"
           components={{ accent: <Accent>{''}</Accent> }}
         />
       </p>

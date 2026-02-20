@@ -2,13 +2,13 @@ import { useTranslation } from 'react-i18next';
 import { CenterContainer } from '@/components/layout/CenterContainer';
 import { ProjectHero } from '@/components/layout/nuestro-trabajo/ProjectHero';
 import { MaggioreLogo } from '@/assets/brands/maggiore';
+import { CaseStudyCtaSection } from '@/components/layout/nuestro-trabajo/case-study/CaseStudyCtaSection';
 import {
   MAGGIORE_ACCENT,
   MaggioreOverviewSection,
   MaggioreChallengeSection,
   MaggioreSolutionSection,
   MaggioreResultsSection,
-  MaggioreCtaSection,
   MaggioreProjectSidebar,
   MaggioreOtherCases,
 } from './maggiore';
@@ -51,7 +51,7 @@ export function MaggioreCasePage() {
             className="h-auto w-full rounded-2xl object-cover"
           />
           <MaggioreResultsSection />
-          <MaggioreCtaSection />
+          <CaseStudyCtaSection caseStudyId="maggiore" accentColor={MAGGIORE_ACCENT} />
         </main>
         <aside className="w-full shrink-0 pb-4 lg:w-80 lg:self-stretch">
           <MaggioreProjectSidebar />

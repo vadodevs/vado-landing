@@ -12,7 +12,19 @@ export function SenderoResultsSection() {
     >
       <p>
         <Trans
-          i18nKey="ourWork.caseStudy.sendero.results.paragraph"
+          i18nKey="ourWork.caseStudy.sendero.results.paragraph1"
+          components={{ accent: <Accent>{''}</Accent> }}
+        />
+      </p>
+      <p>
+        <Trans
+          i18nKey="ourWork.caseStudy.sendero.results.paragraph2"
+          components={{ accent: <Accent>{''}</Accent> }}
+        />
+      </p>
+      <p>
+        <Trans
+          i18nKey="ourWork.caseStudy.sendero.results.paragraph3"
           components={{ accent: <Accent>{''}</Accent> }}
         />
       </p>

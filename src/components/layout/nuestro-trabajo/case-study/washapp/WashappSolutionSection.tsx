@@ -12,9 +12,6 @@ export function WashappSolutionSection() {
       <p>
         <Trans i18nKey="ourWork.caseStudy.washapp.solution.paragraph1" components={{ accent: <Accent>{''}</Accent> }} />
       </p>
-      <p>
-        <Trans i18nKey="ourWork.caseStudy.washapp.solution.paragraph2" components={{ accent: <Accent>{''}</Accent> }} />
-      </p>
       <p className="font-medium text-slate-700">{t('ourWork.caseStudy.washapp.solution.listTitle')}</p>
       <ul className="list-inside list-disc space-y-2 pl-2">
         <li>{t('ourWork.caseStudy.washapp.solution.list1')}</li>
@@ -22,7 +19,11 @@ export function WashappSolutionSection() {
         <li>{t('ourWork.caseStudy.washapp.solution.list3')}</li>
         <li>{t('ourWork.caseStudy.washapp.solution.list4')}</li>
         <li>{t('ourWork.caseStudy.washapp.solution.list5')}</li>
+        <li>{t('ourWork.caseStudy.washapp.solution.list6')}</li>
       </ul>
+      <p>
+        <Trans i18nKey="ourWork.caseStudy.washapp.solution.paragraph2" components={{ accent: <Accent>{''}</Accent> }} />
+      </p>
     </WashappCaseSection>
   );
 }

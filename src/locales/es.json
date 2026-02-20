@@ -104,40 +104,43 @@
         "overview": {
           "label": "Overview",
           "title": "Plataforma SaaS para gestión de códigos QR dinámicos con analítica",
-          "paragraph": "ZenQR se construyó para convertir los códigos QR en una <accent>herramienta de negocio</accent>: <accent>personalizable</accent>, <accent>medible</accent> y administrable desde un panel. Conecta experiencias físicas (menús, empaques, carteles) con acciones digitales y <accent>analítica en tiempo real</accent>."
+          "paragraph": "ZenQR fue desarrollado como una <accent>plataforma SaaS</accent> que permite generar, personalizar y gestionar códigos QR dinámicos desde un solo panel, ayudando a las empresas a <accent>medir interacciones</accent> y mantener control sobre su contenido digital."
         },
         "challenge": {
           "label": "Challenge",
           "title": "El reto",
-          "intro": "El cliente quería ir mucho más allá de generar códigos básicos, buscaba:",
-          "list1": "Personalización de códigos QR",
-          "list2": "Soporte para distintos tipos de información",
-          "list3": "Estadísticas de uso",
-          "list4": "Integraciones con sistemas externos (pagos / boletaje)",
-          "afterList": "Todo con una experiencia visual <accent>clara</accent>, <accent>fluida</accent> y <accent>moderna</accent>.",
-          "closing": "Además, el reto de fondo era transformar lo físico en <accent>digital medible y editable en tiempo real</accent>."
+          "intro": "El cliente necesitaba construir una herramienta que fuera mucho más allá de generar códigos QR básicos. Necesitaban una solución que permitiera:",
+          "list1": "Personalizar códigos QR de forma sencilla",
+          "list2": "Gestionar distintos tipos de contenido desde un mismo lugar",
+          "list3": "Obtener métricas y estadísticas de uso en tiempo real",
+          "list4": "Integrarse con herramientas externas como pagos o eventos",
+          "list5": "Ofrecer una experiencia visual clara y fácil de usar",
+          "afterList": "",
+          "closing": "El reto principal era <accent>combinar funcionalidades avanzadas</accent> sin perder simplicidad para el usuario final."
         },
         "solution": {
           "label": "Solution",
           "title": "La solución",
-          "paragraph1": "El enfoque incluyó <accent>analizar a fondo</accent> herramientas existentes para detectar oportunidades y construir una hoja de ruta alineada a necesidades reales.",
-          "paragraph2": "Luego desarrollamos una plataforma con interfaz <accent>minimalista</accent> que permite empezar a crear códigos incluso <accent>sin registrarse</accent> y con navegación directa.",
-          "listTitle": "La plataforma incluye:",
-          "list1": "Soporte para distintos tipos de contenido",
-          "list2": "Personalización con colores, logos y plantillas",
-          "list3": "Métricas en tiempo real",
-          "list4": "QR estáticos y dinámicos",
-          "list5": "Integración con herramientas externas para eventos y pagos"
+          "paragraph1": "Para resolver este reto, desarrollamos una plataforma SaaS enfocada en <accent>usabilidad y flexibilidad</accent>, diseñada para que cualquier usuario pudiera crear y gestionar códigos QR de forma simple y eficiente.",
+          "paragraph2": "",
+          "listTitle": "La solución permite:",
+          "list1": "Crear códigos QR estáticos y dinámicos",
+          "list2": "Personalizar diseños con colores, logos y plantillas",
+          "list3": "Gestionar distintos tipos de contenido desde un solo panel",
+          "list4": "Medir rendimiento mediante analítica en tiempo real",
+          "list5": "Integrar herramientas externas como pagos o sistemas internos según las necesidades del negocio"
         },
         "results": {
           "label": "Results",
           "title": "Resultados",
-          "paragraph": "El resultado fue una plataforma <accent>eficiente y fácil de usar</accent>, construida en <accent>colaboración estrecha</accent> con el cliente para validar, ajustar y entregar un producto con claridad, funcionalidad y diseño, lista para operar como <accent>alternativa competitiva</accent> en su mercado."
+          "paragraph1": "El resultado fue una plataforma SaaS <accent>funcional y escalable</accent> que permitió al cliente convertir los códigos QR en herramientas digitales medibles y administrables.",
+          "paragraph2": "ZenQR permitió simplificar la creación y gestión de códigos, mejorar la capacidad de análisis y conectar los códigos QR con otros procesos digitales de forma estratégica.",
+          "paragraph3": "Más allá de la tecnología, el proyecto se convirtió en una solución clara y útil para <accent>conectar lo físico con lo digital</accent> de manera estratégica."
         },
         "cta": {
           "subtitle": "Desarrollo a la medida",
-          "titleLine1": "Claridad para el usuario.",
-          "titleLine2": "Escalabilidad para el negocio.",
+          "titleLine1": "Si estás evaluando desarrollar una solución similar,",
+          "titleLine2": "podemos ayudarte a estructurarla y convertirla en un producto funcional y escalable.",
           "description": "Si estás evaluando desarrollar una solución similar, podemos ayudarte a estructurarla y convertirla en un producto funcional y escalable.",
           "ctaLabel": "Hablemos de tu proyecto"
         },
@@ -202,12 +205,14 @@
         "results": {
           "label": "Results",
           "title": "Resultados",
-          "paragraph": "Al finalizar el proyecto, el cliente logró <accent>centralizar completamente</accent> su seguimiento comercial y obtener <accent>visibilidad total</accent> sobre sus conversaciones y oportunidades de venta. Esto permitió mejorar la organización interna, reducir tiempos operativos gracias a la automatización y optimizar el proceso comercial. Además, se alcanzó el seguimiento del <accent>100% de las conversaciones</accent> y una reducción aproximada del <accent>15% en costos operativos</accent>, derivada de una gestión más estructurada y eficiente. El resultado fue un flujo comercial más claro, ordenado y escalable."
+          "paragraph1": "Al finalizar el proyecto, el cliente logró <accent>centralizar completamente</accent> su seguimiento comercial y obtener <accent>visibilidad total</accent> sobre sus conversaciones y oportunidades de venta.",
+          "paragraph2": "Esto permitió mejorar la organización interna, reducir tiempos operativos gracias a la automatización y optimizar el proceso comercial. Además, se alcanzó el seguimiento del <accent>100% de las conversaciones</accent> y una reducción aproximada del <accent>15% en costos operativos</accent>, derivada de una gestión más estructurada y eficiente.",
+          "paragraph3": "El resultado fue un flujo comercial más claro, ordenado y escalable."
         },
         "cta": {
           "subtitle": "",
-          "titleLine1": "",
-          "titleLine2": "",
+          "titleLine1": "Si estás evaluando desarrollar una solución similar,",
+          "titleLine2": "podemos ayudarte a estructurarla y convertirla en un producto funcional y escalable.",
           "description": "Si estás evaluando desarrollar una solución similar, podemos ayudarte a estructurarla y convertirla en un producto funcional y escalable.",
           "ctaLabel": "Hablemos de tu proyecto"
         },
@@ -243,40 +248,43 @@
         "overview": {
           "label": "Overview",
           "title": "Plataforma de gestión náutica",
-          "paragraph": "EBM se construyó como una <accent>herramienta de gestión</accent> para el sector náutico: <accent>centralizada</accent> y adaptable a la operación. Conecta embarcaciones, tripulación y actividades en un solo lugar con <accent>visibilidad en tiempo real</accent>."
+          "paragraph": "Easy Boat Management (EBM) fue desarrollado para <accent>centralizar la operación de yates</accent> en una sola aplicación, integrando servicios técnicos, clientes, suscripciones y seguimiento continuo. El objetivo del proyecto fue digitalizar la operación compleja y convertirla en un sistema <accent>escalable y fácil de gestionar</accent>."
         },
         "challenge": {
           "label": "Challenge",
           "title": "El reto",
-          "intro": "El cliente necesitaba modernizar y digitalizar su operación náutica, con:",
-          "list1": "Gestión de embarcaciones y tripulación",
-          "list2": "Seguimiento de actividades y mantenimiento",
-          "list3": "Reportes y trazabilidad",
-          "list4": "Acceso desde móvil y web",
-          "afterList": "Todo con una experiencia <accent>clara</accent> y <accent>orientada al día a día</accent> del equipo.",
-          "closing": "El reto era tener <accent>una sola fuente de verdad</accent> para la operación náutica, sin depender de planillas ni herramientas dispersas."
+          "intro": "El cliente enfrentaba una operación con múltiples variables y distintos tipos de usuarios. Los principales retos eran:",
+          "list1": "Supervisar tareas de mantenimiento preventivo y correctivo",
+          "list2": "Coordinar técnicos, administradores y clientes",
+          "list3": "Gestionar suscripciones de servicio",
+          "list4": "Mantener comunicación y seguimiento en tiempo real",
+          "list5": "Escalar la operación sin perder control",
+          "afterList": "",
+          "closing": "Era necesario construir una herramienta que <accent>facilitara la operación diaria</accent> sin aumentar la complejidad."
         },
         "solution": {
           "label": "Solution",
           "title": "La solución",
-          "paragraph1": "El enfoque incluyó <accent>mapear los procesos</accent> del cliente y definir una hoja de ruta alineada a la operación náutica real.",
-          "paragraph2": "Desarrollamos una plataforma con interfaz <accent>intuitiva</accent> para gestión de embarcaciones, tripulación y actividades, con <accent>app móvil y panel web</accent>.",
-          "listTitle": "La plataforma incluye:",
-          "list1": "Gestión de embarcaciones y tripulación",
-          "list2": "Actividades y mantenimiento",
-          "list3": "Reportes y dashboards",
-          "list4": "App móvil (iOS y Android)",
-          "list5": "Panel web para administración"
+          "paragraph1": "Para resolver este reto, comenzamos entendiendo a fondo el modelo de negocio y el rol de cada usuario dentro del proceso operativo.",
+          "paragraph2": "La solución fue diseñada para ser <accent>clara, funcional y adaptable</accent> al trabajo real en campo, considerando las dinámicas operativas del sector náutico.",
+          "listTitle": "Desarrollamos una aplicación multiusuario que permite:",
+          "list1": "Gestión de servicios y tareas de mantenimiento",
+          "list2": "Seguimiento del trabajo realizado por técnicos",
+          "list3": "Notificaciones y actualizaciones para clientes",
+          "list4": "Administración de suscripciones y productos",
+          "list5": "Control de sucursales, roles y permisos"
         },
         "results": {
           "label": "Results",
           "title": "Resultados",
-          "paragraph": "El resultado fue una plataforma <accent>adaptada al sector náutico</accent>, construida en <accent>colaboración con el cliente</accent> para validar flujos y entregar una herramienta que el equipo adopta en su operación diaria, con claridad y trazabilidad."
+          "paragraph1": "Al finalizar el proyecto, la empresa logró <accent>organizar mejor su operación</accent> y mejorar el seguimiento de servicios desde una sola plataforma.",
+          "paragraph2": "Esto permitió mejorar el control operativo, fortalecer la comunicación entre técnicos y clientes y consolidar un modelo basado en suscripciones con mayor capacidad de escalabilidad.",
+          "paragraph3": "El resultado fue una operación más organizada, eficiente y <accent>preparada para crecer</accent> sin perder el control."
         },
         "cta": {
           "subtitle": "Desarrollo a la medida",
-          "titleLine1": "Claridad para el usuario.",
-          "titleLine2": "Escalabilidad para el negocio.",
+          "titleLine1": "Si estás evaluando desarrollar una solución similar,",
+          "titleLine2": "podemos ayudarte a estructurarla y convertirla en un producto funcional y escalable.",
           "description": "Si estás evaluando desarrollar una solución similar, podemos ayudarte a estructurarla y convertirla en un producto funcional y escalable.",
           "ctaLabel": "Hablemos de tu proyecto"
         },
@@ -311,40 +319,42 @@
         "overview": {
           "label": "Overview",
           "title": "App móvil para operaciones en campo",
-          "paragraph": "Digital Ranch se construyó como una <accent>herramienta de campo</accent>: <accent>móvil</accent>, <accent>sincronizada</accent> y adaptable a la operación. Conecta el trabajo en terreno con el registro digital en un solo lugar con <accent>visibilidad en tiempo real</accent>."
+          "paragraph": "Digital Ranch fue desarrollado para <accent>digitalizar y centralizar</accent> la gestión de una operación ganadera de gran escala, permitiendo controlar producción, reproducción y seguimiento del ganado desde cualquier lugar, incluso en zonas con conectividad limitada. El objetivo del proyecto fue transformar procesos manuales en un sistema <accent>estructurado, accesible y escalable</accent> que facilitara la toma de decisiones a distancia y mejorara el control operativo del rancho."
         },
         "challenge": {
           "label": "Challenge",
           "title": "El reto",
-          "intro": "El cliente necesitaba una aplicación móvil que conectara la operación en campo con el registro digital, con:",
-          "list1": "Registro y seguimiento en terreno",
-          "list2": "Sincronización offline y en línea",
-          "list3": "Gestión de tareas y reportes",
-          "list4": "Uso en iOS y Android",
-          "afterList": "Todo con una experiencia <accent>clara</accent> y <accent>orientada al día a día</accent> del equipo en campo.",
-          "closing": "El reto era tener <accent>una sola fuente de verdad</accent> entre campo y oficina, sin depender de planillas ni herramientas dispersas."
+          "intro": "El cliente administra una operación ganadera de gran escala y no siempre podía estar físicamente en el rancho. Esto generaba retos importantes:",
+          "list1": "Falta de visibilidad en tiempo real de la operación",
+          "list2": "Información dispersa o difícil de consultar",
+          "list3": "Procesos manuales que complicaban la toma de decisiones",
+          "list4": "Necesidad de operar en campo sin depender de conexión a internet",
+          "afterList": "",
+          "closing": "El desafío principal era construir una herramienta <accent>práctica</accent> que funcionara en las condiciones reales del campo y permitiera mantener control operativo sin presencia física constante."
         },
         "solution": {
           "label": "Solution",
           "title": "La solución",
-          "paragraph1": "El enfoque incluyó <accent>mapear los flujos</accent> del equipo en campo y definir una hoja de ruta alineada a la operación real.",
-          "paragraph2": "Desarrollamos una app con interfaz <accent>intuitiva</accent> para registro, tareas y seguimiento, con <accent>soporte multiplataforma</accent> y sincronización.",
-          "listTitle": "La plataforma incluye:",
-          "list1": "App móvil (iOS y Android)",
-          "list2": "Registro y fotos en campo",
-          "list3": "Sincronización y trabajo offline",
-          "list4": "Panel de gestión y reportes",
-          "list5": "Integración con flujos existentes"
+          "paragraph1": "Desarrollamos una aplicación personalizada, diseñada específicamente para el entorno ganadero y las dinámicas reales de trabajo en campo.",
+          "paragraph2": "El enfoque fue construir una herramienta <accent>sencilla de usar pero robusta en funcionalidad</accent>, alineada con los flujos reales de la operación y preparada para trabajar en entornos con conectividad limitada.",
+          "listTitle": "La solución permite:",
+          "list1": "Llevar control reproductivo mediante inseminaciones, empadres y partos",
+          "list2": "Dar seguimiento al porcentaje de parición y nacimientos",
+          "list3": "Generar reportes automáticos por clasificación del ganado",
+          "list4": "Gestionar distintos tipos de usuario (administradores y vaqueros)",
+          "list5": "Operar sin conexión a internet cuando sea necesario"
         },
         "results": {
           "label": "Results",
           "title": "Resultados",
-          "paragraph": "El resultado fue una app <accent>adaptada a la operación en campo</accent>, construida en <accent>colaboración con el cliente</accent> para validar flujos y entregar una herramienta que el equipo adopta en terreno, con claridad y trazabilidad."
+          "paragraph1": "Al finalizar el proyecto, el cliente logró <accent>centralizar su operación ganadera</accent> en una sola aplicación y obtener acceso inmediato a información crítica desde cualquier ubicación.",
+          "paragraph2": "La solución permitió mejorar la toma de decisiones basada en datos actualizados, estructurar el seguimiento productivo y reproductivo del ganado, y reducir la dependencia de registros manuales.",
+          "paragraph3": "El resultado fue una operación más organizada, eficiente y <accent>adaptable a las condiciones reales del campo</accent>, con mayor control operativo incluso a distancia."
         },
         "cta": {
           "subtitle": "Desarrollo a la medida",
-          "titleLine1": "Claridad para el usuario.",
-          "titleLine2": "Escalabilidad para el negocio.",
+          "titleLine1": "Si estás evaluando desarrollar una solución similar,",
+          "titleLine2": "podemos ayudarte a estructurarla y convertirla en un producto funcional y escalable.",
           "description": "Si estás evaluando desarrollar una solución similar, podemos ayudarte a estructurarla y convertirla en un producto funcional y escalable.",
           "ctaLabel": "Hablemos de tu proyecto"
         },
@@ -379,40 +389,42 @@
         "overview": {
           "label": "Overview",
           "title": "Plataforma de e-commerce a la medida",
-          "paragraph": "Easy Sales se construyó como una <accent>herramienta de ventas</accent>: <accent>integrada</accent> con inventario, pagos y operación. Conecta catálogo, carrito y gestión en un solo lugar con <accent>visibilidad y control</accent>."
+          "paragraph": "EasySales fue desarrollado para permitir que restaurantes <accent>gestionaran su propio servicio de delivery</accent> sin depender completamente de plataformas externas. El objetivo fue habilitar ventas digitales, controlar inventario y coordinar entregas desde una sola solución, manteniendo <accent>control financiero y operativo</accent>."
         },
         "challenge": {
           "label": "Challenge",
           "title": "El reto",
-          "intro": "El cliente necesitaba una solución de e-commerce que conectara inventario, pagos y operación diaria, con:",
-          "list1": "Catálogo y gestión de productos",
-          "list2": "Pagos integrados (Stripe)",
-          "list3": "Inventario y órdenes",
-          "list4": "Panel de administración",
-          "afterList": "Todo con una experiencia <accent>clara</accent> para el comprador y <accent>escalable</accent> para el negocio.",
-          "closing": "El reto era tener <accent>una sola plataforma</accent> que uniera venta, cobro y operación, sin depender de herramientas dispersas."
+          "intro": "El cliente necesitaba ofrecer entrega a domicilio sin afectar su margen de ganancia ni perder control sobre la operación. Los principales retos eran:",
+          "list1": "Mantener rentabilidad en pedidos de delivery",
+          "list2": "Centralizar inventario y ventas",
+          "list3": "Coordinar repartidores y entregas",
+          "list4": "Tener trazabilidad completa del proceso",
+          "afterList": "",
+          "closing": "El desafío era <accent>vender más sin depender de terceros</accent> ni complicar la operación interna."
         },
         "solution": {
           "label": "Solution",
           "title": "La solución",
-          "paragraph1": "El enfoque incluyó <accent>mapear los flujos</accent> de venta y operación del cliente y definir una hoja de ruta alineada al e-commerce real.",
-          "paragraph2": "Desarrollamos una plataforma con interfaz <accent>intuitiva</accent> para catálogo, carrito y checkout, con <accent>integración con Stripe</accent> y panel de gestión.",
-          "listTitle": "La plataforma incluye:",
-          "list1": "Tienda web y catálogo",
-          "list2": "Checkout y pagos (Stripe)",
-          "list3": "Gestión de inventario y órdenes",
-          "list4": "Panel de administración",
-          "list5": "Despliegue en la nube"
+          "paragraph1": "Desarrollamos una aplicación móvil que conecta a clientes, restaurantes y repartidores en un mismo sistema.",
+          "paragraph2": "El enfoque fue crear un sistema <accent>fácil de operar</accent>, pero con control total sobre el flujo comercial y logístico.",
+          "listTitle": "La solución permite:",
+          "list1": "Compra de productos desde la app",
+          "list2": "Gestión de inventario y catálogo",
+          "list3": "Seguimiento de pedidos en tiempo real",
+          "list4": "Administración de entregas",
+          "list5": "Visualización clara de ventas e ingresos"
         },
         "results": {
           "label": "Results",
           "title": "Resultados",
-          "paragraph": "El resultado fue una plataforma <accent>adaptada al e-commerce</accent>, construida en <accent>colaboración con el cliente</accent> para validar flujos y entregar una herramienta que unifica venta, cobro y operación con claridad y trazabilidad."
+          "paragraph1": "El cliente logró habilitar un <accent>canal digital propio</accent> y recuperar el control de su operación de delivery.",
+          "paragraph2": "La solución permitió incrementar ventas digitales, mejorar la gestión de inventario y optimizar la coordinación de entregas sin depender completamente de plataformas externas.",
+          "paragraph3": "El resultado fue una operación más rentable, organizada y <accent>preparada para crecer</accent>."
         },
         "cta": {
           "subtitle": "Desarrollo a la medida",
-          "titleLine1": "Claridad para el usuario.",
-          "titleLine2": "Escalabilidad para el negocio.",
+          "titleLine1": "Si estás evaluando desarrollar una solución similar,",
+          "titleLine2": "podemos ayudarte a estructurarla y convertirla en un producto funcional y escalable.",
           "description": "Si estás evaluando desarrollar una solución similar, podemos ayudarte a estructurarla y convertirla en un producto funcional y escalable.",
           "ctaLabel": "Hablemos de tu proyecto"
         },
@@ -447,40 +459,42 @@
         "overview": {
           "label": "Overview",
           "title": "Sitio web para comunicar propuesta de valor",
-          "paragraph": "Criadero Los Cipreses se construyó como un <accent>sitio web</accent> que comunica la propuesta de valor del criadero: <accent>claro</accent>, <accent>visual</accent> y confiable para nuevos clientes. Conecta la identidad del negocio con la experiencia digital en un solo lugar."
+          "paragraph": "El proyecto se enfocó en desarrollar un sitio web que permitiera <accent>presentar el catálogo de caballos</accent> del criadero de forma profesional y facilitar el contacto con clientes potenciales. El objetivo fue crear un sitio funcional que mostrara información relevante, generara confianza y pudiera utilizarse tanto en <accent>eventos presenciales como en canales digitales</accent>."
         },
         "challenge": {
           "label": "Challenge",
           "title": "El reto",
-          "intro": "El cliente necesitaba un sitio web que comunicara su propuesta de valor de forma clara y confiable, con:",
-          "list1": "Identidad visual y mensaje claro",
-          "list2": "Información del criadero y servicios",
-          "list3": "Navegación sencilla",
-          "list4": "Confianza para nuevos clientes",
-          "afterList": "Todo con una experiencia <accent>clara</accent> y <accent>orientada a quien busca conocer el criadero</accent>.",
-          "closing": "El reto era transmitir <accent>confianza y profesionalismo</accent> en un solo sitio, sin dispersar la información."
+          "intro": "El cliente necesitaba lanzar su presencia digital en un plazo muy corto debido a un evento importante del sector. Los principales retos eran:",
+          "list1": "Publicar un sitio funcional en pocos días",
+          "list2": "Mostrar el catálogo de caballos de forma clara y estructurada",
+          "list3": "Facilitar el acceso a información clave para posibles compradores",
+          "list4": "Mantener una imagen visual alineada al nivel del negocio",
+          "afterList": "",
+          "closing": "Era importante que el sitio fuera <accent>claro, visual y funcional</accent>, sin procesos complejos para el usuario."
         },
         "solution": {
           "label": "Solution",
           "title": "La solución",
-          "paragraph1": "El enfoque incluyó <accent>definir la estructura</accent> del sitio y el mensaje clave del criadero, alineado a su público.",
-          "paragraph2": "Desarrollamos un sitio con diseño <accent>limpio</accent> y navegación <accent>directa</accent>, con secciones para servicios, información y contacto.",
-          "listTitle": "El sitio incluye:",
-          "list1": "Home con propuesta de valor",
-          "list2": "Secciones de servicios e información",
-          "list3": "Diseño responsive",
-          "list4": "Contacto y llamadas a la acción",
-          "list5": "Optimización para buscadores"
+          "paragraph1": "Desarrollamos un sitio web estructurado para presentar el catálogo de manera organizada y atractiva.",
+          "paragraph2": "El enfoque fue crear un sitio <accent>profesional y fácil de usar</accent>, preparado tanto para su presentación en eventos como para su uso continuo como canal digital del negocio.",
+          "listTitle": "La solución permite:",
+          "list1": "Publicar fichas detalladas de cada ejemplar",
+          "list2": "Mostrar imágenes y características relevantes",
+          "list3": "Facilitar el contacto directo con clientes potenciales",
+          "list4": "Optimización básica para velocidad de carga y visibilidad",
+          "list5": ""
         },
         "results": {
           "label": "Results",
           "title": "Resultados",
-          "paragraph": "El resultado fue un sitio <accent>adaptado al criadero</accent>, construido en <accent>colaboración con el cliente</accent> para comunicar su valor de forma clara y generar confianza en nuevos clientes."
+          "paragraph1": "El sitio fue lanzado dentro del plazo establecido, permitiendo al criadero <accent>presentar su catálogo durante un evento</accent> mediante códigos QR que dirigían directamente al sitio.",
+          "paragraph2": "Esto facilitó que los asistentes exploraran los caballos disponibles desde sus dispositivos móviles.",
+          "paragraph3": "El resultado fue una presencia digital <accent>funcional y profesional</accent> que fortaleció su promoción y apoyó sus procesos comerciales."
         },
         "cta": {
           "subtitle": "Desarrollo a la medida",
-          "titleLine1": "Claridad para el usuario.",
-          "titleLine2": "Escalabilidad para el negocio.",
+          "titleLine1": "Si estás evaluando desarrollar una solución similar,",
+          "titleLine2": "podemos ayudarte a estructurarla y convertirla en un producto funcional y escalable.",
           "description": "Si estás evaluando desarrollar una solución similar, podemos ayudarte a estructurarla y convertirla en un producto funcional y escalable.",
           "ctaLabel": "Hablemos de tu proyecto"
         },
@@ -516,40 +530,43 @@
         },
         "overview": {
           "title": "Plataforma de tokens y gestión digital",
-          "paragraph": "Maggiore se construyó como un <accent>sistema de tokens</accent> y <accent>gestión digital</accent>: interfaz clara y arquitectura robusta para administrar transacciones con <accent>visibilidad y control</accent>."
+          "paragraph": "El proyecto se enfocó en <accent>estructurar y profesionalizar</accent> el flujo de trabajo creativo mediante una plataforma que permitiera gestionar solicitudes, presupuesto y procesos con mayor claridad. La solución buscó transformar un proceso operativo disperso en un sistema <accent>ordenado, medible y predecible</accent> para equipos internos y clientes."
         },
         "challenge": {
           "label": "Challenge",
           "title": "El reto",
-          "intro": "El cliente necesitaba un sistema de tokens y gestión digital con:",
-          "list1": "Interfaz clara para usuarios",
-          "list2": "Arquitectura robusta para transacciones",
-          "list3": "Gestión y trazabilidad",
-          "list4": "Escalabilidad y seguridad",
-          "afterList": "Todo con una experiencia <accent>clara</accent> y <accent>orientada a la operación</accent>.",
-          "closing": "El reto era tener <accent>una plataforma confiable</accent> para tokens y gestión digital, sin depender de herramientas dispersas."
+          "intro": "El cliente operaba con múltiples solicitudes creativas, pero el proceso era complejo y poco eficiente. Esto generaba falta de visibilidad, retrasos y dificultades para medir el rendimiento real del equipo. Entre los principales retos estaban:",
+          "list1": "Cotizaciones constantes para cada tarea",
+          "list2": "Aprobaciones dispersas en distintos canales",
+          "list3": "Falta de claridad sobre presupuesto disponible",
+          "list4": "Dificultad para visualizar el avance de solicitudes",
+          "list5": "Procesos administrativos repetitivos que consumían tiempo",
+          "afterList": "",
+          "closing": "La necesidad principal era <accent>profesionalizar el flujo de trabajo</accent> sin hacerlo más pesado para los equipos."
         },
         "solution": {
           "label": "Solution",
           "title": "La solución",
-          "paragraph1": "El enfoque incluyó <accent>mapear los procesos</accent> del cliente y definir una hoja de ruta alineada a la gestión de tokens y transacciones.",
-          "paragraph2": "Desarrollamos una plataforma con interfaz <accent>intuitiva</accent> y arquitectura <accent>robusta</accent>, con backend escalable y trazabilidad.",
-          "listTitle": "La plataforma incluye:",
-          "list1": "Sistema de tokens",
-          "list2": "Gestión de transacciones",
-          "list3": "Panel de administración",
-          "list4": "API y integraciones",
-          "list5": "Seguridad y auditoría"
+          "paragraph1": "Para resolver este reto, desarrollamos una plataforma basada en un <accent>modelo de tokens prepagados</accent>, donde cada servicio tiene un valor claro y cada solicitud sigue un flujo estructurado.",
+          "paragraph2": "El enfoque fue convertir un proceso creativo informal en una operación <accent>medible y fácil de gestionar</accent>.",
+          "listTitle": "La solución permite:",
+          "list1": "Visualizar presupuesto disponible en tiempo real",
+          "list2": "Enviar solicitudes con briefs claros y estructurados",
+          "list3": "Dar seguimiento a tareas según su estatus",
+          "list4": "Asignar responsables y fechas de entrega",
+          "list5": "Centralizar entregables en un entorno compartido en la nube"
         },
         "results": {
           "label": "Results",
           "title": "Resultados",
-          "paragraph": "El resultado fue una plataforma <accent>adaptada a la gestión de tokens</accent>, construida en <accent>colaboración con el cliente</accent> para validar flujos y entregar una herramienta con claridad, funcionalidad y diseño."
+          "paragraph1": "Al finalizar el proyecto, el cliente logró operar con <accent>mayor claridad y control</accent> sobre su flujo creativo, estableciendo un proceso estructurado para cada solicitud y presupuesto.",
+          "paragraph2": "Esto permitió optimizar el uso de los recursos, reducir costos operativos por proyecto y mejorar la comunicación entre equipos.",
+          "paragraph3": "El flujo de trabajo se volvió más ordenado y predecible, facilitando la toma de decisiones y la <accent>gestión del crecimiento</accent>."
         },
         "cta": {
           "subtitle": "Desarrollo a la medida",
-          "titleLine1": "Claridad para el usuario.",
-          "titleLine2": "Escalabilidad para el negocio.",
+          "titleLine1": "Si estás evaluando desarrollar una solución similar,",
+          "titleLine2": "podemos ayudarte a estructurarla y convertirla en un producto funcional y escalable.",
           "description": "Si estás evaluando desarrollar una solución similar, podemos ayudarte a estructurarla y convertirla en un producto funcional y escalable.",
           "ctaLabel": "Hablemos de tu proyecto"
         },
@@ -586,40 +603,43 @@
         "overview": {
           "label": "Overview",
           "title": "App móvil de lavado de autos a domicilio",
-          "paragraph": "WashApp se construyó como una <accent>app móvil</accent> que conecta a usuarios con <accent>lavado de autos a domicilio</accent>. Experiencia <accent>sencilla</accent> para quien agenda y para el operador en campo, con claridad y seguimiento."
+          "paragraph": "WashApp fue desarrollado para <accent>transformar el servicio tradicional</accent> de auto-lavado en un modelo digital bajo demanda. El objetivo fue permitir que los usuarios solicitaran el servicio desde su celular, mientras la empresa mantenía <accent>control operativo y financiero en tiempo real</accent>. La solución buscó mejorar la experiencia del cliente y, al mismo tiempo, estructurar la gestión interna del negocio para hacerlo más eficiente y escalable."
         },
         "challenge": {
           "label": "Challenge",
           "title": "El reto",
-          "intro": "El cliente necesitaba una app de lavado de autos a domicilio con experiencia sencilla para usuarios y operadores, con:",
-          "list1": "Agendamiento y selección de servicio",
-          "list2": "Experiencia clara para el usuario",
-          "list3": "Flujo para operadores en campo",
-          "list4": "Seguimiento y cierre del servicio",
-          "afterList": "Todo con una experiencia <accent>sencilla</accent> y <accent>orientada al día a día</accent> de usuarios y operadores.",
-          "closing": "El reto era unificar <accent>agenda, operación y seguimiento</accent> en una sola app, sin fricciones."
+          "intro": "El cliente buscaba convertir su modelo tradicional en uno más flexible y con mayor capacidad de crecimiento. Sin embargo, enfrentaba diversos retos operativos y administrativos. Entre los principales desafíos se encontraban:",
+          "list1": "Procesos manuales para coordinar servicios",
+          "list2": "Falta de control sobre pagos y operación en campo",
+          "list3": "Dificultad para dar seguimiento a clientes y fomentar la recompra",
+          "list4": "Necesidad de digitalizar la experiencia sin agregar fricción al trabajo del equipo",
+          "afterList": "",
+          "closing": "El desafío principal era convertir un servicio físico en una operación digital <accent>organizada, rentable y preparada para escalar</accent>."
         },
         "solution": {
           "label": "Solution",
           "title": "La solución",
-          "paragraph1": "El enfoque incluyó <accent>mapear los flujos</accent> de usuario y operador y definir una hoja de ruta alineada al servicio a domicilio.",
-          "paragraph2": "Desarrollamos una app con interfaz <accent>intuitiva</accent> para agendar, gestionar y dar seguimiento al lavado, con <accent>vista para el operador en campo</accent>.",
-          "listTitle": "La app incluye:",
-          "list1": "Agendamiento y tipos de servicio",
-          "list2": "Perfil de usuario y historial",
-          "list3": "Panel para operadores en campo",
-          "list4": "Seguimiento del servicio",
-          "list5": "Notificaciones y recordatorios"
+          "paragraph1": "Desarrollamos una aplicación móvil que conecta a clientes, técnicos lavadores y administración dentro de un solo ecosistema digital.",
+          "paragraph2": "El enfoque fue crear una herramienta <accent>sencilla para el usuario final</accent>, pero con el nivel de control necesario para facilitar la operación diaria del negocio.",
+          "listTitle": "La solución permitió:",
+          "list1": "Registro de autos y perfiles de cliente",
+          "list2": "Compra de servicios directamente desde la aplicación",
+          "list3": "Integración de pagos digitales",
+          "list4": "Seguimiento y asignación de técnicos en campo",
+          "list5": "Historial de servicios y control operativo",
+          "list6": "Automatización de cobros a clientes y pagos internos al equipo"
         },
         "results": {
           "label": "Results",
           "title": "Resultados",
-          "paragraph": "El resultado fue una app <accent>adaptada al lavado a domicilio</accent>, construida en <accent>colaboración con el cliente</accent> para validar flujos y entregar una herramienta que usuarios y operadores adoptan con claridad."
+          "paragraph1": "Al finalizar el proyecto, el negocio logró <accent>digitalizar una parte significativa</accent> de sus ventas y operar con mayor control sobre su servicio en campo.",
+          "paragraph2": "La solución permitió incrementar las ventas a través de canales digitales, reducir costos operativos mediante una mejor organización y obtener mayor visibilidad sobre ingresos y desempeño diario. Además, el seguimiento automatizado facilitó la recompra y fortaleció la relación con los clientes.",
+          "paragraph3": "El resultado fue un modelo más escalable, con <accent>procesos claros y una experiencia optimizada</accent> tanto para los usuarios como para el equipo operativo."
         },
         "cta": {
           "subtitle": "Desarrollo a la medida",
-          "titleLine1": "Claridad para el usuario.",
-          "titleLine2": "Escalabilidad para el negocio.",
+          "titleLine1": "Si estás evaluando desarrollar una solución similar,",
+          "titleLine2": "podemos ayudarte a estructurarla y convertirla en un producto funcional y escalable.",
           "description": "Si estás evaluando desarrollar una solución similar, podemos ayudarte a estructurarla y convertirla en un producto funcional y escalable.",
           "ctaLabel": "Hablemos de tu proyecto"
         },

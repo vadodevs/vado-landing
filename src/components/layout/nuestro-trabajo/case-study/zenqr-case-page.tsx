@@ -1,13 +1,13 @@
 import { useTranslation } from 'react-i18next';
 import { CenterContainer } from '@/components/layout/CenterContainer';
 import { ProjectHero } from '@/components/layout/nuestro-trabajo/ProjectHero';
+import { CaseStudyCtaSection } from '@/components/layout/nuestro-trabajo/case-study/CaseStudyCtaSection';
 import {
   ZENQR_ACCENT,
   ZenqrOverviewSection,
   ZenqrChallengeSection,
   ZenqrSolutionSection,
   ZenqrResultsSection,
-  ZenqrCtaSection,
   ZenqrProjectSidebar,
   ZenqrOtherCases,
 } from './zenqr';
@@ -49,7 +49,7 @@ export function ZenqurCasePage() {
             className="h-auto w-full rounded-2xl object-cover"
           />
           <ZenqrResultsSection />
-          <ZenqrCtaSection />
+          <CaseStudyCtaSection caseStudyId="zenqr" accentColor={ZENQR_ACCENT} />
         </main>
         <aside className="w-full shrink-0 pb-4 lg:w-80 lg:self-stretch">
           <ZenqrProjectSidebar />

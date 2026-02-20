@@ -12,7 +12,19 @@ export function ZenqrResultsSection() {
     >
       <p>
         <Trans
-          i18nKey="ourWork.caseStudy.zenqr.results.paragraph"
+          i18nKey="ourWork.caseStudy.zenqr.results.paragraph1"
+          components={{ accent: <Accent>{''}</Accent> }}
+        />
+      </p>
+      <p>
+        <Trans
+          i18nKey="ourWork.caseStudy.zenqr.results.paragraph2"
+          components={{ accent: <Accent>{''}</Accent> }}
+        />
+      </p>
+      <p>
+        <Trans
+          i18nKey="ourWork.caseStudy.zenqr.results.paragraph3"
           components={{ accent: <Accent>{''}</Accent> }}
         />
       </p>

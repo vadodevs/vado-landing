@@ -10,12 +10,18 @@ export function ZenqrChallengeSection() {
       reverse
       variant="minimal"
     >
-      <p>{t('ourWork.caseStudy.zenqr.challenge.intro')}</p>
+      <p>
+        <Trans
+          i18nKey="ourWork.caseStudy.zenqr.challenge.intro"
+          components={{ accent: <Accent>{''}</Accent> }}
+        />
+      </p>
       <ul className="list-inside list-disc space-y-2 pl-2">
         <li>{t('ourWork.caseStudy.zenqr.challenge.list1')}</li>
         <li>{t('ourWork.caseStudy.zenqr.challenge.list2')}</li>
         <li>{t('ourWork.caseStudy.zenqr.challenge.list3')}</li>
         <li>{t('ourWork.caseStudy.zenqr.challenge.list4')}</li>
+        <li>{t('ourWork.caseStudy.zenqr.challenge.list5')}</li>
       </ul>
       <p>
         <Trans
