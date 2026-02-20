@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CenterContainer } from '@/components/layout/CenterContainer';
 import { Button } from '@/components/ui/button';
-import { FloatingLabelInput } from '@/components/ui/floating-label-input';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 export function InsightsStayUpdatedSection() {
   const { t } = useTranslation();
@@ -33,10 +34,11 @@ export function InsightsStayUpdatedSection() {
             className="mt-8 flex w-full max-w-2xl flex-col gap-4 sm:flex-row sm:items-end sm:justify-start sm:gap-3"
           >
             <div className="flex flex-1 flex-col items-stretch gap-1.5 text-left sm:max-w-xs sm:flex-initial">
-              <FloatingLabelInput
+              <Label htmlFor="insights-email">{t('insightsPage.stayUpdated.emailLabel')}</Label>
+              <Input
                 id="insights-email"
                 type="email"
-                label={t('insightsPage.stayUpdated.emailLabel')}
+                placeholder={t('insightsPage.stayUpdated.emailLabel')}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="border-input bg-background focus:ring-primary w-full rounded-lg border px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-offset-2"

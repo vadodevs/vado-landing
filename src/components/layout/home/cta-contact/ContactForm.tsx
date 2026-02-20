@@ -13,7 +13,6 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { FloatingLabelInput } from '@/components/ui/floating-label-input';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -465,10 +464,11 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
                   </p>
                 </div>
                 <div className="space-y-2">
-                  <FloatingLabelInput
+                  <Label htmlFor={`${idPrefix}apply-name`}>{t('home.ctaContact.fullName')}</Label>
+                  <Input
                     id={`${idPrefix}apply-name`}
                     type="text"
-                    label={t('home.ctaContact.fullName')}
+                    placeholder={t('home.ctaContact.fullName')}
                     className="h-10 rounded-lg"
                     value={applyStep1Data?.fullName ?? ''}
                     onChange={(e) =>
@@ -480,10 +480,11 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
                   />
                 </div>
                 <div className="space-y-2">
-                  <FloatingLabelInput
+                  <Label htmlFor={`${idPrefix}apply-email`}>{t('home.ctaContact.email')}</Label>
+                  <Input
                     id={`${idPrefix}apply-email`}
                     type="email"
-                    label={t('home.ctaContact.email')}
+                    placeholder={t('home.ctaContact.email')}
                     className={cn('h-10 rounded-lg', fieldErrors.email && 'border-destructive focus-visible:ring-destructive')}
                     value={applyStep1Data?.email ?? ''}
                     onChange={(e) => {
@@ -503,10 +504,11 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
                   )}
                 </div>
                 <div className="space-y-2">
-                  <FloatingLabelInput
+                  <Label htmlFor={`${idPrefix}apply-phone`}>{t('home.ctaContact.phone')}</Label>
+                  <Input
                     id={`${idPrefix}apply-phone`}
                     type="tel"
-                    label={t('home.ctaContact.phone')}
+                    placeholder={t('home.ctaContact.phonePlaceholder')}
                     className={cn('h-10 rounded-lg', fieldErrors.phone && 'border-destructive focus-visible:ring-destructive')}
                     value={applyStep1Data?.phoneNumber ?? ''}
                     onChange={(e) => {
@@ -526,10 +528,11 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
                   )}
                 </div>
                 <div className="space-y-2">
-                  <FloatingLabelInput
+                  <Label htmlFor={`${idPrefix}apply-role`}>{t('home.ctaContact.applyForm.roleLabel')}</Label>
+                  <Input
                     id={`${idPrefix}apply-role`}
                     type="text"
-                    label={t('home.ctaContact.applyForm.roleLabel')}
+                    placeholder={t('home.ctaContact.applyForm.roleLabel')}
                     className="h-10 rounded-lg"
                     value={applyStep1Data?.role ?? ''}
                     onChange={(e) =>
@@ -893,21 +896,23 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
               className="flex flex-col gap-4"
             >
         <div className="space-y-2">
-          <FloatingLabelInput
+          <Label htmlFor={`${idPrefix}name`}>{t('home.ctaContact.fullName')}</Label>
+          <Input
             id={`${idPrefix}name`}
             name="fullName"
             type="text"
-            label={t('home.ctaContact.fullName')}
+            placeholder={t('home.ctaContact.fullName')}
             className="h-10 rounded-lg"
             disabled={submitStatus === 'loading'}
           />
         </div>
         <div className="space-y-2">
-          <FloatingLabelInput
+          <Label htmlFor={`${idPrefix}email`}>{t('home.ctaContact.email')}</Label>
+          <Input
             id={`${idPrefix}email`}
             name="email"
             type="email"
-            label={t('home.ctaContact.email')}
+            placeholder={t('home.ctaContact.email')}
             className={cn('h-10 rounded-lg', fieldErrors.email && 'border-destructive focus-visible:ring-destructive')}
             disabled={submitStatus === 'loading'}
             aria-invalid={!!fieldErrors.email}
@@ -921,21 +926,12 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
           )}
         </div>
         <div className="space-y-2">
-          <FloatingLabelInput
+          <Label htmlFor={`${idPrefix}company`}>{t('home.ctaContact.companyName')}</Label>
+          <Input
             id={`${idPrefix}company`}
             name="company"
             type="text"
-            label={t('home.ctaContact.companyName')}
-            className="h-10 rounded-lg"
-            disabled={submitStatus === 'loading'}
-          />
-        </div>
-        <div className="space-y-2">
-          <FloatingLabelInput
-            id={`${idPrefix}company`}
-            name="company"
-            type="text"
-            label={t('home.ctaContact.companyName')}
+            placeholder={t('home.ctaContact.companyName')}
             className="h-10 rounded-lg"
             disabled={submitStatus === 'loading'}
           />
