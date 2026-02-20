@@ -24,11 +24,12 @@ export function InsightsOtherArticlesSection({
     .slice(0, OTHER_ARTICLES_COUNT);
 
   const articles = otherIds.map((id) => {
-    const index = INSIGHTS_ARTICLE_IDS.indexOf(id) + 1;
+    const index = INSIGHTS_ARTICLE_IDS.indexOf(id);
+    const imageIndex = (index % 3) + 1;
     return {
       id,
       slug: getInsightsArticleSlug(id),
-      imageSrc: `/articles/article-${index}.png`,
+      imageSrc: `/articles/article-${imageIndex}.png`,
       imageAlt: t(`insightsPage.articles.${id}.imageAlt`),
       date: t(`insightsPage.articles.${id}.date`),
       tag: t(`insightsPage.articles.${id}.tag`),

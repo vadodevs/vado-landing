@@ -56,16 +56,19 @@ export function InsightsArticlesSection() {
   };
 
   const articles = useMemo(() => {
-    return INSIGHTS_ARTICLE_IDS.map((id, index) => ({
-      id,
-      slug: getInsightsArticleSlug(id),
-      imageSrc: `/articles/article-${index + 1}.png`,
-      imageAlt: t(`insightsPage.articles.${id}.imageAlt`),
-      date: t(`insightsPage.articles.${id}.date`),
-      tag: t(`insightsPage.articles.${id}.tag`),
-      title: t(`insightsPage.articles.${id}.title`),
-      description: t(`insightsPage.articles.${id}.description`),
-    }));
+    return INSIGHTS_ARTICLE_IDS.map((id, index) => {
+      const imageIndex = (index % 3) + 1;
+      return {
+        id,
+        slug: getInsightsArticleSlug(id),
+        imageSrc: `/articles/article-${imageIndex}.png`,
+        imageAlt: t(`insightsPage.articles.${id}.imageAlt`),
+        date: t(`insightsPage.articles.${id}.date`),
+        tag: t(`insightsPage.articles.${id}.tag`),
+        title: t(`insightsPage.articles.${id}.title`),
+        description: t(`insightsPage.articles.${id}.description`),
+      };
+    });
   }, [t]);
 
   const filteredArticles = useMemo(() => {
