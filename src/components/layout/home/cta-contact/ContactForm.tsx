@@ -57,6 +57,28 @@ const initialContactValues: ContactFormValues = {
   message: '',
 };
 
+/** Esquema Zod para el paso 1 del formulario "Quiero postularme". */
+function buildApplyStep1Schema(messages: {
+  required: string;
+  emailInvalid: string;
+  phoneInvalid: string;
+}) {
+  return z.object({
+    fullName: z.string().min(1, messages.required),
+    email: z.string().min(1, messages.required).email(messages.emailInvalid),
+    phoneNumber: z
+      .string()
+      .min(1, messages.required)
+      .refine(
+        (val) => val.replace(/\D/g, '').length >= 10,
+        messages.phoneInvalid,
+      ),
+    role: z.string().min(1, messages.required),
+  });
+}
+
+type ApplyStep1Field = 'fullName' | 'email' | 'phoneNumber' | 'role';
+
 interface ContactFormProps {
   /** Prefijo para los ids de los campos (evita duplicados si hay varios formularios en la página). */
   idPrefix?: string;
@@ -75,21 +97,6 @@ const DEVELOPERS_WITH_CV_URL = API_BASE ? `${API_BASE}/users/developers/with-cv`
 
 const MAX_CV_SIZE_MB = 10;
 const MAX_CV_BYTES = MAX_CV_SIZE_MB * 1024 * 1024;
-
-/** Formato email: algo@dominio.ext (RFC 5322 simplificado) */
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-/** Teléfono: solo dígitos, +, espacios, guiones, paréntesis; mínimo 10 dígitos */
-function isValidEmail(value: string): boolean {
-  const trimmed = (value ?? '').trim();
-  return trimmed.length > 0 && trimmed.length <= 255 && EMAIL_REGEX.test(trimmed);
-}
-
-function isValidPhone(value: string): boolean {
-  const trimmed = (value ?? '').trim();
-  const digitsOnly = trimmed.replace(/\D/g, '');
-  return digitsOnly.length >= 10 && trimmed.length <= 55;
-}
 
 function getUtmParams(): Record<string, string> {
   if (typeof window === 'undefined') return {};
@@ -126,11 +133,19 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
     company?: string;
     phone?: string;
     message?: string;
+    role?: string;
   }>({});
   const [contactValues, setContactValues] = useState<ContactFormValues>(initialContactValues);
   const [contactTouched, setContactTouched] = useState<Partial<Record<keyof ContactFormValues, boolean>>>({});
+  const [applyTouched, setApplyTouched] = useState<Partial<Record<ApplyStep1Field, boolean>>>({});
   const isPostularse = subject === SUBJECT_POSTULARSE;
   const isInApplyFlow = isPostularse && showApplyForm;
+
+  const applyStep1Schema = buildApplyStep1Schema({
+    required: t('home.ctaContact.errors.fieldsRequired'),
+    emailInvalid: t('home.ctaContact.errors.emailInvalid'),
+    phoneInvalid: t('home.ctaContact.errors.phoneInvalid'),
+  });
 
   const contactSchema = buildContactSchema({
     required: t('home.ctaContact.errors.fieldsRequired'),
@@ -173,10 +188,57 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
   const handlePhoneInput = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const raw = e.target.value;
-      const digitsOnly = raw.replace(/\D/g, '');
+      const digitsOnly = raw.replace(/\D/g, '').slice(0, 10);
       handleContactChange('phone', digitsOnly);
     },
     [handleContactChange],
+  );
+
+  const validateApplyStep1Field = useCallback(
+    (field: ApplyStep1Field, value: string): string | undefined => {
+      const data = applyStep1Data ?? { fullName: '', email: '', phoneNumber: '', role: '' };
+      const payload = { ...data, [field]: value };
+      const result = applyStep1Schema.safeParse(payload);
+      if (result.success) return undefined;
+      const issue = result.error.issues.find((i) => i.path[0] === field);
+      return issue ? (issue.message as string) : undefined;
+    },
+    [applyStep1Data, applyStep1Schema],
+  );
+
+  const handleApplyStep1Blur = useCallback(
+    (field: ApplyStep1Field) => {
+      setApplyTouched((prev) => ({ ...prev, [field]: true }));
+      const data = applyStep1Data ?? { fullName: '', email: '', phoneNumber: '', role: '' };
+      const value = field === 'phoneNumber' ? data.phoneNumber : data[field];
+      const error = validateApplyStep1Field(field, value);
+      const errorKey = field === 'phoneNumber' ? 'phone' : field;
+      setFieldErrors((prev) => ({ ...prev, [errorKey]: error }));
+    },
+    [applyStep1Data, validateApplyStep1Field],
+  );
+
+  const handleApplyStep1Change = useCallback(
+    (field: ApplyStep1Field, value: string) => {
+      setApplyStep1Data((prev) => ({
+        ...(prev ?? { fullName: '', email: '', phoneNumber: '', role: '' }),
+        [field]: value,
+      }));
+      if (applyTouched[field]) {
+        const error = validateApplyStep1Field(field, value);
+        const errorKey = field === 'phoneNumber' ? 'phone' : field;
+        setFieldErrors((prev) => ({ ...prev, [errorKey]: error }));
+      }
+    },
+    [applyTouched, validateApplyStep1Field],
+  );
+
+  const handleApplyPhoneInput = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const digitsOnly = e.target.value.replace(/\D/g, '').slice(0, 10);
+      handleApplyStep1Change('phoneNumber', digitsOnly);
+    },
+    [handleApplyStep1Change],
   );
 
   const handleSubjectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -187,6 +249,7 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
     setFieldErrors({});
     setContactValues(initialContactValues);
     setContactTouched({});
+    setApplyTouched({});
     if (value !== SUBJECT_POSTULARSE) {
       setShowApplyForm(false);
       setApplyStep(1);
@@ -200,22 +263,16 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
     const email = (data.email ?? '').trim();
     const phoneNumber = (data.phoneNumber ?? '').trim();
     const role = (data.role ?? '').trim();
-    const errors: { email?: string; phone?: string } = {};
-    if (!isValidEmail(email)) errors.email = t('home.ctaContact.errors.emailInvalid');
-    if (!isValidPhone(phoneNumber)) errors.phone = t('home.ctaContact.errors.phoneInvalid');
-    if (Object.keys(errors).length > 0) {
+    const parseResult = applyStep1Schema.safeParse({ fullName, email, phoneNumber, role });
+    if (!parseResult.success) {
+      const errors: { fullName?: string; email?: string; phone?: string; role?: string } = {};
+      parseResult.error.issues.forEach((issue) => {
+        const key = issue.path[0] as ApplyStep1Field;
+        if (key) errors[key === 'phoneNumber' ? 'phone' : key] = issue.message as string;
+      });
       setFieldErrors(errors);
       setSubmitStatus('error');
-      setSubmitError(
-        errors.email && errors.phone
-          ? `${t('home.ctaContact.errors.emailInvalid')} ${t('home.ctaContact.errors.phoneInvalid')}`
-          : errors.email ?? errors.phone ?? t('home.ctaContact.errors.fieldsRequired'),
-      );
-      return;
-    }
-    if (!fullName || !role) {
-      setSubmitStatus('error');
-      setSubmitError(t('home.ctaContact.errors.fieldsRequired'));
+      setSubmitError(parseResult.error.issues.map((i) => i.message).join(' '));
       return;
     }
     setFieldErrors({});
@@ -329,12 +386,19 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
           throw new Error(msg);
         }
       setSubmitStatus('success');
+      setSubmitError(null);
+      setFieldErrors({});
+      setApplyTouched({});
       setShowApplyForm(false);
       setApplyStep(1);
       setApplyStep1Data(null);
       setApplyCvFile(null);
-      form.reset();
-      if (applyCvInputRef.current) applyCvInputRef.current.value = '';
+      try {
+        form.reset();
+        if (applyCvInputRef.current) applyCvInputRef.current.value = '';
+      } catch {
+        // ignorar errores al limpiar el formulario; el envío ya fue exitoso
+      }
     } catch (err) {
       setSubmitStatus('error');
       setSubmitError(err instanceof Error ? err.message : t('home.ctaContact.errors.generic'));
@@ -509,6 +573,7 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
                   setFieldErrors({});
                   setContactValues(initialContactValues);
                   setContactTouched({});
+                  setApplyTouched({});
                   if (applyCvInputRef.current) applyCvInputRef.current.value = '';
                 }}
               >
@@ -564,36 +629,34 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
                   </p>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor={`${idPrefix}apply-name`}>{t('home.ctaContact.fullName')}</Label>
+                  <Label htmlFor={`${idPrefix}apply-name`}>{t('home.ctaContact.fullName')}<span className="text-red-500"> *</span></Label>
                   <Input
                     id={`${idPrefix}apply-name`}
                     type="text"
-                    placeholder={t('home.ctaContact.fullName')}
-                    className="h-10 rounded-lg"
+                    placeholder={t('home.ctaContact.fullNamePlaceholder')}
+                    className={cn('h-10 rounded-lg', fieldErrors.fullName && 'border-destructive focus-visible:ring-destructive')}
                     value={applyStep1Data?.fullName ?? ''}
-                    onChange={(e) =>
-                      setApplyStep1Data((prev) => ({
-                        ...(prev ?? { fullName: '', email: '', phoneNumber: '', role: '' }),
-                        fullName: e.target.value,
-                      }))
-                    }
+                    onChange={(e) => handleApplyStep1Change('fullName', e.target.value)}
+                    onBlur={() => handleApplyStep1Blur('fullName')}
+                    aria-invalid={!!fieldErrors.fullName}
+                    aria-describedby={fieldErrors.fullName ? `${idPrefix}apply-name-error` : undefined}
                   />
+                  {fieldErrors.fullName && (
+                    <p id={`${idPrefix}apply-name-error`} className="text-destructive text-sm" role="alert">
+                      {fieldErrors.fullName}
+                    </p>
+                  )}
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor={`${idPrefix}apply-email`}>{t('home.ctaContact.email')}</Label>
+                  <Label htmlFor={`${idPrefix}apply-email`}>{t('home.ctaContact.email')}<span className="text-red-500"> *</span></Label>
                   <Input
                     id={`${idPrefix}apply-email`}
                     type="email"
-                    placeholder={t('home.ctaContact.email')}
+                    placeholder={t('home.ctaContact.emailPlaceholder')}
                     className={cn('h-10 rounded-lg', fieldErrors.email && 'border-destructive focus-visible:ring-destructive')}
                     value={applyStep1Data?.email ?? ''}
-                    onChange={(e) => {
-                      setFieldErrors((prev) => ({ ...prev, email: undefined }));
-                      setApplyStep1Data((prev) => ({
-                        ...(prev ?? { fullName: '', email: '', phoneNumber: '', role: '' }),
-                        email: e.target.value,
-                      }));
-                    }}
+                    onChange={(e) => handleApplyStep1Change('email', e.target.value)}
+                    onBlur={() => handleApplyStep1Blur('email')}
                     aria-invalid={!!fieldErrors.email}
                     aria-describedby={fieldErrors.email ? `${idPrefix}apply-email-error` : undefined}
                   />
@@ -604,20 +667,17 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
                   )}
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor={`${idPrefix}apply-phone`}>{t('home.ctaContact.phone')}</Label>
+                  <Label htmlFor={`${idPrefix}apply-phone`}>{t('home.ctaContact.phone')}<span className="text-red-500"> *</span></Label>
                   <Input
                     id={`${idPrefix}apply-phone`}
                     type="tel"
+                    inputMode="numeric"
+                    autoComplete="tel"
                     placeholder={t('home.ctaContact.phonePlaceholder')}
                     className={cn('h-10 rounded-lg', fieldErrors.phone && 'border-destructive focus-visible:ring-destructive')}
                     value={applyStep1Data?.phoneNumber ?? ''}
-                    onChange={(e) => {
-                      setFieldErrors((prev) => ({ ...prev, phone: undefined }));
-                      setApplyStep1Data((prev) => ({
-                        ...(prev ?? { fullName: '', email: '', phoneNumber: '', role: '' }),
-                        phoneNumber: e.target.value,
-                      }));
-                    }}
+                    onChange={handleApplyPhoneInput}
+                    onBlur={() => handleApplyStep1Blur('phoneNumber')}
                     aria-invalid={!!fieldErrors.phone}
                     aria-describedby={fieldErrors.phone ? `${idPrefix}apply-phone-error` : undefined}
                   />
@@ -628,20 +688,23 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
                   )}
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor={`${idPrefix}apply-role`}>{t('home.ctaContact.applyForm.roleLabel')}</Label>
+                  <Label htmlFor={`${idPrefix}apply-role`}>{t('home.ctaContact.applyForm.roleLabel')}<span className="text-red-500"> *</span></Label>
                   <Input
                     id={`${idPrefix}apply-role`}
                     type="text"
-                    placeholder={t('home.ctaContact.applyForm.roleLabel')}
-                    className="h-10 rounded-lg"
+                    placeholder={t('home.ctaContact.applyForm.rolePlaceholder')}
+                    className={cn('h-10 rounded-lg', fieldErrors.role && 'border-destructive focus-visible:ring-destructive')}
                     value={applyStep1Data?.role ?? ''}
-                    onChange={(e) =>
-                      setApplyStep1Data((prev) => ({
-                        ...(prev ?? { fullName: '', email: '', phoneNumber: '', role: '' }),
-                        role: e.target.value,
-                      }))
-                    }
+                    onChange={(e) => handleApplyStep1Change('role', e.target.value)}
+                    onBlur={() => handleApplyStep1Blur('role')}
+                    aria-invalid={!!fieldErrors.role}
+                    aria-describedby={fieldErrors.role ? `${idPrefix}apply-role-error` : undefined}
                   />
+                  {fieldErrors.role && (
+                    <p id={`${idPrefix}apply-role-error`} className="text-destructive text-sm" role="alert">
+                      {fieldErrors.role}
+                    </p>
+                  )}
                 </div>
                 <div className="flex flex-wrap justify-end gap-3">
                   <Button
@@ -657,6 +720,7 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
                       setApplyCvFile(null);
                       setFieldErrors({});
                       setSubmitError(null);
+                      setApplyTouched({});
                       if (applyCvInputRef.current) applyCvInputRef.current.value = '';
                     }}
                   >
@@ -947,15 +1011,16 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
                       onClick={() => {
                         setShowApplyForm(false);
                         setApplyStep(1);
-                        setApplyStep1Data(null);
-                        setApplyCvFile(null);
-                        setFieldErrors({});
-                        setSubmitError(null);
-                        if (applyCvInputRef.current) applyCvInputRef.current.value = '';
-                      }}
-                    >
-                      <FaArrowLeft className="mr-1.5 size-3.5 shrink-0" aria-hidden />
-                      {t('home.ctaContact.applyForm.changeSubject')}
+                      setApplyStep1Data(null);
+                      setApplyCvFile(null);
+                      setFieldErrors({});
+                      setSubmitError(null);
+                      setApplyTouched({});
+                      if (applyCvInputRef.current) applyCvInputRef.current.value = '';
+                    }}
+                  >
+                    <FaArrowLeft className="mr-1.5 size-3.5 shrink-0" aria-hidden />
+                    {t('home.ctaContact.applyForm.changeSubject')}
                     </Button>
                   </div>
                 </div>
