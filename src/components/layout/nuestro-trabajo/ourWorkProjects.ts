@@ -18,7 +18,7 @@ export type OurWorkProject = {
 };
 
 export const OUR_WORK_PROJECTS: OurWorkProject[] = [
-  { id: 'sendero', image: '/case-studies/sendero-crm/bg-cover-card.webp', categoryKey: 'crm' },
+  { id: 'sendero', image: '/case-studies/sendero-crm/bg-cover-card.webp', categoryKey: 'platform' },
   { id: 'zenqr', image: '/case-studies/zenqr/bg-cover-card.webp', categoryKey: 'webApp' },
   { id: 'ebm', image: '/case-studies/ebm/ebm-cover-card.webp', categoryKey: 'platform' },
   {
@@ -40,7 +40,7 @@ export const OUR_WORK_PROJECTS: OurWorkProject[] = [
   {
     id: 'easySales',
     image: '/case-studies/easy-sales/bg-cover-card.webp',
-    categoryKey: 'ecommerce',
+    categoryKey: 'platform',
   },
   {
     id: 'cipreses',

@@ -36,7 +36,7 @@
     },
     "projects": {
       "zenqr": {
-        "category": "Aplicación web",
+        "category": "Plataforma",
         "title": "ZenQR",
         "subtitle": "Plataforma SaaS para códigos QR",
         "description": "Plataforma para crear y gestionar códigos QR con analítica, diseño personalizado e integraciones en un solo panel."
@@ -48,7 +48,7 @@
         "description": "Aplicación diseñada para centralizar tareas, servicios y suscripciones para optimizar la operación técnica y la comunicación con clientes."
       },
       "digitalRanch": {
-        "category": "Aplicación web",
+        "category": "App móvil",
         "title": "Digital Ranch",
         "subtitle": "App para gestión ganadera",
         "description": "Aplicación diseñada para registrar y controlar información ganadera en tiempo real, incluso en zonas sin conexión."
@@ -60,19 +60,19 @@
         "description": "Sitio web desarrollado para presentar el catálogo de caballos y facilitar el contacto directo con clientes potenciales."
       },
       "sendero": {
-        "category": "CRM",
+        "category": "Plataforma",
         "title": "Sendero",
         "subtitle": "CRM con IA para la gestión comercial multicanal",
         "description": "Plataforma que centraliza conversaciones y automatiza el seguimiento comercial para mejorar el control del proceso de ventas."
       },
       "easySales": {
-        "category": "E-commerce",
+        "category": "Plataforma",
         "title": "EasySales",
         "subtitle": "Plataforma de delivery de productos",
         "description": "Aplicación que conecta clientes, restaurantes y repartidores para gestionar pedidos y entregas en tiempo real."
       },
       "maggiore": {
-        "category": "Sistema de tokens",
+        "category": "Plataforma",
         "title": "Maggiore",
         "subtitle": "Sistema de gestión creativa por tokens",
         "description": "Sistema digital que organiza solicitudes creativas, controla presupuestos y mejora la gestión operativa entre equipos."

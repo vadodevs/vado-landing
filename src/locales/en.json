@@ -36,7 +36,7 @@
     },
     "projects": {
       "zenqr": {
-        "category": "Web application",
+        "category": "Platform",
         "title": "ZenQR",
         "subtitle": "SaaS platform for QR codes",
         "description": "Platform to create and manage QR codes with analytics, custom design and integrations in a single panel."
@@ -48,7 +48,7 @@
         "description": "Application designed to centralize tasks, services and subscriptions to optimize technical operations and customer communication."
       },
       "digitalRanch": {
-        "category": "Web application",
+        "category": "Mobile app",
         "title": "Digital Ranch",
         "subtitle": "Livestock management app",
         "description": "Application designed to record and control livestock information in real time, even in areas without connectivity."
@@ -60,19 +60,19 @@
         "description": "Website developed to present the horse catalog and facilitate direct contact with potential customers."
       },
       "sendero": {
-        "category": "CRM",
+        "category": "Platform",
         "title": "Sendero",
         "subtitle": "AI CRM for multichannel sales management",
         "description": "Platform that centralizes conversations and automates sales follow-up to improve control of the sales process."
       },
       "easySales": {
-        "category": "E-commerce",
+        "category": "Platform",
         "title": "EasySales",
         "subtitle": "Product delivery platform",
         "description": "Application that connects customers, restaurants and drivers to manage orders and deliveries in real time."
       },
       "maggiore": {
-        "category": "Token system",
+        "category": "Platform",
         "title": "Maggiore",
         "subtitle": "Token-based creative management system",
         "description": "Digital system that organizes creative requests, controls budgets and improves operational management between teams."
