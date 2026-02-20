@@ -22,7 +22,7 @@ export function ZenqurCasePage() {
         logoAlt="ZenQR"
         title={t('ourWork.caseStudy.zenqr.hero.title')}
         description={t('ourWork.caseStudy.zenqr.hero.description')}
-        heroImageSrc="/case-studies/zenqr/zenqr-hero.webp"
+        heroImageSrc="/case-studies/zenqr/bg-hero.webp"
         heroImageAlt={t('ourWork.caseStudy.zenqr.hero.heroImageAlt')}
         backgroundColor={ZENQR_ACCENT}
         backgroundImageSrc="/case-studies/zenqr/bg-hero-zenqr.webp"

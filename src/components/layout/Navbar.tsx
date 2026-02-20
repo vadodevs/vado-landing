@@ -227,7 +227,7 @@ export function Navbar() {
     <header className="bg-background sticky top-0 z-40 w-full border-b p-3">
       <CenterContainer className="flex h-14 items-center justify-between">
         <Link href={homePath} className="flex shrink-0 items-center">
-          <VadoLogo className="h-10 w-auto" />
+          <VadoLogo />
         </Link>
 
         <div className="flex items-center gap-2 lg:hidden">
@@ -246,7 +246,7 @@ export function Navbar() {
                   onClick={() => setDrawerOpen(false)}
                   className="flex shrink-0 items-center"
                 >
-                  <VadoLogo className="h-8 w-auto" />
+                  <VadoLogo />
                 </Link>
                 <DrawerClose asChild>
                   <Button
@@ -283,7 +283,7 @@ export function Navbar() {
               <NavigationMenuItem>
                 <NavigationMenuTrigger
                   className={cn(
-                    'hover:bg-transparent focus:bg-transparent data-[state=open]:bg-transparent data-[state=open]:text-primary',
+                    'data-[state=open]:text-primary hover:bg-transparent focus:bg-transparent data-[state=open]:bg-transparent',
                     isServiciosActive && 'text-primary font-semibold',
                   )}
                 >
@@ -329,7 +329,7 @@ export function Navbar() {
               <NavigationMenuItem>
                 <NavigationMenuTrigger
                   className={cn(
-                    'hover:bg-transparent focus:bg-transparent data-[state=open]:bg-transparent data-[state=open]:text-primary',
+                    'data-[state=open]:text-primary hover:bg-transparent focus:bg-transparent data-[state=open]:bg-transparent',
                     isCompaniaActive && 'text-primary font-semibold',
                   )}
                 >

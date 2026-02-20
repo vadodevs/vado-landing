@@ -11,7 +11,11 @@ const SOCIAL_LINKS = [
   { Icon: FaInstagram, href: 'https://www.instagram.com/vadodevs', label: 'Instagram' },
   { Icon: FaLinkedin, href: 'https://www.linkedin.com/company/vado-devs', label: 'LinkedIn' },
   { Icon: FaTiktok, href: 'https://www.tiktok.com/@vado.devs', label: 'TikTok' },
-  { Icon: FaYoutube, href: 'https://www.youtube.com/channel/UCDD5O0ACBG4_Q05eHDJSwxg', label: 'YouTube' },
+  {
+    Icon: FaYoutube,
+    href: 'https://www.youtube.com/channel/UCDD5O0ACBG4_Q05eHDJSwxg',
+    label: 'YouTube',
+  },
 ] as const;
 
 export function Footer() {
@@ -28,7 +32,7 @@ export function Footer() {
           {/* Brand + social */}
           <div className="flex flex-col gap-4">
             <Link href={path('')} className="inline-block">
-              <VadoLogo whiteLogo className="h-9 w-auto" />
+              <VadoLogo white />
             </Link>
             <p className="text-sm font-medium text-white/90">{t('footer.stayConnected')}</p>
             <div className="flex items-center gap-3">

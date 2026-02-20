@@ -5,7 +5,7 @@ import { ServiceHero } from '@/components/layout/servicios/ServiceHero';
 import { StaffAugmentationIntroSection } from '@/components/layout/servicios/ampliacion-de-personal/StaffAugmentationIntroSection';
 import { StaffAugmentationProcessSection } from '@/components/layout/servicios/ampliacion-de-personal/StaffAugmentationProcessSection';
 import { StaffAugmentationWhyVadoSection } from '@/components/layout/servicios/ampliacion-de-personal/StaffAugmentationWhyVadoSection';
-import { TrustedBrands } from '@/components/layout/home/brands/TrustedBrands';
+// import { TrustedBrands } from '@/components/layout/home/brands/TrustedBrands';
 import { VadoInsightsSection } from '@/components/layout/home/insights/VadoInsightsSection';
 import { FAQSection } from '@/components/layout/home/faq/FAQSection';
 import { CtaContactSection } from '@/components/layout/home/cta-contact/CtaContactSection';
@@ -25,7 +25,7 @@ export default function AmpliacionDePersonal() {
           tagline={t('services.staffAugmentation.hero.tagline')}
           cta={t('services.staffAugmentation.hero.cta')}
         />
-        <TrustedBrands />
+        {/* <TrustedBrands /> */}
         <StaffAugmentationIntroSection />
         <StaffAugmentationProcessSection />
         <StaffAugmentationWhyVadoSection />
