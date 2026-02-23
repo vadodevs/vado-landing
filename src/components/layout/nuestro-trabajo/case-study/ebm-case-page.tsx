@@ -1,7 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { CenterContainer } from '@/components/layout/CenterContainer';
 import { ProjectHero } from '@/components/layout/nuestro-trabajo/ProjectHero';
-import { EbmLogo } from '@/assets/brands/ebm';
 import { CaseStudyCtaSection } from '@/components/layout/nuestro-trabajo/case-study/CaseStudyCtaSection';
 import {
   EBM_ACCENT,
@@ -19,7 +18,14 @@ export function EbmCasePage() {
   return (
     <article className="bg-background relative">
       <ProjectHero
-        logoNode={<EbmLogo color="white" className="h-full w-full object-contain object-left" />}
+        logoNode={
+          <img
+            src="/brands/ebm-white-logo.svg"
+            alt=""
+            className="h-full w-full object-contain object-left"
+            aria-hidden
+          />
+        }
         logoAlt={t('ourWork.projects.ebm.title')}
         title={t('ourWork.caseStudy.ebm.hero.title')}
         description={t('ourWork.caseStudy.ebm.hero.description')}

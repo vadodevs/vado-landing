@@ -8,11 +8,14 @@ export type DigitalRanchLogoProps = {
 const DEFAULT_COLOR = '#6D6D6E';
 const isMonochrome = (c: string) => c !== DEFAULT_COLOR;
 
+const WHITE_COW_GRAY = '#9E9E9E';
+
 export const DigitalRanchLogo = ({ color = DEFAULT_COLOR, className }: DigitalRanchLogoProps) => {
   const fill = isMonochrome(color) ? color : undefined;
   const iconFill = color;
-  const textFill = fill ?? '#6D6D6E';
-  const accentFill = fill ?? '#FEFEFE';
+  const textFill = fill ?? '#CECECE';
+  const isWhite = color === 'white' || color === '#fff' || color === '#ffffff';
+  const accentFill = isWhite ? WHITE_COW_GRAY : (fill ?? '#FEFEFE');
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
