@@ -14,6 +14,9 @@ export function useLocale(): { locale: Locale; path: (p: string) => string } {
 
   useLayoutEffect(() => {
     i18n.changeLanguage(locale)
+    if (typeof document !== 'undefined') {
+      document.documentElement.lang = locale
+    }
   }, [locale])
 
   const path = (p: string) => {

@@ -18,6 +18,8 @@ export default function Cookies() {
         title={`${COOKIE_POLICY_TITLE} | Vado`}
         description={COOKIE_POLICY_DESCRIPTION}
         canonicalPath={canonicalPath}
+        ogType="website"
+        pathWithoutLang="/cookies"
       />
       <MainLayout>
         <main id="main-content" className="bg-background py-12 md:py-16 lg:py-20" aria-label="Cookie Policy">

@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
-import { PageTitle } from '@/components/PageTitle';
+import { PageMeta } from '@/components/PageMeta';
 import MainLayout from '@/components/layout/MainLayout';
+import { useLocale } from '@/hooks/useLocale';
 import { InsightsHero } from '@/components/layout/compania/InsightsHero';
 import { InsightsArticlesSection } from '@/components/layout/compania/InsightsArticlesSection';
 import { InsightsStayUpdatedSection } from '@/components/layout/compania/InsightsStayUpdatedSection';
@@ -9,10 +10,16 @@ import { FAQSection } from '@/components/layout/home/faq/FAQSection';
 
 export default function VadoInsights() {
   const { t } = useTranslation();
+  const { path } = useLocale();
 
   return (
     <>
-      <PageTitle title={t('nav.vadoInsights')} />
+      <PageMeta
+        title={t('nav.vadoInsights')}
+        description={t('seo.vadoInsights')}
+        canonicalPath={path('/compania/vado-insights')}
+        pathWithoutLang="/compania/vado-insights"
+      />
       <MainLayout>
         <InsightsHero
           titleLine1={t('insightsPage.hero.titleLine1')}

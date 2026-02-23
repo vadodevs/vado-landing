@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
-import { PageTitle } from '@/components/PageTitle';
+import { PageMeta } from '@/components/PageMeta';
 import MainLayout from '@/components/layout/MainLayout';
+import { useLocale } from '@/hooks/useLocale';
 import { ServiceHero } from '@/components/layout/servicios/ServiceHero';
 import { AIProcessSection } from '@/components/layout/servicios/soluciones-ia/AIProcessSection';
 import { AISolutionsTabsSection } from '@/components/layout/servicios/soluciones-ia/AISolutionsTabsSection';
@@ -11,10 +12,16 @@ import { SoftwareTestimonialsSection } from '@/components/layout/servicios/softw
 
 export default function SolucionesIA() {
   const { t } = useTranslation();
+  const { path } = useLocale();
 
   return (
     <>
-      <PageTitle title={t('nav.aiSolutions')} />
+      <PageMeta
+        title={t('nav.aiSolutions')}
+        description={t('seo.aiSolutions')}
+        canonicalPath={path('/servicios/soluciones-ia')}
+        pathWithoutLang="/servicios/soluciones-ia"
+      />
       <MainLayout>
         <ServiceHero
           backgroundImage="/backgrounds/bg-blue-header.svg"

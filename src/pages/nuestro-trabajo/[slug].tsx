@@ -70,6 +70,8 @@ export default function NuestroTrabajoProject() {
           description={metaDescription ?? ''}
           image={ogImage}
           canonicalPath={canonicalPath}
+          ogType="website"
+          pathWithoutLang={projectKey ? `/nuestro-trabajo/${projectKey}` : undefined}
         />
       ) : (
         <PageTitle title={pageTitle} />

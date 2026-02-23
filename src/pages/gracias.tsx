@@ -1,7 +1,7 @@
 import { Link } from 'wouter';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'motion/react';
-import { PageTitle } from '@/components/PageTitle';
+import { PageMeta } from '@/components/PageMeta';
 import MainLayout from '@/components/layout/MainLayout';
 import { CenterContainer } from '@/components/layout/CenterContainer';
 import { Button } from '@/components/ui/button';
@@ -13,7 +13,12 @@ export default function Gracias() {
 
   return (
     <>
-      <PageTitle title={t('thankYou.pageTitle')} />
+      <PageMeta
+        title={t('thankYou.pageTitle')}
+        description={t('seo.thankYou')}
+        canonicalPath={path('/gracias')}
+        pathWithoutLang="/gracias"
+      />
       <MainLayout>
         <motion.section
           className="relative min-h-[min(70vh,600px)] py-16 md:py-24 lg:py-28"

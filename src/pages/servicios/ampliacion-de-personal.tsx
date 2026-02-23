@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
-import { PageTitle } from '@/components/PageTitle';
+import { PageMeta } from '@/components/PageMeta';
 import MainLayout from '@/components/layout/MainLayout';
+import { useLocale } from '@/hooks/useLocale';
 import { ServiceHero } from '@/components/layout/servicios/ServiceHero';
 import { StaffAugmentationIntroSection } from '@/components/layout/servicios/ampliacion-de-personal/StaffAugmentationIntroSection';
 import { StaffAugmentationProcessSection } from '@/components/layout/servicios/ampliacion-de-personal/StaffAugmentationProcessSection';
@@ -13,10 +14,16 @@ import { SoftwareTestimonialsSection } from '@/components/layout/servicios/softw
 
 export default function AmpliacionDePersonal() {
   const { t } = useTranslation();
+  const { path } = useLocale();
 
   return (
     <>
-      <PageTitle title={t('nav.staffAugmentation')} />
+      <PageMeta
+        title={t('nav.staffAugmentation')}
+        description={t('seo.staffAugmentation')}
+        canonicalPath={path('/servicios/ampliacion-de-personal')}
+        pathWithoutLang="/servicios/ampliacion-de-personal"
+      />
       <MainLayout>
         <ServiceHero
           backgroundImage="/backgrounds/bg-blue.svg"

@@ -40,6 +40,8 @@ export default function PoliticaDePrivacidad() {
   return (
     <>
       <PageMeta
+        ogType="website"
+        pathWithoutLang="/politica-privacidad"
         title={`${PRIVACY_POLICY_TITLE} | Vado`}
         description={PRIVACY_POLICY_DESCRIPTION}
         canonicalPath={canonicalPath}

@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
-import { PageTitle } from '@/components/PageTitle';
+import { PageMeta } from '@/components/PageMeta';
+import { useLocale } from '@/hooks/useLocale';
 import { AISolutionsSection } from '@/components/layout/home/ai-solutions/AISolutionsSection';
 import { DigitalProductsSection } from '@/components/layout/home/digital-products/DigitalProductsSection';
 import { ClientsSection } from '@/components/layout/home/clients/ClientsSection';
@@ -16,10 +17,16 @@ import MainLayout from '@/components/layout/MainLayout';
 
 export default function Home() {
   const { t } = useTranslation();
+  const { path } = useLocale();
 
   return (
     <>
-      <PageTitle title={t('home.title')} />
+      <PageMeta
+        title={t('home.title')}
+        description={t('seo.home')}
+        canonicalPath={path('')}
+        pathWithoutLang=""
+      />
       <MainLayout>
         <Hero />
         <TrustedBrands />

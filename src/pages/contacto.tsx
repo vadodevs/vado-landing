@@ -1,8 +1,9 @@
 import { useTranslation } from 'react-i18next';
 import { motion } from 'motion/react';
-import { PageTitle } from '@/components/PageTitle';
+import { PageMeta } from '@/components/PageMeta';
 import MainLayout from '@/components/layout/MainLayout';
 import { CenterContainer } from '@/components/layout/CenterContainer';
+import { useLocale } from '@/hooks/useLocale';
 import { ContactForm } from '@/components/layout/home/cta-contact/ContactForm';
 
 const EASING: [number, number, number, number] = [0.25, 0.46, 0.45, 0.94];
@@ -24,10 +25,16 @@ const fadeUp = {
 
 export default function Contacto() {
   const { t } = useTranslation();
+  const { path } = useLocale();
 
   return (
     <>
-      <PageTitle title={t('nav.contactUs')} />
+      <PageMeta
+        title={t('nav.contactUs')}
+        description={t('seo.contact')}
+        canonicalPath={path('/contacto')}
+        pathWithoutLang="/contacto"
+      />
       <MainLayout>
         <motion.section
           className="relative min-h-[min(80vh,700px)] overflow-hidden py-12 md:py-16 lg:py-20"

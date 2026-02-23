@@ -45,6 +45,8 @@ export default function TerminosDelServicio() {
         title={`${TERMS_TITLE} | Vado`}
         description={TERMS_DESCRIPTION}
         canonicalPath={canonicalPath}
+        ogType="website"
+        pathWithoutLang="/terminos"
       />
       <MainLayout>
         <main

@@ -16,6 +16,17 @@
     "openMenu": "Abrir menú",
     "closeMenu": "Cerrar menú"
   },
+  "seo": {
+    "home": "Vado Devs: software a la medida, desarrollo web, apps y soluciones digitales. Llevamos tu negocio del reto al resultado.",
+    "contact": "Contacta a Vado Devs. Cuéntanos tu proyecto y te respondemos con una propuesta a la medida.",
+    "customSoftware": "Desarrollo de software a la medida: aplicaciones web, móviles y plataformas que se adaptan a tu negocio.",
+    "aiSolutions": "Soluciones de inteligencia artificial a la medida: automatización, análisis de datos y productos impulsados por IA.",
+    "staffAugmentation": "Ampliación de personal tecnológico: equipos de desarrollo dedicados y perfiles senior para tu proyecto.",
+    "ourWork": "Casos de éxito y proyectos de Vado Devs: desarrollo web, apps, plataformas SaaS y soluciones digitales.",
+    "vadoInsights": "Artículos y reflexiones sobre tecnología, talento, nearshore y tendencias digitales por Vado Devs.",
+    "cultureAndTalent": "Cultura y talento en Vado: cómo trabajamos, valores y oportunidades para unirse al equipo.",
+    "thankYou": "Gracias por contactarnos. Hemos recibido tu mensaje y te responderemos pronto."
+  },
   "ourWork": {
     "heroBadge": {
       "industry": "Industria",

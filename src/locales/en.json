@@ -16,6 +16,17 @@
     "openMenu": "Open menu",
     "closeMenu": "Close menu"
   },
+  "seo": {
+    "home": "Vado Devs: custom software, web and app development, and digital solutions. From challenge to result.",
+    "contact": "Contact Vado Devs. Tell us about your project and we'll get back to you with a tailored proposal.",
+    "customSoftware": "Custom software development: web apps, mobile apps, and platforms built for your business.",
+    "aiSolutions": "Custom AI solutions: automation, data analytics, and AI-powered products.",
+    "staffAugmentation": "Tech staff augmentation: dedicated development teams and senior talent for your project.",
+    "ourWork": "Case studies and projects by Vado Devs: web, apps, SaaS platforms, and digital solutions.",
+    "vadoInsights": "Articles on technology, talent, nearshore, and digital trends by Vado Devs.",
+    "cultureAndTalent": "Culture and talent at Vado: how we work, our values, and opportunities to join the team.",
+    "thankYou": "Thank you for reaching out. We've received your message and will get back to you soon."
+  },
   "ourWork": {
     "heroBadge": {
       "industry": "Industry",

@@ -35,6 +35,8 @@ export default function GenericArticlePage({ articleId }: GenericArticlePageProp
         title={pageTitle}
         description={metaDescription}
         canonicalPath={canonicalPath}
+        ogType="article"
+        pathWithoutLang={`/compania/articulos/${slug}`}
       />
       <MainLayout>
         <InsightsArticleHero

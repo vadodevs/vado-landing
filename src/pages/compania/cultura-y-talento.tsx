@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
-import { PageTitle } from '@/components/PageTitle';
+import { PageMeta } from '@/components/PageMeta';
 import MainLayout from '@/components/layout/MainLayout';
+import { useLocale } from '@/hooks/useLocale';
 import { CulturaYTalentoHero } from '@/components/layout/compania/CulturaYTalentoHero';
 import { FiveVsSection } from '@/components/layout/compania/FiveVsSection';
 import { CoreValuesSection } from '@/components/layout/compania/CoreValuesSection';
@@ -12,10 +13,16 @@ import { CtaContactSection } from '@/components/layout/home/cta-contact/CtaConta
 
 export default function CulturaYTalento() {
   const { t } = useTranslation();
+  const { path } = useLocale();
 
   return (
     <>
-      <PageTitle title={t('nav.cultureAndTalent')} />
+      <PageMeta
+        title={t('nav.cultureAndTalent')}
+        description={t('seo.cultureAndTalent')}
+        canonicalPath={path('/compania/cultura-y-talento')}
+        pathWithoutLang="/compania/cultura-y-talento"
+      />
       <MainLayout>
         <CulturaYTalentoHero
           titleLine1={t('cultureYTalentoPage.hero.titleLine1')}

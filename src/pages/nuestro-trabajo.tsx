@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
-import { PageTitle } from '@/components/PageTitle';
+import { PageMeta } from '@/components/PageMeta';
 import MainLayout from '@/components/layout/MainLayout';
+import { useLocale } from '@/hooks/useLocale';
 import { ServiceHero } from '@/components/layout/servicios/ServiceHero';
 import { OurWorkProjectsSection } from '@/components/layout/nuestro-trabajo/OurWorkProjectsSection';
 import { FAQSection } from '@/components/layout/home/faq/FAQSection';
@@ -8,10 +9,16 @@ import { CtaContactSection } from '@/components/layout/home/cta-contact/CtaConta
 
 export default function NuestroTrabajo() {
   const { t } = useTranslation();
+  const { path } = useLocale();
 
   return (
     <>
-      <PageTitle title={t('nav.ourWork')} />
+      <PageMeta
+        title={t('nav.ourWork')}
+        description={t('seo.ourWork')}
+        canonicalPath={path('/nuestro-trabajo')}
+        pathWithoutLang="/nuestro-trabajo"
+      />
       <MainLayout>
         <ServiceHero
           backgroundImage="/backgrounds/bg-blue.svg"

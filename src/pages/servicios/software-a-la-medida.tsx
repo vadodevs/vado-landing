@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
-import { PageTitle } from '@/components/PageTitle';
+import { PageMeta } from '@/components/PageMeta';
 import MainLayout from '@/components/layout/MainLayout';
+import { useLocale } from '@/hooks/useLocale';
 import { SoftwareHero } from '@/components/layout/servicios/software-a-la-medida/SoftwareHero';
 import { SoftwareProcessSection } from '@/components/layout/servicios/software-a-la-medida/SoftwareProcessSection';
 import { SoftwareProductsSection } from '@/components/layout/servicios/software-a-la-medida/SoftwareProductsSection';
@@ -13,10 +14,16 @@ import { CtaContactSection } from '@/components/layout/home/cta-contact/CtaConta
 
 export default function SoftwareALaMedida() {
   const { t } = useTranslation();
+  const { path } = useLocale();
 
   return (
     <>
-      <PageTitle title={t('nav.customSoftware')} />
+      <PageMeta
+        title={t('nav.customSoftware')}
+        description={t('seo.customSoftware')}
+        canonicalPath={path('/servicios/software-a-la-medida')}
+        pathWithoutLang="/servicios/software-a-la-medida"
+      />
       <MainLayout>
         <SoftwareHero />
         <SoftwareProductsSection />

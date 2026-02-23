@@ -1,5 +1,6 @@
 import { Route, Switch, Redirect } from 'wouter'
 import { ScrollToTop } from '@/components/ScrollToTop'
+import { JsonLd } from '@/components/JsonLd'
 import Home from '@/pages/home'
 import SoftwareALaMedida from '@/pages/servicios/software-a-la-medida'
 import SolucionesIA from '@/pages/servicios/soluciones-ia'
@@ -21,6 +22,7 @@ export function Router() {
   return (
     <>
       <ScrollToTop />
+      <JsonLd />
       <Switch>
       <Route path="/">
         <Redirect to="/es" />
