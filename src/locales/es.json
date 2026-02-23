@@ -77,9 +77,9 @@
         "subtitle": "Sistema de gestión creativa por tokens",
         "description": "Sistema digital que organiza solicitudes creativas, controla presupuestos y mejora la gestión operativa entre equipos."
       },
-      "washapp": {
+      "washaut": {
         "category": "App móvil",
-        "title": "WashApp",
+        "title": "WashAut",
         "subtitle": "App para servicios de auto lavado",
         "description": "Aplicación que permite solicitar servicios a domicilio y gestionar la operación, pagos y técnicos desde un solo sistema."
       }
@@ -595,19 +595,19 @@
           "slide3Alt": "Maggiore en uso"
         }
       },
-      "washapp": {
+      "washaut": {
         "stackLabel": "Stack",
         "hero": {
-          "title": "WashApp | App para servicios de auto lavado",
+          "title": "WashAut | App para servicios de auto lavado",
           "description": "Aplicación que permite solicitar servicios a domicilio y gestionar la operación, pagos y técnicos desde un solo sistema.",
           "industry": "Servicios a domicilio",
           "solutionType": "App móvil",
-          "heroImageAlt": "WashApp - Lavado de autos a domicilio"
+          "heroImageAlt": "WashAut - Lavado de autos a domicilio"
         },
         "overview": {
           "label": "Overview",
           "title": "App móvil de lavado de autos a domicilio",
-          "paragraph": "WashApp fue desarrollado para <accent>transformar el servicio tradicional</accent> de auto-lavado en un modelo digital bajo demanda. El objetivo fue permitir que los usuarios solicitaran el servicio desde su celular, mientras la empresa mantenía <accent>control operativo y financiero en tiempo real</accent>. La solución buscó mejorar la experiencia del cliente y, al mismo tiempo, estructurar la gestión interna del negocio para hacerlo más eficiente y escalable."
+          "paragraph": "WashAut fue desarrollado para <accent>transformar el servicio tradicional</accent> de auto-lavado en un modelo digital bajo demanda. El objetivo fue permitir que los usuarios solicitaran el servicio desde su celular, mientras la empresa mantenía <accent>control operativo y financiero en tiempo real</accent>. La solución buscó mejorar la experiencia del cliente y, al mismo tiempo, estructurar la gestión interna del negocio para hacerlo más eficiente y escalable."
         },
         "challenge": {
           "label": "Challenge",
@@ -661,9 +661,9 @@
           "backLink": "Volver a Nuestro trabajo"
         },
         "slides": {
-          "slide1Alt": "Captura de la app WashApp",
-          "slide2Alt": "Funcionalidades de WashApp",
-          "slide3Alt": "WashApp en uso"
+          "slide1Alt": "Captura de la app WashAut",
+          "slide2Alt": "Funcionalidades de WashAut",
+          "slide3Alt": "WashAut en uso"
         }
       }
     }

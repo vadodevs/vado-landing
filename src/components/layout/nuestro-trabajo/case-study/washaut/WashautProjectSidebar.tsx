@@ -1,11 +1,11 @@
 import { useTranslation } from 'react-i18next';
 import { FaClipboardList, FaLaptop, FaCode } from 'react-icons/fa';
 import { type ProjectStackItem } from '@/components/layout/nuestro-trabajo/ProjectStack';
-import { WASHAPP_ACCENT } from './washapp-case-section';
+import { WASHAUT_ACCENT } from './washaut-case-section';
 
 const STACK_BASE = '/stack';
 
-const WASHAPP_STACK: ProjectStackItem[] = [
+const WASHAUT_STACK: ProjectStackItem[] = [
   { name: 'Vue', icon: 'vue' },
   { name: 'TypeScript', icon: 'typescript' },
   { name: 'Node.js', icon: 'node-js' },
@@ -13,15 +13,15 @@ const WASHAPP_STACK: ProjectStackItem[] = [
   { name: 'PostgreSQL', icon: 'postgresql' },
 ];
 
-export function WashappProjectSidebar() {
+export function WashautProjectSidebar() {
   const { t } = useTranslation();
 
   return (
     <div className="rounded-2xl border border-slate-200 bg-white shadow-md">
       <div className="border-border border-b px-5 py-4">
         <h3 className="flex items-center gap-2 text-sm font-bold tracking-wider text-slate-700 uppercase">
-          <FaClipboardList className="size-4 shrink-0" style={{ color: WASHAPP_ACCENT }} />
-          {t('ourWork.caseStudy.washapp.sidebar.title')}
+          <FaClipboardList className="size-4 shrink-0" style={{ color: WASHAUT_ACCENT }} />
+          {t('ourWork.caseStudy.washaut.sidebar.title')}
         </h3>
       </div>
 
@@ -29,22 +29,22 @@ export function WashappProjectSidebar() {
         <dl className="space-y-4 text-sm">
           <div>
             <dt className="text-muted-foreground mb-1 flex items-center gap-2 text-xs font-semibold tracking-wider uppercase">
-              <FaLaptop className="size-3.5 shrink-0" style={{ color: WASHAPP_ACCENT }} />
-              {t('ourWork.caseStudy.washapp.sidebar.productType')}
+              <FaLaptop className="size-3.5 shrink-0" style={{ color: WASHAUT_ACCENT }} />
+              {t('ourWork.caseStudy.washaut.sidebar.productType')}
             </dt>
             <dd className="font-medium text-slate-700">
-              {t('ourWork.caseStudy.washapp.sidebar.productTypeMobile')}
+              {t('ourWork.caseStudy.washaut.sidebar.productTypeMobile')}
             </dd>
           </div>
         </dl>
 
         <div className="pt-4">
           <p className="text-muted-foreground mb-3 flex items-center gap-2 text-xs font-semibold tracking-wider uppercase">
-            <FaCode className="size-3.5 shrink-0" style={{ color: WASHAPP_ACCENT }} />
-            {t('ourWork.caseStudy.washapp.stackLabel')}
+            <FaCode className="size-3.5 shrink-0" style={{ color: WASHAUT_ACCENT }} />
+            {t('ourWork.caseStudy.washaut.stackLabel')}
           </p>
           <ul className="flex flex-wrap gap-2" role="list">
-            {WASHAPP_STACK.map((item) => (
+            {WASHAUT_STACK.map((item) => (
               <li key={item.icon}>
                 <span
                   className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-medium text-slate-700"

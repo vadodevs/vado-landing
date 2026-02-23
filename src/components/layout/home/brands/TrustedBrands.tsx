@@ -5,7 +5,7 @@ import { CenterContainer } from '@/components/layout/CenterContainer';
 const BRAND_LOGOS = [
   { src: '/brands/easysales.svg', alt: 'EasySales' },
   { src: '/brands/ebm.svg', alt: 'EasyBoatManagement' },
-  { src: '/brands/washapp.svg', alt: 'WashApp' },
+  { src: '/brands/washaut.svg', alt: 'WashAut' },
   { src: '/brands/rumbo-altenio.svg', alt: 'Rumbo Alteño' },
   { src: '/brands/sendero-logo.svg', alt: 'Sendero CRM' },
   { src: '/brands/maggiore.svg', alt: 'Maggiore Marketing' },

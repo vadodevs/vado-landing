@@ -12,7 +12,7 @@ import { DigitalRanchCasePage } from '@/components/layout/nuestro-trabajo/case-s
 import { EasySalesCasePage } from '@/components/layout/nuestro-trabajo/case-study/easySales-case-page';
 import { CipresesCasePage } from '@/components/layout/nuestro-trabajo/case-study/cipreses-case-page';
 import { MaggioreCasePage } from '@/components/layout/nuestro-trabajo/case-study/maggiore-case-page';
-import { WashappCasePage } from '@/components/layout/nuestro-trabajo/case-study/washapp-case-page';
+import { WashautCasePage } from '@/components/layout/nuestro-trabajo/case-study/washaut-case-page';
 
 const KNOWN_SLUGS = [
   'zenqr',
@@ -22,7 +22,7 @@ const KNOWN_SLUGS = [
   'easySales',
   'cipreses',
   'maggiore',
-  'washapp',
+  'washaut',
 ] as const;
 
 const CASE_COMPONENTS: Record<(typeof KNOWN_SLUGS)[number], React.ComponentType> = {
@@ -33,7 +33,7 @@ const CASE_COMPONENTS: Record<(typeof KNOWN_SLUGS)[number], React.ComponentType>
   easySales: EasySalesCasePage,
   cipreses: CipresesCasePage,
   maggiore: MaggioreCasePage,
-  washapp: WashappCasePage,
+  washaut: WashautCasePage,
 };
 
 export default function NuestroTrabajoProject() {

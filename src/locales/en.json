@@ -77,9 +77,9 @@
         "subtitle": "Token-based creative management system",
         "description": "Digital system that organizes creative requests, controls budgets and improves operational management between teams."
       },
-      "washapp": {
+      "washaut": {
         "category": "Mobile app",
-        "title": "WashApp",
+        "title": "WashAut",
         "subtitle": "App for car wash services",
         "description": "Application that allows requesting at-home services and managing operations, payments and technicians from a single system."
       }
@@ -592,19 +592,19 @@
           "slide3Alt": "Maggiore in use"
         }
       },
-      "washapp": {
+      "washaut": {
         "stackLabel": "Stack",
         "hero": {
-          "title": "WashApp | Mobile app",
+          "title": "WashAut | Mobile app",
           "description": "Mobile app for at-home car washing with a simple experience for users and field operators.",
           "industry": "At-home services",
           "solutionType": "Mobile app",
-          "heroImageAlt": "WashApp - At-home car washing"
+          "heroImageAlt": "WashAut - At-home car washing"
         },
         "overview": {
           "label": "Overview",
           "title": "Mobile app for at-home car washing",
-          "paragraph": "WashApp was built as a <accent>mobile app</accent> that connects users with <accent>at-home car washing</accent>. <accent>Simple</accent> experience for who books and for the field operator, with clarity and follow-up."
+          "paragraph": "WashAut was built as a <accent>mobile app</accent> that connects users with <accent>at-home car washing</accent>. <accent>Simple</accent> experience for who books and for the field operator, with clarity and follow-up."
         },
         "challenge": {
           "label": "Challenge",
@@ -657,9 +657,9 @@
           "backLink": "Back to Our work"
         },
         "slides": {
-          "slide1Alt": "WashApp app screenshot",
-          "slide2Alt": "WashApp features",
-          "slide3Alt": "WashApp in use"
+          "slide1Alt": "WashAut app screenshot",
+          "slide2Alt": "WashAut features",
+          "slide3Alt": "WashAut in use"
         }
       }
     }

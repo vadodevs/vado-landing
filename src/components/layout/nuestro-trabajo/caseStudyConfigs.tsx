@@ -33,7 +33,7 @@ const ACCENT_COLORS: Record<string, string> = {
   easySales: '#fd7113',
   cipreses: '#cc8b33',
   maggiore: '#205c76',
-  washapp: '#3390ff',
+  washaut: '#3390ff',
 };
 
 /** Secciones placeholder para proyectos que aún no tienen contenido propio */
@@ -433,7 +433,7 @@ const CASE_STUDY_SLUGS = [
   'easySales',
   'cipreses',
   'maggiore',
-  'washapp',
+  'washaut',
 ] as const;
 
 export const getCaseStudyConfig = (slug: string, t: TFunction): ProjectCaseStudyConfig | null => {

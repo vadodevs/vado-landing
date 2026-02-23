@@ -9,16 +9,16 @@ import {
 } from '@/components/layout/nuestro-trabajo/ourWorkProjects';
 import { useLocale } from '@/hooks/useLocale';
 
-export function WashappOtherCases() {
+export function WashautOtherCases() {
   const { t } = useTranslation();
   const { path } = useLocale();
-  const otherProjects = OUR_WORK_PROJECTS.filter((p) => p.id !== 'washapp').slice(0, 3);
+  const otherProjects = OUR_WORK_PROJECTS.filter((p) => p.id !== 'washaut').slice(0, 3);
 
   return (
     <section className="border-border bg-muted/30 border-t py-16 md:py-24">
       <CenterContainer>
         <h2 className="mb-10 text-2xl font-bold tracking-tight text-slate-700 md:text-3xl">
-          {t('ourWork.caseStudy.washapp.otherCases.title')}
+          {t('ourWork.caseStudy.washaut.otherCases.title')}
         </h2>
         <motion.ul
           className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3"

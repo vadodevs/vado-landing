@@ -12,7 +12,7 @@ type CaseStudyId =
   | 'ebm'
   | 'maggiore'
   | 'digitalRanch'
-  | 'washapp'
+  | 'washaut'
   | 'easySales'
   | 'cipreses';
 

@@ -32,8 +32,8 @@ export const OUR_WORK_PROJECTS: OurWorkProject[] = [
     categoryKey: 'webApp',
   },
   {
-    id: 'washapp',
-    image: '/case-studies/washapp/bg-cover-card.webp',
+    id: 'washaut',
+    image: '/case-studies/washaut/bg-cover-card.webp',
     categoryKey: 'webApp',
     badgeColor: '#3390ff',
   },

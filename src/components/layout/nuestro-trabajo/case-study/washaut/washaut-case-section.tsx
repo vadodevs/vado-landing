@@ -1,14 +1,14 @@
-export const WASHAPP_ACCENT = '#3390ff';
+export const WASHAUT_ACCENT = '#3390ff';
 
 export function Accent({ children }: { children: React.ReactNode }) {
   return (
-    <span className="font-semibold" style={{ color: WASHAPP_ACCENT }}>
+    <span className="font-semibold" style={{ color: WASHAUT_ACCENT }}>
       {children}
     </span>
   );
 }
 
-export function WashappCaseSection({
+export function WashautCaseSection({
   label,
   title,
   children,
@@ -39,7 +39,7 @@ export function WashappCaseSection({
                   {label && (
                     <span
                       className="text-sm font-semibold tracking-wider uppercase"
-                      style={{ color: WASHAPP_ACCENT }}
+                      style={{ color: WASHAUT_ACCENT }}
                     >
                       {label}
                     </span>
@@ -50,7 +50,7 @@ export function WashappCaseSection({
                 title && (
                   <h2
                     className={'border-l-4 pl-4 ' + titleClass}
-                    style={{ borderColor: WASHAPP_ACCENT }}
+                    style={{ borderColor: WASHAUT_ACCENT }}
                   >
                     {title}
                   </h2>
