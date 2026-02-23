@@ -1,69 +1,273 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://vadodevs.com/es</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/es/servicios/software-a-la-medida</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/es/servicios/soluciones-ia</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/es/servicios/ampliacion-de-personal</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/es/nuestro-trabajo</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/es/compania/vado-insights</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/es/compania/cultura-y-talento</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/es/contacto</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/es/gracias</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/es/terminos</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/es/politica-privacidad</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/es/cookies</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/es/nuestro-trabajo/zenqr</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/es/nuestro-trabajo/sendero</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/es/nuestro-trabajo/ebm</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/es/nuestro-trabajo/digitalRanch</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/es/nuestro-trabajo/easySales</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/es/nuestro-trabajo/cipreses</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/es/nuestro-trabajo/maggiore</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/es/nuestro-trabajo/washaut</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/es/compania/articulos/digitalizacion-retail</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/es/compania/articulos/tecnologia-industria-restaurantera</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/es/compania/articulos/ia-sin-fronteras</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/es/compania/articulos/evolucion-trabajo-remoto-talento</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/es/compania/articulos/mas-alla-fronteras-talento-global</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/es/compania/articulos/preparando-negocio-futuro-mercados-talento</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/es/compania/articulos/plataformas-talento-revolucionando-crecimiento</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/es/compania/articulos/nuevo-paradigma-laboral-talento-senior</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/es/compania/articulos/10-razones-nearshore-outsourcing</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/es/compania/articulos/futuro-trabajo-fronteras-decada-transformacion</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/es/compania/articulos/asegurando-pipeline-cicd-devops</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/es/compania/articulos/desbloqueando-potencial-ingenieria-nearshore</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/es/compania/articulos/consigue-trabajo-suenos-entrevista-desarrollo</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/en</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/en/servicios/software-a-la-medida</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/en/servicios/soluciones-ia</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/en/servicios/ampliacion-de-personal</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/en/nuestro-trabajo</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/en/compania/vado-insights</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/en/compania/cultura-y-talento</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/en/contacto</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/en/gracias</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/en/terminos</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/en/politica-privacidad</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/en/cookies</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/en/nuestro-trabajo/zenqr</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/en/nuestro-trabajo/sendero</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/en/nuestro-trabajo/ebm</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/en/nuestro-trabajo/digitalRanch</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/en/nuestro-trabajo/easySales</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/en/nuestro-trabajo/cipreses</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/en/nuestro-trabajo/maggiore</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/en/nuestro-trabajo/washaut</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/en/compania/articulos/digitalizacion-retail</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/en/compania/articulos/tecnologia-industria-restaurantera</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/en/compania/articulos/ia-sin-fronteras</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/en/compania/articulos/evolucion-trabajo-remoto-talento</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/en/compania/articulos/mas-alla-fronteras-talento-global</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/en/compania/articulos/preparando-negocio-futuro-mercados-talento</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/en/compania/articulos/plataformas-talento-revolucionando-crecimiento</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/en/compania/articulos/nuevo-paradigma-laboral-talento-senior</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/en/compania/articulos/10-razones-nearshore-outsourcing</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/en/compania/articulos/futuro-trabajo-fronteras-decada-transformacion</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/en/compania/articulos/asegurando-pipeline-cicd-devops</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/en/compania/articulos/desbloqueando-potencial-ingenieria-nearshore</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://vadodevs.com/en/compania/articulos/consigue-trabajo-suenos-entrevista-desarrollo</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <!-- Páginas principales -->
+  <url>
+    <loc>https://vadodevs.com/es</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://vadodevs.com/es"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://vadodevs.com/en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://vadodevs.com/es"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vadodevs.com/es/servicios/software-a-la-medida</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://vadodevs.com/es/servicios/software-a-la-medida"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://vadodevs.com/en/servicios/software-a-la-medida"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://vadodevs.com/es/servicios/software-a-la-medida"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vadodevs.com/es/servicios/soluciones-ia</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://vadodevs.com/es/servicios/soluciones-ia"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://vadodevs.com/en/servicios/soluciones-ia"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://vadodevs.com/es/servicios/soluciones-ia"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vadodevs.com/es/servicios/ampliacion-de-personal</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://vadodevs.com/es/servicios/ampliacion-de-personal"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://vadodevs.com/en/servicios/ampliacion-de-personal"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://vadodevs.com/es/servicios/ampliacion-de-personal"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vadodevs.com/es/nuestro-trabajo</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://vadodevs.com/es/nuestro-trabajo"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://vadodevs.com/en/nuestro-trabajo"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://vadodevs.com/es/nuestro-trabajo"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vadodevs.com/es/compania/vado-insights</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://vadodevs.com/es/compania/vado-insights"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://vadodevs.com/en/compania/vado-insights"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://vadodevs.com/es/compania/vado-insights"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vadodevs.com/es/compania/cultura-y-talento</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://vadodevs.com/es/compania/cultura-y-talento"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://vadodevs.com/en/compania/cultura-y-talento"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://vadodevs.com/es/compania/cultura-y-talento"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vadodevs.com/es/contacto</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://vadodevs.com/es/contacto"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://vadodevs.com/en/contacto"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://vadodevs.com/es/contacto"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vadodevs.com/es/gracias</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://vadodevs.com/es/gracias"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://vadodevs.com/en/gracias"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://vadodevs.com/es/gracias"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vadodevs.com/es/terminos</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://vadodevs.com/es/terminos"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://vadodevs.com/en/terminos"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://vadodevs.com/es/terminos"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vadodevs.com/es/politica-privacidad</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://vadodevs.com/es/politica-privacidad"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://vadodevs.com/en/politica-privacidad"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://vadodevs.com/es/politica-privacidad"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vadodevs.com/es/cookies</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://vadodevs.com/es/cookies"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://vadodevs.com/en/cookies"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://vadodevs.com/es/cookies"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Casos de estudio / nuestro-trabajo -->
+  <url>
+    <loc>https://vadodevs.com/es/nuestro-trabajo/zenqr</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://vadodevs.com/es/nuestro-trabajo/zenqr"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://vadodevs.com/en/nuestro-trabajo/zenqr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://vadodevs.com/es/nuestro-trabajo/zenqr"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vadodevs.com/es/nuestro-trabajo/sendero</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://vadodevs.com/es/nuestro-trabajo/sendero"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://vadodevs.com/en/nuestro-trabajo/sendero"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://vadodevs.com/es/nuestro-trabajo/sendero"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vadodevs.com/es/nuestro-trabajo/ebm</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://vadodevs.com/es/nuestro-trabajo/ebm"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://vadodevs.com/en/nuestro-trabajo/ebm"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://vadodevs.com/es/nuestro-trabajo/ebm"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vadodevs.com/es/nuestro-trabajo/digitalRanch</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://vadodevs.com/es/nuestro-trabajo/digitalRanch"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://vadodevs.com/en/nuestro-trabajo/digitalRanch"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://vadodevs.com/es/nuestro-trabajo/digitalRanch"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vadodevs.com/es/nuestro-trabajo/easySales</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://vadodevs.com/es/nuestro-trabajo/easySales"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://vadodevs.com/en/nuestro-trabajo/easySales"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://vadodevs.com/es/nuestro-trabajo/easySales"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vadodevs.com/es/nuestro-trabajo/cipreses</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://vadodevs.com/es/nuestro-trabajo/cipreses"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://vadodevs.com/en/nuestro-trabajo/cipreses"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://vadodevs.com/es/nuestro-trabajo/cipreses"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vadodevs.com/es/nuestro-trabajo/maggiore</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://vadodevs.com/es/nuestro-trabajo/maggiore"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://vadodevs.com/en/nuestro-trabajo/maggiore"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://vadodevs.com/es/nuestro-trabajo/maggiore"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vadodevs.com/es/nuestro-trabajo/washaut</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://vadodevs.com/es/nuestro-trabajo/washaut"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://vadodevs.com/en/nuestro-trabajo/washaut"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://vadodevs.com/es/nuestro-trabajo/washaut"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Artículos Vado Insights -->
+  <url>
+    <loc>https://vadodevs.com/es/compania/articulos/digitalizacion-retail</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://vadodevs.com/es/compania/articulos/digitalizacion-retail"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://vadodevs.com/en/compania/articulos/digitalizacion-retail"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://vadodevs.com/es/compania/articulos/digitalizacion-retail"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vadodevs.com/es/compania/articulos/tecnologia-industria-restaurantera</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://vadodevs.com/es/compania/articulos/tecnologia-industria-restaurantera"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://vadodevs.com/en/compania/articulos/tecnologia-industria-restaurantera"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://vadodevs.com/es/compania/articulos/tecnologia-industria-restaurantera"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vadodevs.com/es/compania/articulos/ia-sin-fronteras</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://vadodevs.com/es/compania/articulos/ia-sin-fronteras"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://vadodevs.com/en/compania/articulos/ia-sin-fronteras"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://vadodevs.com/es/compania/articulos/ia-sin-fronteras"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vadodevs.com/es/compania/articulos/evolucion-trabajo-remoto-talento</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://vadodevs.com/es/compania/articulos/evolucion-trabajo-remoto-talento"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://vadodevs.com/en/compania/articulos/evolucion-trabajo-remoto-talento"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://vadodevs.com/es/compania/articulos/evolucion-trabajo-remoto-talento"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vadodevs.com/es/compania/articulos/mas-alla-fronteras-talento-global</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://vadodevs.com/es/compania/articulos/mas-alla-fronteras-talento-global"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://vadodevs.com/en/compania/articulos/mas-alla-fronteras-talento-global"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://vadodevs.com/es/compania/articulos/mas-alla-fronteras-talento-global"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vadodevs.com/es/compania/articulos/preparando-negocio-futuro-mercados-talento</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://vadodevs.com/es/compania/articulos/preparando-negocio-futuro-mercados-talento"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://vadodevs.com/en/compania/articulos/preparando-negocio-futuro-mercados-talento"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://vadodevs.com/es/compania/articulos/preparando-negocio-futuro-mercados-talento"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vadodevs.com/es/compania/articulos/plataformas-talento-revolucionando-crecimiento</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://vadodevs.com/es/compania/articulos/plataformas-talento-revolucionando-crecimiento"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://vadodevs.com/en/compania/articulos/plataformas-talento-revolucionando-crecimiento"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://vadodevs.com/es/compania/articulos/plataformas-talento-revolucionando-crecimiento"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vadodevs.com/es/compania/articulos/nuevo-paradigma-laboral-talento-senior</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://vadodevs.com/es/compania/articulos/nuevo-paradigma-laboral-talento-senior"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://vadodevs.com/en/compania/articulos/nuevo-paradigma-laboral-talento-senior"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://vadodevs.com/es/compania/articulos/nuevo-paradigma-laboral-talento-senior"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vadodevs.com/es/compania/articulos/10-razones-nearshore-outsourcing</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://vadodevs.com/es/compania/articulos/10-razones-nearshore-outsourcing"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://vadodevs.com/en/compania/articulos/10-razones-nearshore-outsourcing"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://vadodevs.com/es/compania/articulos/10-razones-nearshore-outsourcing"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vadodevs.com/es/compania/articulos/futuro-trabajo-fronteras-decada-transformacion</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://vadodevs.com/es/compania/articulos/futuro-trabajo-fronteras-decada-transformacion"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://vadodevs.com/en/compania/articulos/futuro-trabajo-fronteras-decada-transformacion"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://vadodevs.com/es/compania/articulos/futuro-trabajo-fronteras-decada-transformacion"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vadodevs.com/es/compania/articulos/asegurando-pipeline-cicd-devops</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://vadodevs.com/es/compania/articulos/asegurando-pipeline-cicd-devops"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://vadodevs.com/en/compania/articulos/asegurando-pipeline-cicd-devops"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://vadodevs.com/es/compania/articulos/asegurando-pipeline-cicd-devops"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vadodevs.com/es/compania/articulos/desbloqueando-potencial-ingenieria-nearshore</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://vadodevs.com/es/compania/articulos/desbloqueando-potencial-ingenieria-nearshore"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://vadodevs.com/en/compania/articulos/desbloqueando-potencial-ingenieria-nearshore"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://vadodevs.com/es/compania/articulos/desbloqueando-potencial-ingenieria-nearshore"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vadodevs.com/es/compania/articulos/consigue-trabajo-suenos-entrevista-desarrollo</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://vadodevs.com/es/compania/articulos/consigue-trabajo-suenos-entrevista-desarrollo"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://vadodevs.com/en/compania/articulos/consigue-trabajo-suenos-entrevista-desarrollo"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://vadodevs.com/es/compania/articulos/consigue-trabajo-suenos-entrevista-desarrollo"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
 </urlset>
