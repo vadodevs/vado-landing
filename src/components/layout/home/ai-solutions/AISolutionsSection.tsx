@@ -14,11 +14,11 @@ export function AISolutionsSection() {
       description={t('home.aiSolutions.description')}
       primaryButton={{
         label: t('home.aiSolutions.startProject'),
-        href: path('/contacto'),
+        href: path('/contact'),
       }}
       secondaryButton={{
         label: t('home.aiSolutions.moreInfo'),
-        href: path('/servicios/soluciones-ia'),
+        href: path('/services/ai-solutions'),
       }}
       rightContent={
         <MacbookMockup>

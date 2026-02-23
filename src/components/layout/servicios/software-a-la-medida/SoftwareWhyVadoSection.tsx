@@ -22,7 +22,7 @@ export function SoftwareWhyVadoSection() {
             description: t('services.customSoftware.whyVado.description'),
             primaryButton: {
               label: t('services.customSoftware.whyVado.startProject'),
-              href: path('/contacto'),
+              href: path('/contact'),
             },
           }}
           subCards={[

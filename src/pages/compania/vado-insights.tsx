@@ -17,8 +17,8 @@ export default function VadoInsights() {
       <PageMeta
         title={t('nav.vadoInsights')}
         description={t('seo.vadoInsights')}
-        canonicalPath={path('/compania/vado-insights')}
-        pathWithoutLang="/compania/vado-insights"
+        canonicalPath={path('/company/vado-insights')}
+        pathWithoutLang="/company/vado-insights"
       />
       <MainLayout>
         <InsightsHero

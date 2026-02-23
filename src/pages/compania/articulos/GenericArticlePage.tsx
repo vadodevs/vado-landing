@@ -18,7 +18,7 @@ export default function GenericArticlePage({ articleId }: GenericArticlePageProp
 
   const slug = getInsightsArticleSlug(articleId);
   const pageTitle = `${t(`insightsPage.articles.${articleId}.title`)} | ${t('nav.vadoInsights')}`;
-  const canonicalPath = path(`/compania/articulos/${slug}`);
+  const canonicalPath = path(`/company/articles/${slug}`);
   const metaDescription = t(`insightsPage.articles.${articleId}.description`);
 
   const title = t(`insightsPage.articles.${articleId}.title`);
@@ -36,7 +36,7 @@ export default function GenericArticlePage({ articleId }: GenericArticlePageProp
         description={metaDescription}
         canonicalPath={canonicalPath}
         ogType="article"
-        pathWithoutLang={`/compania/articulos/${slug}`}
+        pathWithoutLang={`/company/articles/${slug}`}
       />
       <MainLayout>
         <InsightsArticleHero

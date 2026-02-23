@@ -17,7 +17,7 @@ export function VadoInsightsSection() {
       category: t('home.vadoInsights.article1.category'),
       title: t('home.vadoInsights.article1.title'),
       author: t('home.vadoInsights.author'),
-      href: path('/compania/vado-insights'),
+      href: path('/company/vado-insights'),
     },
     {
       imageSrc: '/articles/article-2.png',
@@ -26,7 +26,7 @@ export function VadoInsightsSection() {
       category: t('home.vadoInsights.article2.category'),
       title: t('home.vadoInsights.article2.title'),
       author: t('home.vadoInsights.author'),
-      href: path('/compania/vado-insights'),
+      href: path('/company/vado-insights'),
     },
     {
       imageSrc: '/articles/article-3.png',
@@ -35,7 +35,7 @@ export function VadoInsightsSection() {
       category: t('home.vadoInsights.article3.category'),
       title: t('home.vadoInsights.article3.title'),
       author: t('home.vadoInsights.author'),
-      href: path('/compania/vado-insights'),
+      href: path('/company/vado-insights'),
     },
   ];
 
@@ -58,7 +58,7 @@ export function VadoInsightsSection() {
 
         <div className="mt-10 flex justify-center">
           <Button variant="outline" className="border-primary text-primary" asChild>
-            <Link href={path('/compania/vado-insights')}>{t('home.vadoInsights.viewMore')}</Link>
+            <Link href={path('/company/vado-insights')}>{t('home.vadoInsights.viewMore')}</Link>
           </Button>
         </div>
       </CenterContainer>

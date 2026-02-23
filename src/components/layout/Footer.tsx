@@ -60,13 +60,13 @@ export function Footer() {
             </h3>
             <nav className="flex flex-col gap-2">
               <Link
-                href={path('/terminos')}
+                href={path('/terms')}
                 className="text-sm text-white/90 transition-colors hover:text-white"
               >
                 {t('footer.terms')}
               </Link>
               <Link
-                href={path('/politica-privacidad')}
+                href={path('/privacy-policy')}
                 className="text-sm text-white/90 transition-colors hover:text-white"
               >
                 {t('footer.privacy')}

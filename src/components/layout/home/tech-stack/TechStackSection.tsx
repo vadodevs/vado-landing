@@ -35,7 +35,7 @@ export function TechStackSection() {
             </p>
             <div className="flex justify-center lg:justify-start">
               <Button asChild size="default" className="w-full sm:w-auto">
-                <Link href={path('/contacto')}>{t('home.techStack.cta')}</Link>
+                <Link href={path('/contact')}>{t('home.techStack.cta')}</Link>
               </Button>
             </div>
           </div>

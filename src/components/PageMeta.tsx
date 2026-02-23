@@ -10,11 +10,11 @@ export type PageMetaProps = {
   description: string;
   /** URL de la imagen para og:image (relativa o absoluta). Si es relativa, se convierte a absoluta con origin. */
   image?: string;
-  /** Ruta canónica relativa (ej: /es/nuestro-trabajo/sendero). Se convierte a URL absoluta en el cliente. */
+  /** Ruta canónica relativa (ej: /es/our-work/sendero). Se convierte a URL absoluta en el cliente. */
   canonicalPath?: string;
   /** Tipo Open Graph: "website" para páginas estáticas, "article" para artículos/blog. */
   ogType?: 'website' | 'article';
-  /** Ruta sin prefijo de idioma (ej: /contacto) para generar hreflang es/en y x-default. */
+  /** Ruta sin prefijo de idioma (ej: /contact) para generar hreflang es/en y x-default. */
   pathWithoutLang?: string;
 };
 

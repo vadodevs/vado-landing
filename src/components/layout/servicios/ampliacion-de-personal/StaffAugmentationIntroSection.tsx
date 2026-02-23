@@ -43,7 +43,7 @@ export function StaffAugmentationIntroSection() {
             </p>
             <div className="mt-6 flex justify-center lg:justify-start">
               <Button asChild size="lg" className="w-full sm:w-auto">
-                <Link href={path('/contacto')}>{t('services.staffAugmentation.intro.cta')}</Link>
+                <Link href={path('/contact')}>{t('services.staffAugmentation.intro.cta')}</Link>
               </Button>
             </div>
           </div>

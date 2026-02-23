@@ -113,10 +113,10 @@ export function ClientsSection() {
               className="border-primary text-primary w-full sm:w-auto"
               asChild
             >
-              <Link href={path('/nuestro-trabajo')}>{t('home.clients.moreInfo')}</Link>
+              <Link href={path('/our-work')}>{t('home.clients.moreInfo')}</Link>
             </Button>
             <Button className="w-full sm:w-auto" asChild>
-              <Link href={path('/contacto')}>{t('home.clients.startProject')}</Link>
+              <Link href={path('/contact')}>{t('home.clients.startProject')}</Link>
             </Button>
           </div>
         </div>

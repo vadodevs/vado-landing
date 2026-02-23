@@ -19,8 +19,8 @@ export default function SolucionesIA() {
       <PageMeta
         title={t('nav.aiSolutions')}
         description={t('seo.aiSolutions')}
-        canonicalPath={path('/servicios/soluciones-ia')}
-        pathWithoutLang="/servicios/soluciones-ia"
+        canonicalPath={path('/services/ai-solutions')}
+        pathWithoutLang="/services/ai-solutions"
       />
       <MainLayout>
         <ServiceHero

@@ -51,12 +51,12 @@ export function StaffAugmentationSection() {
                   className="hover:bg-primary/10 w-full border-white bg-transparent text-white sm:w-auto"
                   asChild
                 >
-                  <Link href={path('/servicios/ampliacion-de-personal')}>
+                  <Link href={path('/services/staff-augmentation')}>
                     {t('home.staffAugmentation.moreInfo')}
                   </Link>
                 </Button>
                 <Button className="w-full sm:w-auto" asChild>
-                  <Link href={path('/contacto')}>{t('home.staffAugmentation.startProject')}</Link>
+                  <Link href={path('/contact')}>{t('home.staffAugmentation.startProject')}</Link>
                 </Button>
               </div>
             </div>

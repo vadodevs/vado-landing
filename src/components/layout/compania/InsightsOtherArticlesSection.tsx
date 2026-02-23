@@ -35,7 +35,7 @@ export function InsightsOtherArticlesSection({
       tag: t(`insightsPage.articles.${id}.tag`),
       title: t(`insightsPage.articles.${id}.title`),
       description: t(`insightsPage.articles.${id}.description`),
-      href: path(`/compania/articulos/${getInsightsArticleSlug(id)}`),
+      href: path(`/company/articles/${getInsightsArticleSlug(id)}`),
     };
   });
 

@@ -131,7 +131,7 @@ function OtherCasesSection({ projectId, accentColor }: { projectId: string; acce
                 transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
               >
                 <Link
-                  href={path(`/nuestro-trabajo/${project.id}`)}
+                  href={path(`/our-work/${project.id}`)}
                   className="focus-visible:ring-primary group focus-visible:ring-offset-background block focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
                 >
                   <motion.article
@@ -184,7 +184,7 @@ function OtherCasesSection({ projectId, accentColor }: { projectId: string; acce
 
           <div className="flex justify-center pt-4">
             <Link
-              href={path('/nuestro-trabajo')}
+              href={path('/our-work')}
               className="text-muted-foreground hover:text-foreground inline-flex items-center gap-2 text-sm font-medium transition-colors"
             >
               <span aria-hidden>←</span> Volver a Nuestro trabajo

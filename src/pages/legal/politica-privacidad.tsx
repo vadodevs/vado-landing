@@ -35,13 +35,13 @@ const TOC_ITEMS = [
 
 export default function PoliticaDePrivacidad() {
   const { path } = useLocale();
-  const canonicalPath = path('/politica-privacidad');
+  const canonicalPath = path('/privacy-policy');
 
   return (
     <>
       <PageMeta
         ogType="website"
-        pathWithoutLang="/politica-privacidad"
+        pathWithoutLang="/privacy-policy"
         title={`${PRIVACY_POLICY_TITLE} | Vado`}
         description={PRIVACY_POLICY_DESCRIPTION}
         canonicalPath={canonicalPath}

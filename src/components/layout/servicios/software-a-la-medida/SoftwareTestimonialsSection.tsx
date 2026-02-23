@@ -101,12 +101,12 @@ export function SoftwareTestimonialsSection() {
               className="border-primary text-primary w-full sm:w-auto"
               asChild
             >
-              <Link href={path('/nuestro-trabajo')}>
+              <Link href={path('/our-work')}>
                 {t('services.customSoftware.testimonials.moreInfo')}
               </Link>
             </Button>
             <Button className="w-full sm:w-auto" asChild>
-              <Link href={path('/contacto')}>
+              <Link href={path('/contact')}>
                 {t('services.customSoftware.testimonials.startProject')}
               </Link>
             </Button>

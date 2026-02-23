@@ -80,7 +80,7 @@ export function OurWorkProjectsSection() {
           {paginatedProjects.map((project) => (
             <Link
               key={project.id}
-              href={path(`/nuestro-trabajo/${project.id}`)}
+              href={path(`/our-work/${project.id}`)}
               className="focus-visible:ring-primary block h-full rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
             >
               <motion.div

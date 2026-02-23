@@ -21,11 +21,11 @@ export function WhyVadoSection() {
             description: t('home.whyVado.description'),
             primaryButton: {
               label: t('home.whyVado.startProject'),
-              href: path('/contacto'),
+              href: path('/contact'),
             },
             secondaryButton: {
               label: t('home.whyVado.moreInfo'),
-              href: path('/servicios/desarrollo'),
+              href: path('/services/custom-software'),
             },
           }}
           subCards={[

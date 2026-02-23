@@ -23,7 +23,7 @@ export function StaffAugmentationWhyVadoSection() {
             descriptionPart2: t('services.staffAugmentation.whyVado.descriptionPart2'),
             primaryButton: {
               label: t('services.staffAugmentation.whyVado.startProject'),
-              href: path('/contacto'),
+              href: path('/contact'),
             },
           }}
           subCards={[

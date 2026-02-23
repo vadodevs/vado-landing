@@ -46,7 +46,7 @@ export function CultureAndTalentSection({
             </p>
             <div className="flex justify-center lg:justify-start">
               <Button asChild size="default" className="w-full sm:w-auto">
-                <Link href={path('/compania/cultura-y-talento')}>
+                <Link href={path('/company/culture-and-talent')}>
                   {t('home.cultureAndTalent.cta')}
                 </Link>
               </Button>

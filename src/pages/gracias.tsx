@@ -16,8 +16,8 @@ export default function Gracias() {
       <PageMeta
         title={t('thankYou.pageTitle')}
         description={t('seo.thankYou')}
-        canonicalPath={path('/gracias')}
-        pathWithoutLang="/gracias"
+        canonicalPath={path('/thank-you')}
+        pathWithoutLang="/thank-you"
       />
       <MainLayout>
         <motion.section
@@ -43,7 +43,7 @@ export default function Gracias() {
                     {t('thankYou.ctaHome')}
                   </Button>
                 </Link>
-                <Link href={path('/contacto')}>
+                <Link href={path('/contact')}>
                   <Button
                     size="lg"
                     variant="outline"

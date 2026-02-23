@@ -32,8 +32,8 @@ export default function Contacto() {
       <PageMeta
         title={t('nav.contactUs')}
         description={t('seo.contact')}
-        canonicalPath={path('/contacto')}
-        pathWithoutLang="/contacto"
+        canonicalPath={path('/contact')}
+        pathWithoutLang="/contact"
       />
       <MainLayout>
         <motion.section

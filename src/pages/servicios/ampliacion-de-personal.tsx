@@ -21,8 +21,8 @@ export default function AmpliacionDePersonal() {
       <PageMeta
         title={t('nav.staffAugmentation')}
         description={t('seo.staffAugmentation')}
-        canonicalPath={path('/servicios/ampliacion-de-personal')}
-        pathWithoutLang="/servicios/ampliacion-de-personal"
+        canonicalPath={path('/services/staff-augmentation')}
+        pathWithoutLang="/services/staff-augmentation"
       />
       <MainLayout>
         <ServiceHero

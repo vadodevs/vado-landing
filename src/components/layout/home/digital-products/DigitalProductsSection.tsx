@@ -79,10 +79,10 @@ export function DigitalProductsSection({
               className="border-primary text-primary w-full md:w-auto"
               asChild
             >
-              <Link href={path('/servicios/desarrollo')}>{t('home.digitalProducts.moreInfo')}</Link>
+              <Link href={path('/services/custom-software')}>{t('home.digitalProducts.moreInfo')}</Link>
             </Button>
             <Button className="w-full md:w-auto" asChild>
-              <Link href={path('/contacto')}>{t('nav.contactUs')}</Link>
+              <Link href={path('/contact')}>{t('nav.contactUs')}</Link>
             </Button>
           </div>
         </div>

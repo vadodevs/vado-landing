@@ -140,7 +140,7 @@ export function InsightsArticlesSection() {
                 tag={article.tag}
                 title={article.title}
                 description={article.description}
-                href={path(`/compania/articulos/${article.slug}`)}
+                href={path(`/company/articles/${article.slug}`)}
               />
             </motion.div>
           ))}

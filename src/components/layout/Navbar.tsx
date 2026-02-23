@@ -31,14 +31,14 @@ import { cn } from '@/lib/utils';
 import { useLocale } from '@/hooks/useLocale';
 
 const serviciosPaths = [
-  { path: '/servicios/software-a-la-medida', labelKey: 'nav.customSoftware' as const },
-  { path: '/servicios/soluciones-ia', labelKey: 'nav.aiSolutions' as const },
-  { path: '/servicios/ampliacion-de-personal', labelKey: 'nav.staffAugmentation' as const },
+  { path: '/services/custom-software', labelKey: 'nav.customSoftware' as const },
+  { path: '/services/ai-solutions', labelKey: 'nav.aiSolutions' as const },
+  { path: '/services/staff-augmentation', labelKey: 'nav.staffAugmentation' as const },
 ];
 
 const companiaPaths = [
-  { path: '/compania/vado-insights', labelKey: 'nav.vadoInsights' as const },
-  { path: '/compania/cultura-y-talento', labelKey: 'nav.cultureAndTalent' as const },
+  { path: '/company/vado-insights', labelKey: 'nav.vadoInsights' as const },
+  { path: '/company/culture-and-talent', labelKey: 'nav.cultureAndTalent' as const },
 ];
 
 function NavLink({
@@ -157,7 +157,7 @@ function MobileMenuContent({ onLinkClick }: { onLinkClick?: () => void }) {
 
         <div className="border-border border-b">
           <NavLink
-            href={path('/nuestro-trabajo')}
+            href={path('/our-work')}
             onClick={onLinkClick}
             className="block rounded-lg py-3.5 text-base font-medium"
           >
@@ -195,7 +195,7 @@ function MobileMenuContent({ onLinkClick }: { onLinkClick?: () => void }) {
       </div>
 
       <div className="border-border mt-auto border-t p-4">
-        <Link href={path('/contacto')} onClick={onLinkClick} className="block">
+        <Link href={path('/contact')} onClick={onLinkClick} className="block">
           <Button className="h-12 w-full rounded-xl text-base font-semibold" size="lg">
             {t('nav.contactUs')}
           </Button>
@@ -213,14 +213,14 @@ export function Navbar() {
   const loc = location.replace(/\/$/, '') || '/';
   const homePath = path('');
   const isHomeActive = loc === homePath.replace(/\/$/, '') || loc === '/';
-  const nuestroTrabajoPath = path('/nuestro-trabajo');
+  const nuestroTrabajoPath = path('/our-work');
   const isNuestroTrabajoActive =
     loc === nuestroTrabajoPath || loc.startsWith(nuestroTrabajoPath + '/');
-  const serviciosBase = path('/servicios');
+  const serviciosBase = path('/services');
   const isServiciosActive = loc.startsWith(serviciosBase);
-  const companiaBase = path('/compania');
+  const companiaBase = path('/company');
   const isCompaniaActive = loc.startsWith(companiaBase);
-  const contactoPath = path('/contacto');
+  const contactoPath = path('/contact');
   const isContactoActive = loc === contactoPath;
 
   return (
@@ -316,7 +316,7 @@ export function Navbar() {
               <NavigationMenuItem>
                 <NavigationMenuLink asChild>
                   <Link
-                    href={path('/nuestro-trabajo')}
+                    href={path('/our-work')}
                     className={cn(
                       'text-foreground hover:text-primary focus:text-primary focus-visible:ring-ring/50 inline-flex h-9 w-max items-center justify-center rounded-lg bg-transparent px-4 py-2 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
                       isNuestroTrabajoActive && 'text-primary font-semibold',
@@ -368,7 +368,7 @@ export function Navbar() {
             variant={isContactoActive ? 'outline' : 'default'}
             className={cn('ml-2 shrink-0', isContactoActive && 'border-primary text-primary')}
           >
-            <Link href={path('/contacto')}>{t('nav.contactUs')}</Link>
+            <Link href={path('/contact')}>{t('nav.contactUs')}</Link>
           </Button>
         </div>
       </CenterContainer>

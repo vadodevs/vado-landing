@@ -121,7 +121,7 @@ export function Hero() {
                       ease: EASING,
                     }}
                   >
-                    <Link href={path('/contacto')}>
+                    <Link href={path('/contact')}>
                       <Button
                         size="lg"
                         className="mt-6 rounded-lg px-8 py-6 text-base font-bold shadow-lg"

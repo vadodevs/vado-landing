@@ -20,8 +20,8 @@ export default function CulturaYTalento() {
       <PageMeta
         title={t('nav.cultureAndTalent')}
         description={t('seo.cultureAndTalent')}
-        canonicalPath={path('/compania/cultura-y-talento')}
-        pathWithoutLang="/compania/cultura-y-talento"
+        canonicalPath={path('/company/culture-and-talent')}
+        pathWithoutLang="/company/culture-and-talent"
       />
       <MainLayout>
         <CulturaYTalentoHero

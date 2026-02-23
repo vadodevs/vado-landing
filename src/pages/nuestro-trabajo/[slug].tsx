@@ -51,7 +51,7 @@ export default function NuestroTrabajoProject() {
     : t('nav.ourWork');
   const project = projectKey ? OUR_WORK_PROJECTS.find((p) => p.id === projectKey) : null;
   const ogImage = project?.image?.startsWith('/') ? project.image : project ? `/projects/${project.image}` : undefined;
-  const canonicalPath = projectKey ? path(`/nuestro-trabajo/${projectKey}`) : undefined;
+  const canonicalPath = projectKey ? path(`/our-work/${projectKey}`) : undefined;
   const caseStudyDesc = projectKey ? t(`ourWork.caseStudy.${projectKey}.hero.description`) : '';
   const metaDescription =
     projectKey &&
@@ -71,7 +71,7 @@ export default function NuestroTrabajoProject() {
           image={ogImage}
           canonicalPath={canonicalPath}
           ogType="website"
-          pathWithoutLang={projectKey ? `/nuestro-trabajo/${projectKey}` : undefined}
+          pathWithoutLang={projectKey ? `/our-work/${projectKey}` : undefined}
         />
       ) : (
         <PageTitle title={pageTitle} />
@@ -99,7 +99,7 @@ export default function NuestroTrabajoProject() {
                     {t(`ourWork.projects.${projectKey}.description`)}
                   </p>
                   <Link
-                    href={path('/nuestro-trabajo')}
+                    href={path('/our-work')}
                     className="mt-8 inline-block text-primary underline underline-offset-2 hover:no-underline"
                   >
                     ← {t('nav.ourWork')}
@@ -111,7 +111,7 @@ export default function NuestroTrabajoProject() {
                     Proyecto no encontrado.
                   </p>
                   <Link
-                    href={path('/nuestro-trabajo')}
+                    href={path('/our-work')}
                     className="mt-8 inline-block text-primary underline underline-offset-2 hover:no-underline"
                   >
                     ← Volver a Nuestro trabajo

@@ -20,7 +20,7 @@ export type ServiceTabsSectionProps = {
   tabs: TabItem[];
   /** Texto del botón CTA */
   ctaText: string;
-  /** URL del CTA (por defecto /contacto) */
+  /** URL del CTA (por defecto /contact) */
   ctaHref?: string;
   /** Label pequeño encima del título (ej. NUESTRAS SOLUCIONES DE IA) */
   label?: string;
@@ -39,7 +39,7 @@ export type ServiceTabsSectionProps = {
 export function ServiceTabsSection({
   tabs,
   ctaText,
-  ctaHref = '/contacto',
+  ctaHref = '/contact',
   label,
   titlePart1,
   titlePart2,

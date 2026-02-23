@@ -43,7 +43,7 @@ export function SenderoOtherCases() {
               transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
             >
               <Link
-                href={path(`/nuestro-trabajo/${project.id}`)}
+                href={path(`/our-work/${project.id}`)}
                 className="focus-visible:ring-primary group focus-visible:ring-offset-background block focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
               >
                 <motion.article

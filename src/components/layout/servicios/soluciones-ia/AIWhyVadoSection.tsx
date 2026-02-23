@@ -23,7 +23,7 @@ export function AIWhyVadoSection() {
             descriptionPart2: t('services.aiSolutions.whyVado.descriptionPart2'),
             primaryButton: {
               label: t('services.aiSolutions.whyVado.startProject'),
-              href: path('/contacto'),
+              href: path('/contact'),
             },
           }}
           subCards={[

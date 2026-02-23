@@ -53,7 +53,7 @@ export function CaseStudyCtaSection({ caseStudyId, accentColor }: CaseStudyCtaSe
             }}
             asChild
           >
-            <Link href={path('/contacto')}>{t(`${baseKey}.ctaLabel`)}</Link>
+            <Link href={path('/contact')}>{t(`${baseKey}.ctaLabel`)}</Link>
           </Button>
         </motion.div>
       </div>

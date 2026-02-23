@@ -16,8 +16,8 @@ export default function NuestroTrabajo() {
       <PageMeta
         title={t('nav.ourWork')}
         description={t('seo.ourWork')}
-        canonicalPath={path('/nuestro-trabajo')}
-        pathWithoutLang="/nuestro-trabajo"
+        canonicalPath={path('/our-work')}
+        pathWithoutLang="/our-work"
       />
       <MainLayout>
         <ServiceHero

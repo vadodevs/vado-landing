@@ -21,8 +21,8 @@ export default function SoftwareALaMedida() {
       <PageMeta
         title={t('nav.customSoftware')}
         description={t('seo.customSoftware')}
-        canonicalPath={path('/servicios/software-a-la-medida')}
-        pathWithoutLang="/servicios/software-a-la-medida"
+        canonicalPath={path('/services/custom-software')}
+        pathWithoutLang="/services/custom-software"
       />
       <MainLayout>
         <SoftwareHero />

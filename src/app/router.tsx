@@ -27,18 +27,18 @@ export function Router() {
       <Route path="/">
         <Redirect to="/es" />
       </Route>
-      <Route path="/:lang/servicios/software-a-la-medida" component={withLocale(SoftwareALaMedida)} />
-      <Route path="/:lang/servicios/soluciones-ia" component={withLocale(SolucionesIA)} />
-      <Route path="/:lang/servicios/ampliacion-de-personal" component={withLocale(AmpliacionDePersonal)} />
-      <Route path="/:lang/nuestro-trabajo/:slug" component={withLocale(NuestroTrabajoProject)} />
-      <Route path="/:lang/nuestro-trabajo" component={withLocale(NuestroTrabajo)} />
-      <Route path="/:lang/compania/articulos/:articleName" component={withLocale(ArticleRouter)} />
-      <Route path="/:lang/compania/vado-insights" component={withLocale(VadoInsights)} />
-      <Route path="/:lang/compania/cultura-y-talento" component={withLocale(CulturaYTalento)} />
-      <Route path="/:lang/contacto" component={withLocale(Contacto)} />
-      <Route path="/:lang/gracias" component={withLocale(Gracias)} />
-      <Route path="/:lang/terminos" component={withLocale(TerminosDelServicio)} />
-      <Route path="/:lang/politica-privacidad" component={withLocale(PoliticaDePrivacidad)} />
+      <Route path="/:lang/services/custom-software" component={withLocale(SoftwareALaMedida)} />
+      <Route path="/:lang/services/ai-solutions" component={withLocale(SolucionesIA)} />
+      <Route path="/:lang/services/staff-augmentation" component={withLocale(AmpliacionDePersonal)} />
+      <Route path="/:lang/our-work/:slug" component={withLocale(NuestroTrabajoProject)} />
+      <Route path="/:lang/our-work" component={withLocale(NuestroTrabajo)} />
+      <Route path="/:lang/company/articles/:articleName" component={withLocale(ArticleRouter)} />
+      <Route path="/:lang/company/vado-insights" component={withLocale(VadoInsights)} />
+      <Route path="/:lang/company/culture-and-talent" component={withLocale(CulturaYTalento)} />
+      <Route path="/:lang/contact" component={withLocale(Contacto)} />
+      <Route path="/:lang/thank-you" component={withLocale(Gracias)} />
+      <Route path="/:lang/terms" component={withLocale(TerminosDelServicio)} />
+      <Route path="/:lang/privacy-policy" component={withLocale(PoliticaDePrivacidad)} />
       <Route path="/:lang/cookies" component={withLocale(Cookies)} />
       <Route path="/:lang" component={withLocale(Home)} />
       <Route path="/:lang/*" component={withLocale(NotFound)} />
