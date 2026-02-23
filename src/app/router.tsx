@@ -11,6 +11,9 @@ import ArticleRouter from '@/pages/compania/articulos/ArticleRouter'
 import CulturaYTalento from '@/pages/compania/cultura-y-talento'
 import Contacto from '@/pages/contacto'
 import Gracias from '@/pages/gracias'
+import TerminosDelServicio from '@/pages/legal/terminos'
+import PoliticaDePrivacidad from '@/pages/legal/politica-privacidad'
+import Cookies from '@/pages/legal/cookies'
 import { NotFound } from '@/pages/not-found'
 import { withLocale } from '@/app/withLocale'
 
@@ -32,6 +35,9 @@ export function Router() {
       <Route path="/:lang/compania/cultura-y-talento" component={withLocale(CulturaYTalento)} />
       <Route path="/:lang/contacto" component={withLocale(Contacto)} />
       <Route path="/:lang/gracias" component={withLocale(Gracias)} />
+      <Route path="/:lang/terminos" component={withLocale(TerminosDelServicio)} />
+      <Route path="/:lang/politica-privacidad" component={withLocale(PoliticaDePrivacidad)} />
+      <Route path="/:lang/cookies" component={withLocale(Cookies)} />
       <Route path="/:lang" component={withLocale(Home)} />
       <Route path="/:lang/*" component={withLocale(NotFound)} />
       <Route component={NotFound} />
