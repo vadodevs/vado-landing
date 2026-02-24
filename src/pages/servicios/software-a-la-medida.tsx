@@ -6,7 +6,6 @@ import { SoftwareHero } from '@/components/layout/servicios/software-a-la-medida
 import { SoftwareProcessSection } from '@/components/layout/servicios/software-a-la-medida/SoftwareProcessSection';
 import { SoftwareProductsSection } from '@/components/layout/servicios/software-a-la-medida/SoftwareProductsSection';
 import { SoftwareTabsSection } from '@/components/layout/servicios/software-a-la-medida/SoftwareTabsSection';
-import { SoftwareTestimonialsSection } from '@/components/layout/servicios/software-a-la-medida/SoftwareTestimonialsSection';
 import { SoftwareWhyVadoSection } from '@/components/layout/servicios/software-a-la-medida/SoftwareWhyVadoSection';
 import { VadoInsightsSection } from '@/components/layout/home/insights/VadoInsightsSection';
 import { FAQSection } from '@/components/layout/home/faq/FAQSection';
@@ -30,7 +29,6 @@ export default function SoftwareALaMedida() {
         <SoftwareTabsSection />
         <SoftwareProcessSection />
         <SoftwareWhyVadoSection />
-        <SoftwareTestimonialsSection />
         <VadoInsightsSection />
         <FAQSection />
         <CtaContactSection />

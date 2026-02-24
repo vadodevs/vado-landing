@@ -8,7 +8,6 @@ import { AISolutionsTabsSection } from '@/components/layout/servicios/soluciones
 import { AIWhyVadoSection } from '@/components/layout/servicios/soluciones-ia/AIWhyVadoSection';
 import { CtaContactSection } from '@/components/layout/home/cta-contact/CtaContactSection';
 import { FAQSection } from '@/components/layout/home/faq/FAQSection';
-import { SoftwareTestimonialsSection } from '@/components/layout/servicios/software-a-la-medida/SoftwareTestimonialsSection';
 
 export default function SolucionesIA() {
   const { t } = useTranslation();
@@ -32,7 +31,6 @@ export default function SolucionesIA() {
         <AISolutionsTabsSection />
         <AIProcessSection />
         <AIWhyVadoSection />
-        <SoftwareTestimonialsSection />
         <FAQSection />
         <CtaContactSection />
       </MainLayout>

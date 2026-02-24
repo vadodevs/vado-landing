@@ -10,7 +10,6 @@ import { StaffAugmentationWhyVadoSection } from '@/components/layout/servicios/a
 import { VadoInsightsSection } from '@/components/layout/home/insights/VadoInsightsSection';
 import { FAQSection } from '@/components/layout/home/faq/FAQSection';
 import { CtaContactSection } from '@/components/layout/home/cta-contact/CtaContactSection';
-import { SoftwareTestimonialsSection } from '@/components/layout/servicios/software-a-la-medida/SoftwareTestimonialsSection';
 
 export default function AmpliacionDePersonal() {
   const { t } = useTranslation();
@@ -35,7 +34,6 @@ export default function AmpliacionDePersonal() {
         <StaffAugmentationIntroSection />
         <StaffAugmentationProcessSection />
         <StaffAugmentationWhyVadoSection />
-        <SoftwareTestimonialsSection />
         <VadoInsightsSection />
         <FAQSection />
         <CtaContactSection />
