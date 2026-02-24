@@ -9,10 +9,10 @@ export function GrowTalentCtaSection() {
   const { path } = useLocale();
 
   return (
-    <section className="bg-white py-12 md:py-16 lg:py-20">
+    <section className="bg-white py-12 md:py-16">
       <CenterContainer>
         <div className="max-w-2xl text-left">
-          <h2 className="mb-4 text-2xl font-bold leading-tight text-[#19314c] md:text-3xl lg:text-4xl">
+          <h2 className="mb-4 text-2xl leading-tight font-bold text-[#19314c] md:text-3xl lg:text-4xl">
             {t('cultureYTalentoPage.growTalentCta.titleDark')}
             <span className="text-primary">{t('cultureYTalentoPage.growTalentCta.titleBlue')}</span>
           </h2>
@@ -24,7 +24,9 @@ export function GrowTalentCtaSection() {
             className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg px-6 py-4 text-base font-medium"
             asChild
           >
-            <Link href={`${path('/contact')}?apply=1`}>{t('cultureYTalentoPage.growTalentCta.cta')}</Link>
+            <Link href={`${path('/contact')}?apply=1`}>
+              {t('cultureYTalentoPage.growTalentCta.cta')}
+            </Link>
           </Button>
         </div>
       </CenterContainer>
