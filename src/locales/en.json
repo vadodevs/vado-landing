@@ -816,7 +816,10 @@
       "titleLine2": "OUR LATEST INNOVATIONS",
       "emailLabel": "Email",
       "emailPlaceholder": "your@email.com",
-      "subscribeButton": "SUBSCRIBE"
+      "subscribeButton": "SUBSCRIBE",
+      "success": "Thanks. You have been subscribed to our newsletter.",
+      "error": "We could not complete the subscription. Please try again.",
+      "enterAnotherEmail": "Enter another email"
     }
   },
   "cultureYTalentoPage": {
@@ -1116,6 +1119,7 @@
         "fieldsRequired": "Please fill in all required fields.",
         "emailInvalid": "Please enter a valid email address.",
         "phoneInvalid": "Please enter a valid phone number.",
+        "messageMaxLength": "Message cannot exceed 1024 characters.",
         "apiNotConfigured": "Form is not configured. Please contact the administrator.",
         "generic": "Could not send message. Please try again later."
       }

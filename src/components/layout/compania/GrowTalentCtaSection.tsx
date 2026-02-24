@@ -24,7 +24,7 @@ export function GrowTalentCtaSection() {
             className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg px-6 py-4 text-base font-medium"
             asChild
           >
-            <Link href={path('/contact')}>{t('cultureYTalentoPage.growTalentCta.cta')}</Link>
+            <Link href={`${path('/contact')}?apply=1`}>{t('cultureYTalentoPage.growTalentCta.cta')}</Link>
           </Button>
         </div>
       </CenterContainer>

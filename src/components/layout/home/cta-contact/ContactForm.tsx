@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { Link } from 'wouter';
 import { AnimatePresence, motion } from 'motion/react';
 import { useTranslation } from 'react-i18next';
@@ -9,22 +9,19 @@ import { CheckCircle2, Info } from 'lucide-react';
 import { FaArrowLeft } from 'react-icons/fa';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
 
-/** Esquema Zod para el formulario de contacto (no postularse). Todos los campos obligatorios; teléfono solo dígitos, mínimo 10. */
+/** Esquema Zod para el formulario de contacto (no postularse). Alineado con CreateContactDto (lead-slack-readme.md). */
 function buildContactSchema(messages: {
   required: string;
   emailInvalid: string;
   phoneInvalid: string;
+  messageMaxLength: string;
 }) {
   return z.object({
     fullName: z.string().min(1, messages.required),
@@ -33,11 +30,11 @@ function buildContactSchema(messages: {
     phone: z
       .string()
       .min(1, messages.required)
-      .refine(
-        (val) => val.replace(/\D/g, '').length >= 10,
-        messages.phoneInvalid,
-      ),
-    message: z.string().min(1, messages.required),
+      .refine((val) => val.replace(/\D/g, '').length >= 10, messages.phoneInvalid),
+    message: z
+      .string()
+      .min(1, messages.required)
+      .max(MESSAGE_MAX_LENGTH, messages.messageMaxLength),
   });
 }
 
@@ -69,10 +66,7 @@ function buildApplyStep1Schema(messages: {
     phoneNumber: z
       .string()
       .min(1, messages.required)
-      .refine(
-        (val) => val.replace(/\D/g, '').length >= 10,
-        messages.phoneInvalid,
-      ),
+      .refine((val) => val.replace(/\D/g, '').length >= 10, messages.phoneInvalid),
     role: z.string().min(1, messages.required),
   });
 }
@@ -91,24 +85,14 @@ const API_BASE = import.meta.env.VITE_API_BASE_URL
   ? String(import.meta.env.VITE_API_BASE_URL).replace(/\/$/, '')
   : '';
 
-const LEADS_API_URL = API_BASE ? `${API_BASE}/leads` : '';
+const CONTACT_API_URL = API_BASE ? `${API_BASE}/contact` : '';
 const DEVELOPERS_API_URL = API_BASE ? `${API_BASE}/users/developers` : '';
 const DEVELOPERS_WITH_CV_URL = API_BASE ? `${API_BASE}/users/developers/with-cv` : '';
 
+const MESSAGE_MAX_LENGTH = 1024;
+
 const MAX_CV_SIZE_MB = 10;
 const MAX_CV_BYTES = MAX_CV_SIZE_MB * 1024 * 1024;
-
-function getUtmParams(): Record<string, string> {
-  if (typeof window === 'undefined') return {};
-  const params = new URLSearchParams(window.location.search);
-  const out: Record<string, string> = {};
-  const keys = ['utm_campaign', 'utm_term', 'utm_content', 'utm_source', 'utm_medium'];
-  keys.forEach((k) => {
-    const v = params.get(k);
-    if (v) out[k] = v;
-  });
-  return out;
-}
 
 export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) {
   const { t } = useTranslation();
@@ -125,7 +109,9 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
   } | null>(null);
   const [applyCvFile, setApplyCvFile] = useState<File | null>(null);
   const applyCvInputRef = useRef<HTMLInputElement>(null);
-  const [submitStatus, setSubmitStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'loading' | 'success' | 'error'>(
+    'idle',
+  );
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<{
     fullName?: string;
@@ -136,10 +122,23 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
     role?: string;
   }>({});
   const [contactValues, setContactValues] = useState<ContactFormValues>(initialContactValues);
-  const [contactTouched, setContactTouched] = useState<Partial<Record<keyof ContactFormValues, boolean>>>({});
+  const [contactTouched, setContactTouched] = useState<
+    Partial<Record<keyof ContactFormValues, boolean>>
+  >({});
+  const [emailAgreement, setEmailAgreement] = useState(false);
   const [applyTouched, setApplyTouched] = useState<Partial<Record<ApplyStep1Field, boolean>>>({});
   const isPostularse = subject === SUBJECT_POSTULARSE;
   const isInApplyFlow = isPostularse && showApplyForm;
+
+  /** Abrir formulario de postulación si la URL tiene ?apply=1 (ej. desde "Aplicar Ahora" en Cultura y Talento). */
+  useEffect(() => {
+    const params = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
+    if (params.get('apply') === '1' || params.get('subject') === SUBJECT_POSTULARSE) {
+      setSubject(SUBJECT_POSTULARSE);
+      setShowApplyForm(true);
+      setApplyStep(1);
+    }
+  }, []);
 
   const applyStep1Schema = buildApplyStep1Schema({
     required: t('home.ctaContact.errors.fieldsRequired'),
@@ -151,6 +150,7 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
     required: t('home.ctaContact.errors.fieldsRequired'),
     emailInvalid: t('home.ctaContact.errors.emailInvalid'),
     phoneInvalid: t('home.ctaContact.errors.phoneInvalid'),
+    messageMaxLength: t('home.ctaContact.errors.messageMaxLength'),
   });
 
   const validateContactField = useCallback(
@@ -249,6 +249,7 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
     setFieldErrors({});
     setContactValues(initialContactValues);
     setContactTouched({});
+    setEmailAgreement(false);
     setApplyTouched({});
     if (value !== SUBJECT_POSTULARSE) {
       setShowApplyForm(false);
@@ -305,10 +306,18 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
       return;
     }
 
-    const howTheyKnowVado = (form.querySelector<HTMLSelectElement>(`[id="${idPrefix}apply-heard"]`)?.value ?? '').trim();
-    const startVadoRaw = (form.querySelector<HTMLSelectElement>(`[id="${idPrefix}apply-start"]`)?.value ?? '').trim();
-    const validVisaRadio = form.querySelector<HTMLInputElement>(`input[name="${idPrefix}apply-visa"]:checked`)?.value;
-    const travelRadio = form.querySelector<HTMLInputElement>(`input[name="${idPrefix}apply-travel"]:checked`)?.value;
+    const howTheyKnowVado = (
+      form.querySelector<HTMLSelectElement>(`[id="${idPrefix}apply-heard"]`)?.value ?? ''
+    ).trim();
+    const startVadoRaw = (
+      form.querySelector<HTMLSelectElement>(`[id="${idPrefix}apply-start"]`)?.value ?? ''
+    ).trim();
+    const validVisaRadio = form.querySelector<HTMLInputElement>(
+      `input[name="${idPrefix}apply-visa"]:checked`,
+    )?.value;
+    const travelRadio = form.querySelector<HTMLInputElement>(
+      `input[name="${idPrefix}apply-travel"]:checked`,
+    )?.value;
     const cvInput = form.querySelector<HTMLInputElement>(`[id="${idPrefix}apply-cv"]`);
     const cvFile = applyCvFile ?? cvInput?.files?.[0];
 
@@ -365,26 +374,26 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
 
     try {
       const fd = new FormData();
-        fd.append('fullName', body.fullName);
-        fd.append('email', body.email);
-        fd.append('phoneNumber', body.phoneNumber);
-        fd.append('role', body.role);
-        fd.append('howTheyKnowVado', body.howTheyKnowVado);
-        fd.append('agreement', 'true');
-        fd.append('startVado', body.startVado);
-        fd.append('validVisa', String(body.validVisa));
-        fd.append('availabilityToTravel', String(body.availabilityToTravel));
-        fd.append('cv', cvFile);
+      fd.append('fullName', body.fullName);
+      fd.append('email', body.email);
+      fd.append('phoneNumber', body.phoneNumber);
+      fd.append('role', body.role);
+      fd.append('howTheyKnowVado', body.howTheyKnowVado);
+      fd.append('agreement', 'true');
+      fd.append('startVado', body.startVado);
+      fd.append('validVisa', String(body.validVisa));
+      fd.append('availabilityToTravel', String(body.availabilityToTravel));
+      fd.append('cv', cvFile);
 
-        const res = await fetch(DEVELOPERS_WITH_CV_URL, {
-          method: 'POST',
-          body: fd,
-        });
-        if (!res.ok) {
-          const data = await res.json().catch(() => ({}));
-          const msg = data?.message ?? data?.error ?? res.statusText;
-          throw new Error(msg);
-        }
+      const res = await fetch(DEVELOPERS_WITH_CV_URL, {
+        method: 'POST',
+        body: fd,
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        const msg = data?.message ?? data?.error ?? res.statusText;
+        throw new Error(msg);
+      }
       setSubmitStatus('success');
       setSubmitError(null);
       setFieldErrors({});
@@ -429,7 +438,7 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
       return;
     }
 
-    if (!LEADS_API_URL) {
+    if (!CONTACT_API_URL) {
       setSubmitStatus('error');
       setSubmitError(t('home.ctaContact.errors.apiNotConfigured'));
       return;
@@ -464,37 +473,23 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
     setSubmitStatus('loading');
     setSubmitError(null);
 
-    const subjectLabel =
-      subject === 'software-a-la-medida'
-        ? t('home.ctaContact.subjectOptions.softwareALaMedida')
-        : subject === 'ampliacion-personal'
-          ? t('home.ctaContact.subjectOptions.ampliacionPersonal')
-          : subject === 'soluciones-ia'
-            ? t('home.ctaContact.subjectOptions.solucionesIA')
-            : subject === 'otros'
-              ? t('home.ctaContact.subjectOptions.otros')
-              : subject;
-    const projectDescription = subjectLabel
-      ? `${t('home.ctaContact.subject')}: ${subjectLabel}\n\n${message}`
-      : message;
-
-    const utm = getUtmParams();
+    /** Body según CreateContactDto (lead-slack-readme.md). campaignID fijo para este formulario. */
     const body = {
-      fullName,
+      firstName: fullName,
       email,
-      phoneNumber: phone,
+      phone: phone || undefined,
       company,
-      projectDescription,
-      userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : undefined,
-      utmCampaign: utm.utm_campaign,
-      utmTerm: utm.utm_term,
-      utmContent: utm.utm_content,
+      campaignID: 'Companies',
+      agreement: true,
+      emailAgreement,
+      ...(subject ? { subject } : {}),
+      message: message.slice(0, MESSAGE_MAX_LENGTH),
     };
 
     try {
-      const res = await fetch(LEADS_API_URL, {
+      const res = await fetch(CONTACT_API_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify(body),
       });
       if (!res.ok) {
@@ -507,6 +502,7 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
       setSubject('');
       setContactValues(initialContactValues);
       setContactTouched({});
+      setEmailAgreement(false);
       setFieldErrors({});
     } catch (err) {
       setSubmitStatus('error');
@@ -517,7 +513,7 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
   return (
     <div
       className={cn(
-        'rounded-2xl border border-border bg-white px-6 py-8 shadow-sm md:px-8 md:py-10',
+        'border-border rounded-2xl border bg-white px-6 py-8 shadow-sm md:px-8 md:py-10',
         className,
       )}
     >
@@ -573,6 +569,7 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
                   setFieldErrors({});
                   setContactValues(initialContactValues);
                   setContactTouched({});
+                  setEmailAgreement(false);
                   setApplyTouched({});
                   if (applyCvInputRef.current) applyCvInputRef.current.value = '';
                 }}
@@ -582,638 +579,781 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
             </div>
           </motion.div>
         ) : (
-          <form
-            ref={formRef}
-            className="flex flex-col gap-4"
-            onSubmit={handleFormSubmit}
-          >
-        {!isInApplyFlow && (
-          <div className="space-y-2">
-            <Label htmlFor={`${idPrefix}subject`}>{t('home.ctaContact.subject')}</Label>
-            <select
-              id={`${idPrefix}subject`}
-              value={subject}
-              onChange={handleSubjectChange}
-              className={cn(
-                'border-input h-10 w-full rounded-lg border bg-transparent px-3 py-2 text-base',
-                'focus:border-primary focus:ring-primary/50 focus:ring-2 focus:outline-none md:text-sm',
-              )}
-            >
-              <option value="">{t('home.ctaContact.subjectPlaceholder')}</option>
-              <option value="software-a-la-medida">{t('home.ctaContact.subjectOptions.softwareALaMedida')}</option>
-              <option value="ampliacion-personal">{t('home.ctaContact.subjectOptions.ampliacionPersonal')}</option>
-              <option value="soluciones-ia">{t('home.ctaContact.subjectOptions.solucionesIA')}</option>
-              <option value={SUBJECT_POSTULARSE}>{t('home.ctaContact.subjectOptions.quieroPostularme')}</option>
-              <option value="otros">{t('home.ctaContact.subjectOptions.otros')}</option>
-            </select>
-          </div>
-        )}
-        <AnimatePresence mode="wait">
-          {isPostularse ? (
-            showApplyForm ? (
-              applyStep === 1 ? (
-              <motion.div
-                key="apply-form-step1"
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }}
-                className="flex flex-col gap-4"
-              >
-                <div className="text-center">
-                  <h4 className="text-primary text-lg font-bold">
-                    {t('home.ctaContact.applyForm.title')}
-                  </h4>
-                  <p className="text-muted-foreground text-sm">
-                    {t('home.ctaContact.applyForm.step', { current: 1, total: 2 })}
-                  </p>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor={`${idPrefix}apply-name`}>{t('home.ctaContact.fullName')}<span> *</span></Label>
-                  <Input
-                    id={`${idPrefix}apply-name`}
-                    type="text"
-                    placeholder={t('home.ctaContact.fullNamePlaceholder')}
-                    className={cn('h-10 rounded-lg', fieldErrors.fullName && 'border-destructive focus-visible:ring-destructive')}
-                    value={applyStep1Data?.fullName ?? ''}
-                    onChange={(e) => handleApplyStep1Change('fullName', e.target.value)}
-                    onBlur={() => handleApplyStep1Blur('fullName')}
-                    aria-invalid={!!fieldErrors.fullName}
-                    aria-describedby={fieldErrors.fullName ? `${idPrefix}apply-name-error` : undefined}
-                  />
-                  {fieldErrors.fullName && (
-                    <p id={`${idPrefix}apply-name-error`} className="text-destructive text-sm" role="alert">
-                      {fieldErrors.fullName}
-                    </p>
+          <form ref={formRef} className="flex flex-col gap-4" onSubmit={handleFormSubmit}>
+            {!isInApplyFlow && (
+              <div className="space-y-2">
+                <Label htmlFor={`${idPrefix}subject`}>{t('home.ctaContact.subject')}</Label>
+                <select
+                  id={`${idPrefix}subject`}
+                  value={subject}
+                  onChange={handleSubjectChange}
+                  className={cn(
+                    'border-input h-10 w-full rounded-lg border bg-transparent px-3 py-2 text-base',
+                    'focus:border-primary focus:ring-primary/50 focus:ring-2 focus:outline-none md:text-sm',
                   )}
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor={`${idPrefix}apply-email`}>{t('home.ctaContact.email')}<span> *</span></Label>
-                  <Input
-                    id={`${idPrefix}apply-email`}
-                    type="email"
-                    placeholder={t('home.ctaContact.emailPlaceholder')}
-                    className={cn('h-10 rounded-lg', fieldErrors.email && 'border-destructive focus-visible:ring-destructive')}
-                    value={applyStep1Data?.email ?? ''}
-                    onChange={(e) => handleApplyStep1Change('email', e.target.value)}
-                    onBlur={() => handleApplyStep1Blur('email')}
-                    aria-invalid={!!fieldErrors.email}
-                    aria-describedby={fieldErrors.email ? `${idPrefix}apply-email-error` : undefined}
-                  />
-                  {fieldErrors.email && (
-                    <p id={`${idPrefix}apply-email-error`} className="text-destructive text-sm" role="alert">
-                      {fieldErrors.email}
-                    </p>
-                  )}
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor={`${idPrefix}apply-phone`}>{t('home.ctaContact.phone')}<span> *</span></Label>
-                  <Input
-                    id={`${idPrefix}apply-phone`}
-                    type="tel"
-                    inputMode="numeric"
-                    autoComplete="tel"
-                    placeholder={t('home.ctaContact.phonePlaceholder')}
-                    className={cn('h-10 rounded-lg', fieldErrors.phone && 'border-destructive focus-visible:ring-destructive')}
-                    value={applyStep1Data?.phoneNumber ?? ''}
-                    onChange={handleApplyPhoneInput}
-                    onBlur={() => handleApplyStep1Blur('phoneNumber')}
-                    aria-invalid={!!fieldErrors.phone}
-                    aria-describedby={fieldErrors.phone ? `${idPrefix}apply-phone-error` : undefined}
-                  />
-                  {fieldErrors.phone && (
-                    <p id={`${idPrefix}apply-phone-error`} className="text-destructive text-sm" role="alert">
-                      {fieldErrors.phone}
-                    </p>
-                  )}
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor={`${idPrefix}apply-role`}>{t('home.ctaContact.applyForm.roleLabel')}<span> *</span></Label>
-                  <Input
-                    id={`${idPrefix}apply-role`}
-                    type="text"
-                    placeholder={t('home.ctaContact.applyForm.rolePlaceholder')}
-                    className={cn('h-10 rounded-lg', fieldErrors.role && 'border-destructive focus-visible:ring-destructive')}
-                    value={applyStep1Data?.role ?? ''}
-                    onChange={(e) => handleApplyStep1Change('role', e.target.value)}
-                    onBlur={() => handleApplyStep1Blur('role')}
-                    aria-invalid={!!fieldErrors.role}
-                    aria-describedby={fieldErrors.role ? `${idPrefix}apply-role-error` : undefined}
-                  />
-                  {fieldErrors.role && (
-                    <p id={`${idPrefix}apply-role-error`} className="text-destructive text-sm" role="alert">
-                      {fieldErrors.role}
-                    </p>
-                  )}
-                </div>
-                <div className="flex flex-wrap justify-end gap-3">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="lg"
-                    className="border-input bg-background hover:bg-muted rounded-lg font-medium"
-                    onClick={() => {
-                      setSubject('');
-                      setShowApplyForm(false);
-                      setApplyStep(1);
-                      setApplyStep1Data(null);
-                      setApplyCvFile(null);
-                      setFieldErrors({});
-                      setSubmitError(null);
-                      setApplyTouched({});
-                      if (applyCvInputRef.current) applyCvInputRef.current.value = '';
-                    }}
-                  >
-                    {t('home.ctaContact.applyForm.back')}
-                  </Button>
-                  <Button
-                    type="button"
-                    size="lg"
-                    className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg font-medium"
-                    onClick={handleContinueToStep2}
-                  >
-                    {t('home.ctaContact.applyForm.continue')}
-                  </Button>
-                </div>
-              </motion.div>
-              ) : (
-              <motion.div
-                key="apply-form-step2"
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }}
-                className="flex flex-col gap-4"
-              >
-                <div className="text-center">
-                  <h4 className="text-primary text-lg font-bold">
-                    {t('home.ctaContact.applyForm.step2Title')}
-                  </h4>
-                  <p className="text-muted-foreground text-sm">
-                    {t('home.ctaContact.applyForm.step', { current: 2, total: 2 })}
-                  </p>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor={`${idPrefix}apply-heard`}>
-                    {t('home.ctaContact.applyForm.heardAbout')}
-                  </Label>
-                  <select
-                    id={`${idPrefix}apply-heard`}
-                    className={cn(
-                      'border-input h-10 w-full rounded-lg border bg-transparent px-3 py-2 text-base',
-                      'focus:border-primary focus:ring-primary/50 focus:ring-2 focus:outline-none md:text-sm',
-                    )}
-                  >
-                    <option value="">{t('home.ctaContact.subjectPlaceholder')}</option>
-                    <option value="linkedin">{t('home.ctaContact.applyForm.heardLinkedIn')}</option>
-                    <option value="referido">{t('home.ctaContact.applyForm.heardReferral')}</option>
-                    <option value="web">{t('home.ctaContact.applyForm.heardWeb')}</option>
-                    <option value="otro">{t('home.ctaContact.subjectOptions.otros')}</option>
-                  </select>
-                </div>
-                <div className="space-y-2">
-                  <Label>{t('home.ctaContact.applyForm.currentlyWorking')}</Label>
-                  <div className="flex gap-4">
-                    <label className="flex cursor-pointer items-center gap-2">
-                      <input
-                        type="radio"
-                        name={`${idPrefix}apply-working`}
-                        value="si"
-                        className="accent-primary border-input size-4 rounded-full border"
-                      />
-                      <span className="text-sm">{t('home.ctaContact.applyForm.yes')}</span>
-                    </label>
-                    <label className="flex cursor-pointer items-center gap-2">
-                      <input
-                        type="radio"
-                        name={`${idPrefix}apply-working`}
-                        value="no"
-                        className="accent-primary border-input size-4 rounded-full border"
-                      />
-                      <span className="text-sm">{t('home.ctaContact.applyForm.no')}</span>
-                    </label>
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor={`${idPrefix}apply-start`}>
-                    {t('home.ctaContact.applyForm.startDate')}
-                  </Label>
-                  <select
-                    id={`${idPrefix}apply-start`}
-                    className={cn(
-                      'border-input h-10 w-full rounded-lg border bg-transparent px-3 py-2 text-base',
-                      'focus:border-primary focus:ring-primary/50 focus:ring-2 focus:outline-none md:text-sm',
-                    )}
-                  >
-                    <option value="">{t('home.ctaContact.subjectPlaceholder')}</option>
-                    <option value="inmediato">{t('home.ctaContact.applyForm.immediately')}</option>
-                    <option value="1-mes">1 {t('home.ctaContact.applyForm.month')}</option>
-                    <option value="2-3-meses">2-3 {t('home.ctaContact.applyForm.months')}</option>
-                    <option value="mas">{t('home.ctaContact.applyForm.moreThan3Months')}</option>
-                  </select>
-                </div>
-                <div className="space-y-2">
-                  <Label className="flex items-center gap-1.5">
-                    {t('home.ctaContact.applyForm.validVisa')}
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <span
-                          className="text-muted-foreground hover:text-foreground inline-flex cursor-help"
-                          aria-label={t('home.ctaContact.applyForm.visaInfo')}
-                        >
-                          <Info className="size-4 shrink-0" strokeWidth={2} aria-hidden />
-                        </span>
-                      </TooltipTrigger>
-                      <TooltipContent sideOffset={6} className="max-w-[240px]">
-                        {t('home.ctaContact.applyForm.visaInfo')}
-                      </TooltipContent>
-                    </Tooltip>
-                  </Label>
-                  <div className="flex gap-4">
-                    <label className="flex cursor-pointer items-center gap-2">
-                      <input
-                        type="radio"
-                        name={`${idPrefix}apply-visa`}
-                        value="si"
-                        defaultChecked
-                        className="accent-primary border-input size-4 rounded-full border"
-                      />
-                      <span className="text-sm">{t('home.ctaContact.applyForm.yes')}</span>
-                    </label>
-                    <label className="flex cursor-pointer items-center gap-2">
-                      <input
-                        type="radio"
-                        name={`${idPrefix}apply-visa`}
-                        value="no"
-                        className="accent-primary border-input size-4 rounded-full border"
-                      />
-                      <span className="text-sm">{t('home.ctaContact.applyForm.no')}</span>
-                    </label>
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label>{t('home.ctaContact.applyForm.travelAvailability')}</Label>
-                  <div className="flex gap-4">
-                    <label className="flex cursor-pointer items-center gap-2">
-                      <input
-                        type="radio"
-                        name={`${idPrefix}apply-travel`}
-                        value="si"
-                        className="accent-primary border-input size-4 rounded-full border"
-                      />
-                      <span className="text-sm">{t('home.ctaContact.applyForm.yes')}</span>
-                    </label>
-                    <label className="flex cursor-pointer items-center gap-2">
-                      <input
-                        type="radio"
-                        name={`${idPrefix}apply-travel`}
-                        value="no"
-                        className="accent-primary border-input size-4 rounded-full border"
-                      />
-                      <span className="text-sm">{t('home.ctaContact.applyForm.no')}</span>
-                    </label>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <Checkbox
-                    id={`${idPrefix}apply-agreement`}
-                    className="border-primary/50 data-[state=checked]:border-primary data-[state=checked]:bg-primary"
-                  />
-                  <Label
-                    htmlFor={`${idPrefix}apply-agreement`}
-                    className="text-muted-foreground flex cursor-pointer flex-wrap items-center gap-x-1 gap-y-0 text-sm leading-relaxed font-normal"
-                  >
-                    <span>{t('home.ctaContact.privacyLabel')}</span>
-                    <a
-                      href={path('/privacy-policy')}
-                      className="text-primary shrink-0 font-medium underline underline-offset-2"
-                    >
-                      {t('home.ctaContact.privacyPolicy')}
-                    </a>
-                    <span>{t('home.ctaContact.and')}</span>
-                    <a
-                      href={path('/terms')}
-                      className="text-primary shrink-0 font-medium underline underline-offset-2"
-                    >
-                      {t('home.ctaContact.termsOfService')}
-                    </a>
-                  </Label>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor={`${idPrefix}apply-cv`}>
-                    {t('home.ctaContact.applyForm.attachCV')}
-                    <span> *</span>
-                  </Label>
-                  <label
-                    htmlFor={`${idPrefix}apply-cv`}
-                    className={cn(
-                      'border-primary/30 bg-primary/5 flex min-h-[120px] cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed px-4 py-6',
-                      'hover:bg-primary/10 transition-colors',
-                    )}
-                  >
-                    {applyCvFile ? (
-                      <>
-                        <svg
-                          className="text-primary size-10"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                          aria-hidden
-                        >
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <span className="text-foreground text-sm font-medium">
-                          {applyCvFile.name}
-                        </span>
-                        <span className="text-muted-foreground text-xs">
-                          ({(applyCvFile.size / 1024).toFixed(1)} KB)
-                        </span>
-                        <span className="text-primary text-xs font-medium">
-                          {t('home.ctaContact.applyForm.fileSelected')}
-                        </span>
-                      </>
-                    ) : (
-                      <>
-                        <svg
-                          className="text-primary size-8"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                        </svg>
-                        <span className="text-muted-foreground text-sm">
-                          {t('home.ctaContact.applyForm.attachCVHint')}
-                        </span>
-                      </>
-                    )}
-                    <input
-                      ref={applyCvInputRef}
-                      id={`${idPrefix}apply-cv`}
-                      type="file"
-                      accept=".pdf,application/pdf"
-                      className="hidden"
-                      onChange={(e) => setApplyCvFile(e.target.files?.[0] ?? null)}
-                    />
-                  </label>
-                  {applyCvFile && (
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      className="text-muted-foreground hover:text-foreground -mt-1"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setApplyCvFile(null);
-                        if (applyCvInputRef.current) applyCvInputRef.current.value = '';
-                      }}
-                    >
-                      {t('home.ctaContact.applyForm.removeFile')}
-                    </Button>
-                  )}
-                </div>
-                {submitStatus === 'error' && submitError && (
-                  <p className="text-destructive text-sm" role="alert">
-                    {submitError}
-                  </p>
-                )}
-                <div className="flex flex-col gap-3 pt-2">
-                  <div className="flex justify-between gap-4">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="lg"
-                      className="rounded-lg font-medium"
-                      onClick={() => {
-                        setFieldErrors({});
-                        setSubmitError(null);
-                        setApplyStep(1);
-                      }}
-                      disabled={submitStatus === 'loading'}
-                    >
-                      ← {t('home.ctaContact.applyForm.back')}
-                    </Button>
-                    <Button
-                      type="submit"
-                      size="lg"
-                      className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg font-medium"
-                      disabled={submitStatus === 'loading'}
-                    >
-                      {submitStatus === 'loading' ? t('home.ctaContact.sending') : t('home.ctaContact.submit')}
-                    </Button>
-                  </div>
-                  <div className="flex justify-center">
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      className="text-muted-foreground hover:text-foreground"
-                      onClick={() => {
-                        setShowApplyForm(false);
-                        setApplyStep(1);
-                      setApplyStep1Data(null);
-                      setApplyCvFile(null);
-                      setFieldErrors({});
-                      setSubmitError(null);
-                      setApplyTouched({});
-                      if (applyCvInputRef.current) applyCvInputRef.current.value = '';
-                    }}
-                  >
-                    <FaArrowLeft className="mr-1.5 size-3.5 shrink-0" aria-hidden />
-                    {t('home.ctaContact.applyForm.changeSubject')}
-                    </Button>
-                  </div>
-                </div>
-              </motion.div>
-              )
-            ) : (
-              <motion.div
-                key="postularse"
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }}
-                className="flex flex-col items-center gap-6 py-4"
-              >
-                <p className="text-muted-foreground text-center text-base leading-relaxed">
-                  {t('home.ctaContact.applyMessage')}
-                </p>
-                <Button
-                  type="button"
-                  size="lg"
-                  className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg font-medium px-8"
-                  onClick={() => {
-                    setShowApplyForm(true);
-                    setApplyStep1Data((prev) => prev ?? { fullName: '', email: '', phoneNumber: '', role: '' });
-                  }}
                 >
-                  {t('home.ctaContact.applyNow')}
-                </Button>
-              </motion.div>
-            )
-          ) : (
-            <motion.div
-              key="form"
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }}
-              className="flex flex-col gap-4"
-            >
-        <div className="space-y-2">
-          <Label htmlFor={`${idPrefix}name`}>{t('home.ctaContact.fullName')}<span> *</span></Label>
-          <Input
-            id={`${idPrefix}name`}
-            name="fullName"
-            type="text"
-            placeholder={t('home.ctaContact.fullNamePlaceholder')}
-            className={cn('h-10 rounded-lg', fieldErrors.fullName && 'border-destructive focus-visible:ring-destructive')}
-            value={contactValues.fullName}
-            onChange={(e) => handleContactChange('fullName', e.target.value)}
-            onBlur={() => handleContactBlur('fullName')}
-            disabled={submitStatus === 'loading'}
-            aria-invalid={!!fieldErrors.fullName}
-            aria-describedby={fieldErrors.fullName ? `${idPrefix}name-error` : undefined}
-          />
-          {fieldErrors.fullName && (
-            <p id={`${idPrefix}name-error`} className="text-destructive text-sm" role="alert">
-              {fieldErrors.fullName}
-            </p>
-          )}
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor={`${idPrefix}email`}>{t('home.ctaContact.email')}<span> *</span></Label>
-          <Input
-            id={`${idPrefix}email`}
-            name="email"
-            type="email"
-            placeholder={t('home.ctaContact.emailPlaceholder')}
-            className={cn('h-10 rounded-lg', fieldErrors.email && 'border-destructive focus-visible:ring-destructive')}
-            value={contactValues.email}
-            onChange={(e) => handleContactChange('email', e.target.value)}
-            onBlur={() => handleContactBlur('email')}
-            disabled={submitStatus === 'loading'}
-            aria-invalid={!!fieldErrors.email}
-            aria-describedby={fieldErrors.email ? `${idPrefix}email-error` : undefined}
-          />
-          {fieldErrors.email && (
-            <p id={`${idPrefix}email-error`} className="text-destructive text-sm" role="alert">
-              {fieldErrors.email}
-            </p>
-          )}
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor={`${idPrefix}company`}>{t('home.ctaContact.companyName')}<span> *</span></Label>
-          <Input
-            id={`${idPrefix}company`}
-            name="company"
-            type="text"
-            placeholder={t('home.ctaContact.companyPlaceholder')}
-            className={cn('h-10 rounded-lg', fieldErrors.company && 'border-destructive focus-visible:ring-destructive')}
-            value={contactValues.company}
-            onChange={(e) => handleContactChange('company', e.target.value)}
-            onBlur={() => handleContactBlur('company')}
-            disabled={submitStatus === 'loading'}
-            aria-invalid={!!fieldErrors.company}
-            aria-describedby={fieldErrors.company ? `${idPrefix}company-error` : undefined}
-          />
-          {fieldErrors.company && (
-            <p id={`${idPrefix}company-error`} className="text-destructive text-sm" role="alert">
-              {fieldErrors.company}
-            </p>
-          )}
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor={`${idPrefix}phone`}>{t('home.ctaContact.phone')}<span> *</span></Label>
-          <Input
-            id={`${idPrefix}phone`}
-            name="phone"
-            type="tel"
-            inputMode="numeric"
-            autoComplete="tel"
-            placeholder={t('home.ctaContact.phonePlaceholder')}
-            className={cn('h-10 rounded-lg', fieldErrors.phone && 'border-destructive focus-visible:ring-destructive')}
-            value={contactValues.phone}
-            onChange={handlePhoneInput}
-            onBlur={() => handleContactBlur('phone')}
-            disabled={submitStatus === 'loading'}
-            aria-invalid={!!fieldErrors.phone}
-            aria-describedby={fieldErrors.phone ? `${idPrefix}phone-error` : undefined}
-          />
-          {fieldErrors.phone && (
-            <p id={`${idPrefix}phone-error`} className="text-destructive text-sm" role="alert">
-              {fieldErrors.phone}
-            </p>
-          )}
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor={`${idPrefix}message`}>{t('home.ctaContact.message')}<span> *</span></Label>
-          <Textarea
-            id={`${idPrefix}message`}
-            name="projectDescription"
-            placeholder={t('home.ctaContact.messagePlaceholder')}
-            rows={4}
-            className={cn('rounded-lg', fieldErrors.message && 'border-destructive focus-visible:ring-destructive')}
-            value={contactValues.message}
-            onChange={(e) => handleContactChange('message', e.target.value)}
-            onBlur={() => handleContactBlur('message')}
-            disabled={submitStatus === 'loading'}
-            aria-invalid={!!fieldErrors.message}
-            aria-describedby={fieldErrors.message ? `${idPrefix}message-error` : undefined}
-          />
-          {fieldErrors.message && (
-            <p id={`${idPrefix}message-error`} className="text-destructive text-sm" role="alert">
-              {fieldErrors.message}
-            </p>
-          )}
-        </div>
-        <div className="flex items-start gap-3">
-          <Checkbox id={`${idPrefix}privacy`} className="border-primary/50 data-[state=checked]:border-primary data-[state=checked]:bg-primary" />
-          <Label
-            htmlFor={`${idPrefix}privacy`}
-            className="text-muted-foreground flex cursor-pointer flex-wrap items-center gap-x-1 gap-y-0 text-sm leading-relaxed font-normal"
-          >
-            <span>{t('home.ctaContact.privacyLabel')}</span>
-            <a
-              href={path('/privacy-policy')}
-              className="text-primary shrink-0 font-medium underline underline-offset-2"
-            >
-              {t('home.ctaContact.privacyPolicy')}
-            </a>
-            <span>{t('home.ctaContact.and')}</span>
-            <a
-              href={path('/terms')}
-              className="text-primary shrink-0 font-medium underline underline-offset-2"
-            >
-              {t('home.ctaContact.termsOfService')}
-            </a>
-          </Label>
-        </div>
-        <div className="flex items-start gap-3">
-          <Checkbox id={`${idPrefix}newsletter`} className="border-primary/50 data-[state=checked]:border-primary data-[state=checked]:bg-primary" />
-          <Label
-            htmlFor={`${idPrefix}newsletter`}
-            className="text-muted-foreground cursor-pointer text-sm leading-relaxed font-normal"
-          >
-            {t('home.ctaContact.newsletterLabel')}
-          </Label>
-        </div>
-        {submitStatus === 'error' && submitError && (
-          <p className="text-destructive text-sm" role="alert">
-            {submitError}
-          </p>
-        )}
-        <Button
-          type="submit"
-          size="lg"
-          className="bg-primary text-primary-foreground hover:bg-primary/90 w-full rounded-lg font-medium"
-          disabled={submitStatus === 'loading'}
-        >
-          {submitStatus === 'loading' ? t('home.ctaContact.sending') : t('home.ctaContact.submit')}
-        </Button>
-            </motion.div>
-          )}
-        </AnimatePresence>
+                  <option value="">{t('home.ctaContact.subjectPlaceholder')}</option>
+                  <option value="Custom Software Development">
+                    {t('home.ctaContact.subjectOptions.softwareALaMedida')}
+                  </option>
+                  <option value="Staff Augmentation">
+                    {t('home.ctaContact.subjectOptions.ampliacionPersonal')}
+                  </option>
+                  <option value="AI Solutions">
+                    {t('home.ctaContact.subjectOptions.solucionesIA')}
+                  </option>
+                  <option value={SUBJECT_POSTULARSE}>
+                    {t('home.ctaContact.subjectOptions.quieroPostularme')}
+                  </option>
+                  <option value="Other">{t('home.ctaContact.subjectOptions.otros')}</option>
+                </select>
+              </div>
+            )}
+            <AnimatePresence mode="wait">
+              {isPostularse ? (
+                showApplyForm ? (
+                  applyStep === 1 ? (
+                    <motion.div
+                      key="apply-form-step1"
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -8 }}
+                      transition={{ duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }}
+                      className="flex flex-col gap-4"
+                    >
+                      <div className="text-center">
+                        <h4 className="text-primary text-lg font-bold">
+                          {t('home.ctaContact.applyForm.title')}
+                        </h4>
+                        <p className="text-muted-foreground text-sm">
+                          {t('home.ctaContact.applyForm.step', { current: 1, total: 2 })}
+                        </p>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor={`${idPrefix}apply-name`}>
+                          {t('home.ctaContact.fullName')}
+                          <span> *</span>
+                        </Label>
+                        <Input
+                          id={`${idPrefix}apply-name`}
+                          type="text"
+                          placeholder={t('home.ctaContact.fullNamePlaceholder')}
+                          className={cn(
+                            'h-10 rounded-lg',
+                            fieldErrors.fullName &&
+                              'border-destructive focus-visible:ring-destructive',
+                          )}
+                          value={applyStep1Data?.fullName ?? ''}
+                          onChange={(e) => handleApplyStep1Change('fullName', e.target.value)}
+                          onBlur={() => handleApplyStep1Blur('fullName')}
+                          aria-invalid={!!fieldErrors.fullName}
+                          aria-describedby={
+                            fieldErrors.fullName ? `${idPrefix}apply-name-error` : undefined
+                          }
+                        />
+                        {fieldErrors.fullName && (
+                          <p
+                            id={`${idPrefix}apply-name-error`}
+                            className="text-destructive text-sm"
+                            role="alert"
+                          >
+                            {fieldErrors.fullName}
+                          </p>
+                        )}
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor={`${idPrefix}apply-email`}>
+                          {t('home.ctaContact.email')}
+                          <span> *</span>
+                        </Label>
+                        <Input
+                          id={`${idPrefix}apply-email`}
+                          type="email"
+                          placeholder={t('home.ctaContact.emailPlaceholder')}
+                          className={cn(
+                            'h-10 rounded-lg',
+                            fieldErrors.email &&
+                              'border-destructive focus-visible:ring-destructive',
+                          )}
+                          value={applyStep1Data?.email ?? ''}
+                          onChange={(e) => handleApplyStep1Change('email', e.target.value)}
+                          onBlur={() => handleApplyStep1Blur('email')}
+                          aria-invalid={!!fieldErrors.email}
+                          aria-describedby={
+                            fieldErrors.email ? `${idPrefix}apply-email-error` : undefined
+                          }
+                        />
+                        {fieldErrors.email && (
+                          <p
+                            id={`${idPrefix}apply-email-error`}
+                            className="text-destructive text-sm"
+                            role="alert"
+                          >
+                            {fieldErrors.email}
+                          </p>
+                        )}
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor={`${idPrefix}apply-phone`}>
+                          {t('home.ctaContact.phone')}
+                          <span> *</span>
+                        </Label>
+                        <Input
+                          id={`${idPrefix}apply-phone`}
+                          type="tel"
+                          inputMode="numeric"
+                          autoComplete="tel"
+                          placeholder={t('home.ctaContact.phonePlaceholder')}
+                          className={cn(
+                            'h-10 rounded-lg',
+                            fieldErrors.phone &&
+                              'border-destructive focus-visible:ring-destructive',
+                          )}
+                          value={applyStep1Data?.phoneNumber ?? ''}
+                          onChange={handleApplyPhoneInput}
+                          onBlur={() => handleApplyStep1Blur('phoneNumber')}
+                          aria-invalid={!!fieldErrors.phone}
+                          aria-describedby={
+                            fieldErrors.phone ? `${idPrefix}apply-phone-error` : undefined
+                          }
+                        />
+                        {fieldErrors.phone && (
+                          <p
+                            id={`${idPrefix}apply-phone-error`}
+                            className="text-destructive text-sm"
+                            role="alert"
+                          >
+                            {fieldErrors.phone}
+                          </p>
+                        )}
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor={`${idPrefix}apply-role`}>
+                          {t('home.ctaContact.applyForm.roleLabel')}
+                          <span> *</span>
+                        </Label>
+                        <Input
+                          id={`${idPrefix}apply-role`}
+                          type="text"
+                          placeholder={t('home.ctaContact.applyForm.rolePlaceholder')}
+                          className={cn(
+                            'h-10 rounded-lg',
+                            fieldErrors.role && 'border-destructive focus-visible:ring-destructive',
+                          )}
+                          value={applyStep1Data?.role ?? ''}
+                          onChange={(e) => handleApplyStep1Change('role', e.target.value)}
+                          onBlur={() => handleApplyStep1Blur('role')}
+                          aria-invalid={!!fieldErrors.role}
+                          aria-describedby={
+                            fieldErrors.role ? `${idPrefix}apply-role-error` : undefined
+                          }
+                        />
+                        {fieldErrors.role && (
+                          <p
+                            id={`${idPrefix}apply-role-error`}
+                            className="text-destructive text-sm"
+                            role="alert"
+                          >
+                            {fieldErrors.role}
+                          </p>
+                        )}
+                      </div>
+                      <div className="flex flex-wrap justify-end gap-3">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="lg"
+                          className="border-input bg-background hover:bg-muted rounded-lg font-medium"
+                          onClick={() => {
+                            setSubject('');
+                            setShowApplyForm(false);
+                            setApplyStep(1);
+                            setApplyStep1Data(null);
+                            setApplyCvFile(null);
+                            setFieldErrors({});
+                            setSubmitError(null);
+                            setApplyTouched({});
+                            if (applyCvInputRef.current) applyCvInputRef.current.value = '';
+                          }}
+                        >
+                          {t('home.ctaContact.applyForm.back')}
+                        </Button>
+                        <Button
+                          type="button"
+                          size="lg"
+                          className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg font-medium"
+                          onClick={handleContinueToStep2}
+                        >
+                          {t('home.ctaContact.applyForm.continue')}
+                        </Button>
+                      </div>
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="apply-form-step2"
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -8 }}
+                      transition={{ duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }}
+                      className="flex flex-col gap-4"
+                    >
+                      <div className="text-center">
+                        <h4 className="text-primary text-lg font-bold">
+                          {t('home.ctaContact.applyForm.step2Title')}
+                        </h4>
+                        <p className="text-muted-foreground text-sm">
+                          {t('home.ctaContact.applyForm.step', { current: 2, total: 2 })}
+                        </p>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor={`${idPrefix}apply-heard`}>
+                          {t('home.ctaContact.applyForm.heardAbout')}
+                        </Label>
+                        <select
+                          id={`${idPrefix}apply-heard`}
+                          className={cn(
+                            'border-input h-10 w-full rounded-lg border bg-transparent px-3 py-2 text-base',
+                            'focus:border-primary focus:ring-primary/50 focus:ring-2 focus:outline-none md:text-sm',
+                          )}
+                        >
+                          <option value="">{t('home.ctaContact.subjectPlaceholder')}</option>
+                          <option value="linkedin">
+                            {t('home.ctaContact.applyForm.heardLinkedIn')}
+                          </option>
+                          <option value="referido">
+                            {t('home.ctaContact.applyForm.heardReferral')}
+                          </option>
+                          <option value="web">{t('home.ctaContact.applyForm.heardWeb')}</option>
+                          <option value="otro">{t('home.ctaContact.subjectOptions.otros')}</option>
+                        </select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>{t('home.ctaContact.applyForm.currentlyWorking')}</Label>
+                        <div className="flex gap-4">
+                          <label className="flex cursor-pointer items-center gap-2">
+                            <input
+                              type="radio"
+                              name={`${idPrefix}apply-working`}
+                              value="si"
+                              className="accent-primary border-input size-4 rounded-full border"
+                            />
+                            <span className="text-sm">{t('home.ctaContact.applyForm.yes')}</span>
+                          </label>
+                          <label className="flex cursor-pointer items-center gap-2">
+                            <input
+                              type="radio"
+                              name={`${idPrefix}apply-working`}
+                              value="no"
+                              className="accent-primary border-input size-4 rounded-full border"
+                            />
+                            <span className="text-sm">{t('home.ctaContact.applyForm.no')}</span>
+                          </label>
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor={`${idPrefix}apply-start`}>
+                          {t('home.ctaContact.applyForm.startDate')}
+                        </Label>
+                        <select
+                          id={`${idPrefix}apply-start`}
+                          className={cn(
+                            'border-input h-10 w-full rounded-lg border bg-transparent px-3 py-2 text-base',
+                            'focus:border-primary focus:ring-primary/50 focus:ring-2 focus:outline-none md:text-sm',
+                          )}
+                        >
+                          <option value="">{t('home.ctaContact.subjectPlaceholder')}</option>
+                          <option value="inmediato">
+                            {t('home.ctaContact.applyForm.immediately')}
+                          </option>
+                          <option value="1-mes">1 {t('home.ctaContact.applyForm.month')}</option>
+                          <option value="2-3-meses">
+                            2-3 {t('home.ctaContact.applyForm.months')}
+                          </option>
+                          <option value="mas">
+                            {t('home.ctaContact.applyForm.moreThan3Months')}
+                          </option>
+                        </select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="flex items-center gap-1.5">
+                          {t('home.ctaContact.applyForm.validVisa')}
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span
+                                className="text-muted-foreground hover:text-foreground inline-flex cursor-help"
+                                aria-label={t('home.ctaContact.applyForm.visaInfo')}
+                              >
+                                <Info className="size-4 shrink-0" strokeWidth={2} aria-hidden />
+                              </span>
+                            </TooltipTrigger>
+                            <TooltipContent sideOffset={6} className="max-w-[240px]">
+                              {t('home.ctaContact.applyForm.visaInfo')}
+                            </TooltipContent>
+                          </Tooltip>
+                        </Label>
+                        <div className="flex gap-4">
+                          <label className="flex cursor-pointer items-center gap-2">
+                            <input
+                              type="radio"
+                              name={`${idPrefix}apply-visa`}
+                              value="si"
+                              defaultChecked
+                              className="accent-primary border-input size-4 rounded-full border"
+                            />
+                            <span className="text-sm">{t('home.ctaContact.applyForm.yes')}</span>
+                          </label>
+                          <label className="flex cursor-pointer items-center gap-2">
+                            <input
+                              type="radio"
+                              name={`${idPrefix}apply-visa`}
+                              value="no"
+                              className="accent-primary border-input size-4 rounded-full border"
+                            />
+                            <span className="text-sm">{t('home.ctaContact.applyForm.no')}</span>
+                          </label>
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>{t('home.ctaContact.applyForm.travelAvailability')}</Label>
+                        <div className="flex gap-4">
+                          <label className="flex cursor-pointer items-center gap-2">
+                            <input
+                              type="radio"
+                              name={`${idPrefix}apply-travel`}
+                              value="si"
+                              className="accent-primary border-input size-4 rounded-full border"
+                            />
+                            <span className="text-sm">{t('home.ctaContact.applyForm.yes')}</span>
+                          </label>
+                          <label className="flex cursor-pointer items-center gap-2">
+                            <input
+                              type="radio"
+                              name={`${idPrefix}apply-travel`}
+                              value="no"
+                              className="accent-primary border-input size-4 rounded-full border"
+                            />
+                            <span className="text-sm">{t('home.ctaContact.applyForm.no')}</span>
+                          </label>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <Checkbox
+                          id={`${idPrefix}apply-agreement`}
+                          className="border-primary/50 data-[state=checked]:border-primary data-[state=checked]:bg-primary"
+                        />
+                        <Label
+                          htmlFor={`${idPrefix}apply-agreement`}
+                          className="text-muted-foreground flex cursor-pointer flex-wrap items-center gap-x-1 gap-y-0 text-sm leading-relaxed font-normal"
+                        >
+                          <span>{t('home.ctaContact.privacyLabel')}</span>
+                          <a
+                            href={path('/privacy-policy')}
+                            className="text-primary shrink-0 font-medium underline underline-offset-2"
+                          >
+                            {t('home.ctaContact.privacyPolicy')}
+                          </a>
+                          <span>{t('home.ctaContact.and')}</span>
+                          <a
+                            href={path('/terms')}
+                            className="text-primary shrink-0 font-medium underline underline-offset-2"
+                          >
+                            {t('home.ctaContact.termsOfService')}
+                          </a>
+                        </Label>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor={`${idPrefix}apply-cv`}>
+                          {t('home.ctaContact.applyForm.attachCV')}
+                          <span> *</span>
+                        </Label>
+                        <label
+                          htmlFor={`${idPrefix}apply-cv`}
+                          className={cn(
+                            'border-primary/30 bg-primary/5 flex min-h-[120px] cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed px-4 py-6',
+                            'hover:bg-primary/10 transition-colors',
+                          )}
+                        >
+                          {applyCvFile ? (
+                            <>
+                              <svg
+                                className="text-primary size-10"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                                aria-hidden
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                                />
+                              </svg>
+                              <span className="text-foreground text-sm font-medium">
+                                {applyCvFile.name}
+                              </span>
+                              <span className="text-muted-foreground text-xs">
+                                ({(applyCvFile.size / 1024).toFixed(1)} KB)
+                              </span>
+                              <span className="text-primary text-xs font-medium">
+                                {t('home.ctaContact.applyForm.fileSelected')}
+                              </span>
+                            </>
+                          ) : (
+                            <>
+                              <svg
+                                className="text-primary size-8"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                                />
+                              </svg>
+                              <span className="text-muted-foreground text-sm">
+                                {t('home.ctaContact.applyForm.attachCVHint')}
+                              </span>
+                            </>
+                          )}
+                          <input
+                            ref={applyCvInputRef}
+                            id={`${idPrefix}apply-cv`}
+                            type="file"
+                            accept=".pdf,application/pdf"
+                            className="hidden"
+                            onChange={(e) => setApplyCvFile(e.target.files?.[0] ?? null)}
+                          />
+                        </label>
+                        {applyCvFile && (
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="text-muted-foreground hover:text-foreground -mt-1"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              setApplyCvFile(null);
+                              if (applyCvInputRef.current) applyCvInputRef.current.value = '';
+                            }}
+                          >
+                            {t('home.ctaContact.applyForm.removeFile')}
+                          </Button>
+                        )}
+                      </div>
+                      {submitStatus === 'error' && submitError && (
+                        <p className="text-destructive text-sm" role="alert">
+                          {submitError}
+                        </p>
+                      )}
+                      <div className="flex flex-col gap-3 pt-2">
+                        <div className="flex justify-between gap-4">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="lg"
+                            className="rounded-lg font-medium"
+                            onClick={() => {
+                              setFieldErrors({});
+                              setSubmitError(null);
+                              setApplyStep(1);
+                            }}
+                            disabled={submitStatus === 'loading'}
+                          >
+                            ← {t('home.ctaContact.applyForm.back')}
+                          </Button>
+                          <Button
+                            type="submit"
+                            size="lg"
+                            className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg font-medium"
+                            disabled={submitStatus === 'loading'}
+                          >
+                            {submitStatus === 'loading'
+                              ? t('home.ctaContact.sending')
+                              : t('home.ctaContact.submit')}
+                          </Button>
+                        </div>
+                        <div className="flex justify-center">
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="text-muted-foreground hover:text-foreground"
+                            onClick={() => {
+                              setShowApplyForm(false);
+                              setApplyStep(1);
+                              setApplyStep1Data(null);
+                              setApplyCvFile(null);
+                              setFieldErrors({});
+                              setSubmitError(null);
+                              setApplyTouched({});
+                              if (applyCvInputRef.current) applyCvInputRef.current.value = '';
+                            }}
+                          >
+                            <FaArrowLeft className="mr-1.5 size-3.5 shrink-0" aria-hidden />
+                            {t('home.ctaContact.applyForm.changeSubject')}
+                          </Button>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )
+                ) : (
+                  <motion.div
+                    key="postularse"
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={{ duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }}
+                    className="flex flex-col items-center gap-6 py-4"
+                  >
+                    <p className="text-muted-foreground text-center text-base leading-relaxed">
+                      {t('home.ctaContact.applyMessage')}
+                    </p>
+                    <Button
+                      type="button"
+                      size="lg"
+                      className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg px-8 font-medium"
+                      onClick={() => {
+                        setShowApplyForm(true);
+                        setApplyStep1Data(
+                          (prev) => prev ?? { fullName: '', email: '', phoneNumber: '', role: '' },
+                        );
+                      }}
+                    >
+                      {t('home.ctaContact.applyNow')}
+                    </Button>
+                  </motion.div>
+                )
+              ) : (
+                <motion.div
+                  key="form"
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }}
+                  className="flex flex-col gap-4"
+                >
+                  <div className="space-y-2">
+                    <Label htmlFor={`${idPrefix}name`}>
+                      {t('home.ctaContact.fullName')}
+                      <span> *</span>
+                    </Label>
+                    <Input
+                      id={`${idPrefix}name`}
+                      name="fullName"
+                      type="text"
+                      placeholder={t('home.ctaContact.fullNamePlaceholder')}
+                      className={cn(
+                        'h-10 rounded-lg',
+                        fieldErrors.fullName && 'border-destructive focus-visible:ring-destructive',
+                      )}
+                      value={contactValues.fullName}
+                      onChange={(e) => handleContactChange('fullName', e.target.value)}
+                      onBlur={() => handleContactBlur('fullName')}
+                      disabled={submitStatus === 'loading'}
+                      aria-invalid={!!fieldErrors.fullName}
+                      aria-describedby={fieldErrors.fullName ? `${idPrefix}name-error` : undefined}
+                    />
+                    {fieldErrors.fullName && (
+                      <p
+                        id={`${idPrefix}name-error`}
+                        className="text-destructive text-sm"
+                        role="alert"
+                      >
+                        {fieldErrors.fullName}
+                      </p>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor={`${idPrefix}email`}>
+                      {t('home.ctaContact.email')}
+                      <span> *</span>
+                    </Label>
+                    <Input
+                      id={`${idPrefix}email`}
+                      name="email"
+                      type="email"
+                      placeholder={t('home.ctaContact.emailPlaceholder')}
+                      className={cn(
+                        'h-10 rounded-lg',
+                        fieldErrors.email && 'border-destructive focus-visible:ring-destructive',
+                      )}
+                      value={contactValues.email}
+                      onChange={(e) => handleContactChange('email', e.target.value)}
+                      onBlur={() => handleContactBlur('email')}
+                      disabled={submitStatus === 'loading'}
+                      aria-invalid={!!fieldErrors.email}
+                      aria-describedby={fieldErrors.email ? `${idPrefix}email-error` : undefined}
+                    />
+                    {fieldErrors.email && (
+                      <p
+                        id={`${idPrefix}email-error`}
+                        className="text-destructive text-sm"
+                        role="alert"
+                      >
+                        {fieldErrors.email}
+                      </p>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor={`${idPrefix}company`}>
+                      {t('home.ctaContact.companyName')}
+                      <span> *</span>
+                    </Label>
+                    <Input
+                      id={`${idPrefix}company`}
+                      name="company"
+                      type="text"
+                      placeholder={t('home.ctaContact.companyPlaceholder')}
+                      className={cn(
+                        'h-10 rounded-lg',
+                        fieldErrors.company && 'border-destructive focus-visible:ring-destructive',
+                      )}
+                      value={contactValues.company}
+                      onChange={(e) => handleContactChange('company', e.target.value)}
+                      onBlur={() => handleContactBlur('company')}
+                      disabled={submitStatus === 'loading'}
+                      aria-invalid={!!fieldErrors.company}
+                      aria-describedby={
+                        fieldErrors.company ? `${idPrefix}company-error` : undefined
+                      }
+                    />
+                    {fieldErrors.company && (
+                      <p
+                        id={`${idPrefix}company-error`}
+                        className="text-destructive text-sm"
+                        role="alert"
+                      >
+                        {fieldErrors.company}
+                      </p>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor={`${idPrefix}phone`}>
+                      {t('home.ctaContact.phone')}
+                      <span> *</span>
+                    </Label>
+                    <Input
+                      id={`${idPrefix}phone`}
+                      name="phone"
+                      type="tel"
+                      inputMode="numeric"
+                      autoComplete="tel"
+                      placeholder={t('home.ctaContact.phonePlaceholder')}
+                      className={cn(
+                        'h-10 rounded-lg',
+                        fieldErrors.phone && 'border-destructive focus-visible:ring-destructive',
+                      )}
+                      value={contactValues.phone}
+                      onChange={handlePhoneInput}
+                      onBlur={() => handleContactBlur('phone')}
+                      disabled={submitStatus === 'loading'}
+                      aria-invalid={!!fieldErrors.phone}
+                      aria-describedby={fieldErrors.phone ? `${idPrefix}phone-error` : undefined}
+                    />
+                    {fieldErrors.phone && (
+                      <p
+                        id={`${idPrefix}phone-error`}
+                        className="text-destructive text-sm"
+                        role="alert"
+                      >
+                        {fieldErrors.phone}
+                      </p>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor={`${idPrefix}message`}>
+                      {t('home.ctaContact.message')}
+                      <span> *</span>
+                    </Label>
+                    <Textarea
+                      id={`${idPrefix}message`}
+                      name="projectDescription"
+                      placeholder={t('home.ctaContact.messagePlaceholder')}
+                      rows={4}
+                      className={cn(
+                        'rounded-lg',
+                        fieldErrors.message && 'border-destructive focus-visible:ring-destructive',
+                      )}
+                      value={contactValues.message}
+                      onChange={(e) => handleContactChange('message', e.target.value)}
+                      onBlur={() => handleContactBlur('message')}
+                      disabled={submitStatus === 'loading'}
+                      aria-invalid={!!fieldErrors.message}
+                      aria-describedby={
+                        fieldErrors.message ? `${idPrefix}message-error` : undefined
+                      }
+                    />
+                    {fieldErrors.message && (
+                      <p
+                        id={`${idPrefix}message-error`}
+                        className="text-destructive text-sm"
+                        role="alert"
+                      >
+                        {fieldErrors.message}
+                      </p>
+                    )}
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <Checkbox
+                      id={`${idPrefix}privacy`}
+                      className="border-primary/50 data-[state=checked]:border-primary data-[state=checked]:bg-primary"
+                    />
+                    <Label
+                      htmlFor={`${idPrefix}privacy`}
+                      className="text-muted-foreground flex cursor-pointer flex-wrap items-center gap-x-1 gap-y-0 text-sm leading-relaxed font-normal"
+                    >
+                      <span>{t('home.ctaContact.privacyLabel')}</span>
+                      <a
+                        href={path('/privacy-policy')}
+                        className="text-primary shrink-0 font-medium underline underline-offset-2"
+                      >
+                        {t('home.ctaContact.privacyPolicy')}
+                      </a>
+                      <span>{t('home.ctaContact.and')}</span>
+                      <a
+                        href={path('/terms')}
+                        className="text-primary shrink-0 font-medium underline underline-offset-2"
+                      >
+                        {t('home.ctaContact.termsOfService')}
+                      </a>
+                    </Label>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <Checkbox
+                      id={`${idPrefix}newsletter`}
+                      className="border-primary/50 data-[state=checked]:border-primary data-[state=checked]:bg-primary"
+                      checked={emailAgreement}
+                      onCheckedChange={(checked) => setEmailAgreement(checked === true)}
+                    />
+                    <Label
+                      htmlFor={`${idPrefix}newsletter`}
+                      className="text-muted-foreground cursor-pointer text-sm leading-relaxed font-normal"
+                    >
+                      {t('home.ctaContact.newsletterLabel')}
+                    </Label>
+                  </div>
+                  {submitStatus === 'error' && submitError && (
+                    <p className="text-destructive text-sm" role="alert">
+                      {submitError}
+                    </p>
+                  )}
+                  <Button
+                    type="submit"
+                    size="lg"
+                    className="bg-primary text-primary-foreground hover:bg-primary/90 w-full rounded-lg font-medium"
+                    disabled={submitStatus === 'loading'}
+                  >
+                    {submitStatus === 'loading'
+                      ? t('home.ctaContact.sending')
+                      : t('home.ctaContact.submit')}
+                  </Button>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </form>
         )}
       </AnimatePresence>
