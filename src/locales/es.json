@@ -821,7 +821,8 @@
       "emailLabel": "Email",
       "emailPlaceholder": "tu@email.com",
       "subscribeButton": "SUSCRIBIRSE",
-      "success": "Gracias. Te hemos suscrito al boletín.",
+      "success": "Gracias. Te has suscrito al boletín correctamente.",
+      "alreadyRegistered": "Este correo ya está registrado.",
       "error": "No pudimos completar la suscripción. Intenta de nuevo.",
       "enterAnotherEmail": "Poner otro correo"
     }

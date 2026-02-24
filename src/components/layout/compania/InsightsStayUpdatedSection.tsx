@@ -53,8 +53,8 @@ export function InsightsStayUpdatedSection() {
 
       setStatus('success');
       setEmail('');
-      if (data.alreadyRegistered === true && data.message) {
-        setSuccessMessage(data.message);
+      if (data.alreadyRegistered === true) {
+        setSuccessMessage(t('insightsPage.stayUpdated.alreadyRegistered'));
       } else {
         setSuccessMessage(t('insightsPage.stayUpdated.success'));
       }
