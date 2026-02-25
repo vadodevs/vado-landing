@@ -75,26 +75,26 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://vadodevs.com/es/terms</loc>
-    <xhtml:link rel="alternate" hreflang="es" href="https://vadodevs.com/es/terms"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://vadodevs.com/en/terms"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://vadodevs.com/es/terms"/>
+    <loc>https://vadodevs.com/es/info/terms-of-service</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://vadodevs.com/es/info/terms-of-service"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://vadodevs.com/en/info/terms-of-service"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://vadodevs.com/es/info/terms-of-service"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://vadodevs.com/es/privacy-policy</loc>
-    <xhtml:link rel="alternate" hreflang="es" href="https://vadodevs.com/es/privacy-policy"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://vadodevs.com/en/privacy-policy"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://vadodevs.com/es/privacy-policy"/>
+    <loc>https://vadodevs.com/es/info/privacy-policy</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://vadodevs.com/es/info/privacy-policy"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://vadodevs.com/en/info/privacy-policy"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://vadodevs.com/es/info/privacy-policy"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://vadodevs.com/es/cookies</loc>
-    <xhtml:link rel="alternate" hreflang="es" href="https://vadodevs.com/es/cookies"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://vadodevs.com/en/cookies"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://vadodevs.com/es/cookies"/>
+    <loc>https://vadodevs.com/es/info/cookies</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://vadodevs.com/es/info/cookies"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://vadodevs.com/en/info/cookies"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://vadodevs.com/es/info/cookies"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>

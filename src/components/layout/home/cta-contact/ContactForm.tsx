@@ -947,14 +947,14 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
                         >
                           <span>{t('home.ctaContact.privacyLabel')}</span>
                           <a
-                            href={path('/privacy-policy')}
+                            href={path('/info/privacy-policy')}
                             className="text-primary shrink-0 font-medium underline underline-offset-2"
                           >
                             {t('home.ctaContact.privacyPolicy')}
                           </a>
                           <span>{t('home.ctaContact.and')}</span>
                           <a
-                            href={path('/terms')}
+                            href={path('/info/terms-of-service')}
                             className="text-primary shrink-0 font-medium underline underline-offset-2"
                           >
                             {t('home.ctaContact.termsOfService')}
@@ -1308,14 +1308,14 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
                     >
                       <span>{t('home.ctaContact.privacyLabel')}</span>
                       <a
-                        href={path('/privacy-policy')}
+                        href={path('/info/privacy-policy')}
                         className="text-primary shrink-0 font-medium underline underline-offset-2"
                       >
                         {t('home.ctaContact.privacyPolicy')}
                       </a>
                       <span>{t('home.ctaContact.and')}</span>
                       <a
-                        href={path('/terms')}
+                        href={path('/info/terms-of-service')}
                         className="text-primary shrink-0 font-medium underline underline-offset-2"
                       >
                         {t('home.ctaContact.termsOfService')}

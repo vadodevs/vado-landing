@@ -35,13 +35,13 @@ const TOC_ITEMS = [
 
 export default function PoliticaDePrivacidad() {
   const { path } = useLocale();
-  const canonicalPath = path('/privacy-policy');
+  const canonicalPath = path('/info/privacy-policy');
 
   return (
     <>
       <PageMeta
         ogType="website"
-        pathWithoutLang="/privacy-policy"
+        pathWithoutLang="/info/privacy-policy"
         title={`${PRIVACY_POLICY_TITLE} | Vado`}
         description={PRIVACY_POLICY_DESCRIPTION}
         canonicalPath={canonicalPath}
@@ -521,7 +521,7 @@ export default function PoliticaDePrivacidad() {
                 <p>
                   Specific information about how we use such technologies and how you can refuse
                   certain cookies is set out in our{' '}
-                  <a href={path('/cookies')} className="text-primary hover:underline">
+                  <a href={path('/info/cookies')} className="text-primary hover:underline">
                     Cookie Notice
                   </a>
                   .

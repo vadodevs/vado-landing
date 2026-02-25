@@ -60,19 +60,19 @@ export function Footer() {
             </h3>
             <nav className="flex flex-col gap-2">
               <Link
-                href={path('/terms')}
+                href={path('/info/terms-of-service')}
                 className="text-sm text-white/90 transition-colors hover:text-white"
               >
                 {t('footer.terms')}
               </Link>
               <Link
-                href={path('/privacy-policy')}
+                href={path('/info/privacy-policy')}
                 className="text-sm text-white/90 transition-colors hover:text-white"
               >
                 {t('footer.privacy')}
               </Link>
               <Link
-                href={path('/cookies')}
+                href={path('/info/cookies')}
                 className="text-sm text-white/90 transition-colors hover:text-white"
               >
                 {t('footer.cookies')}

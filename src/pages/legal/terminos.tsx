@@ -37,7 +37,7 @@ const TOC_ITEMS = [
 
 export default function TerminosDelServicio() {
   const { path } = useLocale();
-  const canonicalPath = path('/terms');
+  const canonicalPath = path('/info/terms-of-service');
 
   return (
     <>
@@ -46,7 +46,7 @@ export default function TerminosDelServicio() {
         description={TERMS_DESCRIPTION}
         canonicalPath={canonicalPath}
         ogType="website"
-        pathWithoutLang="/terms"
+        pathWithoutLang="/info/terms-of-service"
       />
       <MainLayout>
         <main
@@ -683,7 +683,7 @@ export default function TerminosDelServicio() {
                 </h2>
                 <p>
                   We care about data privacy and security. Please review our{' '}
-                  <a href={path('/privacy-policy')} className="text-primary hover:underline">
+                  <a href={path('/info/privacy-policy')} className="text-primary hover:underline">
                     Privacy Policy
                   </a>
                   . By using the Services, you agree to be bound by our Privacy Policy,

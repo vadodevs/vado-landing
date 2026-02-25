@@ -18,9 +18,9 @@ const STATIC_PATHS = [
   '/compania/cultura-y-talento',
   '/contacto',
   '/gracias',
-  '/terminos',
-  '/politica-privacidad',
-  '/cookies',
+  '/info/terms-of-service',
+  '/info/privacy-policy',
+  '/info/cookies',
 ]
 const OUR_WORK_SLUGS = [
   'zenqr', 'sendero', 'ebm', 'digitalRanch', 'easySales', 'cipreses', 'maggiore', 'washaut',

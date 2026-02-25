@@ -37,9 +37,9 @@ export function Router() {
       <Route path="/:lang/company/culture-and-talent" component={withLocale(CulturaYTalento)} />
       <Route path="/:lang/contact" component={withLocale(Contacto)} />
       <Route path="/:lang/thank-you" component={withLocale(Gracias)} />
-      <Route path="/:lang/terms" component={withLocale(TerminosDelServicio)} />
-      <Route path="/:lang/privacy-policy" component={withLocale(PoliticaDePrivacidad)} />
-      <Route path="/:lang/cookies" component={withLocale(Cookies)} />
+      <Route path="/:lang/info/terms-of-service" component={withLocale(TerminosDelServicio)} />
+      <Route path="/:lang/info/privacy-policy" component={withLocale(PoliticaDePrivacidad)} />
+      <Route path="/:lang/info/cookies" component={withLocale(Cookies)} />
       <Route path="/:lang" component={withLocale(Home)} />
       <Route path="/:lang/*" component={withLocale(NotFound)} />
       <Route component={NotFound} />

@@ -10,7 +10,7 @@ const COOKIE_POLICY_DESCRIPTION =
 
 export default function Cookies() {
   const { path } = useLocale();
-  const canonicalPath = path('/cookies');
+  const canonicalPath = path('/info/cookies');
 
   return (
     <>
@@ -19,7 +19,7 @@ export default function Cookies() {
         description={COOKIE_POLICY_DESCRIPTION}
         canonicalPath={canonicalPath}
         ogType="website"
-        pathWithoutLang="/cookies"
+        pathWithoutLang="/info/cookies"
       />
       <MainLayout>
         <main id="main-content" className="bg-background py-12 md:py-16 lg:py-20" aria-label="Cookie Policy">
