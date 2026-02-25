@@ -33,6 +33,8 @@ export function AISolutionsTabsSection() {
       titlePart2={t('services.aiSolutions.solutions.titlePart2')}
       description={t('services.aiSolutions.solutions.description')}
       tabLabelWrap
+      variant="imageHero"
+      backgroundImageSrc="/ai-section.png"
     />
   );
 }

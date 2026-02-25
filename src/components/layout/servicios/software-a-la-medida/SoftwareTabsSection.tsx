@@ -31,7 +31,7 @@ export function SoftwareTabsSection() {
       ctaText={t('services.customSoftware.hero.cta')}
       disableTabTextSelection
       variant="imageHero"
-      backgroundImageSrc="/test/image-default.png"
+      backgroundImageSrc="/custom-developer.jpg"
     />
   );
 }

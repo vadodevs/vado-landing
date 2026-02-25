@@ -32,8 +32,6 @@ export type ServiceTabsSectionProps = {
   description?: string;
   /** Permite que el texto de las tabs haga salto de línea (ej. para Soluciones IA) */
   tabLabelWrap?: boolean;
-  /** Oculta la barra indicadora bajo la tab activa */
-  hideTabIndicator?: boolean;
   /** Desactiva la selección de texto en las tabs */
   disableTabTextSelection?: boolean;
   /** Variante visual del contenedor principal */
@@ -51,7 +49,6 @@ export function ServiceTabsSection({
   titlePart2,
   description,
   tabLabelWrap,
-  hideTabIndicator,
   disableTabTextSelection,
   variant = 'default',
   backgroundImageSrc,
@@ -89,10 +86,10 @@ export function ServiceTabsSection({
             variant="line"
             className={cn(
               tabLabelWrap
-                ? 'border-border mb-6 flex w-full flex-nowrap justify-start gap-1 overflow-x-auto overflow-y-hidden border-b bg-transparent pb-0 [scrollbar-width:none] md:flex-wrap md:items-stretch md:gap-3 md:overflow-visible [&::-webkit-scrollbar]:hidden'
-                : 'border-border mb-6 flex w-full justify-start gap-1 overflow-x-auto overflow-y-hidden border-b bg-transparent pb-0 md:flex-wrap',
-              hideTabIndicator &&
-                '[&_[data-slot=tabs-trigger][data-state=active]:after:!opacity-0 [&_[data-slot=tabs-trigger][data-state=active]:after:!h-0 [&_[data-slot=tabs-trigger][data-state=active]:border-transparent [&_[data-slot=tabs-trigger][data-state=active]:border-b-0',
+                ? 'mb-6 flex w-full flex-nowrap justify-start gap-1 overflow-x-auto overflow-y-hidden bg-transparent pb-0 [scrollbar-width:none] md:flex-wrap md:items-stretch md:gap-3 md:overflow-visible [&::-webkit-scrollbar]:hidden'
+                : 'mb-6 flex w-full justify-start gap-1 overflow-x-auto overflow-y-hidden bg-transparent pb-0 md:flex-wrap',
+              // Sin borde en el contenedor ni línea del pseudo-elemento; solo el borde azul del trigger activo.
+              '[&_[data-slot=tabs-trigger]:after:h-0] [&_[data-slot=tabs-trigger]:after:bg-transparent]',
             )}
             style={{ WebkitOverflowScrolling: 'touch', touchAction: 'pan-x' }}
           >
@@ -103,11 +100,11 @@ export function ServiceTabsSection({
                 className={
                   tabLabelWrap
                     ? cn(
-                        'data-[state=active]:border-primary data-[state=active]:text-primary shrink-0 rounded-none border-0 border-transparent bg-transparent px-3 py-2 text-center text-sm font-medium whitespace-nowrap data-[state=active]:bg-transparent data-[state=active]:shadow-none md:flex md:h-auto md:flex-1 md:items-center md:justify-center md:px-4 md:py-3 md:text-base md:leading-snug md:whitespace-normal',
+                        'data-[state=active]:border-b-primary data-[state=active]:text-primary shrink-0 rounded-none border-x-0 border-t-0 border-b-2 border-b-transparent bg-transparent px-3 py-2 text-center text-sm font-medium whitespace-nowrap data-[state=active]:bg-transparent data-[state=active]:shadow-none md:flex md:h-auto md:flex-1 md:items-center md:justify-center md:px-4 md:py-3 md:text-base md:leading-snug md:whitespace-normal',
                         disableTabTextSelection && 'select-none',
                       )
                     : cn(
-                        'data-[state=active]:border-primary data-[state=active]:text-primary shrink-0 rounded-none border-b-2 border-transparent px-3 py-2 text-sm font-medium md:px-4 md:text-base',
+                        'data-[state=active]:border-b-primary data-[state=active]:text-primary shrink-0 rounded-none border-x-0 border-t-0 border-b-2 border-b-transparent bg-transparent px-3 py-2 text-sm font-medium md:px-4 md:text-base',
                         disableTabTextSelection && 'select-none',
                       )
                 }
@@ -119,7 +116,7 @@ export function ServiceTabsSection({
 
           <TabsContent value={activeTab} className="mt-0 focus-visible:outline-none">
             {variant === 'imageHero' ? (
-              <div className="relative mx-auto overflow-visible rounded-2xl px-6 py-8 md:px-8 md:py-10 lg:max-w-6xl lg:px-10 lg:py-8">
+              <div className="relative mx-auto overflow-visible rounded-2xl px-6 py-10 md:px-10 md:py-12 lg:max-w-7xl lg:px-12 lg:py-10">
                 <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-2xl">
                   {backgroundImageSrc && (
                     <img
@@ -132,7 +129,7 @@ export function ServiceTabsSection({
                   <div className="absolute inset-y-0 left-0 w-[75%] bg-linear-to-r from-black/90 via-black/55" />
                 </div>
 
-                <div className="relative z-10 flex min-h-[260px] flex-col gap-8 lg:min-h-[320px] lg:flex-row lg:items-center lg:gap-10">
+                <div className="relative z-10 flex min-h-[300px] flex-col gap-8 lg:min-h-[380px] lg:flex-row lg:items-center lg:gap-12">
                   <div className="order-2 flex flex-1 flex-col justify-center lg:order-1 lg:max-w-[55%]">
                     <AnimatePresence mode="wait">
                       <motion.div
