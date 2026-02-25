@@ -17,9 +17,8 @@ export function TechStackSection() {
             <div className="relative flex aspect-square w-full max-w-[320px] items-center justify-center md:max-w-[380px] lg:max-w-[420px]">
               <img
                 src="/tech-stack/stack.png"
-                alt=""
+                alt={t('home.techStack.imageAlt')}
                 className="relative z-1 w-full max-w-[280px] object-contain md:max-w-[320px] lg:max-w-[360px]"
-                aria-hidden
               />
             </div>
           </div>

@@ -17,7 +17,7 @@ export function VadoInsightsSection() {
       category: t('home.vadoInsights.article1.category'),
       title: t('home.vadoInsights.article1.title'),
       author: t('home.vadoInsights.author'),
-      href: path('/company/articles/10-razones-nearshore-outsourcing'),
+      href: path('/company/articles/10-reasons-nearshore-outsourcing-success'),
     },
     {
       imageSrc: '/articles/land-your-dream-job.webp',
@@ -26,7 +26,7 @@ export function VadoInsightsSection() {
       category: t('home.vadoInsights.article2.category'),
       title: t('home.vadoInsights.article2.title'),
       author: t('home.vadoInsights.author'),
-      href: path('/company/articles/consigue-trabajo-suenos-entrevista-desarrollo'),
+      href: path('/company/articles/land-your-dream-software-job'),
     },
     {
       imageSrc: '/articles/exceptional-alternatives.webp',
@@ -35,7 +35,7 @@ export function VadoInsightsSection() {
       category: t('home.vadoInsights.article3.category'),
       title: t('home.vadoInsights.article3.title'),
       author: t('home.vadoInsights.author'),
-      href: path('/company/articles/desbloqueando-potencial-ingenieria-nearshore'),
+      href: path('/company/articles/benefits-of-nearshore-engineering'),
     },
   ];
 

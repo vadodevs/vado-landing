@@ -39,10 +39,10 @@ export function FiveVsSection() {
           <div className="relative w-full shrink-0 lg:min-h-[340px] lg:w-[420px]">
             <div className="flex flex-col gap-4 sm:gap-6 lg:relative lg:min-h-[340px]">
               <div className="aspect-video w-full overflow-hidden rounded-xl lg:absolute lg:top-0 lg:right-0 lg:w-[85%]">
-                <img src={IMAGE_1} alt="" className="h-full w-full object-cover" loading="lazy" />
+                <img src={IMAGE_1} alt={t('cultureYTalentoPage.fiveVs.imagesAlt')} className="h-full w-full object-cover" loading="lazy" />
               </div>
               <div className="aspect-video w-full overflow-hidden rounded-xl lg:absolute lg:bottom-0 lg:left-0 lg:z-10 lg:w-[85%]">
-                <img src={IMAGE_2} alt="" className="h-full w-full object-cover" loading="lazy" />
+                <img src={IMAGE_2} alt={t('cultureYTalentoPage.fiveVs.imagesAlt')} className="h-full w-full object-cover" loading="lazy" />
               </div>
             </div>
           </div>

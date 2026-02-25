@@ -105,7 +105,7 @@ export function OurWorkProjectsSection() {
                       src={
                         project.image.startsWith('/') ? project.image : `/projects/${project.image}`
                       }
-                      alt=""
+                      alt={t(`ourWork.projects.${project.id}.title`)}
                       className="h-auto w-full object-contain"
                       loading="lazy"
                     />

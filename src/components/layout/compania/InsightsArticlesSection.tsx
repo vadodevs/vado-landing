@@ -131,7 +131,7 @@ export function InsightsArticlesSection() {
           >
             <img
               src="/articles/empty-state/empty-articles.svg"
-              alt=""
+              alt={t('insightsPage.articles.emptyStateImageAlt')}
               className="text-muted-foreground mx-auto h-auto w-full max-w-[229px]"
               width={229}
               height={182}

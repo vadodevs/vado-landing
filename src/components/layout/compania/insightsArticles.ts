@@ -21,19 +21,19 @@ export const INSIGHTS_ARTICLE_IDS = [
 export type InsightsArticleId = (typeof INSIGHTS_ARTICLE_IDS)[number];
 
 const SLUG_BY_ID: Record<InsightsArticleId, string> = {
-  article1: 'digitalizacion-retail',
-  article2: 'tecnologia-industria-restaurantera',
-  article3: 'ia-sin-fronteras',
-  article4: 'evolucion-trabajo-remoto-talento',
-  article5: 'mas-alla-fronteras-talento-global',
-  article6: 'preparando-negocio-futuro-mercados-talento',
-  article7: 'plataformas-talento-revolucionando-crecimiento',
-  article8: 'nuevo-paradigma-laboral-talento-senior',
-  article9: '10-razones-nearshore-outsourcing',
-  article10: 'futuro-trabajo-fronteras-decada-transformacion',
-  article11: 'asegurando-pipeline-cicd-devops',
-  article12: 'desbloqueando-potencial-ingenieria-nearshore',
-  article13: 'consigue-trabajo-suenos-entrevista-desarrollo',
+  article1: 'digitalization-in-retail',
+  article2: 'technology-transforming-restaurant-industry',
+  article3: 'ai-without-borders',
+  article4: 'evolution-of-remote-work-talent-acquisition',
+  article5: 'beyond-borders-global-talent-pools',
+  article6: 'future-proofing-with-talent-marketplaces',
+  article7: 'how-talent-platforms-revolutionize-growth',
+  article8: 'new-labor-paradigm-senior-talent',
+  article9: '10-reasons-nearshore-outsourcing-success',
+  article10: 'future-of-work-across-borders',
+  article11: 'securing-your-ci-cd-pipeline',
+  article12: 'benefits-of-nearshore-engineering',
+  article13: 'land-your-dream-software-job',
 };
 
 export function getInsightsArticleSlug(id: InsightsArticleId): string {

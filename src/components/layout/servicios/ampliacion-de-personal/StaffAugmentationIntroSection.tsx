@@ -18,9 +18,8 @@ export function StaffAugmentationIntroSection() {
           <div className="order-2 flex justify-center lg:order-1 lg:max-w-[48%] lg:flex-1">
             <img
               src={PHONE_IMAGE_SRC}
-              alt=""
+              alt={t('services.staffAugmentation.intro.imageAlt')}
               className="h-auto w-full object-contain object-center md:max-w-[340px] lg:max-w-[440px]"
-              aria-hidden
             />
           </div>
 

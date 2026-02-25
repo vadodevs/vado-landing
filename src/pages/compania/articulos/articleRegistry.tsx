@@ -14,19 +14,19 @@ import DesbloqueandoPotencialIngenieriaNearshore from './desbloqueando-potencial
 import ConsigueTrabajoSuenosEntrevistaDesarrollo from './consigue-trabajo-suenos-entrevista-desarrollo';
 
 export const ARTICULO_PAGES: Record<string, ComponentType> = {
-  'digitalizacion-retail': DigitalizacionRetail,
-  'tecnologia-industria-restaurantera': TecnologiaIndustriaRestaurantera,
-  'ia-sin-fronteras': IaSinFronteras,
-  'evolucion-trabajo-remoto-talento': EvolucionTrabajoRemotoTalento,
-  'mas-alla-fronteras-talento-global': MasAllaFronterasTalentoGlobal,
-  'preparando-negocio-futuro-mercados-talento': PreparandoNegocioFuturoMercadosTalento,
-  'plataformas-talento-revolucionando-crecimiento': PlataformasTalentoRevolucionandoCrecimiento,
-  'nuevo-paradigma-laboral-talento-senior': NuevoParadigmaLaboralTalentoSenior,
-  '10-razones-nearshore-outsourcing': RazonesNearshoreOutsourcing,
-  'futuro-trabajo-fronteras-decada-transformacion': FuturoTrabajoFronterasDecadaTransformacion,
-  'asegurando-pipeline-cicd-devops': AsegurandoPipelineCicdDevops,
-  'desbloqueando-potencial-ingenieria-nearshore': DesbloqueandoPotencialIngenieriaNearshore,
-  'consigue-trabajo-suenos-entrevista-desarrollo': ConsigueTrabajoSuenosEntrevistaDesarrollo,
+  'digitalization-in-retail': DigitalizacionRetail,
+  'technology-transforming-restaurant-industry': TecnologiaIndustriaRestaurantera,
+  'ai-without-borders': IaSinFronteras,
+  'evolution-of-remote-work-talent-acquisition': EvolucionTrabajoRemotoTalento,
+  'beyond-borders-global-talent-pools': MasAllaFronterasTalentoGlobal,
+  'future-proofing-with-talent-marketplaces': PreparandoNegocioFuturoMercadosTalento,
+  'how-talent-platforms-revolutionize-growth': PlataformasTalentoRevolucionandoCrecimiento,
+  'new-labor-paradigm-senior-talent': NuevoParadigmaLaboralTalentoSenior,
+  '10-reasons-nearshore-outsourcing-success': RazonesNearshoreOutsourcing,
+  'future-of-work-across-borders': FuturoTrabajoFronterasDecadaTransformacion,
+  'securing-your-ci-cd-pipeline': AsegurandoPipelineCicdDevops,
+  'benefits-of-nearshore-engineering': DesbloqueandoPotencialIngenieriaNearshore,
+  'land-your-dream-software-job': ConsigueTrabajoSuenosEntrevistaDesarrollo,
 };
 
 export const ARTICULO_SLUGS = Object.keys(ARTICULO_PAGES);

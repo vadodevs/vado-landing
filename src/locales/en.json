@@ -801,6 +801,7 @@
         "body": "The dynamic world of software development thrives on exciting opportunities waiting to be unlocked. Whether you're an experienced developer or a recent graduate, navigating the interview process requires meticulous preparation and a strategic approach. Here are 5 key tips to help you stand out and make a lasting impression:\n\n1. Technical Check & Comfort Zone: Before you begin, make sure your camera, microphone and internet connection are flawless. Prepare your development environment for code assessments, minimize distractions by closing unnecessary tabs and choose a quiet, well-lit space to project professionalism.\n\n2. Deep Company Research: Research is crucial! Dive into the company's projects, values, recent achievements, mission and goals. Understand what they look for in potential employees. Explore their website, social media and seek insider information from current or former employees through mutual contacts.\n\n3. Authenticity and Honesty Shine: Be yourself! It's okay to admit you don't know everything. Keep your résumé on hand to avoid contradictions due to nerves. Stay calm during challenging questions — they're observing how you handle pressure. Always be honest and transparent.\n\n4. Ask Smart Questions: Prepare thoughtful questions about the company and the role to demonstrate your genuine interest. Take note of questions during the interview to clarify them at the end. Remember, there are no bad questions — ask without fear!\n\n5. Practice Makes Perfect: Practice coding challenges on free platforms to sharpen your skills. Simulate real interview conditions to build confidence. Keep learning and expanding your knowledge base.\n\n## Extra Tips for Success:\n\n### Dress Professionally\n\nEven in online interviews, dressing professionally conveys a positive first impression.\n\n### Be Punctual\n\nShow respect and professionalism by arriving a few minutes early.\n\n### Showcase Your Portfolio\n\nHave your online portfolio ready to demonstrate your skills and programming projects.\n\nBy implementing these steps, you will not only improve your technical performance but also present yourself as a prepared, professional and compelling candidate. Remember, the interview is a two-way street. Evaluate whether the company aligns with your values and career aspirations. Best of luck on your journey to landing the job of your dreams!\n\n~ The Vado Team"
       },
       "noResults": "No articles found.",
+      "emptyStateImageAlt": "No articles found illustration",
       "viewMore": "View more",
       "backToArticles": "Back to Articles",
       "otherArticlesTitle": "Other articles you might like",
@@ -852,7 +853,8 @@
       "v5": {
         "title": "Vital Bonds",
         "description": "More than a team, we are a community that shares knowledge and celebrates achievements together."
-      }
+      },
+      "imagesAlt": "Vado team collaborating"
     },
     "coreValues": {
       "title": "Core Values",
@@ -871,7 +873,8 @@
     },
     "teamVado": {
       "title": "Vado Team",
-      "description": "We are a committed team, focused on solving real problems and building solutions that create value. We share a way of working where collaboration and constant learning are part of everyday life. Each project is an opportunity to adapt, improve, and keep refining what we do best: functional technology solutions."
+      "description": "We are a committed team, focused on solving real problems and building solutions that create value. We share a way of working where collaboration and constant learning are part of everyday life. Each project is an opportunity to adapt, improve, and keep refining what we do best: functional technology solutions.",
+      "imageAlt": "Vado team member"
     },
     "leadership": {
       "title": "Business Leadership",
@@ -915,13 +918,15 @@
       "description": "We drive your business with artificial intelligence solutions designed to automate tasks, improve customer service, analyze large volumes of data and make smarter decisions.",
       "moreInfo": "More Information",
       "startProject": "Let's start your project",
-      "bgAlt": "Decorative background"
+      "bgAlt": "Decorative background",
+      "mockupImageAlt": "AI solutions landing page mockup"
     },
     "techStack": {
       "titlePart1": "Technologies that drive",
       "titlePart2": "growth",
       "description": "We stand out as your ideal partner, combining experience and technology to create scalable and secure solutions.",
-      "cta": "Let's start your project"
+      "cta": "Let's start your project",
+      "imageAlt": "Technology stack and tools used by Vado"
     },
     "clients": {
       "label": "OUR CLIENTS",
@@ -1359,7 +1364,8 @@
         "titlePart2": "develop your projects",
         "subheadline": "Strategic Talent for Your Team",
         "description": "Staff augmentation is a flexible strategy that allows you to add specialized talent to your projects without hiring internally. We adapt the profile to the requirements and objectives of your project.",
-        "cta": "Strengthen your team"
+        "cta": "Strengthen your team",
+        "imageAlt": "Mobile device with staff augmentation concept"
       },
       "process": {
         "label": "OUR PROCESS",

@@ -50,7 +50,7 @@ export default function Contacto() {
           <CenterContainer className="relative z-10 flex flex-col gap-10 lg:flex-row lg:items-center lg:gap-14">
             {/* Columna izquierda: título, descripción, beneficios */}
             <motion.div
-              className="flex-1 text-center lg:max-w-[48%] lg:text-left"
+              className="flex-1 text-left lg:max-w-[48%]"
               initial="hidden"
               animate="visible"
               variants={{
@@ -62,7 +62,7 @@ export default function Contacto() {
               }}
             >
               <motion.h2
-                className="mb-4 text-2xl font-bold leading-tight text-white md:text-3xl lg:text-4xl"
+                className="mb-4 text-2xl leading-tight font-bold text-white md:text-3xl lg:text-4xl"
                 variants={fadeUp}
               >
                 <span className="block">{t('home.ctaContact.titlePart1')}</span>
@@ -70,7 +70,7 @@ export default function Contacto() {
                 <span className="block">{t('home.ctaContact.titlePart3')}</span>
               </motion.h2>
               <motion.p
-                className="text-white/95 mb-6 text-base leading-relaxed md:text-lg"
+                className="mb-6 text-base leading-relaxed text-white/95 md:text-lg"
                 variants={fadeUp}
               >
                 {t('home.ctaContact.description')}
@@ -88,18 +88,9 @@ export default function Contacto() {
                 }}
               >
                 {BENEFIT_KEYS.map((key) => (
-                  <motion.li
-                    key={key}
-                    className="flex items-center gap-3"
-                    variants={fadeUp}
-                  >
-                    <img
-                      src="/icons/check.svg"
-                      alt=""
-                      className="size-6 shrink-0"
-                      aria-hidden
-                    />
-                    <span className="text-white text-sm leading-relaxed md:text-base">
+                  <motion.li key={key} className="flex items-center gap-3" variants={fadeUp}>
+                    <img src="/icons/check.svg" alt="" className="size-6 shrink-0" aria-hidden />
+                    <span className="text-sm leading-relaxed text-white md:text-base">
                       {t(key)}
                     </span>
                   </motion.li>

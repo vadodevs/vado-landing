@@ -26,12 +26,12 @@ const OUR_WORK_SLUGS = [
   'zenqr', 'sendero', 'ebm', 'digitalRanch', 'easySales', 'cipreses', 'maggiore', 'washaut',
 ]
 const ARTICLE_SLUGS = [
-  'digitalizacion-retail', 'tecnologia-industria-restaurantera', 'ia-sin-fronteras',
-  'evolucion-trabajo-remoto-talento', 'mas-alla-fronteras-talento-global',
-  'preparando-negocio-futuro-mercados-talento', 'plataformas-talento-revolucionando-crecimiento',
-  'nuevo-paradigma-laboral-talento-senior', '10-razones-nearshore-outsourcing',
-  'futuro-trabajo-fronteras-decada-transformacion', 'asegurando-pipeline-cicd-devops',
-  'desbloqueando-potencial-ingenieria-nearshore', 'consigue-trabajo-suenos-entrevista-desarrollo',
+  'digitalization-in-retail', 'technology-transforming-restaurant-industry', 'ai-without-borders',
+  'evolution-of-remote-work-talent-acquisition', 'beyond-borders-global-talent-pools',
+  'future-proofing-with-talent-marketplaces', 'how-talent-platforms-revolutionize-growth',
+  'new-labor-paradigm-senior-talent', '10-reasons-nearshore-outsourcing-success',
+  'future-of-work-across-borders', 'securing-your-ci-cd-pipeline',
+  'benefits-of-nearshore-engineering', 'land-your-dream-software-job',
 ]
 
 function generateSitemapXml(baseUrl: string): string {

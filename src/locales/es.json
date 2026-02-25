@@ -805,6 +805,7 @@
         "body": "El dinámico mundo del desarrollo de software prospera gracias a oportunidades emocionantes esperando ser desbloqueadas. Ya seas un desarrollador con experiencia o un recién graduado, navegar el proceso de entrevista requiere preparación meticulosa y un enfoque estratégico. Aquí tienes 5 consejos clave para ayudarte a destacar y dejar una impresión duradera:\n\n1. Chequeo Técnico & Zona de Confort: Antes de comenzar, asegúrate de que tu cámara, micrófono y conexión a internet estén impecables. Prepara tu entorno de desarrollo para evaluaciones de código, minimiza distracciones cerrando pestañas innecesarias y elige un espacio tranquilo y bien iluminado para proyectar profesionalismo.\n\n2. Investigación Profunda de la Empresa: ¡La investigación es crucial! Sumérgete en los proyectos, valores, logros recientes, misión y objetivos de la empresa. Comprende qué buscan en sus potenciales empleados. Explora su sitio web, redes sociales y busca información interna de empleados actuales o anteriores mediante contactos en común.\n\n3. La Autenticidad y Honestidad Brillan: ¡Sé tú mismo! Está bien admitir que no lo sabes todo. Ten tu currículum a la mano para evitar contradicciones por nervios. Mantén la calma durante preguntas desafiantes — están observando tu manejo bajo presión. Siempre sé honesto y transparente.\n\n4. Haz Preguntas Inteligentes: Prepara preguntas reflexivas sobre la empresa y el puesto para demostrar tu interés genuino. Toma nota de preguntas durante la entrevista para aclararlas al final. Recuerda, no existen malas preguntas — ¡pregunta sin miedo!\n\n5. La Práctica Hace al Maestro: Practica retos de programación en plataformas gratuitas para afinar tus habilidades. Simula condiciones reales de entrevista para ganar confianza. Sigue aprendiendo y ampliando tu base de conocimiento.\n\n## Consejos Extra para el Éxito:\n\n### Viste Profesionalmente\n\nIncluso en entrevistas en línea, vestir profesional transmite una primera impresión positiva.\n\n### Sé Puntual\n\nMuestra respeto y profesionalismo llegando unos minutos antes.\n\n### Muestra Tu Portafolio\n\nTen tu portafolio en línea listo para demostrar tus habilidades y proyectos de programación.\n\nAl implementar estos pasos, no solo mejorarás tu rendimiento técnico, sino que también te proyectarás como un candidato preparado, profesional y cautivador. Recuerda, la entrevista es una calle de doble sentido. Evalúa si la empresa se alinea con tus valores y aspiraciones profesionales. ¡Mucho éxito en tu camino hacia conseguir el trabajo de tus sueños!\n\n~ El Equipo de Vado"
       },
       "noResults": "No se encontraron artículos.",
+      "emptyStateImageAlt": "Ilustración de no hay artículos",
       "viewMore": "Ver más",
       "backToArticles": "Volver a Artículos",
       "otherArticlesTitle": "Otros artículos que podrían interesarte",
@@ -856,7 +857,8 @@
       "v5": {
         "title": "Vínculo Humano",
         "description": "Más que un equipo, somos una comunidad que comparte conocimientos y celebra logros juntos."
-      }
+      },
+      "imagesAlt": "Equipo Vado colaborando"
     },
     "coreValues": {
       "title": "Valores fundamentales",
@@ -875,7 +877,8 @@
     },
     "teamVado": {
       "title": "Equipo Vado",
-      "description": "Somos un equipo comprometido, enfocado en resolver problemas reales y en construir soluciones que generan valor. Nos une una forma de trabajar donde la colaboración y el aprendizaje constante son parte del día a día. Cada proyecto representa una oportunidad para adaptarnos, mejorar y seguir afinando lo que mejor sabemos hacer: soluciones tecnológicas funcionales."
+      "description": "Somos un equipo comprometido, enfocado en resolver problemas reales y en construir soluciones que generan valor. Nos une una forma de trabajar donde la colaboración y el aprendizaje constante son parte del día a día. Cada proyecto representa una oportunidad para adaptarnos, mejorar y seguir afinando lo que mejor sabemos hacer: soluciones tecnológicas funcionales.",
+      "imageAlt": "Miembro del equipo Vado"
     },
     "leadership": {
       "title": "Liderazgo Empresarial",
@@ -919,13 +922,15 @@
       "description": "Impulsamos tu negocio con soluciones de inteligencia artificial diseñadas para automatizar tareas, mejorar la atención al cliente, analizar grandes volúmenes de datos y tomar decisiones más inteligentes.",
       "moreInfo": "Más Información",
       "startProject": "Empecemos tu proyecto",
-      "bgAlt": "Fondo decorativo"
+      "bgAlt": "Fondo decorativo",
+      "mockupImageAlt": "Mockup de landing de soluciones de IA"
     },
     "techStack": {
       "titlePart1": "Tecnologías que impulsan",
       "titlePart2": "el crecimiento",
       "description": "Nos destacamos como tu socio ideal, combinando experiencia y tecnología para crear soluciones escalables y seguras.",
-      "cta": "Empecemos tu proyecto"
+      "cta": "Empecemos tu proyecto",
+      "imageAlt": "Stack tecnológico y herramientas que utiliza Vado"
     },
     "clients": {
       "label": "NUESTROS CLIENTES",
@@ -1363,7 +1368,8 @@
         "titlePart2": "desarrollar tus proyectos",
         "subheadline": "Talento Estratégico para Tu Equipo",
         "description": "La ampliación de personal es una estrategia flexible que te permite sumar talento especializado a tus proyectos sin necesidad de contratar internamente. Adaptamos el perfil a los requerimientos y objetivos de tu proyecto.",
-        "cta": "Refuerza tu equipo"
+        "cta": "Refuerza tu equipo",
+        "imageAlt": "Dispositivo móvil con concepto de ampliación de personal"
       },
       "process": {
         "label": "NUESTRO PROCESO",
