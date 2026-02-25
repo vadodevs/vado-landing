@@ -3,12 +3,11 @@ import { useTranslation } from 'react-i18next';
 import { ServiceTabsSection } from '@/components/layout/servicios/ServiceTabsSection';
 
 const TAB_IDS = [
-  'appsMvps',
-  'sitiosWeb',
-  'crm',
-  'digitalizacion',
-  'erp',
-  'metaMensajeria',
+  'webApps',
+  'mobileApps',
+  'saasSolutions',
+  'enterpriseSystems',
+  'automationIntegrations',
 ] as const;
 
 export function SoftwareTabsSection() {
@@ -22,16 +21,17 @@ export function SoftwareTabsSection() {
         title: t(`services.customSoftware.tabs.${id}.title`),
         description: t(`services.customSoftware.tabs.${id}.description`),
       })),
-    [t]
+    [t],
   );
 
   return (
     <ServiceTabsSection
       tabs={tabs}
       ctaText={t('services.customSoftware.hero.cta')}
+      tabLabelWrap
       disableTabTextSelection
       variant="imageHero"
-      backgroundImageSrc="/custom-developer.jpg"
+      backgroundImageSrc="/team-vado/vado-team-23.webp"
     />
   );
 }

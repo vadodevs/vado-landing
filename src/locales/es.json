@@ -940,22 +940,22 @@
       "startProject": "Empecemos tu proyecto",
       "items": {
         "1": {
-          "name": "Javier Barceló",
-          "role": "ICSSA",
-          "quote": "Vado destaca en la selección de desarrolladores y la colaboración fluida, permitiendo al equipo concentrarse en el crecimiento. Con mínimas diferencias horarias, la coordinación es eficiente.",
-          "image": ""
+          "name": "EasySales",
+          "role": "",
+          "quote": "Antes dependíamos de plataformas que nos quitaban hasta el 30 % por pedido y eso nos estaba afectando mucho. Con la app que desarrolló Vado empezamos a operar bajo nuestras propias reglas. Ahora controlamos zonas, horarios y tarifas, y los pedidos salen más rápido. La diferencia en margen y en control del negocio ha sido enorme.",
+          "image": "/brands/easysales.svg"
         },
         "2": {
-          "name": "Alek Hagopian",
-          "role": "CEO, SolidlyAI",
-          "quote": "Vado destaca en la selección de desarrolladores y la colaboración fluida, permitiendo al equipo de SolidlyAI concentrarse en el crecimiento. Con mínimas diferencias horarias, la coordinación es eficiente.",
-          "image": ""
+          "name": "Solidly",
+          "role": "",
+          "quote": "Queríamos crecer rápido sin pasar meses buscando y contratando desarrolladores. Vado nos ayudó a integrar talento que se adaptó muy bien a nuestro equipo. La colaboración ha sido muy fluida y eso nos permitió avanzar sin frenar el ritmo del producto.",
+          "image": "/brands/solidly.svg"
         },
         "3": {
-          "name": "Nombre de empresa",
+          "name": "Digital Ranch",
           "role": "",
-          "quote": "El equipo entregó nuestro sistema a tiempo y con calidad. La comunicación fue excelente en cada etapa del proyecto.",
-          "image": ""
+          "quote": "Necesitábamos ordenar nuestra operación ganadera porque muchos procesos seguían siendo manuales. Vado entendió muy bien cómo trabajamos en campo y nos propuso una solución realmente hecha a nuestra medida. Hoy tenemos mejor control de la información y trabajamos con mucha más claridad.",
+          "image": "/brands/digital-ranch.svg"
         }
       }
     },
@@ -1257,35 +1257,30 @@
         "description": "Creamos aplicaciones y sistemas que se adaptan 100% a las necesidades de tu negocio, ayudándote a optimizar procesos, ahorrar tiempo y mejorar resultados."
       },
       "tabs": {
-        "appsMvps": {
-          "label": "Apps y MVPs",
-          "title": "Apps y MVPs",
-          "description": "Diseñamos y desarrollamos plataformas, aplicaciones móviles, herramientas innovadoras y versiones iniciales de productos (MVPs). Para que pruebes tus ideas rápido y llegues al mercado antes que la competencia."
+        "webApps": {
+          "label": "Aplicaciones Web",
+          "title": "Aplicaciones Web",
+          "description": "Diseñamos y desarrollamos aplicaciones web a la medida: plataformas, dashboards, portales y sistemas administrativos adaptados a tu operación. Creamos soluciones escalables, seguras y listas para crecer junto con tu negocio."
         },
-        "sitiosWeb": {
-          "label": "Sitios Web",
-          "title": "Sitios Web",
-          "description": "Creamos sitios web modernos, rápidos y adaptados a todos los dispositivos. Desde landing pages hasta portales corporativos y e-commerce."
+        "mobileApps": {
+          "label": "Aplicaciones Móviles",
+          "title": "Aplicaciones Móviles",
+          "description": "Creamos aplicaciones móviles para iOS y Android enfocadas en experiencia de usuario, rendimiento y crecimiento. Desde apps internas para optimizar procesos hasta productos digitales listos para conquistar el mercado."
         },
-        "crm": {
-          "label": "CRM",
-          "title": "CRM",
-          "description": "Sistemas de gestión de relaciones con clientes a la medida. Automatiza ventas, seguimiento y reportes para que tu equipo cierre más y mejor."
+        "saasSolutions": {
+          "label": "Soluciones SaaS",
+          "title": "Soluciones SaaS",
+          "description": "Desarrollamos plataformas SaaS robustas y escalables, diseñadas para modelos de suscripción y crecimiento continuo. Desde MVPs para validar tu producto hasta soluciones completas preparadas para miles de usuarios."
         },
-        "digitalizacion": {
-          "label": "Digitalización de Procesos",
-          "title": "Digitalización de Procesos",
-          "description": "Transformamos tus procesos manuales en flujos digitales. Menos papeles, menos errores y más control en tiempo real."
+        "enterpriseSystems": {
+          "label": "Sistemas Empresariales",
+          "title": "Sistemas Empresariales",
+          "description": "Construimos sistemas empresariales personalizados como CRM, ERP y plataformas internas que centralizan información, optimizan procesos y mejoran la toma de decisiones en tiempo real."
         },
-        "erp": {
-          "label": "ERP",
-          "title": "ERP",
-          "description": "Sistemas de planificación de recursos empresariales integrados. Inventario, finanzas, compras y operaciones en una sola plataforma."
-        },
-        "metaMensajeria": {
-          "label": "Meta y Mensajería Integradas",
-          "title": "Meta y Mensajería Integradas",
-          "description": "Integramos WhatsApp, Messenger y otros canales en tu operación. Atención al cliente, ventas y notificaciones desde un solo lugar."
+        "automationIntegrations": {
+          "label": "Automatización e Integraciones",
+          "title": "Automatización e Integraciones",
+          "description": "Digitalizamos y conectamos tus procesos mediante automatizaciones inteligentes e integración entre sistemas, APIs y herramientas existentes. Reducimos tareas manuales, errores operativos y tiempos de ejecución."
         }
       },
       "process": {

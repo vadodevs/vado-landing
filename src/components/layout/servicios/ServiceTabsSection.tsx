@@ -87,7 +87,7 @@ export function ServiceTabsSection({
             className={cn(
               tabLabelWrap
                 ? 'mb-6 flex w-full flex-nowrap justify-start gap-1 overflow-x-auto overflow-y-hidden bg-transparent pb-0 [scrollbar-width:none] md:flex-wrap md:items-stretch md:gap-3 md:overflow-visible [&::-webkit-scrollbar]:hidden'
-                : 'mb-6 flex w-full justify-start gap-1 overflow-x-auto overflow-y-hidden bg-transparent pb-0 md:flex-wrap',
+                : 'mb-6 flex w-full justify-start gap-1 overflow-x-auto overflow-y-hidden bg-transparent pb-0',
               // Sin borde en el contenedor ni línea del pseudo-elemento; solo el borde azul del trigger activo.
               '[&_[data-slot=tabs-trigger]:after:h-0] [&_[data-slot=tabs-trigger]:after:bg-transparent]',
             )}

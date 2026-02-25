@@ -936,22 +936,22 @@
       "startProject": "Let's start your project",
       "items": {
         "1": {
-          "name": "Javier Barceló",
-          "role": "ICSSA",
-          "quote": "Vado excels in developer matching and seamless collaboration, enabling the team to focus on growth. With minimal time zone differences, coordination is efficient.",
-          "image": ""
+          "name": "EasySales",
+          "role": "",
+          "quote": "We used to depend on delivery platforms that took up to 30% per order, and that was hitting us hard. With the app Vado built, we started operating under our own rules. Now we control zones, schedules, and fees, and orders go out faster. The difference in margin and in how much control we have over the business has been huge.",
+          "image": "/brands/easysales.svg"
         },
         "2": {
-          "name": "Alek Hagopian",
-          "role": "CEO, SolidlyAI",
-          "quote": "Vado excels in developer matching and seamless collaboration, enabling the SolidlyAI team to concentrate on growth. With minimal time zone differences, coordination is efficient.",
-          "image": ""
+          "name": "Solidly",
+          "role": "",
+          "quote": "We wanted to grow fast without spending months searching for and hiring developers. Vado helped us bring in talent that fit our team really well. Collaboration has been very smooth, and that allowed us to keep moving forward without slowing down product velocity.",
+          "image": "/brands/solidly.svg"
         },
         "3": {
-          "name": "Company name",
+          "name": "Digital Ranch",
           "role": "",
-          "quote": "The team delivered our system on time and with quality. Communication was excellent at every stage of the project.",
-          "image": ""
+          "quote": "We needed to bring order to our cattle operation because many processes were still manual. Vado really understood how we work in the field and proposed a solution truly tailored to us. Today we have much better control over our information and we work with far more clarity.",
+          "image": "/brands/digital-ranch.svg"
         }
       }
     },
@@ -1253,35 +1253,30 @@
         "description": "We create applications and systems that adapt 100% to your business needs, helping you optimize processes, save time and improve results."
       },
       "tabs": {
-        "appsMvps": {
-          "label": "Apps & MVPs",
-          "title": "Apps & MVPs",
-          "description": "We design and develop platforms, mobile apps, innovative tools and initial product versions (MVPs). So you can test ideas fast and get to market before the competition."
+        "webApps": {
+          "label": "Web Applications",
+          "title": "Web Applications",
+          "description": "We design and build custom web applications: platforms, dashboards, portals and admin systems tailored to your operations. Scalable, secure solutions ready to grow with your business."
         },
-        "sitiosWeb": {
-          "label": "Websites",
-          "title": "Websites",
-          "description": "We build modern, fast websites that work on every device. From landing pages to corporate portals and e-commerce."
+        "mobileApps": {
+          "label": "Mobile Applications",
+          "title": "Mobile Applications",
+          "description": "We build iOS and Android mobile apps focused on user experience, performance and growth. From internal apps that optimize processes to digital products ready to win the market."
         },
-        "crm": {
-          "label": "CRM",
-          "title": "CRM",
-          "description": "Custom CRM systems. Automate sales, follow-up and reporting so your team closes more and better."
+        "saasSolutions": {
+          "label": "SaaS Solutions",
+          "title": "SaaS Solutions",
+          "description": "We develop robust, scalable SaaS platforms designed for subscription models and continuous growth. From MVPs to validate your product to full solutions ready for thousands of users."
         },
-        "digitalizacion": {
-          "label": "Process Digitalization",
-          "title": "Process Digitalization",
-          "description": "We turn manual processes into digital flows. Less paper, fewer errors and more real-time control."
+        "enterpriseSystems": {
+          "label": "Enterprise Systems",
+          "title": "Enterprise Systems",
+          "description": "We build custom enterprise systems like CRM, ERP and internal platforms that centralize information, optimize processes and improve real-time decision-making."
         },
-        "erp": {
-          "label": "ERP",
-          "title": "ERP",
-          "description": "Integrated enterprise resource planning. Inventory, finance, purchasing and operations in one platform."
-        },
-        "metaMensajeria": {
-          "label": "Meta & Messaging Integration",
-          "title": "Meta & Messaging Integration",
-          "description": "We integrate WhatsApp, Messenger and other channels into your operations. Customer service, sales and notifications from one place."
+        "automationIntegrations": {
+          "label": "Automation & Integrations",
+          "title": "Automation & Integrations",
+          "description": "We digitize and connect your processes with smart automations and integrations between systems, APIs and existing tools. We reduce manual work, operational errors and execution times."
         }
       },
       "process": {
