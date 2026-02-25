@@ -11,7 +11,7 @@ export function VadoInsightsSection() {
 
   const articles = [
     {
-      imageSrc: '/articles/article-1.png',
+      imageSrc: '/articles/article-1.webp',
       imageAlt: t('home.vadoInsights.article1.imageAlt'),
       date: t('home.vadoInsights.article1.date'),
       category: t('home.vadoInsights.article1.category'),
@@ -20,7 +20,7 @@ export function VadoInsightsSection() {
       href: path('/test/image-test.jpg'),
     },
     {
-      imageSrc: '/articles/article-2.png',
+      imageSrc: '/articles/article-2.webp',
       imageAlt: t('home.vadoInsights.article2.imageAlt'),
       date: t('home.vadoInsights.article2.date'),
       category: t('home.vadoInsights.article2.category'),
@@ -29,7 +29,7 @@ export function VadoInsightsSection() {
       href: path('/company/vado-insights'),
     },
     {
-      imageSrc: '/articles/article-3.png',
+      imageSrc: '/articles/article-3.webp',
       imageAlt: t('home.vadoInsights.article3.imageAlt'),
       date: t('home.vadoInsights.article3.date'),
       category: t('home.vadoInsights.article3.category'),
