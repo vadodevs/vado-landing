@@ -1,10 +1,17 @@
 import { useTranslation } from 'react-i18next';
+import type { IconType } from 'react-icons';
+import { FaLightbulb, FaPencilRuler, FaCogs, FaShieldAlt, FaRocket } from 'react-icons/fa';
 import { CenterContainer } from '@/components/layout/CenterContainer';
 
-const VADO_IMAGE_SRC = '/sections-image/vado.png';
-const CHECK_ICON_SRC = '/icons/check.svg';
-
 const STEP_IDS = ['step1', 'step2', 'step3', 'step4', 'step5'] as const;
+
+const STEP_ICONS: Record<(typeof STEP_IDS)[number], IconType> = {
+  step1: FaLightbulb,
+  step2: FaPencilRuler,
+  step3: FaCogs,
+  step4: FaShieldAlt,
+  step5: FaRocket,
+};
 
 export function AIProcessSection() {
   const { t } = useTranslation();
@@ -12,25 +19,38 @@ export function AIProcessSection() {
   return (
     <section className="bg-white py-12 md:py-16 lg:py-20">
       <CenterContainer>
-        <div className="flex flex-col gap-10 lg:flex-row lg:items-center lg:gap-14">
-          {/* Texto primero (izquierda): label, título, subtítulo y lista con check */}
-          <div className="order-1 flex flex-col lg:max-w-[55%] lg:flex-1 lg:justify-center">
-            <p className="text-muted-foreground mb-2 text-xs font-medium tracking-wider uppercase md:text-sm">
-              {t('services.aiSolutions.process.label')}
-            </p>
-            <h2 className="text-primary text-2xl leading-tight font-bold sm:text-3xl md:text-4xl lg:text-4xl">
-              {t('services.aiSolutions.process.title')}
-            </h2>
-            <p className="text-primary mt-2 text-lg font-semibold sm:text-xl">
-              {t('services.aiSolutions.process.subtitle')}
-            </p>
-            <ul className="mt-6 flex flex-col gap-4 md:mt-8 md:gap-5">
-              {STEP_IDS.map((stepId) => (
-                <li key={stepId} className="flex gap-3 md:gap-4">
-                  <span className="mt-0.5 shrink-0" aria-hidden>
-                    <img src={CHECK_ICON_SRC} alt="" className="h-6 w-6 md:h-7 md:w-7" />
-                  </span>
-                  <div>
+        <div className="flex flex-col lg:max-w-3xl">
+          <p className="text-muted-foreground mb-2 text-xs font-medium tracking-wider uppercase md:text-sm">
+            {t('services.aiSolutions.process.label')}
+          </p>
+          <h2 className="text-primary text-2xl leading-tight font-bold sm:text-3xl md:text-4xl lg:text-4xl">
+            {t('services.aiSolutions.process.title')}
+          </h2>
+          <p className="text-primary mt-2 text-lg font-semibold sm:text-xl">
+            {t('services.aiSolutions.process.subtitle')}
+          </p>
+
+          <ul className="mt-8 flex flex-col gap-6 md:mt-10 md:gap-8">
+            {STEP_IDS.map((stepId, index) => {
+              const Icon = STEP_ICONS[stepId];
+
+              return (
+                <li key={stepId} className="flex gap-4 md:gap-6">
+                  {/* Punto de la línea de tiempo */}
+                  <div className="flex flex-col items-center">
+                    <div className="bg-primary text-primary-foreground flex h-10 w-10 items-center justify-center rounded-full shadow-md md:h-11 md:w-11">
+                      <Icon className="h-5 w-5 md:h-6 md:w-6" aria-hidden />
+                    </div>
+                    {index < STEP_IDS.length - 1 && (
+                      <span
+                        className="bg-primary/20 mt-2 h-full w-[2px] flex-1 md:w-[3px]"
+                        aria-hidden
+                      />
+                    )}
+                  </div>
+
+                  {/* Contenido del paso */}
+                  <div className="pb-4">
                     <h3 className="font-semibold text-[#19314c] md:text-lg">
                       {t(`services.aiSolutions.process.steps.${stepId}.title`)}
                     </h3>
@@ -39,21 +59,9 @@ export function AIProcessSection() {
                     </p>
                   </div>
                 </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Imagen vado.png después (derecha) */}
-          <div className="order-2 flex justify-center lg:max-w-[45%] lg:flex-1">
-            <div className="relative flex items-center justify-center">
-              <img
-                src={VADO_IMAGE_SRC}
-                alt=""
-                className="relative z-1 h-auto w-full max-w-[240px] object-contain object-center md:max-w-[300px] lg:max-w-[380px]"
-                aria-hidden
-              />
-            </div>
-          </div>
+              );
+            })}
+          </ul>
         </div>
       </CenterContainer>
     </section>
