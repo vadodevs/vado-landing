@@ -122,32 +122,46 @@ export function InsightsArticlesSection() {
           </div>
         </div>
 
-        <motion.div
-          key={currentPage}
-          className="grid gap-6 sm:grid-cols-2 lg:gap-8"
-          variants={container}
-          initial="visible"
-          animate="visible"
-        >
-          {paginatedArticles.map((article) => (
-            <motion.div key={article.id} variants={card}>
-              <InsightsArticleCard
-                imageSrc={article.imageSrc}
-                imageAlt={article.imageAlt}
-                date={article.date}
-                tag={article.tag}
-                title={article.title}
-                description={article.description}
-                href={path(`/company/articles/${article.slug}`)}
-              />
-            </motion.div>
-          ))}
-        </motion.div>
-
-        {filteredArticles.length === 0 && (
-          <p className="text-muted-foreground py-12 text-center text-sm">
-            {t('insightsPage.articles.noResults')}
-          </p>
+        {filteredArticles.length === 0 ? (
+          <motion.div
+            className="flex flex-col items-center justify-center py-12 md:py-16"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <img
+              src="/articles/empty-state/empty-articles.svg"
+              alt=""
+              className="text-muted-foreground mx-auto h-auto w-full max-w-[229px]"
+              width={229}
+              height={182}
+            />
+            <p className="text-muted-foreground mt-6 text-center text-sm">
+              {t('insightsPage.articles.noResults')}
+            </p>
+          </motion.div>
+        ) : (
+          <motion.div
+            key={currentPage}
+            className="grid gap-6 sm:grid-cols-2 lg:gap-8"
+            variants={container}
+            initial="visible"
+            animate="visible"
+          >
+            {paginatedArticles.map((article) => (
+              <motion.div key={article.id} variants={card}>
+                <InsightsArticleCard
+                  imageSrc={article.imageSrc}
+                  imageAlt={article.imageAlt}
+                  date={article.date}
+                  tag={article.tag}
+                  title={article.title}
+                  description={article.description}
+                  href={path(`/company/articles/${article.slug}`)}
+                />
+              </motion.div>
+            ))}
+          </motion.div>
         )}
 
         {filteredArticles.length > 0 && totalPages > 1 && (
