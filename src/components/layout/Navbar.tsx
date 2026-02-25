@@ -336,7 +336,7 @@ export function Navbar() {
                   {t('nav.company')}
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
-                  <ul className="grid min-w-40 gap-0.5 px-2 py-1">
+                  <ul className="grid min-w-52 gap-1 px-3 py-2">
                     {companiaPaths.map(({ path: p, labelKey }) => {
                       const href = path(p);
                       const isActive = loc === href || loc.startsWith(href + '/');
@@ -346,7 +346,7 @@ export function Navbar() {
                             <Link
                               href={href}
                               className={cn(
-                                'text-foreground hover:text-primary focus:text-primary block rounded-lg px-3 py-2 text-sm no-underline transition-colors outline-none select-none focus:outline-none',
+                                'text-foreground hover:text-primary focus:text-primary block rounded-lg px-4 py-2.5 text-sm no-underline transition-colors outline-none select-none focus:outline-none',
                                 isActive && 'text-primary font-semibold',
                               )}
                             >
