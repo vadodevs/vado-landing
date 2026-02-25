@@ -8,6 +8,7 @@ import { useLocale } from '@/hooks/useLocale';
 import {
   INSIGHTS_ARTICLE_IDS,
   getInsightsArticleSlug,
+  getInsightsArticleImageSrc,
   INSIGHTS_ARTICLES_PER_PAGE,
 } from './insightsArticles';
 
@@ -57,40 +58,11 @@ export function InsightsArticlesSection() {
 
   const articles = useMemo(() => {
     return INSIGHTS_ARTICLE_IDS.map((id, index) => {
-      const imageIndex = (index % 3) + 1;
-      const defaultImageSrc = `/articles/article-${imageIndex}.webp`;
-
+      const fallback = `/articles/article-${(index % 3) + 1}.webp`;
       return {
         id,
         slug: getInsightsArticleSlug(id),
-        imageSrc:
-          id === 'article1'
-            ? '/test/image-test.jpg'
-            : id === 'article2'
-              ? '/articles/restaurant-industry.webp'
-              : id === 'article3'
-                ? '/articles/ai-without-borders.webp'
-                : id === 'article4'
-                ? '/articles/the-evolution-of-workforce.webp'
-                : id === 'article5'
-                  ? '/articles/beyond-borders.webp'
-                  : id === 'article6'
-                    ? '/articles/future-proofing.webp'
-                    : id === 'article7'
-                      ? '/articles/how-talent-platforms-revlotuionize.webp'
-                      : id === 'article8'
-                        ? '/articles/the-new-workfoce-paradigm.webp'
-                        : id === 'article9'
-                          ? '/articles/nearshore-outsourcing.webp'
-                          : id === 'article10'
-                            ? '/articles/the-future-of-work.webp'
-                            : id === 'article11'
-                              ? '/articles/securing-your-ci-cd.webp'
-                              : id === 'article12'
-                                ? '/articles/exceptional-alternatives.webp'
-                                : id === 'article13'
-                                  ? '/articles/land-your-dream-job.webp'
-                                  : defaultImageSrc,
+        imageSrc: getInsightsArticleImageSrc(id, fallback),
         imageAlt: t(`insightsPage.articles.${id}.imageAlt`),
         date: t(`insightsPage.articles.${id}.date`),
         tag: t(`insightsPage.articles.${id}.tag`),

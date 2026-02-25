@@ -11,31 +11,31 @@ export function VadoInsightsSection() {
 
   const articles = [
     {
-      imageSrc: '/articles/article-1.webp',
+      imageSrc: '/articles/nearshore-outsourcing.webp',
       imageAlt: t('home.vadoInsights.article1.imageAlt'),
       date: t('home.vadoInsights.article1.date'),
       category: t('home.vadoInsights.article1.category'),
       title: t('home.vadoInsights.article1.title'),
       author: t('home.vadoInsights.author'),
-      href: path('/test/image-test.jpg'),
+      href: path('/company/articles/10-razones-nearshore-outsourcing'),
     },
     {
-      imageSrc: '/articles/article-2.webp',
+      imageSrc: '/articles/land-your-dream-job.webp',
       imageAlt: t('home.vadoInsights.article2.imageAlt'),
       date: t('home.vadoInsights.article2.date'),
       category: t('home.vadoInsights.article2.category'),
       title: t('home.vadoInsights.article2.title'),
       author: t('home.vadoInsights.author'),
-      href: path('/company/vado-insights'),
+      href: path('/company/articles/consigue-trabajo-suenos-entrevista-desarrollo'),
     },
     {
-      imageSrc: '/articles/article-3.webp',
+      imageSrc: '/articles/exceptional-alternatives.webp',
       imageAlt: t('home.vadoInsights.article3.imageAlt'),
       date: t('home.vadoInsights.article3.date'),
       category: t('home.vadoInsights.article3.category'),
       title: t('home.vadoInsights.article3.title'),
       author: t('home.vadoInsights.author'),
-      href: path('/company/vado-insights'),
+      href: path('/company/articles/desbloqueando-potencial-ingenieria-nearshore'),
     },
   ];
 
