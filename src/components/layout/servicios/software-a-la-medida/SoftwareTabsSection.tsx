@@ -29,6 +29,7 @@ export function SoftwareTabsSection() {
     <ServiceTabsSection
       tabs={tabs}
       ctaText={t('services.customSoftware.hero.cta')}
+      disableTabTextSelection
       variant="imageHero"
       backgroundImageSrc="/test/image-default.png"
     />

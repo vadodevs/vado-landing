@@ -34,6 +34,8 @@ export type ServiceTabsSectionProps = {
   tabLabelWrap?: boolean;
   /** Oculta la barra indicadora bajo la tab activa */
   hideTabIndicator?: boolean;
+  /** Desactiva la selección de texto en las tabs */
+  disableTabTextSelection?: boolean;
   /** Variante visual del contenedor principal */
   variant?: 'default' | 'imageHero';
   /** Imagen de fondo cuando se usa la variante imageHero */
@@ -50,6 +52,7 @@ export function ServiceTabsSection({
   description,
   tabLabelWrap,
   hideTabIndicator,
+  disableTabTextSelection,
   variant = 'default',
   backgroundImageSrc,
 }: ServiceTabsSectionProps) {
@@ -99,8 +102,14 @@ export function ServiceTabsSection({
                 value={tab.id}
                 className={
                   tabLabelWrap
-                    ? 'data-[state=active]:border-primary data-[state=active]:text-primary shrink-0 rounded-none border-0 border-transparent bg-transparent px-3 py-2 text-center text-sm font-medium whitespace-nowrap data-[state=active]:bg-transparent data-[state=active]:shadow-none md:flex md:h-auto md:flex-1 md:items-center md:justify-center md:px-4 md:py-3 md:text-base md:leading-snug md:whitespace-normal'
-                    : 'data-[state=active]:border-primary data-[state=active]:text-primary shrink-0 rounded-none border-b-2 border-transparent px-3 py-2 text-sm font-medium md:px-4 md:text-base'
+                    ? cn(
+                        'data-[state=active]:border-primary data-[state=active]:text-primary shrink-0 rounded-none border-0 border-transparent bg-transparent px-3 py-2 text-center text-sm font-medium whitespace-nowrap data-[state=active]:bg-transparent data-[state=active]:shadow-none md:flex md:h-auto md:flex-1 md:items-center md:justify-center md:px-4 md:py-3 md:text-base md:leading-snug md:whitespace-normal',
+                        disableTabTextSelection && 'select-none',
+                      )
+                    : cn(
+                        'data-[state=active]:border-primary data-[state=active]:text-primary shrink-0 rounded-none border-b-2 border-transparent px-3 py-2 text-sm font-medium md:px-4 md:text-base',
+                        disableTabTextSelection && 'select-none',
+                      )
                 }
               >
                 {tab.label}
