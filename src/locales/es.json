@@ -53,7 +53,7 @@
         "description": "Plataforma para crear y gestionar códigos QR con analítica, diseño personalizado e integraciones en un solo panel."
       },
       "ebm": {
-        "category": "Plataforma",
+        "category": "App móvil",
         "title": "EBM",
         "subtitle": "App para gestión de mantenimiento de yates",
         "description": "Aplicación diseñada para centralizar tareas, servicios y suscripciones para optimizar la operación técnica y la comunicación con clientes."
@@ -77,7 +77,7 @@
         "description": "Plataforma que centraliza conversaciones y automatiza el seguimiento comercial para mejorar el control del proceso de ventas."
       },
       "easySales": {
-        "category": "Plataforma",
+        "category": "App móvil",
         "title": "EasySales",
         "subtitle": "Plataforma de delivery de productos",
         "description": "Aplicación que conecta clientes, restaurantes y repartidores para gestionar pedidos y entregas en tiempo real."

@@ -58,10 +58,35 @@ export function InsightsArticlesSection() {
   const articles = useMemo(() => {
     return INSIGHTS_ARTICLE_IDS.map((id, index) => {
       const imageIndex = (index % 3) + 1;
+      const defaultImageSrc = `/articles/article-${imageIndex}.png`;
+
       return {
         id,
         slug: getInsightsArticleSlug(id),
-        imageSrc: `/articles/article-${imageIndex}.png`,
+        imageSrc:
+          id === 'article1'
+            ? '/test/image-test.jpg'
+            : id === 'article4'
+              ? '/articles/the-evolution-of-workforce.png'
+              : id === 'article5'
+                ? '/articles/beyond-borders.png'
+                : id === 'article6'
+                  ? '/articles/future-proofing.png'
+                  : id === 'article7'
+                    ? '/articles/how-talent-platforms-revlotuionize.png'
+                    : id === 'article8'
+                      ? '/articles/the-new-workfoce-paradigm.png'
+                      : id === 'article9'
+                        ? '/articles/nearshore-outsourcing.png'
+                        : id === 'article10'
+                          ? '/articles/the-future-of-work.png'
+                          : id === 'article11'
+                            ? '/articles/securing-your-ci-cd.png'
+                            : id === 'article12'
+                              ? '/articles/exceptional-alternatives.png'
+                              : id === 'article13'
+                              ? '/articles/land-your-dream-job.png'
+                              : defaultImageSrc,
         imageAlt: t(`insightsPage.articles.${id}.imageAlt`),
         date: t(`insightsPage.articles.${id}.date`),
         tag: t(`insightsPage.articles.${id}.tag`),
@@ -82,10 +107,7 @@ export function InsightsArticlesSection() {
     );
   }, [articles, searchQuery]);
 
-  const totalPages = Math.max(
-    1,
-    Math.ceil(filteredArticles.length / INSIGHTS_ARTICLES_PER_PAGE),
-  );
+  const totalPages = Math.max(1, Math.ceil(filteredArticles.length / INSIGHTS_ARTICLES_PER_PAGE));
   const from = (currentPage - 1) * INSIGHTS_ARTICLES_PER_PAGE;
   const paginatedArticles = useMemo(
     () => filteredArticles.slice(from, from + INSIGHTS_ARTICLES_PER_PAGE),
@@ -107,7 +129,7 @@ export function InsightsArticlesSection() {
           </h2>
           <div className="relative w-full sm:w-72">
             <Search
-              className="text-muted-foreground pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2"
+              className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2"
               aria-hidden
             />
             <input
@@ -118,7 +140,7 @@ export function InsightsArticlesSection() {
                 setCurrentPage(1);
               }}
               placeholder={t('insightsPage.articles.searchPlaceholder')}
-              className="border-input bg-background text-foreground placeholder:text-muted-foreground w-full rounded-lg border py-2.5 pl-10 pr-4 text-sm outline-none transition-colors focus:ring-2 focus:ring-primary focus:ring-offset-2"
+              className="border-input bg-background text-foreground placeholder:text-muted-foreground focus:ring-primary w-full rounded-lg border py-2.5 pr-4 pl-10 text-sm transition-colors outline-none focus:ring-2 focus:ring-offset-2"
               aria-label={t('insightsPage.articles.searchPlaceholder')}
             />
           </div>
@@ -166,29 +188,25 @@ export function InsightsArticlesSection() {
               {t('insightsPage.articles.pagination.previous')}
             </button>
             <div className="flex items-center gap-1">
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                (page) => (
-                  <button
-                    key={page}
-                    type="button"
-                    onClick={() => goToPage(page)}
-                    aria-current={currentPage === page ? 'page' : undefined}
-                    className={
-                      currentPage === page
-                        ? 'bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-10 min-w-10 items-center justify-center rounded-lg px-3 text-sm font-medium transition-colors'
-                        : 'border-input text-foreground hover:bg-muted inline-flex h-10 min-w-10 items-center justify-center rounded-lg border px-3 text-sm font-medium transition-colors'
-                    }
-                  >
-                    {page}
-                  </button>
-                ),
-              )}
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                <button
+                  key={page}
+                  type="button"
+                  onClick={() => goToPage(page)}
+                  aria-current={currentPage === page ? 'page' : undefined}
+                  className={
+                    currentPage === page
+                      ? 'bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-10 min-w-10 items-center justify-center rounded-lg px-3 text-sm font-medium transition-colors'
+                      : 'border-input text-foreground hover:bg-muted inline-flex h-10 min-w-10 items-center justify-center rounded-lg border px-3 text-sm font-medium transition-colors'
+                  }
+                >
+                  {page}
+                </button>
+              ))}
             </div>
             <button
               type="button"
-              onClick={() =>
-                goToPage(Math.min(totalPages, currentPage + 1))
-              }
+              onClick={() => goToPage(Math.min(totalPages, currentPage + 1))}
               disabled={currentPage === totalPages}
               className="border-input text-foreground hover:bg-muted inline-flex h-10 min-w-10 items-center justify-center rounded-lg border px-3 text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-50"
             >

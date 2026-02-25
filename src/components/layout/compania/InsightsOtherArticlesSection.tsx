@@ -26,10 +26,32 @@ export function InsightsOtherArticlesSection({
   const articles = otherIds.map((id) => {
     const index = INSIGHTS_ARTICLE_IDS.indexOf(id);
     const imageIndex = (index % 3) + 1;
+    const imageSrc =
+      id === 'article4'
+        ? '/articles/the-evolution-of-workforce.png'
+        : id === 'article5'
+          ? '/articles/beyond-borders.png'
+          : id === 'article6'
+            ? '/articles/future-proofing.png'
+            : id === 'article7'
+              ? '/articles/how-talent-platforms-revlotuionize.png'
+              : id === 'article8'
+                ? '/articles/the-new-workfoce-paradigm.png'
+                : id === 'article9'
+                  ? '/articles/nearshore-outsourcing.png'
+                  : id === 'article10'
+                    ? '/articles/the-future-of-work.png'
+                    : id === 'article11'
+                      ? '/articles/securing-your-ci-cd.png'
+                      : id === 'article12'
+                        ? '/articles/exceptional-alternatives.png'
+                        : id === 'article13'
+                          ? '/articles/land-your-dream-job.png'
+                          : `/articles/article-${imageIndex}.png`;
     return {
       id,
       slug: getInsightsArticleSlug(id),
-      imageSrc: `/articles/article-${imageIndex}.png`,
+      imageSrc,
       imageAlt: t(`insightsPage.articles.${id}.imageAlt`),
       date: t(`insightsPage.articles.${id}.date`),
       tag: t(`insightsPage.articles.${id}.tag`),

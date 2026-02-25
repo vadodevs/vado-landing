@@ -17,7 +17,7 @@ export function VadoInsightsSection() {
       category: t('home.vadoInsights.article1.category'),
       title: t('home.vadoInsights.article1.title'),
       author: t('home.vadoInsights.author'),
-      href: path('/company/vado-insights'),
+      href: path('/test/image-test.jpg'),
     },
     {
       imageSrc: '/articles/article-2.png',

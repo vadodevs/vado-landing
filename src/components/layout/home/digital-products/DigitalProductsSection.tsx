@@ -12,7 +12,7 @@ type DigitalProductsSectionProps = {
 };
 
 export function DigitalProductsSection({
-  mockupImageSrc = '/home-assets/home-bg-mockup.png',
+  mockupImageSrc = '/home-assets/ebm-layout.png',
   mockupImageAlt = 'App mockup',
 }: DigitalProductsSectionProps) {
   const { t } = useTranslation();

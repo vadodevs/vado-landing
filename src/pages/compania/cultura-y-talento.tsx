@@ -6,7 +6,7 @@ import { CulturaYTalentoHero } from '@/components/layout/compania/CulturaYTalent
 import { FiveVsSection } from '@/components/layout/compania/FiveVsSection';
 import { CoreValuesSection } from '@/components/layout/compania/CoreValuesSection';
 import { GrowTalentCtaSection } from '@/components/layout/compania/GrowTalentCtaSection';
-import { LeadershipSection } from '@/components/layout/compania/LeadershipSection';
+// import { LeadershipSection } from '@/components/layout/compania/LeadershipSection';
 import { TeamVadoSection } from '@/components/layout/compania/TeamVadoSection';
 import { FAQSection } from '@/components/layout/home/faq/FAQSection';
 import { CtaContactSection } from '@/components/layout/home/cta-contact/CtaContactSection';
@@ -32,7 +32,7 @@ export default function CulturaYTalento() {
         <FiveVsSection />
         <CoreValuesSection />
         <TeamVadoSection />
-        <LeadershipSection />
+        {/* <LeadershipSection /> */}
         <GrowTalentCtaSection />
         <FAQSection />
         <CtaContactSection />

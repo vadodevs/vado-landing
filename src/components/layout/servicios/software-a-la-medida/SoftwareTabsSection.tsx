@@ -29,6 +29,8 @@ export function SoftwareTabsSection() {
     <ServiceTabsSection
       tabs={tabs}
       ctaText={t('services.customSoftware.hero.cta')}
+      variant="imageHero"
+      backgroundImageSrc="/test/image-default.png"
     />
   );
 }

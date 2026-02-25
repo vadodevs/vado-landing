@@ -1,6 +1,5 @@
 import { useTranslation } from 'react-i18next';
 import { CardFeatureSection } from '@/components/layout/CardFeatureSection';
-import { MacbookMockup } from '@/components/ui/macbook-mockup';
 import { useLocale } from '@/hooks/useLocale';
 
 export function AISolutionsSection() {
@@ -21,15 +20,11 @@ export function AISolutionsSection() {
         href: path('/services/ai-solutions'),
       }}
       rightContent={
-        <MacbookMockup>
-          <div className="relative h-50 w-full overflow-hidden rounded-t-[8px] border-2 border-solid border-[rgb(18,18,18)] bg-white md:h-75 lg:h-70">
-            <img
-              src="/home-assets/home-bg-mockup.png"
-              alt=""
-              className="absolute inset-0 h-full w-full object-cover object-top"
-            />
-          </div>
-        </MacbookMockup>
+        <img
+          src="/home-assets/mockup-landing.png"
+          alt=""
+          className="h-auto w-full max-w-full object-contain"
+        />
       }
       backgroundAlt={t('home.aiSolutions.bgAlt')}
       className="py-8"
