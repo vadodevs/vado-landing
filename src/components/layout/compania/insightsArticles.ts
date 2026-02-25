@@ -46,7 +46,7 @@ export function getInsightsArticleIdBySlug(slug: string): InsightsArticleId | nu
 }
 
 export const INSIGHTS_ARTICLE_IMAGE_BY_ID: Record<InsightsArticleId, string> = {
-  article1: '/test/image-test.jpg',
+  article1: '/articles/digitalization-retail.webp',
   article2: '/articles/restaurant-industry.webp',
   article3: '/articles/ai-without-borders.webp',
   article4: '/articles/the-evolution-of-workforce.webp',
