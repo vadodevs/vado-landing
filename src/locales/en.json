@@ -939,19 +939,19 @@
           "name": "EasySales",
           "role": "",
           "quote": "We used to depend on delivery platforms that took up to 30% per order, and that was hitting us hard. With the app Vado built, we started operating under our own rules. Now we control zones, schedules, and fees, and orders go out faster. The difference in margin and in how much control we have over the business has been huge.",
-          "image": "/brands/easysales.svg"
+          "image": "/testimonials/easy-sales.svg"
         },
         "2": {
           "name": "Solidly",
           "role": "",
           "quote": "We wanted to grow fast without spending months searching for and hiring developers. Vado helped us bring in talent that fit our team really well. Collaboration has been very smooth, and that allowed us to keep moving forward without slowing down product velocity.",
-          "image": "/brands/solidly.svg"
+          "image": "/testimonials/solidly.svg"
         },
         "3": {
           "name": "Digital Ranch",
           "role": "",
           "quote": "We needed to bring order to our cattle operation because many processes were still manual. Vado really understood how we work in the field and proposed a solution truly tailored to us. Today we have much better control over our information and we work with far more clarity.",
-          "image": "/brands/digital-ranch.svg"
+          "image": "/testimonials/digital-ranch.svg"
         }
       }
     },

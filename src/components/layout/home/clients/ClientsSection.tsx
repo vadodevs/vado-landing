@@ -22,14 +22,14 @@ function TestimonialAvatar({
       <img
         src={src}
         alt={alt}
-        className="h-10 w-10 shrink-0 rounded-full object-cover md:h-12 md:w-12"
+        className="h-8 w-8 shrink-0 rounded-full object-cover md:h-10 md:w-10"
       />
     );
   }
 
   return (
     <div
-      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#19314c] text-sm font-semibold text-white/90 md:h-12 md:w-12 md:text-base"
+      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#19314c] text-xs font-semibold text-white/90 md:h-10 md:w-10 md:text-sm"
       aria-hidden
     >
       {initial}
