@@ -13,6 +13,29 @@ import {
 const EASING: [number, number, number, number] = [0.25, 0.46, 0.45, 0.94];
 const OTHER_ARTICLES_COUNT = 3;
 
+const container = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.04,
+      delayChildren: 0.02,
+    },
+  },
+};
+
+const card = {
+  hidden: { opacity: 0, y: 12 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.25,
+      ease: EASING,
+    },
+  },
+};
+
 export function InsightsOtherArticlesSection({
   currentArticleId,
 }: {
@@ -52,20 +75,33 @@ export function InsightsOtherArticlesSection({
         <h2 className="text-foreground mb-8 text-2xl font-bold tracking-tight md:text-3xl">
           {t('insightsPage.articles.otherArticlesTitle')}
         </h2>
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
+        <motion.div
+          className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8"
+          variants={container}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: '-50px' }}
+        >
           {articles.map((article) => (
-            <InsightsArticleCard
+            <motion.div
               key={article.id}
-              imageSrc={article.imageSrc}
-              imageAlt={article.imageAlt}
-              date={article.date}
-              tag={article.tag}
-              title={article.title}
-              description={article.description}
-              href={article.href}
-            />
+              variants={card}
+              whileHover={{ y: -6, transition: { duration: 0.2 } }}
+              whileTap={{ scale: 0.98 }}
+              className="h-full"
+            >
+              <InsightsArticleCard
+                imageSrc={article.imageSrc}
+                imageAlt={article.imageAlt}
+                date={article.date}
+                tag={article.tag}
+                title={article.title}
+                description={article.description}
+                href={article.href}
+              />
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </CenterContainer>
     </motion.section>
   );

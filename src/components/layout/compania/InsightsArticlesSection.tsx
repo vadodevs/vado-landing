@@ -142,14 +142,20 @@ export function InsightsArticlesSection() {
           </motion.div>
         ) : (
           <motion.div
-            key={currentPage}
+            key={`${currentPage}-${searchQuery.trim()}`}
             className="grid gap-6 sm:grid-cols-2 lg:gap-8"
             variants={container}
-            initial="visible"
+            initial="hidden"
             animate="visible"
           >
             {paginatedArticles.map((article) => (
-              <motion.div key={article.id} variants={card}>
+              <motion.div
+                key={article.id}
+                variants={card}
+                whileHover={{ y: -6, transition: { duration: 0.2 } }}
+                whileTap={{ scale: 0.98 }}
+                className="h-full"
+              >
                 <InsightsArticleCard
                   imageSrc={article.imageSrc}
                   imageAlt={article.imageAlt}
