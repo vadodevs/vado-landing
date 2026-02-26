@@ -130,24 +130,22 @@ export function ServiceTabsSection({
 
                 <div className="relative z-10 flex min-h-[300px] flex-col gap-8 lg:min-h-[380px] lg:flex-row lg:items-center lg:gap-12">
                   <div className="order-2 flex flex-1 flex-col justify-center lg:order-1 lg:max-w-[55%]">
-                    <div
-                      className="flex flex-col text-white"
-                    >
-                        <h3 className="text-2xl font-bold md:text-3xl lg:text-4xl">
-                          {tabs.find((t) => t.id === activeTab)?.title}
-                        </h3>
-                        <p className="mt-3 text-base leading-relaxed text-white/90 md:text-lg">
-                          {tabs.find((t) => t.id === activeTab)?.description}
-                        </p>
-                        <Link href={path(ctaHref)} className="mt-6 inline-block">
-                          <Button
-                            size="lg"
-                            className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg px-6 py-5 text-sm font-bold md:text-base"
-                          >
-                            {ctaText}
-                          </Button>
-                        </Link>
-                      </div>
+                    <div className="flex flex-col text-white">
+                      <h3 className="text-2xl font-bold md:text-3xl lg:text-4xl">
+                        {tabs.find((t) => t.id === activeTab)?.title}
+                      </h3>
+                      <p className="mt-3 text-base leading-relaxed text-white/90 md:text-lg">
+                        {tabs.find((t) => t.id === activeTab)?.description}
+                      </p>
+                      <Link href={path(ctaHref)} className="mt-6 inline-block">
+                        <Button
+                          size="lg"
+                          className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg px-6 py-5 text-sm font-bold md:text-base"
+                        >
+                          {ctaText}
+                        </Button>
+                      </Link>
+                    </div>
                   </div>
 
                   <div className="order-1 hidden flex-1 lg:order-2 lg:block" aria-hidden="true" />
@@ -157,7 +155,7 @@ export function ServiceTabsSection({
               <div className="relative mx-auto overflow-visible rounded-2xl bg-[#19314c] px-6 py-8 md:px-8 md:py-10 lg:max-w-6xl lg:px-10 lg:py-8">
                 <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-2xl">
                   <img
-                    src="/backgrounds/bg-card.svg"
+                    src="/backgrounds/bg-card.webp"
                     alt=""
                     className="h-full w-full object-cover object-center opacity-60"
                     aria-hidden
@@ -166,32 +164,28 @@ export function ServiceTabsSection({
 
                 <div className="relative z-1 flex flex-col gap-8 lg:flex-row lg:items-center lg:gap-8">
                   <div className="order-1 flex flex-1 flex-col justify-center lg:max-w-[48%]">
-                    <div
-                      className="flex flex-col"
-                    >
-                        <h3 className="text-2xl font-bold text-white md:text-3xl lg:text-4xl">
-                          {tabs.find((t) => t.id === activeTab)?.title}
-                        </h3>
-                        <p className="mt-3 text-base leading-relaxed text-white/90 md:text-lg">
-                          {tabs.find((t) => t.id === activeTab)?.description}
-                        </p>
-                        <Link href={path(ctaHref)} className="mt-6 inline-block">
-                          <Button
-                            size="lg"
-                            className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg px-6 py-5 text-sm font-bold md:text-base"
-                          >
-                            {ctaText}
-                          </Button>
-                        </Link>
-                      </div>
+                    <div className="flex flex-col">
+                      <h3 className="text-2xl font-bold text-white md:text-3xl lg:text-4xl">
+                        {tabs.find((t) => t.id === activeTab)?.title}
+                      </h3>
+                      <p className="mt-3 text-base leading-relaxed text-white/90 md:text-lg">
+                        {tabs.find((t) => t.id === activeTab)?.description}
+                      </p>
+                      <Link href={path(ctaHref)} className="mt-6 inline-block">
+                        <Button
+                          size="lg"
+                          className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg px-6 py-5 text-sm font-bold md:text-base"
+                        >
+                          {ctaText}
+                        </Button>
+                      </Link>
+                    </div>
                   </div>
 
                   <div className="order-2 flex flex-1 justify-center lg:max-w-[52%] lg:items-end lg:justify-center">
-                    <div
-                      className="flex justify-center lg:translate-y-[20%]"
-                    >
-                        <PhoneMockup className="w-[min(200px,65vw)] lg:w-[240px]" />
-                      </div>
+                    <div className="flex justify-center lg:translate-y-[20%]">
+                      <PhoneMockup className="w-[min(200px,65vw)] lg:w-[240px]" />
+                    </div>
                   </div>
                 </div>
               </div>

@@ -17,7 +17,7 @@ export function InsightsHero({ titleLine1, titleLine2, subtitle, description }: 
       }}
     >
       <img
-        src="/backgrounds/bg-blue.svg"
+        src="/backgrounds/bg-blue.webp"
         alt=""
         className="pointer-events-none absolute inset-0 z-0 h-full w-full object-cover object-center"
         aria-hidden
@@ -27,25 +27,13 @@ export function InsightsHero({ titleLine1, titleLine2, subtitle, description }: 
           <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between lg:gap-12">
             <div className="max-w-2xl flex-1">
               <h1 className="text-2xl leading-tight font-bold tracking-tight text-white uppercase drop-shadow sm:text-3xl md:text-4xl lg:text-4xl">
-                <span
-                  className="block"
-                >
-                  {titleLine1}
-                </span>
-                <span
-                  className="text-primary mt-0.5 block"
-                >
-                  {titleLine2}
-                </span>
+                <span className="block">{titleLine1}</span>
+                <span className="text-primary mt-0.5 block">{titleLine2}</span>
               </h1>
-              <p
-                className="mt-2 text-sm font-medium text-white/95 drop-shadow md:text-base"
-              >
+              <p className="mt-2 text-sm font-medium text-white/95 drop-shadow md:text-base">
                 {subtitle}
               </p>
-              <p
-                className="mt-1 max-w-lg text-sm text-white/90 drop-shadow md:text-base"
-              >
+              <p className="mt-1 max-w-lg text-sm text-white/90 drop-shadow md:text-base">
                 {description}
               </p>
             </div>

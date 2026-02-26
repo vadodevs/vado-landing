@@ -21,7 +21,7 @@ export function DigitalProductsSection({
   return (
     <section className="relative overflow-hidden">
       <img
-        src="/backgrounds/bg-white-blue.png"
+        src="/backgrounds/bg-white-blue.webp"
         alt={t('home.digitalProducts.bgAlt')}
         className="pointer-events-none absolute top-0 -right-20 w-auto object-cover object-right"
         aria-hidden
@@ -79,7 +79,9 @@ export function DigitalProductsSection({
               className="border-primary text-primary w-full md:w-auto"
               asChild
             >
-              <Link href={path('/services/custom-software')}>{t('home.digitalProducts.moreInfo')}</Link>
+              <Link href={path('/services/custom-software')}>
+                {t('home.digitalProducts.moreInfo')}
+              </Link>
             </Button>
             <Button className="w-full md:w-auto" asChild>
               <Link href={path('/contact')}>{t('nav.contactUs')}</Link>

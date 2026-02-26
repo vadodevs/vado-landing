@@ -4,7 +4,7 @@ import { CenterContainer } from '@/components/layout/CenterContainer';
 import { Button } from '@/components/ui/button';
 import { useLocale } from '@/hooks/useLocale';
 
-const PHONE_IMAGE_SRC = '/sections-image/phone-image.png';
+const PHONE_IMAGE_SRC = '/sections-image/phone-image.webp';
 
 export function StaffAugmentationIntroSection() {
   const { t } = useTranslation();

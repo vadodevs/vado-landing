@@ -23,7 +23,7 @@ export default function SolucionesIA() {
       />
       <MainLayout>
         <ServiceHero
-          backgroundImage="/backgrounds/bg-blue-header.svg"
+          backgroundImage="/backgrounds/bg-blue-header.webp"
           titleLine1={t('services.aiSolutions.hero.titleLine1')}
           titleLine2={t('services.aiSolutions.hero.titleLine2')}
           tagline={t('services.aiSolutions.hero.tagline')}

@@ -22,7 +22,7 @@ export type CardFeatureSectionProps = {
   secondaryButton: CardFeatureSectionButton;
   /** Contenido de la columna derecha (ej. mockup, imagen, etc.) */
   rightContent: React.ReactNode;
-  /** URL de la imagen de fondo. Por defecto: /backgrounds/bg-card.svg */
+  /** URL de la imagen de fondo. Por defecto: /backgrounds/bg-card.webp */
   backgroundSrc?: string;
   /** Alt de la imagen de fondo (accesibilidad) */
   backgroundAlt?: string;
@@ -37,7 +37,7 @@ export function CardFeatureSection({
   primaryButton,
   secondaryButton,
   rightContent,
-  backgroundSrc = '/backgrounds/bg-card.svg',
+  backgroundSrc = '/backgrounds/bg-card.webp',
   backgroundAlt = '',
   className,
 }: CardFeatureSectionProps) {
@@ -58,9 +58,7 @@ export function CardFeatureSection({
             <h2 className="mb-4 text-3xl leading-tight font-bold text-white md:text-4xl">
               {title}
             </h2>
-            <p className="mb-6 text-base leading-relaxed text-white md:text-lg">
-              {description}
-            </p>
+            <p className="mb-6 text-base leading-relaxed text-white md:text-lg">{description}</p>
             <div className="flex flex-col gap-3 sm:flex-row">
               <Button
                 variant={secondaryButton.variant ?? 'outline'}

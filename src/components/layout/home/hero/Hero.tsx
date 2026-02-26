@@ -22,6 +22,7 @@ export function Hero() {
         <video
           ref={videoRef}
           src="/hero/hero-slide.mp4"
+          preload="auto"
           className="absolute inset-0 h-full w-full object-cover object-center"
           style={{ minWidth: '100%', minHeight: '100%' }}
           muted

@@ -1,6 +1,6 @@
 import { CenterContainer } from '@/components/layout/CenterContainer';
 
-const INSIGHTS_ARTICLE_HERO_BG = '/backgrounds/bg-blue-header.svg';
+const INSIGHTS_ARTICLE_HERO_BG = '/backgrounds/bg-blue-header.webp';
 
 export type InsightsArticleHeroProps = {
   category?: string;

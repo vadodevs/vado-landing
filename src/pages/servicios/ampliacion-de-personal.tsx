@@ -25,7 +25,7 @@ export default function AmpliacionDePersonal() {
       />
       <MainLayout>
         <ServiceHero
-          backgroundImage="/backgrounds/bg-blue.svg"
+          backgroundImage="/backgrounds/bg-blue.webp"
           titleLine1={t('services.staffAugmentation.hero.titleLine1')}
           titleLine2={t('services.staffAugmentation.hero.titleLine2')}
           tagline={t('services.staffAugmentation.hero.tagline')}

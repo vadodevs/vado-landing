@@ -20,7 +20,7 @@ export function CulturaYTalentoHero({
       }}
     >
       <img
-        src="/backgrounds/bg-blue.svg"
+        src="/backgrounds/bg-blue.webp"
         alt=""
         className="pointer-events-none absolute inset-0 z-0 h-full w-full object-cover object-center"
         aria-hidden
@@ -30,12 +30,8 @@ export function CulturaYTalentoHero({
           <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between lg:gap-12">
             <div className="max-w-2xl flex-1">
               <h1 className="text-2xl leading-tight font-bold tracking-tight text-white uppercase drop-shadow sm:text-3xl md:text-4xl lg:text-4xl">
-                <span className="block">
-                  {titleLine1}
-                </span>
-                <span className="text-primary mt-0.5 block">
-                  {titleLine2}
-                </span>
+                <span className="block">{titleLine1}</span>
+                <span className="text-primary mt-0.5 block">{titleLine2}</span>
               </h1>
               <p className="mt-4 max-w-xl text-sm leading-relaxed text-white/95 drop-shadow md:text-base">
                 {description}

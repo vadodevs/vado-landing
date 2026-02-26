@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { CenterContainer } from '@/components/layout/CenterContainer';
 
-const PHONE_IMAGE_SRC = '/sections-image/phone-image.png';
+const PHONE_IMAGE_SRC = '/sections-image/phone-image.webp';
 
 export function SoftwareProductsSection() {
   const { t } = useTranslation();

@@ -21,7 +21,7 @@ export default function NuestroTrabajo() {
       />
       <MainLayout>
         <ServiceHero
-          backgroundImage="/backgrounds/bg-blue.svg"
+          backgroundImage="/backgrounds/bg-blue.webp"
           titleLine1={t('ourWork.hero.titleLine1')}
           titleLine2={t('ourWork.hero.titleLine2')}
           tagline={t('ourWork.hero.tagline')}

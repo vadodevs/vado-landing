@@ -6,7 +6,7 @@ export function SoftwareHero() {
 
   return (
     <ServiceHero
-      backgroundImage="/backgrounds/bg-blue.svg"
+      backgroundImage="/backgrounds/bg-blue.webp"
       titleLine1={t('services.customSoftware.hero.titleLine1')}
       titleLine2={t('services.customSoftware.hero.titleLine2')}
       tagline={t('services.customSoftware.hero.tagline')}

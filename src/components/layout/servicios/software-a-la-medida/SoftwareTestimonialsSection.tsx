@@ -45,7 +45,7 @@ export function SoftwareTestimonialsSection() {
     <section className="relative overflow-hidden bg-white py-12 md:py-16 lg:py-20">
       {/* Decoración a la derecha */}
       <img
-        src="/backgrounds/decoration-blue.svg"
+        src="/backgrounds/decoration-blue.webp"
         alt=""
         className="pointer-events-none absolute top-1/4 right-0 h-auto w-[180px] max-w-[35%] opacity-80 md:w-[220px] lg:top-1/5 lg:w-[260px]"
         aria-hidden

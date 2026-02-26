@@ -46,7 +46,7 @@ export function ClientsSection() {
       {/* Fondo onda: cubre toda la section y se extiende sobre la section de arriba */}
       <div className="absolute inset-0 overflow-hidden">
         <img
-          src="/backgrounds/bg-cut.svg"
+          src="/backgrounds/bg-cut.webp"
           alt=""
           className="pointer-events-none absolute -top-1/3 left-0 h-[140%] w-full object-cover object-top"
           aria-hidden
@@ -54,7 +54,7 @@ export function ClientsSection() {
       </div>
 
       <img
-        src="/backgrounds/decoration-blue.svg"
+        src="/backgrounds/decoration-blue.webp"
         alt=""
         className="pointer-events-none absolute top-1/4 right-0 h-auto w-[200px] max-w-[40%] opacity-80 md:w-[240px] lg:top-1/5 lg:w-[280px]"
         aria-hidden
@@ -92,11 +92,7 @@ export function ClientsSection() {
                     {t(`home.clients.items.${id}.quote`)}
                   </p>
                   <div className="flex items-center gap-3">
-                    <TestimonialAvatar
-                      src={useImage ? imageSrc : undefined}
-                      alt=""
-                      name={name}
-                    />
+                    <TestimonialAvatar src={useImage ? imageSrc : undefined} alt="" name={name} />
                     <p className="text-sm font-semibold text-[#19314c]">
                       {role ? `${name} - ${role}` : name}
                     </p>
