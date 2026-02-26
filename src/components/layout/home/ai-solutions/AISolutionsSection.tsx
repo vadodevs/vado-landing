@@ -21,7 +21,7 @@ export function AISolutionsSection() {
       }}
       rightContent={
         <img
-          src="/home-assets/mockup-landing.png"
+          src="/home-assets/mockup-landing.webp"
           alt={t('home.aiSolutions.mockupImageAlt')}
           className="h-auto w-full max-w-full object-contain"
         />
