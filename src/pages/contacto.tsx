@@ -6,22 +6,11 @@ import { CenterContainer } from '@/components/layout/CenterContainer';
 import { useLocale } from '@/hooks/useLocale';
 import { ContactForm } from '@/components/layout/home/cta-contact/ContactForm';
 
-const EASING: [number, number, number, number] = [0.25, 0.46, 0.45, 0.94];
-
 const BENEFIT_KEYS = [
   'home.ctaContact.benefit1',
   'home.ctaContact.benefit2',
   'home.ctaContact.benefit3',
 ] as const;
-
-const fadeUp = {
-  hidden: { opacity: 0, y: 20 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.5, delay: 0.08 * i, ease: EASING },
-  }),
-};
 
 export default function Contacto() {
   const { t } = useTranslation();
@@ -43,27 +32,14 @@ export default function Contacto() {
             backgroundSize: 'cover',
             backgroundPosition: 'center',
           }}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.4 }}
         >
           <CenterContainer className="relative z-10 flex flex-col gap-10 lg:flex-row lg:items-center lg:gap-14">
             {/* Columna izquierda: título, descripción, beneficios */}
             <motion.div
               className="flex-1 text-left lg:max-w-[48%]"
-              initial="hidden"
-              animate="visible"
-              variants={{
-                hidden: { opacity: 0 },
-                visible: {
-                  opacity: 1,
-                  transition: { staggerChildren: 0.08, delayChildren: 0.1 },
-                },
-              }}
             >
               <motion.h2
                 className="mb-4 text-2xl leading-tight font-bold text-white md:text-3xl lg:text-4xl"
-                variants={fadeUp}
               >
                 <span className="block">{t('home.ctaContact.titlePart1')}</span>
                 <span className="text-primary block">{t('home.ctaContact.titlePart2')}</span>
@@ -71,24 +47,14 @@ export default function Contacto() {
               </motion.h2>
               <motion.p
                 className="mb-6 text-base leading-relaxed text-white/95 md:text-lg"
-                variants={fadeUp}
               >
                 {t('home.ctaContact.description')}
               </motion.p>
               <motion.ul
                 className="space-y-3"
-                initial="hidden"
-                animate="visible"
-                variants={{
-                  hidden: { opacity: 0 },
-                  visible: {
-                    opacity: 1,
-                    transition: { staggerChildren: 0.06, delayChildren: 0.25 },
-                  },
-                }}
               >
                 {BENEFIT_KEYS.map((key) => (
-                  <motion.li key={key} className="flex items-center gap-3" variants={fadeUp}>
+                  <motion.li key={key} className="flex items-center gap-3">
                     <img src="/icons/check.svg" alt="" className="size-6 shrink-0" aria-hidden />
                     <span className="text-sm leading-relaxed text-white md:text-base">
                       {t(key)}
@@ -101,9 +67,6 @@ export default function Contacto() {
             {/* Columna derecha: formulario */}
             <motion.div
               className="min-w-0 flex-1 lg:max-w-[52%]"
-              initial={{ opacity: 0, y: 24 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }}
             >
               <ContactForm idPrefix="contact-" />
             </motion.div>

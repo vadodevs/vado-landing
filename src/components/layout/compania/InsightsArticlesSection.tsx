@@ -12,31 +12,6 @@ import {
   INSIGHTS_ARTICLES_PER_PAGE,
 } from './insightsArticles';
 
-const EASING: [number, number, number, number] = [0.25, 0.46, 0.45, 0.94];
-
-const container = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.04,
-      delayChildren: 0.02,
-    },
-  },
-};
-
-const card = {
-  hidden: { opacity: 0, y: 12 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.25,
-      ease: EASING,
-    },
-  },
-};
-
 export function InsightsArticlesSection() {
   const { t } = useTranslation();
   const { path } = useLocale();
@@ -94,9 +69,6 @@ export function InsightsArticlesSection() {
     <motion.section
       ref={sectionRef}
       className="bg-background py-12 md:py-16 lg:py-20"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
     >
       <CenterContainer>
         <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
@@ -123,12 +95,7 @@ export function InsightsArticlesSection() {
         </div>
 
         {filteredArticles.length === 0 ? (
-          <motion.div
-            className="flex flex-col items-center justify-center py-12 md:py-16"
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-          >
+          <motion.div className="flex flex-col items-center justify-center py-12 md:py-16">
             <img
               src="/articles/empty-state/empty-articles.svg"
               alt={t('insightsPage.articles.emptyStateImageAlt')}
@@ -144,18 +111,9 @@ export function InsightsArticlesSection() {
           <motion.div
             key={`${currentPage}-${searchQuery.trim()}`}
             className="grid gap-6 sm:grid-cols-2 lg:gap-8"
-            variants={container}
-            initial="hidden"
-            animate="visible"
           >
             {paginatedArticles.map((article) => (
-              <motion.div
-                key={article.id}
-                variants={card}
-                whileHover={{ y: -6, transition: { duration: 0.2 } }}
-                whileTap={{ scale: 0.98 }}
-                className="h-full"
-              >
+              <motion.div key={article.id} className="h-full">
                 <InsightsArticleCard
                   imageSrc={article.imageSrc}
                   imageAlt={article.imageAlt}

@@ -23,24 +23,10 @@ export function DigitalRanchOtherCases() {
         <motion.ul
           className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3"
           role="list"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-40px' }}
-          variants={{
-            visible: {
-              transition: { staggerChildren: 0.08, delayChildren: 0.1 },
-            },
-            hidden: {},
-          }}
         >
           {otherProjects.map((project) => (
             <motion.li
               key={project.id}
-              variants={{
-                visible: { opacity: 1, y: 0 },
-                hidden: { opacity: 0, y: 16 },
-              }}
-              transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
             >
               <Link
                 href={path(`/our-work/${project.id}`)}
@@ -48,11 +34,6 @@ export function DigitalRanchOtherCases() {
               >
                 <motion.article
                   className="bg-background ring-border/50 rounded-2xl shadow-sm ring-1"
-                  whileHover={{
-                    y: -4,
-                    transition: { duration: 0.2 },
-                  }}
-                  transition={{ type: 'tween', duration: 0.2 }}
                 >
                   <div className="bg-muted/40 relative aspect-4/3">
                     <motion.img
@@ -60,8 +41,6 @@ export function DigitalRanchOtherCases() {
                       alt=""
                       className="size-full object-contain object-center p-6"
                       loading="lazy"
-                      whileHover={{ scale: 1.05 }}
-                      transition={{ duration: 0.25 }}
                     />
                     <span
                       className={`absolute top-3 right-3 rounded-md px-2.5 py-1 text-xs font-medium tracking-wide text-white shadow-sm ${

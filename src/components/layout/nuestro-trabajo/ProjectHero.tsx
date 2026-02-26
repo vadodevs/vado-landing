@@ -5,16 +5,6 @@ import { CenterContainer } from '@/components/layout/CenterContainer';
 import { AppStoreButtons } from '@/components/ui/AppStoreButtons';
 
 const DIAGONAL_CLIP = 'polygon(0 0, 100% 0, 100% 82%, 0 100%)';
-const EASING: [number, number, number, number] = [0.25, 0.46, 0.45, 0.94];
-
-const fadeUp = {
-  hidden: { opacity: 0, y: 20 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.5, delay: 0.08 * i, ease: EASING },
-  }),
-};
 
 export type ProjectHeroCta = {
   href: string;
@@ -80,9 +70,6 @@ export function ProjectHero({
   return (
     <motion.header
       className="relative overflow-visible py-10 md:py-12 lg:py-14"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.4 }}
     >
       {/* Fondo con corte diagonal (solo estos layers se cortan) */}
       <div
@@ -122,7 +109,7 @@ export function ProjectHero({
       />
       <CenterContainer className="relative z-10">
         {backHref != null && backLabel != null && (
-          <motion.div custom={0} initial="hidden" animate="visible" variants={fadeUp}>
+          <motion.div>
             <Link
               href={backHref}
               className="mb-4 inline-flex items-center gap-2 text-sm font-medium text-white/80 transition-colors hover:text-white"
@@ -137,10 +124,6 @@ export function ProjectHero({
             <motion.div
               className="flex h-16 w-auto max-w-[180px] items-center md:h-20 md:max-w-[200px]"
               aria-hidden={!!logoNode}
-              custom={1}
-              initial="hidden"
-              animate="visible"
-              variants={fadeUp}
             >
               {logoNode ? (
                 <div className="h-full w-full [&_svg]:h-full [&_svg]:w-full [&_svg]:object-contain [&_svg]:object-left">
@@ -156,10 +139,6 @@ export function ProjectHero({
             </motion.div>
             <motion.div
               className="space-y-3"
-              custom={2}
-              initial="hidden"
-              animate="visible"
-              variants={fadeUp}
             >
               <h1 className="text-2xl font-bold tracking-tight text-white md:text-3xl lg:text-4xl">
                 {title}
@@ -184,10 +163,6 @@ export function ProjectHero({
             </motion.div>
             <motion.div
               className="flex flex-wrap items-center gap-4"
-              custom={3}
-              initial="hidden"
-              animate="visible"
-              variants={fadeUp}
             >
               {cta && (
                 <a
@@ -218,9 +193,6 @@ export function ProjectHero({
           {/* Imagen a la derecha (sin clip, se ve completa) */}
           <motion.div
             className="flex flex-1 justify-center lg:justify-end"
-            initial={{ opacity: 0, x: 24 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }}
           >
             <img
               src={heroImageSrc}

@@ -134,13 +134,6 @@ export function ServiceTabsSection({
                     <AnimatePresence mode="wait">
                       <motion.div
                         key={activeTab}
-                        initial={{ opacity: 0, y: 12 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -8 }}
-                        transition={{
-                          duration: 0.25,
-                          ease: [0.25, 0.46, 0.45, 0.94],
-                        }}
                         className="flex flex-col text-white"
                       >
                         <h3 className="text-2xl font-bold md:text-3xl lg:text-4xl">
@@ -180,13 +173,6 @@ export function ServiceTabsSection({
                     <AnimatePresence mode="wait">
                       <motion.div
                         key={activeTab}
-                        initial={{ opacity: 0, y: 12 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -8 }}
-                        transition={{
-                          duration: 0.25,
-                          ease: [0.25, 0.46, 0.45, 0.94],
-                        }}
                         className="flex flex-col"
                       >
                         <h3 className="text-2xl font-bold text-white md:text-3xl lg:text-4xl">
@@ -211,13 +197,6 @@ export function ServiceTabsSection({
                     <AnimatePresence mode="wait">
                       <motion.div
                         key={activeTab}
-                        initial={{ opacity: 0, scale: 0.96 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.98 }}
-                        transition={{
-                          duration: 0.25,
-                          ease: [0.25, 0.46, 0.45, 0.94],
-                        }}
                         className="flex justify-center lg:translate-y-[20%]"
                       >
                         <PhoneMockup className="w-[min(200px,65vw)] lg:w-[240px]" />

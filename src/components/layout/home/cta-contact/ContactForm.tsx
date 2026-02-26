@@ -525,10 +525,6 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
         {submitStatus === 'success' ? (
           <motion.div
             key="thank-you"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
             className="flex flex-col items-center gap-6 py-6 text-center"
           >
             <CheckCircle2
@@ -615,10 +611,6 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
                   applyStep === 1 ? (
                     <motion.div
                       key="apply-form-step1"
-                      initial={{ opacity: 0, y: 12 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -8 }}
-                      transition={{ duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }}
                       className="flex flex-col gap-4"
                     >
                       <div className="text-center">
@@ -791,10 +783,6 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
                   ) : (
                     <motion.div
                       key="apply-form-step2"
-                      initial={{ opacity: 0, y: 12 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -8 }}
-                      transition={{ duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }}
                       className="flex flex-col gap-4"
                     >
                       <div className="text-center">
@@ -1103,10 +1091,6 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
                 ) : (
                   <motion.div
                     key="postularse"
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -8 }}
-                    transition={{ duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }}
                     className="flex flex-col items-center gap-6 py-4"
                   >
                     <p className="text-muted-foreground text-center text-base leading-relaxed">
@@ -1130,10 +1114,6 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
               ) : (
                 <motion.div
                   key="form"
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -8 }}
-                  transition={{ duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }}
                   className="flex flex-col gap-4"
                 >
                   <div className="space-y-2">

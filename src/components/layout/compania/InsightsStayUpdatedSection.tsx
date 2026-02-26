@@ -13,8 +13,6 @@ const API_BASE = import.meta.env.VITE_API_BASE_URL
 /** Endpoint para suscripción al boletín. Ver newsletter.md */
 const NEWSLETTER_API_URL = API_BASE ? `${API_BASE}/newsletter` : '';
 
-const transition = { duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] as const };
-
 export function InsightsStayUpdatedSection() {
   const { t } = useTranslation();
   const [email, setEmail] = useState('');
@@ -71,22 +69,14 @@ export function InsightsStayUpdatedSection() {
       <CenterContainer>
         <motion.div
           className="w-full overflow-visible px-1 py-8 text-left md:py-12"
-          initial={false}
-          animate={{ opacity: 1 }}
         >
           <motion.p
             className="text-muted-foreground mb-2 text-xs font-semibold tracking-[0.2em] uppercase md:text-sm"
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ ...transition, delay: 0.05 }}
           >
             {t('insightsPage.stayUpdated.topLine')}
           </motion.p>
           <motion.h2
             className="mb-6 text-2xl leading-tight font-bold tracking-tight text-[#19314c] md:mb-8 md:text-4xl lg:text-5xl"
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ ...transition, delay: 0.1 }}
           >
             {t('insightsPage.stayUpdated.titleLine1')}
             <span className="text-primary mt-1 block">
@@ -99,10 +89,6 @@ export function InsightsStayUpdatedSection() {
               <motion.div
                 key="success"
                 className="flex flex-col gap-5"
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={transition}
               >
                 <div className="flex items-start gap-3">
                   <CheckCircle2
@@ -135,10 +121,6 @@ export function InsightsStayUpdatedSection() {
                 key="form"
                 onSubmit={handleSubmit}
                 className="flex w-full max-w-2xl flex-col gap-4"
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={transition}
               >
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:gap-4">
                   <div className="flex flex-1 flex-col gap-1.5 sm:max-w-sm sm:pr-1">
@@ -178,10 +160,6 @@ export function InsightsStayUpdatedSection() {
                     <motion.p
                       className="text-destructive text-sm"
                       role="alert"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={transition}
                     >
                       {errorMessage}
                     </motion.p>

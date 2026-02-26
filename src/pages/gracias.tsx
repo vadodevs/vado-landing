@@ -22,9 +22,6 @@ export default function Gracias() {
       <MainLayout>
         <motion.section
           className="relative min-h-[min(70vh,600px)] py-16 md:py-24 lg:py-28"
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
         >
           <CenterContainer className="flex flex-col items-center justify-center text-center">
             <div className="mx-auto flex max-w-xl flex-col gap-6">

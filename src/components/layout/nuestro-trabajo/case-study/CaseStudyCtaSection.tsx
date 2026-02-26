@@ -31,10 +31,6 @@ export function CaseStudyCtaSection({ caseStudyId, accentColor }: CaseStudyCtaSe
       <div className="w-full min-w-0">
         <motion.div
           className="w-full text-left"
-          initial={{ opacity: 0, y: 12 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-40px' }}
-          transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
         >
           <h2 className="mb-8 text-lg leading-tight font-semibold tracking-tight uppercase md:text-xl lg:text-2xl">
             <span className="block" style={{ color: CTA_TITLE_DARK }}>

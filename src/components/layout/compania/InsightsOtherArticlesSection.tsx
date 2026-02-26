@@ -10,31 +10,7 @@ import {
   type InsightsArticleId,
 } from '@/components/layout/compania/insightsArticles';
 
-const EASING: [number, number, number, number] = [0.25, 0.46, 0.45, 0.94];
 const OTHER_ARTICLES_COUNT = 3;
-
-const container = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.04,
-      delayChildren: 0.02,
-    },
-  },
-};
-
-const card = {
-  hidden: { opacity: 0, y: 12 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.25,
-      ease: EASING,
-    },
-  },
-};
 
 export function InsightsOtherArticlesSection({
   currentArticleId,
@@ -64,30 +40,15 @@ export function InsightsOtherArticlesSection({
   });
 
   return (
-    <motion.section
-      className="bg-muted/30 py-12 md:py-16 lg:py-20"
-      initial={{ opacity: 0 }}
-      whileInView={{ opacity: 1 }}
-      viewport={{ once: true, margin: '-50px' }}
-      transition={{ duration: 0.5, ease: EASING }}
-    >
+    <motion.section className="bg-muted/30 py-12 md:py-16 lg:py-20">
       <CenterContainer>
         <h2 className="text-foreground mb-8 text-2xl font-bold tracking-tight md:text-3xl">
           {t('insightsPage.articles.otherArticlesTitle')}
         </h2>
-        <motion.div
-          className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8"
-          variants={container}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-50px' }}
-        >
+        <motion.div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
           {articles.map((article) => (
             <motion.div
               key={article.id}
-              variants={card}
-              whileHover={{ y: -6, transition: { duration: 0.2 } }}
-              whileTap={{ scale: 0.98 }}
               className="h-full"
             >
               <InsightsArticleCard
