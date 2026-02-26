@@ -1,6 +1,9 @@
-import { Route, Switch, Redirect } from 'wouter'
+import { Route, Switch } from 'wouter'
+import { useEffect } from 'react'
+import { useLocation } from 'wouter'
 import { ScrollToTop } from '@/components/ScrollToTop'
 import { JsonLd } from '@/components/JsonLd'
+import { getPreferredLocaleFromBrowser } from '@/app/i18n'
 import Home from '@/pages/home'
 import SoftwareALaMedida from '@/pages/servicios/software-a-la-medida'
 import SolucionesIA from '@/pages/servicios/soluciones-ia'
@@ -18,6 +21,14 @@ import Cookies from '@/pages/legal/cookies'
 import { NotFound } from '@/pages/not-found'
 import { withLocale } from '@/app/withLocale'
 
+function RootRedirect() {
+  const [, setLocation] = useLocation()
+  useEffect(() => {
+    setLocation(`/${getPreferredLocaleFromBrowser()}`)
+  }, [setLocation])
+  return null
+}
+
 export function Router() {
   return (
     <>
@@ -25,7 +36,7 @@ export function Router() {
       <JsonLd />
       <Switch>
       <Route path="/">
-        <Redirect to="/es" />
+        <RootRedirect />
       </Route>
       <Route path="/:lang/services/custom-software" component={withLocale(SoftwareALaMedida)} />
       <Route path="/:lang/services/ai-solutions" component={withLocale(SolucionesIA)} />

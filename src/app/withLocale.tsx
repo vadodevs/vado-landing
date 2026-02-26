@@ -1,11 +1,10 @@
 import { useEffect } from 'react';
 import { useLocation } from 'wouter';
-import { isLocale } from '@/app/i18n';
-import { defaultLocale } from '@/app/i18n';
+import { isLocale, getPreferredLocaleFromBrowser } from '@/app/i18n';
 
 /**
  * Wraps a component so it only renders when the current path has a valid locale (en|es).
- * Redirects to /es when the first segment is not a supported locale.
+ * Redirects to the browser's preferred locale when the first segment is not a supported locale.
  */
 export function withLocale<P extends object>(Component: React.ComponentType<P>) {
   return function WithLocale(props: P) {
@@ -15,7 +14,7 @@ export function withLocale<P extends object>(Component: React.ComponentType<P>) 
 
     useEffect(() => {
       if (!lang || !isLocale(lang)) {
-        setLocation(`/${defaultLocale}`);
+        setLocation(`/${getPreferredLocaleFromBrowser()}`);
       }
     }, [lang, setLocation]);
 
