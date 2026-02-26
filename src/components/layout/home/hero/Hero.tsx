@@ -21,15 +21,16 @@ export function Hero() {
       <div className="relative h-screen w-full">
         <video
           ref={videoRef}
-          src="/hero/hero-slide.mp4"
-          preload="auto"
+          preload="metadata"
+          poster="/hero/hero-cover.webp"
           className="absolute inset-0 h-full w-full object-cover object-center"
           style={{ minWidth: '100%', minHeight: '100%' }}
           muted
           loop
-          playsInline
           aria-hidden
-        />
+        >
+          <source src="/hero/hero-slide.mp4" type="video/mp4" />
+        </video>
         <div className="absolute inset-0 bg-black/40" aria-hidden />
         <div className="absolute inset-0 z-10 flex items-center justify-center">
           <CenterContainer className="w-full">
