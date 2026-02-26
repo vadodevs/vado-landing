@@ -1,8 +1,5 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
-@import 'swiper/css';
-@import 'swiper/css/pagination';
-@import 'swiper/css/navigation';
 
 @custom-variant dark (&:is(.dark *));
 
