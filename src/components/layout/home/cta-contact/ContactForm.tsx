@@ -2,7 +2,6 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { Link } from 'wouter';
-import { AnimatePresence, motion } from 'motion/react';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from '@/hooks/useLocale';
 import { CheckCircle2, Info } from 'lucide-react';
@@ -521,12 +520,10 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
         {t('home.ctaContact.formTitle')}
       </h3>
 
-      <AnimatePresence mode="wait">
-        {submitStatus === 'success' ? (
-          <motion.div
-            key="thank-you"
-            className="flex flex-col items-center gap-6 py-6 text-center"
-          >
+      {submitStatus === 'success' ? (
+        <div
+          className="flex flex-col items-center gap-6 py-6 text-center"
+        >
             <CheckCircle2
               className="text-primary size-16 shrink-0 md:size-20"
               strokeWidth={1.5}
@@ -573,46 +570,44 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
                 {t('thankYou.ctaContact')}
               </Button>
             </div>
-          </motion.div>
-        ) : (
-          <form ref={formRef} className="flex flex-col gap-4" onSubmit={handleFormSubmit}>
-            {!isInApplyFlow && (
-              <div className="space-y-2">
-                <Label htmlFor={`${idPrefix}subject`}>{t('home.ctaContact.subject')}</Label>
-                <select
-                  id={`${idPrefix}subject`}
-                  value={subject}
-                  onChange={handleSubjectChange}
-                  className={cn(
-                    'border-input h-10 w-full rounded-lg border bg-transparent px-3 py-2 text-base',
-                    'focus:border-primary focus:ring-primary/50 focus:ring-2 focus:outline-none md:text-sm',
-                  )}
+        </div>
+      ) : (
+        <form ref={formRef} className="flex flex-col gap-4" onSubmit={handleFormSubmit}>
+          {!isInApplyFlow && (
+            <div className="space-y-2">
+              <Label htmlFor={`${idPrefix}subject`}>{t('home.ctaContact.subject')}</Label>
+              <select
+                id={`${idPrefix}subject`}
+                value={subject}
+                onChange={handleSubjectChange}
+                className={cn(
+                  'border-input h-10 w-full rounded-lg border bg-transparent px-3 py-2 text-base',
+                  'focus:border-primary focus:ring-primary/50 focus:ring-2 focus:outline-none md:text-sm',
+                )}
+              >
+                <option value="">{t('home.ctaContact.subjectPlaceholder')}</option>
+                <option value="Custom Software Development">
+                  {t('home.ctaContact.subjectOptions.softwareALaMedida')}
+                </option>
+                <option value="Staff Augmentation">
+                  {t('home.ctaContact.subjectOptions.ampliacionPersonal')}
+                </option>
+                <option value="AI Solutions">
+                  {t('home.ctaContact.subjectOptions.solucionesIA')}
+                </option>
+                <option value={SUBJECT_POSTULARSE}>
+                  {t('home.ctaContact.subjectOptions.quieroPostularme')}
+                </option>
+                <option value="Other">{t('home.ctaContact.subjectOptions.otros')}</option>
+              </select>
+            </div>
+          )}
+          {isPostularse ? (
+            showApplyForm ? (
+              applyStep === 1 ? (
+                <div
+                  className="flex flex-col gap-4"
                 >
-                  <option value="">{t('home.ctaContact.subjectPlaceholder')}</option>
-                  <option value="Custom Software Development">
-                    {t('home.ctaContact.subjectOptions.softwareALaMedida')}
-                  </option>
-                  <option value="Staff Augmentation">
-                    {t('home.ctaContact.subjectOptions.ampliacionPersonal')}
-                  </option>
-                  <option value="AI Solutions">
-                    {t('home.ctaContact.subjectOptions.solucionesIA')}
-                  </option>
-                  <option value={SUBJECT_POSTULARSE}>
-                    {t('home.ctaContact.subjectOptions.quieroPostularme')}
-                  </option>
-                  <option value="Other">{t('home.ctaContact.subjectOptions.otros')}</option>
-                </select>
-              </div>
-            )}
-            <AnimatePresence mode="wait">
-              {isPostularse ? (
-                showApplyForm ? (
-                  applyStep === 1 ? (
-                    <motion.div
-                      key="apply-form-step1"
-                      className="flex flex-col gap-4"
-                    >
                       <div className="text-center">
                         <h4 className="text-primary text-lg font-bold">
                           {t('home.ctaContact.applyForm.title')}
@@ -779,10 +774,9 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
                           {t('home.ctaContact.applyForm.continue')}
                         </Button>
                       </div>
-                    </motion.div>
+                    </div>
                   ) : (
-                    <motion.div
-                      key="apply-form-step2"
+                    <div
                       className="flex flex-col gap-4"
                     >
                       <div className="text-center">
@@ -1086,11 +1080,10 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
                           </Button>
                         </div>
                       </div>
-                    </motion.div>
+                    </div>
                   )
                 ) : (
-                  <motion.div
-                    key="postularse"
+                  <div
                     className="flex flex-col items-center gap-6 py-4"
                   >
                     <p className="text-muted-foreground text-center text-base leading-relaxed">
@@ -1109,11 +1102,10 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
                     >
                       {t('home.ctaContact.applyNow')}
                     </Button>
-                  </motion.div>
+                  </div>
                 )
               ) : (
-                <motion.div
-                  key="form"
+                <div
                   className="flex flex-col gap-4"
                 >
                   <div className="space-y-2">
@@ -1331,12 +1323,10 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
                       ? t('home.ctaContact.sending')
                       : t('home.ctaContact.submit')}
                   </Button>
-                </motion.div>
+                </div>
               )}
-            </AnimatePresence>
-          </form>
-        )}
-      </AnimatePresence>
+        </form>
+      )}
     </div>
   );
 }

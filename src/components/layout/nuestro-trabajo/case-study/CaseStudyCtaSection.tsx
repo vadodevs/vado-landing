@@ -1,6 +1,5 @@
 import { Link } from 'wouter';
 import { useTranslation } from 'react-i18next';
-import { motion } from 'motion/react';
 import { Button } from '@/components/ui/button';
 import { useLocale } from '@/hooks/useLocale';
 
@@ -29,7 +28,7 @@ export function CaseStudyCtaSection({ caseStudyId, accentColor }: CaseStudyCtaSe
   return (
     <section className="relative w-full py-16 md:py-20 lg:py-24">
       <div className="w-full min-w-0">
-        <motion.div
+        <div
           className="w-full text-left"
         >
           <h2 className="mb-8 text-lg leading-tight font-semibold tracking-tight uppercase md:text-xl lg:text-2xl">
@@ -51,7 +50,7 @@ export function CaseStudyCtaSection({ caseStudyId, accentColor }: CaseStudyCtaSe
           >
             <Link href={path('/contact')}>{t(`${baseKey}.ctaLabel`)}</Link>
           </Button>
-        </motion.div>
+        </div>
       </div>
     </section>
   );

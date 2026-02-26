@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { AnimatePresence, motion } from 'motion/react';
 import { Mail, CheckCircle2 } from 'lucide-react';
 import { CenterContainer } from '@/components/layout/CenterContainer';
 import { Button } from '@/components/ui/button';
@@ -67,29 +66,27 @@ export function InsightsStayUpdatedSection() {
   return (
     <section className="py-14 md:py-20 lg:py-24">
       <CenterContainer>
-        <motion.div
+        <div
           className="w-full overflow-visible px-1 py-8 text-left md:py-12"
         >
-          <motion.p
+          <p
             className="text-muted-foreground mb-2 text-xs font-semibold tracking-[0.2em] uppercase md:text-sm"
           >
             {t('insightsPage.stayUpdated.topLine')}
-          </motion.p>
-          <motion.h2
+          </p>
+          <h2
             className="mb-6 text-2xl leading-tight font-bold tracking-tight text-[#19314c] md:mb-8 md:text-4xl lg:text-5xl"
           >
             {t('insightsPage.stayUpdated.titleLine1')}
             <span className="text-primary mt-1 block">
               {t('insightsPage.stayUpdated.titleLine2')}
             </span>
-          </motion.h2>
+          </h2>
 
-          <AnimatePresence mode="wait">
-            {showSuccess ? (
-              <motion.div
-                key="success"
-                className="flex flex-col gap-5"
-              >
+          {showSuccess ? (
+            <div
+              className="flex flex-col gap-5"
+            >
                 <div className="flex items-start gap-3">
                   <CheckCircle2
                     className="text-primary mt-0.5 size-6 shrink-0 md:size-7"
@@ -115,13 +112,12 @@ export function InsightsStayUpdatedSection() {
                 >
                   {t('insightsPage.stayUpdated.enterAnotherEmail')}
                 </Button>
-              </motion.div>
-            ) : (
-              <motion.form
-                key="form"
-                onSubmit={handleSubmit}
-                className="flex w-full max-w-2xl flex-col gap-4"
-              >
+            </div>
+          ) : (
+            <form
+              onSubmit={handleSubmit}
+              className="flex w-full max-w-2xl flex-col gap-4"
+            >
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:gap-4">
                   <div className="flex flex-1 flex-col gap-1.5 sm:max-w-sm sm:pr-1">
                     <Label
@@ -155,20 +151,17 @@ export function InsightsStayUpdatedSection() {
                     {status === 'loading' ? '...' : t('insightsPage.stayUpdated.subscribeButton')}
                   </Button>
                 </div>
-                <AnimatePresence>
-                  {status === 'error' && errorMessage && (
-                    <motion.p
-                      className="text-destructive text-sm"
-                      role="alert"
-                    >
-                      {errorMessage}
-                    </motion.p>
-                  )}
-                </AnimatePresence>
-              </motion.form>
-            )}
-          </AnimatePresence>
-        </motion.div>
+                {status === 'error' && errorMessage && (
+                  <p
+                    className="text-destructive text-sm"
+                    role="alert"
+                  >
+                    {errorMessage}
+                  </p>
+                )}
+              </form>
+          )}
+        </div>
       </CenterContainer>
     </section>
   );

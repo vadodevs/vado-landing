@@ -1,6 +1,5 @@
 import { useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { motion } from 'motion/react';
 import { Link } from 'wouter';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination } from 'swiper/modules';
@@ -42,7 +41,7 @@ export function Hero() {
       >
         <SwiperSlide className="h-full! w-full!">
           <div className="relative h-screen w-full">
-            <motion.video
+            <video
               ref={videoRef}
               src="/hero/hero-slide.mp4"
               className="absolute inset-0 h-full w-full object-cover object-center"
@@ -52,33 +51,33 @@ export function Hero() {
               playsInline
               aria-hidden
             />
-            <motion.div
+            <div
               className="absolute inset-0 bg-black/40"
               aria-hidden
             />
             <div className="absolute inset-0 z-10 flex items-center justify-center">
               <CenterContainer className="w-full">
-                <motion.div
+                <div
                   className="flex flex-col items-start text-left text-white"
                 >
                   <h1 className="max-w-3xl drop-shadow-md">
-                    <motion.span
+                    <span
                       className="block text-4xl font-bold uppercase tracking-tight sm:text-5xl md:text-6xl lg:text-7xl"
                     >
                       {t('home.heroTitleLine1')}
-                    </motion.span>
-                    <motion.span
+                    </span>
+                    <span
                       className="mt-1 block text-4xl font-bold uppercase tracking-tight sm:text-5xl md:text-6xl lg:text-7xl"
                     >
                       {t('home.heroTitleLine2')}
-                    </motion.span>
+                    </span>
                   </h1>
-                  <motion.p
+                  <p
                     className="mt-5 max-w-xl text-base text-white/95 drop-shadow sm:text-lg md:text-xl"
                   >
                     {t('home.heroTagline')}
-                  </motion.p>
-                  <motion.div>
+                  </p>
+                  <div>
                     <Link href={path('/contact')}>
                       <Button
                         size="lg"
@@ -87,8 +86,8 @@ export function Hero() {
                         {t('home.heroCta')}
                       </Button>
                     </Link>
-                  </motion.div>
-                </motion.div>
+                  </div>
+                </div>
               </CenterContainer>
             </div>
           </div>

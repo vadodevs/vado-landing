@@ -1,5 +1,4 @@
 import { useTranslation } from 'react-i18next';
-import { motion } from 'motion/react';
 import { CenterContainer } from '@/components/layout/CenterContainer';
 import { InsightsArticleCard } from '@/components/layout/compania/InsightsArticleCard';
 import { useLocale } from '@/hooks/useLocale';
@@ -40,14 +39,14 @@ export function InsightsOtherArticlesSection({
   });
 
   return (
-    <motion.section className="bg-muted/30 py-12 md:py-16 lg:py-20">
+    <section className="bg-muted/30 py-12 md:py-16 lg:py-20">
       <CenterContainer>
         <h2 className="text-foreground mb-8 text-2xl font-bold tracking-tight md:text-3xl">
           {t('insightsPage.articles.otherArticlesTitle')}
         </h2>
-        <motion.div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
           {articles.map((article) => (
-            <motion.div
+            <div
               key={article.id}
               className="h-full"
             >
@@ -60,10 +59,10 @@ export function InsightsOtherArticlesSection({
                 description={article.description}
                 href={article.href}
               />
-            </motion.div>
+            </div>
           ))}
-        </motion.div>
+        </div>
       </CenterContainer>
-    </motion.section>
+    </section>
   );
 }

@@ -1,6 +1,5 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { motion } from 'motion/react';
 import { Link } from 'wouter';
 import { CenterContainer } from '@/components/layout/CenterContainer';
 import { useLocale } from '@/hooks/useLocale';
@@ -38,12 +37,12 @@ export function OurWorkProjectsSection() {
   }, [currentPage]);
 
   return (
-    <motion.section
+    <section
       ref={sectionRef}
       className="py-12 md:py-16 lg:py-20"
     >
       <CenterContainer>
-        <motion.div
+        <div
           key={currentPage}
           className="grid gap-6 sm:grid-cols-2 lg:gap-8"
         >
@@ -53,16 +52,16 @@ export function OurWorkProjectsSection() {
               href={path(`/our-work/${project.id}`)}
               className="focus-visible:ring-primary block h-full rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
             >
-              <motion.div
+              <div
                 className="relative h-full"
               >
-                <motion.span
+                <span
                   className={`absolute top-[-6px] right-[-6px] z-10 rounded-tr-lg rounded-bl-lg px-3 py-1.5 text-xs font-medium tracking-wide text-white uppercase shadow ${project.badgeColor ? '' : BADGE_COLORS[project.categoryKey]}`}
                   style={project.badgeColor ? { backgroundColor: project.badgeColor } : undefined}
                 >
                   {t(`ourWork.projects.${project.id}.category`)}
-                </motion.span>
-                <motion.article
+                </span>
+                <article
                   className="flex h-full flex-col overflow-hidden rounded-2xl bg-white shadow-sm"
                 >
                   <div className="flex items-center justify-center px-6 py-6 md:p-4">
@@ -92,11 +91,11 @@ export function OurWorkProjectsSection() {
                       {t(`ourWork.projects.${project.id}.description`)}
                     </p>
                   </div>
-                </motion.article>
-              </motion.div>
+                </article>
+              </div>
             </Link>
           ))}
-        </motion.div>
+        </div>
 
         {totalPages > 1 && (
           <nav
@@ -139,6 +138,6 @@ export function OurWorkProjectsSection() {
           </nav>
         )}
       </CenterContainer>
-    </motion.section>
+    </section>
   );
 }

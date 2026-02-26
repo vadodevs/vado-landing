@@ -1,4 +1,3 @@
-import { motion } from 'motion/react';
 import { CenterContainer } from '@/components/layout/CenterContainer';
 
 const INSIGHTS_ARTICLE_HERO_BG = '/backgrounds/bg-blue-header.svg';
@@ -12,13 +11,13 @@ export type InsightsArticleHeroProps = {
 
 export function InsightsArticleHero({ category, title, date, author }: InsightsArticleHeroProps) {
   return (
-    <motion.section
+    <section
       className="relative flex min-h-[45vh] w-full items-center overflow-hidden bg-white md:min-h-[50vh]"
       style={{
         clipPath: 'polygon(0 0, 100% 0, 100% 82%, 0 100%)',
       }}
     >
-      <motion.img
+      <img
         src={INSIGHTS_ARTICLE_HERO_BG}
         alt=""
         className="pointer-events-none absolute inset-0 z-0 h-full w-full object-cover object-center"
@@ -26,7 +25,7 @@ export function InsightsArticleHero({ category, title, date, author }: InsightsA
       />
       <div className="absolute inset-0 z-10 flex items-center py-16">
         <CenterContainer className="w-full">
-          <motion.div className="max-w-3xl">
+          <div className="max-w-3xl">
             {category && (
               <p className="text-primary mb-1 text-xs font-semibold tracking-wider uppercase drop-shadow sm:text-sm">
                 {category}
@@ -39,9 +38,9 @@ export function InsightsArticleHero({ category, title, date, author }: InsightsA
             <h1 className="mt-2 text-2xl leading-tight font-bold tracking-tight text-white drop-shadow sm:text-3xl md:text-4xl">
               {title}
             </h1>
-          </motion.div>
+          </div>
         </CenterContainer>
       </div>
-    </motion.section>
+    </section>
   );
 }

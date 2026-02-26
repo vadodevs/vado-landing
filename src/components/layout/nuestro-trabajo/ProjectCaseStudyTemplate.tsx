@@ -1,6 +1,5 @@
 import { Link } from 'wouter';
 import { useTranslation } from 'react-i18next';
-import { motion } from 'motion/react';
 import { CenterContainer } from '@/components/layout/CenterContainer';
 import { ProjectHero } from '@/components/layout/nuestro-trabajo/ProjectHero';
 import {
@@ -108,23 +107,23 @@ function OtherCasesSection({ projectId, accentColor }: { projectId: string; acce
             </p>
           </header>
 
-          <motion.ul
+          <ul
             className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3"
             role="list"
           >
             {otherProjects.map((project) => (
-              <motion.li
+              <li
                 key={project.id}
               >
                 <Link
                   href={path(`/our-work/${project.id}`)}
                   className="focus-visible:ring-primary group focus-visible:ring-offset-background block focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
                 >
-                  <motion.article
+                  <article
                     className="bg-background ring-border/50 overflow-hidden rounded-2xl shadow-sm ring-1"
                   >
                     <div className="bg-muted/40 relative aspect-4/3 overflow-hidden">
-                      <motion.img
+                      <img
                         src={project.image.startsWith('/') ? project.image : `/projects/${project.image}`}
                         alt=""
                         className="size-full object-contain object-center p-6"
@@ -155,11 +154,11 @@ function OtherCasesSection({ projectId, accentColor }: { projectId: string; acce
                         {t(`ourWork.projects.${project.id}.description`)}
                       </p>
                     </div>
-                  </motion.article>
+                  </article>
                 </Link>
-              </motion.li>
+              </li>
             ))}
-          </motion.ul>
+          </ul>
 
           <div className="flex justify-center pt-4">
             <Link

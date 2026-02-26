@@ -1,6 +1,5 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { motion } from 'motion/react';
 import { Search } from 'lucide-react';
 import { CenterContainer } from '@/components/layout/CenterContainer';
 import { InsightsArticleCard } from './InsightsArticleCard';
@@ -66,7 +65,7 @@ export function InsightsArticlesSection() {
   );
 
   return (
-    <motion.section
+    <section
       ref={sectionRef}
       className="bg-background py-12 md:py-16 lg:py-20"
     >
@@ -95,7 +94,7 @@ export function InsightsArticlesSection() {
         </div>
 
         {filteredArticles.length === 0 ? (
-          <motion.div className="flex flex-col items-center justify-center py-12 md:py-16">
+          <div className="flex flex-col items-center justify-center py-12 md:py-16">
             <img
               src="/articles/empty-state/empty-articles.svg"
               alt={t('insightsPage.articles.emptyStateImageAlt')}
@@ -106,14 +105,14 @@ export function InsightsArticlesSection() {
             <p className="text-muted-foreground mt-6 text-center text-sm">
               {t('insightsPage.articles.noResults')}
             </p>
-          </motion.div>
+          </div>
         ) : (
-          <motion.div
+          <div
             key={`${currentPage}-${searchQuery.trim()}`}
             className="grid gap-6 sm:grid-cols-2 lg:gap-8"
           >
             {paginatedArticles.map((article) => (
-              <motion.div key={article.id} className="h-full">
+              <div key={article.id} className="h-full">
                 <InsightsArticleCard
                   imageSrc={article.imageSrc}
                   imageAlt={article.imageAlt}
@@ -123,9 +122,9 @@ export function InsightsArticlesSection() {
                   description={article.description}
                   href={path(`/company/articles/${article.slug}`)}
                 />
-              </motion.div>
+              </div>
             ))}
-          </motion.div>
+          </div>
         )}
 
         {filteredArticles.length > 0 && totalPages > 1 && (
@@ -169,6 +168,6 @@ export function InsightsArticlesSection() {
           </nav>
         )}
       </CenterContainer>
-    </motion.section>
+    </section>
   );
 }

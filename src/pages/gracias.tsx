@@ -1,6 +1,5 @@
 import { Link } from 'wouter';
 import { useTranslation } from 'react-i18next';
-import { motion } from 'motion/react';
 import { PageMeta } from '@/components/PageMeta';
 import MainLayout from '@/components/layout/MainLayout';
 import { CenterContainer } from '@/components/layout/CenterContainer';
@@ -20,7 +19,7 @@ export default function Gracias() {
         pathWithoutLang="/thank-you"
       />
       <MainLayout>
-        <motion.section
+        <section
           className="relative min-h-[min(70vh,600px)] py-16 md:py-24 lg:py-28"
         >
           <CenterContainer className="flex flex-col items-center justify-center text-center">
@@ -52,7 +51,7 @@ export default function Gracias() {
               </div>
             </div>
           </CenterContainer>
-        </motion.section>
+        </section>
       </MainLayout>
     </>
   );

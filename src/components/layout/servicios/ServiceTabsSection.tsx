@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Link } from 'wouter';
-import { AnimatePresence, motion } from 'motion/react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -131,11 +130,9 @@ export function ServiceTabsSection({
 
                 <div className="relative z-10 flex min-h-[300px] flex-col gap-8 lg:min-h-[380px] lg:flex-row lg:items-center lg:gap-12">
                   <div className="order-2 flex flex-1 flex-col justify-center lg:order-1 lg:max-w-[55%]">
-                    <AnimatePresence mode="wait">
-                      <motion.div
-                        key={activeTab}
-                        className="flex flex-col text-white"
-                      >
+                    <div
+                      className="flex flex-col text-white"
+                    >
                         <h3 className="text-2xl font-bold md:text-3xl lg:text-4xl">
                           {tabs.find((t) => t.id === activeTab)?.title}
                         </h3>
@@ -150,8 +147,7 @@ export function ServiceTabsSection({
                             {ctaText}
                           </Button>
                         </Link>
-                      </motion.div>
-                    </AnimatePresence>
+                      </div>
                   </div>
 
                   <div className="order-1 hidden flex-1 lg:order-2 lg:block" aria-hidden="true" />
@@ -170,11 +166,9 @@ export function ServiceTabsSection({
 
                 <div className="relative z-1 flex flex-col gap-8 lg:flex-row lg:items-center lg:gap-8">
                   <div className="order-1 flex flex-1 flex-col justify-center lg:max-w-[48%]">
-                    <AnimatePresence mode="wait">
-                      <motion.div
-                        key={activeTab}
-                        className="flex flex-col"
-                      >
+                    <div
+                      className="flex flex-col"
+                    >
                         <h3 className="text-2xl font-bold text-white md:text-3xl lg:text-4xl">
                           {tabs.find((t) => t.id === activeTab)?.title}
                         </h3>
@@ -189,19 +183,15 @@ export function ServiceTabsSection({
                             {ctaText}
                           </Button>
                         </Link>
-                      </motion.div>
-                    </AnimatePresence>
+                      </div>
                   </div>
 
                   <div className="order-2 flex flex-1 justify-center lg:max-w-[52%] lg:items-end lg:justify-center">
-                    <AnimatePresence mode="wait">
-                      <motion.div
-                        key={activeTab}
-                        className="flex justify-center lg:translate-y-[20%]"
-                      >
+                    <div
+                      className="flex justify-center lg:translate-y-[20%]"
+                    >
                         <PhoneMockup className="w-[min(200px,65vw)] lg:w-[240px]" />
-                      </motion.div>
-                    </AnimatePresence>
+                      </div>
                   </div>
                 </div>
               </div>
