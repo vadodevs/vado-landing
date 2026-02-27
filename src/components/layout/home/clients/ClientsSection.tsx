@@ -48,6 +48,7 @@ export function ClientsSection() {
         <img
           src="/backgrounds/bg-cut.webp"
           alt=""
+          loading="lazy"
           className="pointer-events-none absolute -top-1/3 left-0 h-[140%] w-full object-cover object-top"
           aria-hidden
         />
@@ -56,6 +57,7 @@ export function ClientsSection() {
       <img
         src="/backgrounds/decoration-blue.webp"
         alt=""
+        loading="lazy"
         className="pointer-events-none absolute top-1/4 right-0 h-auto w-[200px] max-w-[40%] opacity-80 md:w-[240px] lg:top-1/5 lg:w-[280px]"
         aria-hidden
       />

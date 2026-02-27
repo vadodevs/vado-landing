@@ -23,6 +23,7 @@ export function DigitalProductsSection({
       <img
         src="/backgrounds/bg-white-blue.webp"
         alt={t('home.digitalProducts.bgAlt')}
+        loading="lazy"
         className="pointer-events-none absolute top-0 -right-20 w-auto object-cover object-right"
         aria-hidden
       />
