@@ -27,6 +27,8 @@ export function Hero() {
           style={{ minWidth: '100%', minHeight: '100%' }}
           muted
           loop
+          playsInline
+          autoPlay
           aria-hidden
         >
           <source src="/hero/hero-slide.mp4" type="video/mp4" />
