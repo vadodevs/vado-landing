@@ -46,17 +46,20 @@ function NavLink({
   children,
   onClick,
   className,
+  exact,
 }: {
   href: string;
   children: React.ReactNode;
   onClick?: () => void;
   className?: string;
+  exact?: boolean;
 }) {
   const [location] = useLocation();
   const base = href.replace(/\/$/, '') || '/';
   const locationNorm = location.replace(/\/$/, '') || '/';
-  const isActiveRoute =
-    locationNorm === base || (base !== '/' && locationNorm.startsWith(base + '/'));
+  const isActiveRoute = exact
+    ? locationNorm === base
+    : locationNorm === base || (base !== '/' && locationNorm.startsWith(base + '/'));
 
   return (
     <Link
@@ -113,8 +116,8 @@ function MobileMenuContent({ onLinkClick }: { onLinkClick?: () => void }) {
   const { path } = useLocale();
   const [location] = useLocation();
   const loc = location.replace(/\/$/, '') || '/';
-  const isServiciosActive = loc.startsWith(path('/servicios'));
-  const isCompaniaActive = loc.startsWith(path('/compania'));
+  const isServiciosActive = loc.startsWith(path('/services'));
+  const isCompaniaActive = loc.startsWith(path('/company'));
 
   return (
     <nav className="flex flex-1 flex-col overflow-y-auto">
@@ -122,6 +125,7 @@ function MobileMenuContent({ onLinkClick }: { onLinkClick?: () => void }) {
         <NavLink
           href={path('')}
           onClick={onLinkClick}
+          exact
           className="block rounded-lg py-3.5 text-base font-medium"
         >
           {t('nav.home')}

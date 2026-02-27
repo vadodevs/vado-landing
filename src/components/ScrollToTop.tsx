@@ -1,14 +1,15 @@
 import { useEffect } from 'react';
 import { useLocation } from 'wouter';
 
-/**
- * Hace scroll al inicio de la página cuando cambia la ruta.
- */
 export function ScrollToTop() {
   const [location] = useLocation();
 
   useEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    window.scrollTo(0, 0);
+
+    // Repeat after drawer / overlay animations that may restore scroll position
+    const timer = setTimeout(() => window.scrollTo(0, 0), 350);
+    return () => clearTimeout(timer);
   }, [location]);
 
   return null;
