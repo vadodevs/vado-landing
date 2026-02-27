@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { CenterContainer } from '@/components/layout/CenterContainer';
 
 const CHECK_ICON_SRC = '/icons/check.svg';
-const IMAGE_SRC = '/team-vado/vado-team-12.webp';
+const IMAGE_SRC = '/team-vado/vado-team-34.webp';
 
 const STEP_IDS = ['step1', 'step2', 'step3', 'step4'] as const;
 
@@ -44,7 +44,7 @@ export function StaffAugmentationProcessSection() {
           </div>
 
           <div className="order-2 flex w-full justify-center lg:max-w-[45%] lg:flex-1">
-            <div className="relative aspect-[4/3] w-full min-w-0 max-w-[300px] overflow-hidden rounded-2xl border border-[#19314c]/10 bg-[#19314c]/5 shadow-lg shadow-[#19314c]/15 md:max-w-[360px] lg:max-w-[420px]">
+            <div className="relative aspect-4/3 w-full max-w-[300px] min-w-0 overflow-hidden rounded-2xl md:max-w-[360px] lg:max-w-[420px]">
               <img
                 src={IMAGE_SRC}
                 alt=""

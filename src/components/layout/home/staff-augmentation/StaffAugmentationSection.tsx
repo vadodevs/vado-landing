@@ -22,7 +22,7 @@ export function StaffAugmentationSection() {
           <div className="flex w-full justify-center lg:absolute lg:top-1/2 lg:left-10 lg:z-0 lg:max-w-150 lg:-translate-y-1/2">
             <div className="aspect-16/10 w-full max-w-lg overflow-hidden rounded-2xl shadow-xl">
               <img
-                src="/team-vado/vado-team-24.webp"
+                src="/team-vado/vado-team-32.webp"
                 alt={t('home.staffAugmentation.imageAlt')}
                 className="h-full w-full object-cover object-center"
               />

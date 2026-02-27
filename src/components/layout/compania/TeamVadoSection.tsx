@@ -2,23 +2,17 @@ import { useTranslation } from 'react-i18next';
 import { CenterContainer } from '@/components/layout/CenterContainer';
 import { Marquee } from '@/components/ui/marquee';
 
-// Solo vado-team-1 a vado-team-18. Elige qué números va en cada fila.
-const ROW1_IMAGE_NUMBERS: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-const ROW2_IMAGE_NUMBERS: number[] = [10, 11, 12, 13, 14, 15, 16, 17, 18];
+const ROW1_IMAGE_NUMBERS: number[] = [
+  1, 4, 10, 7, 15, 3, 12, 18, 5, 22, 9, 27, 14, 28, 2, 33, 8, 36,
+];
+const ROW2_IMAGE_NUMBERS: number[] = [
+  29, 19, 11, 24, 16, 42, 13, 40, 17, 23, 39, 26, 30, 6, 31, 32, 34, 35,
+];
 
 const toPaths = (nums: number[]) => nums.map((n) => `/team-vado/vado-team-${n}.webp`);
 
-function shuffle<T>(arr: T[]): T[] {
-  const out = [...arr];
-  for (let i = out.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [out[i], out[j]] = [out[j], out[i]];
-  }
-  return out;
-}
-
-const TEAM_IMAGES_ROW1 = shuffle(toPaths(ROW1_IMAGE_NUMBERS));
-const TEAM_IMAGES_ROW2 = shuffle(toPaths(ROW2_IMAGE_NUMBERS));
+const TEAM_IMAGES_ROW1 = toPaths(ROW1_IMAGE_NUMBERS);
+const TEAM_IMAGES_ROW2 = toPaths(ROW2_IMAGE_NUMBERS);
 
 /** Contenedores más altos y más largos para el carrusel */
 const IMAGE_CLASS =
