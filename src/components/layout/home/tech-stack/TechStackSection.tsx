@@ -18,9 +18,6 @@ export function TechStackSection() {
               <img
                 src="/tech-stack/stack.png"
                 alt={t('home.techStack.imageAlt')}
-                loading="lazy"
-                width={360}
-                height={360}
                 className="relative z-1 w-full max-w-[280px] object-contain md:max-w-[320px] lg:max-w-[360px]"
               />
             </div>

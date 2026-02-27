@@ -25,9 +25,6 @@ export function CultureAndTalentSection({
               <img
                 src={imageSrc}
                 alt={imageAlt ?? t('home.cultureAndTalent.imageAlt')}
-                loading="lazy"
-                width={640}
-                height={400}
                 className="h-full w-full object-cover object-center"
               />
             </div>

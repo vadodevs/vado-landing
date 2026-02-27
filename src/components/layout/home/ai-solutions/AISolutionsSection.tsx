@@ -23,9 +23,6 @@ export function AISolutionsSection() {
         <img
           src="/home-assets/mockup-landing.webp"
           alt={t('home.aiSolutions.mockupImageAlt')}
-          loading="lazy"
-          width={480}
-          height={480}
           className="h-auto w-full max-w-full object-contain"
         />
       }

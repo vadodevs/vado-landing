@@ -22,9 +22,6 @@ function TestimonialAvatar({
       <img
         src={src}
         alt={alt}
-        loading="lazy"
-        width={40}
-        height={40}
         className="h-8 w-8 shrink-0 rounded-full object-cover md:h-10 md:w-10"
       />
     );

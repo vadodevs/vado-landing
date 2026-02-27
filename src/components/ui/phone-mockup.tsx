@@ -29,9 +29,6 @@ export function PhoneMockup({ src, alt = '', children, className }: PhoneMockupP
             <img
               src={src}
               alt={alt}
-              loading="lazy"
-              width={260}
-              height={563}
               className="h-full w-full object-cover object-top"
             />
           ) : (
