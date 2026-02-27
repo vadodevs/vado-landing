@@ -89,4 +89,15 @@ Sitemap: ${baseUrl}/sitemap.xml
       '@': path.resolve(__dirname, 'src'),
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom'],
+          'vendor-i18n': ['react-i18next', 'i18next'],
+          'vendor-ui': ['wouter', 'vaul', '@radix-ui/react-accordion'],
+        },
+      },
+    },
+  },
 })

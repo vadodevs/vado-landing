@@ -28,6 +28,9 @@ export function InsightCard({
         <img
           src={imageSrc}
           alt={imageAlt}
+          loading="lazy"
+          width={400}
+          height={225}
           className="block h-full w-full rounded-lg object-cover"
         />
       </div>

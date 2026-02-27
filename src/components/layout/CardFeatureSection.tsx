@@ -47,6 +47,7 @@ export function CardFeatureSection({
         <img
           src={backgroundSrc}
           alt={backgroundAlt}
+          loading="lazy"
           className="pointer-events-none absolute inset-0 h-full w-full object-cover object-center"
           aria-hidden={!backgroundAlt}
         />

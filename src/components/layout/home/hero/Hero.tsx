@@ -19,6 +19,13 @@ export function Hero() {
   return (
     <section className="relative w-full max-w-[100vw] overflow-x-hidden">
       <div className="relative h-screen w-full">
+        <img
+          src="/hero/hero-cover.webp"
+          alt=""
+          fetchPriority="high"
+          aria-hidden
+          className="absolute inset-0 h-full w-full object-cover object-center"
+        />
         <video
           ref={videoRef}
           preload="metadata"

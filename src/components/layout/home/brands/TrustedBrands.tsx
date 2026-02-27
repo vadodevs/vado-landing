@@ -43,6 +43,7 @@ export function TrustedBrands() {
               <img
                 src={brand.src}
                 alt={brand.alt}
+                loading="lazy"
                 className="h-12 w-auto object-contain"
                 width={180}
                 height={48}

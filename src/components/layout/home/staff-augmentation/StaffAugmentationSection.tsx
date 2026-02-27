@@ -13,6 +13,7 @@ export function StaffAugmentationSection() {
       <img
         src="/backgrounds/rectangles.webp"
         alt=""
+        loading="lazy"
         className="absolute inset-0 left-1/2 h-auto w-140 -translate-x-1/2 object-cover object-center"
         aria-hidden
       />
@@ -24,6 +25,9 @@ export function StaffAugmentationSection() {
               <img
                 src="/team-vado/vado-team-32.webp"
                 alt={t('home.staffAugmentation.imageAlt')}
+                loading="lazy"
+                width={640}
+                height={400}
                 className="h-full w-full object-cover object-center"
               />
             </div>
@@ -33,6 +37,7 @@ export function StaffAugmentationSection() {
               <img
                 src="/backgrounds/bg-decoration.webp"
                 alt=""
+                loading="lazy"
                 className="pointer-events-none absolute inset-0 h-full w-full object-cover object-center opacity-20"
                 aria-hidden
               />
