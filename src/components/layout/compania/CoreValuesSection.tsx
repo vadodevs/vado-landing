@@ -29,11 +29,12 @@ export function CoreValuesSection() {
           {CARDS.map(({ id, icon }) => (
             <div
               key={id}
-              className="group h-[220px] w-full min-w-0 cursor-default sm:h-[260px]"
+              className="group h-[220px] w-full min-w-0 cursor-pointer sm:h-[260px]"
               style={{ perspective: '1000px' }}
+              tabIndex={0}
             >
               <div
-                className="relative h-full w-full transform-[rotateY(0deg)] transition-transform duration-500 group-hover:transform-[rotateY(180deg)]"
+                className="relative h-full w-full transform-[rotateY(0deg)] transition-transform duration-500 group-hover:transform-[rotateY(180deg)] group-focus:transform-[rotateY(180deg)]"
                 style={{ transformStyle: 'preserve-3d' }}
               >
                 {/* Front */}
