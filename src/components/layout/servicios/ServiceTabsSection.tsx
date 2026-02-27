@@ -125,7 +125,7 @@ export function ServiceTabsSection({
                       aria-hidden
                     />
                   )}
-                  <div className="absolute inset-y-0 left-0 w-[75%] bg-linear-to-r from-black/90 via-black/55" />
+                  <div className="absolute inset-0 w-full bg-black/60 lg:inset-y-0 lg:left-0 lg:w-full lg:bg-transparent lg:bg-linear-to-r lg:from-black/90 lg:via-black/55 lg:to-transparent" />
                 </div>
 
                 <div className="relative z-10 flex min-h-[300px] flex-col gap-8 lg:min-h-[380px] lg:flex-row lg:items-center lg:gap-12">
