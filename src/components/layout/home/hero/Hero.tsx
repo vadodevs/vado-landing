@@ -29,7 +29,6 @@ export function Hero() {
           loop
           playsInline
           autoPlay
-          aria-hidden
         >
           <source src="/hero/hero-slide.mp4" type="video/mp4" />
         </video>
