@@ -34,6 +34,7 @@ const serviciosPaths = [
   { path: '/services/custom-software', labelKey: 'nav.customSoftware' as const },
   { path: '/services/ai-solutions', labelKey: 'nav.aiSolutions' as const },
   { path: '/services/staff-augmentation', labelKey: 'nav.staffAugmentation' as const },
+  { path: '/services/developers-on-demand', labelKey: 'nav.developersOnDemand' as const },
 ];
 
 const companiaPaths = [
@@ -198,7 +199,16 @@ function MobileMenuContent({ onLinkClick }: { onLinkClick?: () => void }) {
         </Accordion>
       </div>
 
-      <div className="border-border mt-auto border-t p-4">
+      <div className="border-border mt-auto flex flex-col gap-2 border-t p-4">
+        <Link href={path('/login')} onClick={onLinkClick} className="block">
+          <Button
+            variant="outline"
+            className="h-12 w-full rounded-xl text-base font-semibold"
+            size="lg"
+          >
+            {t('nav.login')}
+          </Button>
+        </Link>
         <Link href={path('/contact')} onClick={onLinkClick} className="block">
           <Button className="h-12 w-full rounded-xl text-base font-semibold" size="lg">
             {t('nav.contactUs')}
@@ -225,7 +235,9 @@ export function Navbar() {
   const companiaBase = path('/company');
   const isCompaniaActive = loc.startsWith(companiaBase);
   const contactoPath = path('/contact');
+  const loginPath = path('/login');
   const isContactoActive = loc === contactoPath;
+  const isLoginActive = loc === loginPath;
 
   return (
     <header className="bg-background sticky top-0 z-40 w-full border-b p-3">
@@ -366,14 +378,24 @@ export function Navbar() {
             </NavigationMenuList>
           </NavigationMenu>
           <LangSwitcher className="ml-1 shrink-0" />
-          <Button
-            asChild
-            size="default"
-            variant={isContactoActive ? 'outline' : 'default'}
-            className={cn('ml-2 shrink-0', isContactoActive && 'border-primary text-primary')}
-          >
-            <Link href={path('/contact')}>{t('nav.contactUs')}</Link>
-          </Button>
+          <div className="ml-2 flex shrink-0 items-center gap-2">
+            <Button
+              asChild
+              size="default"
+              variant={isLoginActive ? 'default' : 'outline'}
+              className={cn(isLoginActive && 'shadow-sm')}
+            >
+              <Link href={loginPath}>{t('nav.login')}</Link>
+            </Button>
+            <Button
+              asChild
+              size="default"
+              variant={isContactoActive ? 'outline' : 'default'}
+              className={cn(isContactoActive && 'border-primary text-primary')}
+            >
+              <Link href={contactoPath}>{t('nav.contactUs')}</Link>
+            </Button>
+          </div>
         </div>
       </CenterContainer>
     </header>

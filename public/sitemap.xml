@@ -35,6 +35,14 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://vadodevs.com/es/services/developers-on-demand</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://vadodevs.com/es/services/developers-on-demand"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://vadodevs.com/en/services/developers-on-demand"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://vadodevs.com/es/services/developers-on-demand"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://vadodevs.com/es/our-work</loc>
     <xhtml:link rel="alternate" hreflang="es" href="https://vadodevs.com/es/our-work"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://vadodevs.com/en/our-work"/>

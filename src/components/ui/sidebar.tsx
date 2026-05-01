@@ -27,6 +27,20 @@ import {
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
+
+function getSidebarOpenFromCookie(): boolean | null {
+  if (typeof document === "undefined") return null
+  const prefix = `${SIDEBAR_COOKIE_NAME}=`
+  const cookies = document.cookie.split(";").map((c) => c.trim())
+  for (const row of cookies) {
+    if (row.startsWith(prefix)) {
+      const v = row.slice(prefix.length)
+      if (v === "true") return true
+      if (v === "false") return false
+    }
+  }
+  return null
+}
 const SIDEBAR_WIDTH = "16rem"
 const SIDEBAR_WIDTH_MOBILE = "18rem"
 const SIDEBAR_WIDTH_ICON = "3rem"
@@ -71,7 +85,12 @@ function SidebarProvider({
 
   // This is the internal state of the sidebar.
   // We use openProp and setOpenProp for control from outside the component.
-  const [_open, _setOpen] = React.useState(defaultOpen)
+  // Lee la cookie al montar: cada página usa su propio `<AppShell>` y al navegar el provider
+  // se vuelve a montar; sin esto, `defaultOpen` reiniciaría el sidebar a expandido.
+  const [_open, _setOpen] = React.useState(() => {
+    const stored = getSidebarOpenFromCookie()
+    return stored !== null ? stored : defaultOpen
+  })
   const open = openProp ?? _open
   const setOpen = React.useCallback(
     (value: boolean | ((value: boolean) => boolean)) => {
@@ -156,12 +175,15 @@ function Sidebar({
   variant = "sidebar",
   collapsible = "offcanvas",
   className,
+  sheetClassName,
   children,
   ...props
 }: React.ComponentProps<"div"> & {
   side?: "left" | "right"
   variant?: "sidebar" | "floating" | "inset"
   collapsible?: "offcanvas" | "icon" | "none"
+  /** Solo móvil: clases en `SheetContent` (el drawer se monta en portal fuera del árbol del layout). */
+  sheetClassName?: string
 }) {
   const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
 
@@ -187,7 +209,10 @@ function Sidebar({
           data-sidebar="sidebar"
           data-slot="sidebar"
           data-mobile="true"
-          className="bg-sidebar text-sidebar-foreground w-(--sidebar-width) p-0 [&>button]:hidden"
+          className={cn(
+            "bg-sidebar text-sidebar-foreground w-(--sidebar-width) p-0 [&>button]:hidden",
+            sheetClassName
+          )}
           style={
             {
               "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
@@ -606,10 +631,8 @@ function SidebarMenuSkeleton({
 }: React.ComponentProps<"div"> & {
   showIcon?: boolean
 }) {
-  // Random width between 50 to 90%.
-  const width = React.useMemo(() => {
-    return `${Math.floor(Math.random() * 40) + 50}%`
-  }, [])
+  /** Fixed width keeps skeleton layout stable and satisfies render purity rules. */
+  const width = "70%"
 
   return (
     <div
@@ -698,6 +721,8 @@ function SidebarMenuSubButton({
   )
 }
 
+/* useSidebar is part of the public sidebar API (shadcn pattern). */
+/* eslint-disable react-refresh/only-export-components */
 export {
   Sidebar,
   SidebarContent,

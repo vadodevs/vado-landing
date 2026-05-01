@@ -17,10 +17,14 @@ const STATIC_PATHS = [
   '/compania/vado-insights',
   '/compania/cultura-y-talento',
   '/contacto',
+  '/login',
   '/gracias',
   '/info/terms-of-service',
   '/info/privacy-policy',
   '/info/cookies',
+  '/app/dev',
+  '/app/company',
+  '/app/projects',
 ]
 const OUR_WORK_SLUGS = [
   'zenqr', 'sendero', 'ebm', 'digitalRanch', 'easySales', 'cipreses', 'maggiore', 'washaut',
@@ -55,6 +59,15 @@ function generateSitemapXml(baseUrl: string): string {
 
 // https://vite.dev/config/
 export default defineConfig({
+  server: {
+    // Túneles (ngrok, etc.): sin esto Vite bloquea el Host header en desarrollo.
+    allowedHosts: [
+      '.ngrok-free.dev',
+      '.ngrok-free.app',
+      '.ngrok.io',
+      'localhost',
+    ],
+  },
   plugins: [
     react(),
     tailwindcss(),

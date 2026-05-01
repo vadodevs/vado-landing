@@ -4,7 +4,7 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import { Link } from 'wouter';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from '@/hooks/useLocale';
-import { CheckCircle2, Info } from 'lucide-react';
+import { CheckCircle2, Eye, EyeOff, Info, X } from 'lucide-react';
 import { FaArrowLeft } from 'react-icons/fa';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
@@ -14,6 +14,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
+import { normalizeExpertiseTag } from '@/lib/expertiseFormat';
 
 /** Esquema Zod para el formulario de contacto (no postularse). Alineado con CreateContactDto (lead-slack-readme.md). */
 function buildContactSchema(messages: {
@@ -57,20 +58,19 @@ const initialContactValues: ContactFormValues = {
 function buildApplyStep1Schema(messages: {
   required: string;
   emailInvalid: string;
-  phoneInvalid: string;
+  passwordMinLength: string;
 }) {
   return z.object({
     fullName: z.string().min(1, messages.required),
     email: z.string().min(1, messages.required).email(messages.emailInvalid),
-    phoneNumber: z
+    password: z
       .string()
       .min(1, messages.required)
-      .refine((val) => val.replace(/\D/g, '').length >= 10, messages.phoneInvalid),
-    role: z.string().min(1, messages.required),
+      .refine((val) => val.length >= 8, messages.passwordMinLength),
   });
 }
 
-type ApplyStep1Field = 'fullName' | 'email' | 'phoneNumber' | 'role';
+type ApplyStep1Field = 'fullName' | 'email' | 'password';
 
 interface ContactFormProps {
   /** Prefijo para los ids de los campos (evita duplicados si hay varios formularios en la página). */
@@ -103,10 +103,12 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
   const [applyStep1Data, setApplyStep1Data] = useState<{
     fullName: string;
     email: string;
-    phoneNumber: string;
-    role: string;
+    password: string;
   } | null>(null);
+  const [showApplyPassword, setShowApplyPassword] = useState(false);
   const [applyCvFile, setApplyCvFile] = useState<File | null>(null);
+  const [applyExpertiseTags, setApplyExpertiseTags] = useState<string[]>([]);
+  const [applyExpertiseInput, setApplyExpertiseInput] = useState('');
   const applyCvInputRef = useRef<HTMLInputElement>(null);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'loading' | 'success' | 'error'>(
     'idle',
@@ -118,7 +120,7 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
     company?: string;
     phone?: string;
     message?: string;
-    role?: string;
+    password?: string;
   }>({});
   const [contactValues, setContactValues] = useState<ContactFormValues>(initialContactValues);
   const [contactTouched, setContactTouched] = useState<
@@ -142,7 +144,7 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
   const applyStep1Schema = buildApplyStep1Schema({
     required: t('home.ctaContact.errors.fieldsRequired'),
     emailInvalid: t('home.ctaContact.errors.emailInvalid'),
-    phoneInvalid: t('home.ctaContact.errors.phoneInvalid'),
+    passwordMinLength: t('home.ctaContact.errors.applyPasswordMin'),
   });
 
   const contactSchema = buildContactSchema({
@@ -195,7 +197,7 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
 
   const validateApplyStep1Field = useCallback(
     (field: ApplyStep1Field, value: string): string | undefined => {
-      const data = applyStep1Data ?? { fullName: '', email: '', phoneNumber: '', role: '' };
+      const data = applyStep1Data ?? { fullName: '', email: '', password: '' };
       const payload = { ...data, [field]: value };
       const result = applyStep1Schema.safeParse(payload);
       if (result.success) return undefined;
@@ -208,11 +210,10 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
   const handleApplyStep1Blur = useCallback(
     (field: ApplyStep1Field) => {
       setApplyTouched((prev) => ({ ...prev, [field]: true }));
-      const data = applyStep1Data ?? { fullName: '', email: '', phoneNumber: '', role: '' };
-      const value = field === 'phoneNumber' ? data.phoneNumber : data[field];
+      const data = applyStep1Data ?? { fullName: '', email: '', password: '' };
+      const value = data[field];
       const error = validateApplyStep1Field(field, value);
-      const errorKey = field === 'phoneNumber' ? 'phone' : field;
-      setFieldErrors((prev) => ({ ...prev, [errorKey]: error }));
+      setFieldErrors((prev) => ({ ...prev, [field]: error }));
     },
     [applyStep1Data, validateApplyStep1Field],
   );
@@ -220,24 +221,15 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
   const handleApplyStep1Change = useCallback(
     (field: ApplyStep1Field, value: string) => {
       setApplyStep1Data((prev) => ({
-        ...(prev ?? { fullName: '', email: '', phoneNumber: '', role: '' }),
+        ...(prev ?? { fullName: '', email: '', password: '' }),
         [field]: value,
       }));
       if (applyTouched[field]) {
         const error = validateApplyStep1Field(field, value);
-        const errorKey = field === 'phoneNumber' ? 'phone' : field;
-        setFieldErrors((prev) => ({ ...prev, [errorKey]: error }));
+        setFieldErrors((prev) => ({ ...prev, [field]: error }));
       }
     },
     [applyTouched, validateApplyStep1Field],
-  );
-
-  const handleApplyPhoneInput = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const digitsOnly = e.target.value.replace(/\D/g, '').slice(0, 10);
-      handleApplyStep1Change('phoneNumber', digitsOnly);
-    },
-    [handleApplyStep1Change],
   );
 
   const handleSubjectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -254,21 +246,23 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
       setShowApplyForm(false);
       setApplyStep(1);
       setApplyStep1Data(null);
+      setShowApplyPassword(false);
+      setApplyExpertiseTags([]);
+      setApplyExpertiseInput('');
     }
   };
 
   const handleContinueToStep2 = () => {
-    const data = applyStep1Data ?? { fullName: '', email: '', phoneNumber: '', role: '' };
+    const data = applyStep1Data ?? { fullName: '', email: '', password: '' };
     const fullName = (data.fullName ?? '').trim();
     const email = (data.email ?? '').trim();
-    const phoneNumber = (data.phoneNumber ?? '').trim();
-    const role = (data.role ?? '').trim();
-    const parseResult = applyStep1Schema.safeParse({ fullName, email, phoneNumber, role });
+    const password = data.password ?? '';
+    const parseResult = applyStep1Schema.safeParse({ fullName, email, password });
     if (!parseResult.success) {
-      const errors: { fullName?: string; email?: string; phone?: string; role?: string } = {};
+      const errors: { fullName?: string; email?: string; password?: string } = {};
       parseResult.error.issues.forEach((issue) => {
         const key = issue.path[0] as ApplyStep1Field;
-        if (key) errors[key === 'phoneNumber' ? 'phone' : key] = issue.message as string;
+        if (key) errors[key] = issue.message as string;
       });
       setFieldErrors(errors);
       setSubmitStatus('error');
@@ -278,9 +272,20 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
     setFieldErrors({});
     setSubmitError(null);
     setApplyCvFile(null);
-    setApplyStep1Data({ fullName, email, phoneNumber, role });
+    setApplyStep1Data({ fullName, email, password });
     setApplyStep(2);
   };
+
+  const addApplyExpertiseTag = useCallback(() => {
+    const formatted = normalizeExpertiseTag(applyExpertiseInput);
+    if (!formatted) return;
+    setApplyExpertiseTags((prev) => {
+      const exists = prev.some((t) => t.toLowerCase() === formatted.toLowerCase());
+      if (exists) return prev;
+      return [...prev, formatted].slice(0, 40);
+    });
+    setApplyExpertiseInput('');
+  }, [applyExpertiseInput]);
 
   const handleApplySubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -317,10 +322,13 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
     const travelRadio = form.querySelector<HTMLInputElement>(
       `input[name="${idPrefix}apply-travel"]:checked`,
     )?.value;
+    const workingRadio = form.querySelector<HTMLInputElement>(
+      `input[name="${idPrefix}apply-working"]:checked`,
+    )?.value;
     const cvInput = form.querySelector<HTMLInputElement>(`[id="${idPrefix}apply-cv"]`);
     const cvFile = applyCvFile ?? cvInput?.files?.[0];
 
-    if (!howTheyKnowVado || !startVadoRaw) {
+    if (!howTheyKnowVado || !startVadoRaw || !workingRadio) {
       setSubmitStatus('error');
       setSubmitError(t('home.ctaContact.errors.fieldsRequired'));
       return;
@@ -344,6 +352,7 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
 
     const validVisa = validVisaRadio === 'si';
     const availabilityToTravel = travelRadio === 'si';
+    const currentlyEmployed = workingRadio === 'si';
 
     if (!cvFile) {
       setSubmitStatus('error');
@@ -362,8 +371,7 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
     const body = {
       fullName: applyStep1Data.fullName,
       email: applyStep1Data.email,
-      phoneNumber: applyStep1Data.phoneNumber,
-      role: applyStep1Data.role,
+      password: applyStep1Data.password,
       howTheyKnowVado: howTheyKnowVadoLabel,
       agreement: true,
       startVado,
@@ -375,13 +383,14 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
       const fd = new FormData();
       fd.append('fullName', body.fullName);
       fd.append('email', body.email);
-      fd.append('phoneNumber', body.phoneNumber);
-      fd.append('role', body.role);
+      fd.append('password', body.password);
       fd.append('howTheyKnowVado', body.howTheyKnowVado);
       fd.append('agreement', 'true');
       fd.append('startVado', body.startVado);
       fd.append('validVisa', String(body.validVisa));
       fd.append('availabilityToTravel', String(body.availabilityToTravel));
+      fd.append('currentlyEmployed', String(currentlyEmployed));
+      fd.append('expertiseJson', JSON.stringify(applyExpertiseTags));
       fd.append('cv', cvFile);
 
       const res = await fetch(DEVELOPERS_WITH_CV_URL, {
@@ -400,7 +409,10 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
       setShowApplyForm(false);
       setApplyStep(1);
       setApplyStep1Data(null);
+      setShowApplyPassword(false);
       setApplyCvFile(null);
+      setApplyExpertiseTags([]);
+      setApplyExpertiseInput('');
       try {
         form.reset();
         if (applyCvInputRef.current) applyCvInputRef.current.value = '';
@@ -557,7 +569,10 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
                   setShowApplyForm(false);
                   setApplyStep(1);
                   setApplyStep1Data(null);
+                  setShowApplyPassword(false);
                   setApplyCvFile(null);
+                  setApplyExpertiseTags([]);
+                  setApplyExpertiseInput('');
                   setSubmitError(null);
                   setFieldErrors({});
                   setContactValues(initialContactValues);
@@ -681,67 +696,58 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
                         )}
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor={`${idPrefix}apply-phone`}>
-                          {t('home.ctaContact.phone')}
+                        <Label htmlFor={`${idPrefix}apply-password`}>
+                          {t('home.ctaContact.applyForm.passwordLabel')}
                           <span> *</span>
                         </Label>
-                        <Input
-                          id={`${idPrefix}apply-phone`}
-                          type="tel"
-                          inputMode="numeric"
-                          autoComplete="tel"
-                          placeholder={t('home.ctaContact.phonePlaceholder')}
-                          className={cn(
-                            'h-10 rounded-lg',
-                            fieldErrors.phone &&
-                              'border-destructive focus-visible:ring-destructive',
-                          )}
-                          value={applyStep1Data?.phoneNumber ?? ''}
-                          onChange={handleApplyPhoneInput}
-                          onBlur={() => handleApplyStep1Blur('phoneNumber')}
-                          aria-invalid={!!fieldErrors.phone}
-                          aria-describedby={
-                            fieldErrors.phone ? `${idPrefix}apply-phone-error` : undefined
-                          }
-                        />
-                        {fieldErrors.phone && (
+                        <div className="relative">
+                          <Input
+                            id={`${idPrefix}apply-password`}
+                            type={showApplyPassword ? 'text' : 'password'}
+                            autoComplete="new-password"
+                            className={cn(
+                              'h-10 pr-10 rounded-lg',
+                              fieldErrors.password &&
+                                'border-destructive focus-visible:ring-destructive',
+                            )}
+                            value={applyStep1Data?.password ?? ''}
+                            onChange={(e) => handleApplyStep1Change('password', e.target.value)}
+                            onBlur={() => handleApplyStep1Blur('password')}
+                            aria-invalid={!!fieldErrors.password}
+                            aria-describedby={
+                              fieldErrors.password ? `${idPrefix}apply-password-error` : undefined
+                            }
+                          />
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="text-muted-foreground absolute right-0.5 top-0.5 size-9"
+                            onClick={() => setShowApplyPassword((s) => !s)}
+                            tabIndex={-1}
+                            aria-label={
+                              showApplyPassword
+                                ? t('home.ctaContact.applyForm.passwordHide')
+                                : t('home.ctaContact.applyForm.passwordShow')
+                            }
+                          >
+                            {showApplyPassword ? (
+                              <EyeOff className="size-4" />
+                            ) : (
+                              <Eye className="size-4" />
+                            )}
+                          </Button>
+                        </div>
+                        <p className="text-muted-foreground text-xs">
+                          {t('home.ctaContact.applyForm.passwordHint')}
+                        </p>
+                        {fieldErrors.password && (
                           <p
-                            id={`${idPrefix}apply-phone-error`}
+                            id={`${idPrefix}apply-password-error`}
                             className="text-destructive text-sm"
                             role="alert"
                           >
-                            {fieldErrors.phone}
-                          </p>
-                        )}
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor={`${idPrefix}apply-role`}>
-                          {t('home.ctaContact.applyForm.roleLabel')}
-                          <span> *</span>
-                        </Label>
-                        <Input
-                          id={`${idPrefix}apply-role`}
-                          type="text"
-                          placeholder={t('home.ctaContact.applyForm.rolePlaceholder')}
-                          className={cn(
-                            'h-10 rounded-lg',
-                            fieldErrors.role && 'border-destructive focus-visible:ring-destructive',
-                          )}
-                          value={applyStep1Data?.role ?? ''}
-                          onChange={(e) => handleApplyStep1Change('role', e.target.value)}
-                          onBlur={() => handleApplyStep1Blur('role')}
-                          aria-invalid={!!fieldErrors.role}
-                          aria-describedby={
-                            fieldErrors.role ? `${idPrefix}apply-role-error` : undefined
-                          }
-                        />
-                        {fieldErrors.role && (
-                          <p
-                            id={`${idPrefix}apply-role-error`}
-                            className="text-destructive text-sm"
-                            role="alert"
-                          >
-                            {fieldErrors.role}
+                            {fieldErrors.password}
                           </p>
                         )}
                       </div>
@@ -756,7 +762,10 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
                             setShowApplyForm(false);
                             setApplyStep(1);
                             setApplyStep1Data(null);
+                            setShowApplyPassword(false);
                             setApplyCvFile(null);
+                            setApplyExpertiseTags([]);
+                            setApplyExpertiseInput('');
                             setFieldErrors({});
                             setSubmitError(null);
                             setApplyTouched({});
@@ -855,6 +864,66 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
                             {t('home.ctaContact.applyForm.moreThan3Months')}
                           </option>
                         </select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor={`${idPrefix}apply-expertise-input`}>
+                          {t('home.ctaContact.applyForm.expertiseLabel')}
+                        </Label>
+                        <p className="text-muted-foreground text-xs">
+                          {t('home.ctaContact.applyForm.expertiseHint')}
+                        </p>
+                        {applyExpertiseTags.length > 0 ? (
+                          <div className="flex flex-wrap gap-2">
+                            {applyExpertiseTags.map((tag) => (
+                              <span
+                                key={tag}
+                                className="bg-primary/10 text-foreground inline-flex items-center gap-1 rounded-md px-2.5 py-1 text-sm font-medium"
+                              >
+                                {tag}
+                                <button
+                                  type="button"
+                                  className="text-muted-foreground hover:text-destructive -mr-0.5 rounded p-0.5 transition-colors"
+                                  onClick={() =>
+                                    setApplyExpertiseTags((prev) => prev.filter((t) => t !== tag))
+                                  }
+                                  aria-label={t('home.ctaContact.applyForm.expertiseRemove', {
+                                    tag,
+                                  })}
+                                >
+                                  <X className="size-3.5" aria-hidden />
+                                </button>
+                              </span>
+                            ))}
+                          </div>
+                        ) : null}
+                        <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center">
+                          <Input
+                            id={`${idPrefix}apply-expertise-input`}
+                            type="text"
+                            autoComplete="off"
+                            placeholder={t('home.ctaContact.applyForm.expertisePlaceholder')}
+                            value={applyExpertiseInput}
+                            onChange={(e) => setApplyExpertiseInput(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault();
+                                addApplyExpertiseTag();
+                              }
+                            }}
+                            className={cn(
+                              'border-input h-10 flex-1 rounded-lg border bg-transparent px-3 py-2 text-base',
+                              'focus:border-primary focus:ring-primary/50 focus:ring-2 focus:outline-none md:text-sm',
+                            )}
+                          />
+                          <Button
+                            type="button"
+                            variant="secondary"
+                            className="shrink-0"
+                            onClick={addApplyExpertiseTag}
+                          >
+                            {t('home.ctaContact.applyForm.expertiseAdd')}
+                          </Button>
+                        </div>
                       </div>
                       <div className="space-y-2">
                         <Label className="flex items-center gap-1.5">
@@ -1041,6 +1110,7 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
                             onClick={() => {
                               setFieldErrors({});
                               setSubmitError(null);
+                              setShowApplyPassword(false);
                               setApplyStep(1);
                             }}
                             disabled={submitStatus === 'loading'}
@@ -1068,7 +1138,10 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
                               setShowApplyForm(false);
                               setApplyStep(1);
                               setApplyStep1Data(null);
+                              setShowApplyPassword(false);
                               setApplyCvFile(null);
+                              setApplyExpertiseTags([]);
+                              setApplyExpertiseInput('');
                               setFieldErrors({});
                               setSubmitError(null);
                               setApplyTouched({});
@@ -1095,9 +1168,8 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
                       className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg px-8 font-medium"
                       onClick={() => {
                         setShowApplyForm(true);
-                        setApplyStep1Data(
-                          (prev) => prev ?? { fullName: '', email: '', phoneNumber: '', role: '' },
-                        );
+                        setApplyStep1Data((prev) => prev ?? { fullName: '', email: '', password: '' });
+                        setShowApplyPassword(false);
                       }}
                     >
                       {t('home.ctaContact.applyNow')}
