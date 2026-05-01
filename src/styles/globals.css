@@ -135,8 +135,40 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    scrollbar-width: thin;
+    /* thumb | track — track = negro del mapa (hero, bg-black) */
+    scrollbar-color: #1a1a1a #000;
   }
   body {
-    @apply bg-background text-foreground overflow-x-hidden font-sans;
+    @apply bg-[#1A1A1A] text-foreground overflow-x-hidden font-sans;
+  }
+
+  /* Carril negro como el mapa (hero); thumb ligeramente más claro */
+  *::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+    background: #000;
+    border-radius: 9999px;
+  }
+  *::-webkit-scrollbar-track {
+    background: #000;
+    border-radius: 9999px;
+    box-shadow: none;
+  }
+  *::-webkit-scrollbar-thumb {
+    background-color: #1a1a1a;
+    border-radius: 9999px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+    box-shadow: none;
+  }
+  *::-webkit-scrollbar-thumb:hover {
+    background-color: color-mix(in oklch, var(--foreground) 52%, var(--muted));
+  }
+  *::-webkit-scrollbar-thumb:active {
+    background-color: color-mix(in oklch, var(--foreground) 60%, var(--muted));
+  }
+  *::-webkit-scrollbar-corner {
+    background: #000;
   }
 }

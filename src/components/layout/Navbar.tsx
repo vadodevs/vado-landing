@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'wouter';
 import { useTranslation } from 'react-i18next';
 import { Menu, X } from 'lucide-react';
@@ -76,11 +76,15 @@ function NavLink({
   );
 }
 
-function LangSwitcher({ className }: { className?: string }) {
+function LangSwitcher({ className, overlay }: { className?: string; overlay?: boolean }) {
   const { locale } = useLocale();
   const [location] = useLocation();
   const enPath = location.replace(/^\/[^/]+/, '/en');
   const esPath = location.replace(/^\/[^/]+/, '/es');
+
+  const inactive = overlay
+    ? 'text-white/75 hover:text-white'
+    : 'text-muted-foreground hover:text-foreground';
 
   return (
     <div className={cn('flex items-center gap-1 text-sm', className)}>
@@ -88,21 +92,17 @@ function LangSwitcher({ className }: { className?: string }) {
         href={enPath}
         className={cn(
           'rounded px-2 py-1 font-medium transition-colors',
-          locale === 'en'
-            ? 'text-primary font-semibold'
-            : 'text-muted-foreground hover:text-foreground',
+          locale === 'en' ? 'text-primary font-semibold' : inactive,
         )}
       >
         EN
       </Link>
-      <span className="text-muted-foreground">|</span>
+      <span className={cn(overlay ? 'text-white/35' : 'text-muted-foreground')}>|</span>
       <Link
         href={esPath}
         className={cn(
           'rounded px-2 py-1 font-medium transition-colors',
-          locale === 'es'
-            ? 'text-primary font-semibold'
-            : 'text-muted-foreground hover:text-foreground',
+          locale === 'es' ? 'text-primary font-semibold' : inactive,
         )}
       >
         ES
@@ -209,8 +209,33 @@ function MobileMenuContent({ onLinkClick }: { onLinkClick?: () => void }) {
   );
 }
 
+const SCROLL_ELEVATE_PX = 8;
+/** Cuánto se mueve el navbar respecto al delta de scroll (0–1): más bajo = más “poco a poco” */
+const SCROLL_TO_NAV_FACTOR = 0.42;
+/** Ignorar micro-ruidos del trackpad */
+const SCROLL_DELTA_EPS = 1.5;
+/** Bajar: ocultar de golpe solo si reduced motion — mismos umbrales que antes */
+const SCROLL_DOWN_HIDE_PX = 12;
+const SCROLL_UP_SHOW_PX = 4;
+const DESKTOP_NAV_MQ = '(min-width: 1024px)';
+
 export function Navbar() {
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [elevated, setElevated] = useState(false);
+  /** 0 = visible, negativo = subido (px) — solo desktop lg+ */
+  const [navOffsetY, setNavOffsetY] = useState(0);
+  /** Transición suave al subir scroll; sin transición al bajar para seguir el dedo */
+  const [revealTransition, setRevealTransition] = useState(true);
+  const [isDesktopNav, setIsDesktopNav] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia(DESKTOP_NAV_MQ).matches,
+  );
+  const [reducedMotion, setReducedMotion] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+  );
+  const [navHiddenReduced, setNavHiddenReduced] = useState(false);
+  const [navHeaderHeight, setNavHeaderHeight] = useState(88);
+  const headerRef = useRef<HTMLElement>(null);
+  const lastScrollY = useRef(0);
   const { t } = useTranslation();
   const { path } = useLocale();
   const [location] = useLocation();
@@ -227,18 +252,197 @@ export function Navbar() {
   const contactoPath = path('/contact');
   const isContactoActive = loc === contactoPath;
 
+  const overlay = !elevated;
+
+  useLayoutEffect(() => {
+    const mqDesktop = window.matchMedia(DESKTOP_NAV_MQ);
+    const mqReduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const syncDesktop = () => setIsDesktopNav(mqDesktop.matches);
+    const syncReduce = () => setReducedMotion(mqReduce.matches);
+    syncDesktop();
+    syncReduce();
+    mqDesktop.addEventListener('change', syncDesktop);
+    mqReduce.addEventListener('change', syncReduce);
+    return () => {
+      mqDesktop.removeEventListener('change', syncDesktop);
+      mqReduce.removeEventListener('change', syncReduce);
+    };
+  }, []);
+
+  useLayoutEffect(() => {
+    const el = headerRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(() => setNavHeaderHeight(el.offsetHeight));
+    ro.observe(el);
+    setNavHeaderHeight(el.offsetHeight);
+    return () => ro.disconnect();
+  }, [location]);
+
+  /* Reset de scroll-nav y suscripción: setState inicial al cambiar ruta / drawer / breakpoint es intencional */
+  /* eslint-disable react-hooks/set-state-in-effect */
+  useLayoutEffect(() => {
+    lastScrollY.current = window.scrollY;
+    setNavOffsetY(0);
+    setNavHiddenReduced(false);
+    setRevealTransition(true);
+    if (typeof window !== 'undefined') {
+      if (!isDesktopNav) {
+        setElevated(window.scrollY > SCROLL_ELEVATE_PX);
+      } else {
+        setElevated(false);
+      }
+    }
+
+    const headerHeight = () => headerRef.current?.offsetHeight ?? 80;
+
+    const onScroll = () => {
+      const y = window.scrollY;
+      const prev = lastScrollY.current;
+
+      if (drawerOpen) {
+        lastScrollY.current = y;
+        if (!isDesktopNav) {
+          setElevated(y > SCROLL_ELEVATE_PX);
+        } else if (y <= SCROLL_ELEVATE_PX) {
+          setElevated(false);
+        }
+        return;
+      }
+
+      if (!isDesktopNav) {
+        lastScrollY.current = y;
+        setElevated(y > SCROLL_ELEVATE_PX);
+        setNavOffsetY(0);
+        setNavHiddenReduced(false);
+        return;
+      }
+
+      // Desktop: barra oscura en el hero (arriba del todo); más abajo solo blanca al subir scroll
+      if (y <= SCROLL_ELEVATE_PX) {
+        lastScrollY.current = y;
+        setElevated(false);
+        setNavOffsetY(0);
+        setNavHiddenReduced(false);
+        setRevealTransition(true);
+        return;
+      }
+
+      const delta = y - prev;
+      lastScrollY.current = y;
+
+      if (Math.abs(delta) >= SCROLL_DELTA_EPS) {
+        if (delta < 0) {
+          setElevated(true);
+        } else {
+          setElevated(false);
+        }
+      }
+
+      if (reducedMotion) {
+        if (delta > SCROLL_DOWN_HIDE_PX) {
+          setNavHiddenReduced(true);
+        } else if (delta < -SCROLL_UP_SHOW_PX) {
+          setNavHiddenReduced(false);
+        }
+        return;
+      }
+
+      if (Math.abs(delta) < SCROLL_DELTA_EPS) {
+        return;
+      }
+
+      const h = headerHeight();
+
+      if (delta > 0) {
+        setRevealTransition(false);
+        setNavOffsetY((off) => Math.max(off - delta * SCROLL_TO_NAV_FACTOR, -h));
+      } else {
+        setRevealTransition(true);
+        setNavOffsetY((off) => Math.min(off - delta * SCROLL_TO_NAV_FACTOR, 0));
+      }
+    };
+
+    const onResize = () => {
+      if (!isDesktopNav) {
+        setNavOffsetY(0);
+        setNavHiddenReduced(false);
+        return;
+      }
+      const h = headerHeight();
+      setNavOffsetY((off) => Math.min(0, Math.max(off, -h)));
+    };
+
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onResize);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onResize);
+    };
+  }, [location, drawerOpen, isDesktopNav, reducedMotion]);
+  /* eslint-enable react-hooks/set-state-in-effect */
+
+  const navTransformResolved = !isDesktopNav
+    ? 'translateY(0)'
+    : reducedMotion
+      ? navHiddenReduced
+        ? 'translateY(-100%)'
+        : 'translateY(0)'
+      : `translateY(${navOffsetY}px)`;
+
+  const navTransition = reducedMotion
+    ? 'none'
+    : [
+        isDesktopNav
+          ? revealTransition
+            ? 'transform 450ms cubic-bezier(0.22, 1, 0.36, 1)'
+            : 'transform 0ms linear 0s'
+          : null,
+        'background-color 500ms ease',
+        'box-shadow 500ms ease',
+        'border-color 500ms ease',
+      ]
+        .filter(Boolean)
+        .join(', ');
+
+  const navInert =
+    isDesktopNav &&
+    (reducedMotion ? navHiddenReduced : navOffsetY <= -navHeaderHeight + 6);
+
   return (
-    <header className="bg-background sticky top-0 z-40 w-full border-b p-3">
+    <header
+      ref={headerRef}
+      inert={navInert ? true : undefined}
+      style={{
+        transform: navTransformResolved,
+        transition: navTransition,
+      }}
+      className={cn(
+        'fixed left-0 right-0 top-0 z-40 w-full p-3',
+        'motion-reduce:transition-none',
+        elevated
+          ? 'bg-white shadow-sm'
+          : 'border-transparent bg-black',
+      )}
+    >
       <CenterContainer className="flex h-14 items-center justify-between">
-        <Link href={homePath} className="flex shrink-0 items-center">
-          <VadoLogo />
+        <Link href={homePath} className="flex shrink-0 size-28 items-center">
+          <VadoLogo white={overlay} />
         </Link>
 
         <div className="flex items-center gap-2 lg:hidden">
-          <LangSwitcher className="shrink-0" />
+          <LangSwitcher className="shrink-0" overlay={overlay} />
           <Drawer open={drawerOpen} onOpenChange={setDrawerOpen} direction="right">
             <DrawerTrigger asChild>
-              <Button variant="ghost" size="icon" aria-label={t('nav.openMenu')}>
+              <Button
+                variant="ghost"
+                size="icon"
+                aria-label={t('nav.openMenu')}
+                className={cn(
+                  overlay &&
+                    'text-white hover:bg-white/10 hover:text-white focus-visible:ring-white/40',
+                )}
+              >
                 <Menu className="size-6" />
               </Button>
             </DrawerTrigger>
@@ -276,7 +480,10 @@ export function Navbar() {
                   <Link
                     href={homePath}
                     className={cn(
-                      'text-foreground hover:text-primary focus:text-primary focus-visible:ring-ring/50 inline-flex h-9 w-max items-center justify-center rounded-lg bg-transparent px-4 py-2 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
+                      'inline-flex h-9 w-max items-center justify-center rounded-lg bg-transparent px-4 py-2 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
+                      overlay
+                        ? 'text-white hover:text-white/90 focus:text-white focus-visible:ring-white/40 focus-visible:ring-offset-transparent'
+                        : 'text-foreground hover:text-primary focus:text-primary focus-visible:ring-ring/50',
                       isHomeActive && 'text-primary font-semibold',
                     )}
                   >
@@ -287,7 +494,11 @@ export function Navbar() {
               <NavigationMenuItem>
                 <NavigationMenuTrigger
                   className={cn(
-                    'data-[state=open]:text-primary hover:bg-transparent focus:bg-transparent data-[state=open]:bg-transparent',
+                    'hover:bg-transparent focus:bg-transparent data-[state=open]:bg-transparent',
+                    overlay &&
+                      'text-white hover:text-white/90 hover:bg-white/10 focus:bg-white/10 focus:text-white data-[state=open]:text-white data-[state=open]:bg-white/10 [&_svg]:text-white',
+                    !overlay &&
+                      'data-[state=open]:text-primary data-[state=open]:bg-transparent',
                     isServiciosActive && 'text-primary font-semibold',
                   )}
                 >
@@ -322,7 +533,10 @@ export function Navbar() {
                   <Link
                     href={path('/our-work')}
                     className={cn(
-                      'text-foreground hover:text-primary focus:text-primary focus-visible:ring-ring/50 inline-flex h-9 w-max items-center justify-center rounded-lg bg-transparent px-4 py-2 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
+                      'inline-flex h-9 w-max items-center justify-center rounded-lg bg-transparent px-4 py-2 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
+                      overlay
+                        ? 'text-white hover:text-white/90 focus:text-white focus-visible:ring-white/40 focus-visible:ring-offset-transparent'
+                        : 'text-foreground hover:text-primary focus:text-primary focus-visible:ring-ring/50',
                       isNuestroTrabajoActive && 'text-primary font-semibold',
                     )}
                   >
@@ -333,7 +547,11 @@ export function Navbar() {
               <NavigationMenuItem>
                 <NavigationMenuTrigger
                   className={cn(
-                    'data-[state=open]:text-primary hover:bg-transparent focus:bg-transparent data-[state=open]:bg-transparent',
+                    'hover:bg-transparent focus:bg-transparent data-[state=open]:bg-transparent',
+                    overlay &&
+                      'text-white hover:text-white/90 hover:bg-white/10 focus:bg-white/10 focus:text-white data-[state=open]:text-white data-[state=open]:bg-white/10 [&_svg]:text-white',
+                    !overlay &&
+                      'data-[state=open]:text-primary data-[state=open]:bg-transparent',
                     isCompaniaActive && 'text-primary font-semibold',
                   )}
                 >
@@ -365,12 +583,17 @@ export function Navbar() {
               </NavigationMenuItem>
             </NavigationMenuList>
           </NavigationMenu>
-          <LangSwitcher className="ml-1 shrink-0" />
+          <LangSwitcher className="ml-1 shrink-0" overlay={overlay} />
           <Button
             asChild
             size="default"
-            variant={isContactoActive ? 'outline' : 'default'}
-            className={cn('ml-2 shrink-0', isContactoActive && 'border-primary text-primary')}
+            variant={overlay || isContactoActive ? 'outline' : 'default'}
+            className={cn(
+              'ml-2 shrink-0',
+              overlay &&
+                'border-white bg-transparent text-white hover:bg-white/15 hover:text-white',
+              elevated && isContactoActive && 'border-primary text-primary',
+            )}
           >
             <Link href={path('/contact')}>{t('nav.contactUs')}</Link>
           </Button>

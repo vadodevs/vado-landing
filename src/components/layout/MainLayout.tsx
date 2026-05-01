@@ -9,7 +9,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
   return (
     <div>
       <Navbar />
-      <div className="overflow-x-clip">{children}</div>
+      <div className="overflow-x-clip pt-20">{children}</div>
       <Footer />
     </div>
   );

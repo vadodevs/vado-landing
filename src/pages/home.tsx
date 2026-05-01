@@ -5,6 +5,8 @@ import { AISolutionsSection } from '@/components/layout/home/ai-solutions/AISolu
 import { DigitalProductsSection } from '@/components/layout/home/digital-products/DigitalProductsSection';
 import { ClientsSection } from '@/components/layout/home/clients/ClientsSection';
 import { Hero } from '@/components/layout/home/hero/Hero';
+import { HowWeWorkSection } from '@/components/layout/home/how-we-work/HowWeWorkSection';
+import { NearshoreBenefitsBentoSection } from '@/components/layout/home/nearshore-bento/NearshoreBenefitsBentoSection';
 import { StaffAugmentationSection } from '@/components/layout/home/staff-augmentation/StaffAugmentationSection';
 import { TechStackSection } from '@/components/layout/home/tech-stack/TechStackSection';
 import { WhyVadoSection } from '@/components/layout/home/why-vado/WhyVadoSection';
@@ -29,6 +31,8 @@ export default function Home() {
       />
       <MainLayout>
         <Hero />
+        <HowWeWorkSection />
+        <NearshoreBenefitsBentoSection />
         <TrustedBrands />
         <DigitalProductsSection />
         <AISolutionsSection />
