@@ -5,6 +5,7 @@ import { motion, useReducedMotion } from 'motion/react';
 import { useLocale } from '@/hooks/useLocale';
 import { cn } from '@/lib/utils';
 import { CenterContainer } from '@/components/layout/CenterContainer';
+import { TrustedBrands } from '@/components/layout/home/brands/TrustedBrands';
 import WorldMap, { type MapProps } from '@/components/ui/world-map';
 import {
   ArrowRight,
@@ -36,7 +37,7 @@ function FocusCardHeader({
   return (
     <div className="flex items-start gap-3">
       <span
-        className="bg-primary/15 text-primary flex size-11 shrink-0 items-center justify-center rounded-xl md:size-12"
+        className="bg-gray-50 text-primary flex size-11 shrink-0 items-center justify-center rounded-xl md:size-12"
         aria-hidden
       >
         <Icon className="size-5 md:size-[1.375rem]" strokeWidth={1.75} />
@@ -44,13 +45,13 @@ function FocusCardHeader({
       <div className="min-w-0">
         <h3
           className={cn(
-            'text-base font-semibold tracking-tight text-neutral-900 md:text-lg',
+            'text-base font-semibold tracking-tight text-black md:text-lg',
             titleClassName,
           )}
         >
           {t(titleKey)}
         </h3>
-        <p className="text-primary mt-1.5 text-sm font-semibold leading-snug text-pretty md:text-[15px]">
+        <p className="text-white mt-1.5 text-sm font-medium leading-snug text-pretty md:text-[15px]">
           {t(taglineKey)}
         </p>
       </div>
@@ -266,14 +267,16 @@ export function Hero() {
         </CenterContainer>
       </div>
 
-      <div className="relative border-t border-neutral-200 bg-neutral-50 py-12 md:py-16 lg:py-20">
+      <TrustedBrands />
+
+      <div className="relative  bg-neutral-100 py-12 md:py-16 lg:py-20">
         <CenterContainer>
           <div className="mx-auto max-w-5xl">
             <h2 className="text-primary text-center text-2xl font-semibold tracking-tight md:text-3xl">
               {t('home.focusSectionTitle')}
             </h2>
             <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-3">
-              <article className="border-primary/25 bg-primary/5 ring-primary/20 flex flex-col gap-6 rounded-2xl border p-6 shadow-sm ring-1 md:col-span-3 md:flex-row md:items-stretch md:gap-8 md:p-8">
+              <article className="bg-white flex flex-col gap-6 rounded-2xl  p-6 md:col-span-3 md:flex-row md:items-stretch md:gap-8 md:p-8">
                 <div className="min-w-0 flex-1">
                   <FocusCardHeader
                     icon={Rocket}
@@ -294,18 +297,18 @@ export function Hero() {
                   />
                 </div>
                 <div className="flex shrink-0 flex-col gap-3 sm:flex-row sm:items-stretch md:flex-col md:justify-center md:border-l md:border-primary/15 md:pl-8">
-                  <div className="bg-background/80 flex flex-1 flex-col justify-center rounded-xl border border-neutral-200/80 px-4 py-3">
+                  <div className="bg-white flex flex-1 flex-col justify-center rounded-xl border border-neutral-200/80 px-4 py-3">
                     <p className="text-primary text-base font-semibold">{t('home.focusCardMvpPriceMvp')}</p>
-                    <p className="text-primary mt-1 text-xs font-medium">{t('home.focusCardMvpPriceMvpHint')}</p>
+                    <p className="text-gray-500 mt-1 text-xs font-medium">{t('home.focusCardMvpPriceMvpHint')}</p>
                   </div>
-                  <div className="bg-background/80 flex flex-1 flex-col justify-center rounded-xl border border-neutral-200/80 px-4 py-3">
+                  <div className="bg-white flex flex-1 flex-col justify-center rounded-xl border border-neutral-200/80 px-4 py-3">
                     <p className="text-primary text-base font-semibold">{t('home.focusCardMvpPriceProd')}</p>
-                    <p className="text-primary mt-1 text-xs font-medium">{t('home.focusCardMvpPriceProdHint')}</p>
+                    <p className="text-gray-500 mt-1 text-xs font-medium">{t('home.focusCardMvpPriceProdHint')}</p>
                   </div>
                 </div>
               </article>
 
-              <article className="flex flex-col rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm md:p-7">
+              <article className="flex flex-col rounded-2xl bg-white p-6 shadow-sm md:p-7">
                 <FocusCardHeader
                   icon={UsersRound}
                   titleKey="home.focusCardStaffTitle"
@@ -324,7 +327,7 @@ export function Hero() {
                 />
               </article>
 
-              <article className="flex flex-col rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm md:p-7">
+              <article className="flex flex-col rounded-2xl bg-white p-6 shadow-sm md:p-7">
                 <FocusCardHeader
                   icon={Layers2}
                   titleKey="home.focusCardConsultingTitle"
@@ -343,7 +346,7 @@ export function Hero() {
                 />
               </article>
 
-              <article className="flex flex-col rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm md:p-7">
+              <article className="flex flex-col rounded-2xl bg-white p-6 shadow-sm md:p-7">
                 <FocusCardHeader
                   icon={Sparkles}
                   titleKey="home.focusCardAiTitle"

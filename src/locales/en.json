@@ -968,7 +968,7 @@
     "nearshoreBento": {
       "kicker": "Staff augmentation",
       "title": "Nearshore benefits that compound over time",
-      "subtitle": "Six practical reasons teams choose LATAM augmentation with Vado—designed to fit US-led delivery.",
+      "subtitle": "Five practical reasons teams choose LATAM augmentation with Vado—designed to fit US-led delivery.",
       "item1Title": "Nearshore advantage (LATAM-based)",
       "item1Description": "Work with engineers in your time zone — real-time collaboration, strong communication, and cultural alignment with US teams.",
       "item2Title": "US-level quality, BPO efficiency",
@@ -979,8 +979,6 @@
       "item4Description": "Scale up or down as needed — stay lean, reduce overhead, and keep full control of your roadmap and priorities.",
       "item5Title": "Continuity & knowledge retention",
       "item5Description": "Stable teams that stay with your product — less churn, better context, and long-term ownership of your codebase.",
-      "item6Title": "Built for async + real-time workflows",
-      "item6Description": "Aligned with US time zones but optimized for both synchronous collaboration and async delivery — keeping progress constant without bottlenecks.",
       "moreLink": "More on staff augmentation",
       "contactLink": "Book a call"
     },

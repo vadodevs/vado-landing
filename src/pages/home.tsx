@@ -14,7 +14,6 @@ import { CultureAndTalentSection } from '@/components/layout/home/culture-and-ta
 import { VadoInsightsSection } from '@/components/layout/home/insights/VadoInsightsSection';
 import { FAQSection } from '@/components/layout/home/faq/FAQSection';
 import { CtaContactSection } from '@/components/layout/home/cta-contact/CtaContactSection';
-import { TrustedBrands } from '@/components/layout/home/brands/TrustedBrands';
 import MainLayout from '@/components/layout/MainLayout';
 
 export default function Home() {
@@ -33,7 +32,6 @@ export default function Home() {
         <Hero />
         <HowWeWorkSection />
         <NearshoreBenefitsBentoSection />
-        <TrustedBrands />
         <DigitalProductsSection />
         <AISolutionsSection />
         <TechStackSection />

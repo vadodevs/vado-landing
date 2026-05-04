@@ -972,7 +972,7 @@
     "nearshoreBento": {
       "kicker": "Staff augmentation",
       "title": "Beneficios nearshore que se acumulan con el tiempo",
-      "subtitle": "Seis razones concretas para sumar talento LATAM con Vado—pensado para encajar con equipos en EE. UU.",
+      "subtitle": "Cinco razones concretas para sumar talento LATAM con Vado—pensado para encajar con equipos en EE. UU.",
       "item1Title": "Ventaja nearshore (basada en LATAM)",
       "item1Description": "Trabaja con ingenieros en tu huso horario — colaboración en tiempo real, comunicación sólida y afinidad cultural con equipos en EE. UU.",
       "item2Title": "Calidad nivel EE. UU., eficiencia tipo BPO",
@@ -983,8 +983,6 @@
       "item4Description": "Sube o baja capacidad según necesites — mantente ágil, reduce overhead y conserva el control de tu roadmap y prioridades.",
       "item5Title": "Continuidad y retención de conocimiento",
       "item5Description": "Equipos estables que se quedan con tu producto — menos rotación, más contexto y ownership a largo plazo de tu código.",
-      "item6Title": "Pensado para async y tiempo real",
-      "item6Description": "Alineados con zonas horarias de EE. UU., optimizados para colaboración síncrona y entrega asíncrona — avance constante sin cuellos de botella.",
       "moreLink": "Más sobre staff augmentation",
       "contactLink": "Agendar llamada"
     },
