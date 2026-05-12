@@ -3,6 +3,7 @@ import { Toaster } from 'sonner'
 import '@/app/i18n' // inicializa i18n
 import { AdminAssignedProjectsProvider } from '@/contexts/AdminAssignedProjectsContext'
 import { AppNavBadgesProvider } from '@/contexts/AppNavBadgesContext'
+import { AppSideChatStateProvider } from '@/contexts/AppSideChatStateContext'
 import { queryClient } from './queryClient'
 
 export function Providers({ children }: { children: React.ReactNode }) {
@@ -10,10 +11,10 @@ export function Providers({ children }: { children: React.ReactNode }) {
         <QueryClientProvider client={queryClient}>
             <AdminAssignedProjectsProvider>
                 <AppNavBadgesProvider>
-                    {children}
+                    <AppSideChatStateProvider>{children}</AppSideChatStateProvider>
                 </AppNavBadgesProvider>
             </AdminAssignedProjectsProvider>
-            <Toaster richColors />
+            <Toaster position="top-center" richColors style={{ zIndex: 99990 }} />
         </QueryClientProvider>
     )
 }

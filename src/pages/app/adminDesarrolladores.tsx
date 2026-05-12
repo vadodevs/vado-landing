@@ -6,6 +6,7 @@ import {
   Eye,
   Filter,
   Heart,
+  Key,
   KeyRound,
   Loader2,
   MoreVertical,
@@ -49,7 +50,13 @@ import {
 import {
   setAdminDevelopersSeenMax,
 } from '@/lib/appNavBadges';
-import { ADMIN_FILTER_BADGE_CLASS, ADMIN_FILTER_CONTROL_CLASS, ADMIN_FAVORITES_TOOLBAR_BUTTON_ACTIVE, ADMIN_FAVORITES_TOOLBAR_BUTTON_INACTIVE, ADMIN_FAVORITE_ROW_HEART_BUTTON_CLASS, ADMIN_FAVORITE_ROW_HEART_ICON_CLASS } from '@/lib/adminFilterUi';
+import { ADMIN_FILTER_BADGE_CLASS, ADMIN_FILTER_CONTROL_CLASS, ADMIN_FAVORITES_TOOLBAR_BUTTON_ACTIVE, ADMIN_FAVORITES_TOOLBAR_BUTTON_INACTIVE } from '@/lib/adminFilterUi';
+import {
+  ADMIN_ROW_ACTION_ICON_BUTTON_CLASS,
+  ADMIN_ROW_ACTION_ICON_MUTED_CLASS,
+  ADMIN_TABLE_ACTIONS_TH_CLASS,
+  adminRowActionHeartIconClass,
+} from '@/lib/adminTableActionsUi';
 import { cn } from '@/lib/utils';
 
 const FECHA_ORDEN_DEV_OPTIONS: AdminSelectOption[] = [
@@ -512,92 +519,96 @@ export default function AppAdminDesarrolladoresPage() {
           </div>
         </div>
 
-        <div className="shrink-0 rounded-lg border border-border/70 bg-card p-2 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] dark:border-border/50 dark:bg-muted/25 dark:shadow-none">
-          <div className="flex w-full flex-wrap items-center gap-1.5">
-            <span className={ADMIN_FILTER_BADGE_CLASS}>
-              <Filter className="size-3" aria-hidden />
-              Filtros rápidos
-            </span>
-            <div className="relative w-full min-w-0 max-w-md shrink-0 sm:min-w-[12rem] sm:max-w-[280px]">
-              <Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
-              <input
-                value={searchTerm}
-                onChange={(event) => setSearchTerm(event.target.value)}
-                placeholder="Nombre, apellido, correo o expertise…"
-                aria-label="Buscar por nombre, correo o expertise"
-                className={cn(
-                  'h-8 w-full pr-2 pl-8',
-                  ADMIN_FILTER_CONTROL_CLASS,
-                  'placeholder:text-muted-foreground',
-                )}
-              />
-            </div>
-            <div className="flex min-w-0 flex-1 flex-wrap items-center gap-1.5">
-              <AdminSelect
-                value={fechaOrden}
-                onValueChange={(v) => setFechaOrden(v as 'newest' | 'oldest')}
-                options={FECHA_ORDEN_DEV_OPTIONS}
-                aria-label="Orden por fecha de alta"
-                triggerClassName="h-8 shrink-0"
-              />
-              <AdminSelect
-                value={disponibilidadFilter}
-                onValueChange={setDisponibilidadFilter}
-                options={disponibilidadSelectOptions}
-                aria-label="Filtrar por disponibilidad"
-                triggerClassName="h-8 shrink-0"
-              />
-              <AdminSelect
-                value={visaFilter}
-                onValueChange={setVisaFilter}
-                options={VISA_FILTER_OPTIONS}
-                aria-label="Filtrar por visa vigente"
-                triggerClassName="h-8 shrink-0"
-              />
-              <AdminSelect
-                value={viajesFilter}
-                onValueChange={setViajesFilter}
-                options={VIAJES_FILTER_OPTIONS}
-                aria-label="Filtrar por disponibilidad para viajar"
-                triggerClassName="h-8 shrink-0"
-              />
-              <AdminSelect
-                value={empleoActualFilter}
-                onValueChange={setEmpleoActualFilter}
-                options={EMPLEO_FILTER_OPTIONS}
-                aria-label="Filtrar por empleo actual"
-                triggerClassName="h-8 shrink-0"
-              />
-              <AdminSelect
-                value={procedenciaFilter}
-                onValueChange={setProcedenciaFilter}
-                options={procedenciaSelectOptions}
-                aria-label="Filtrar por procedencia"
-                triggerClassName="h-8 shrink-0"
-              />
-            </div>
-            <div className="ml-auto flex shrink-0 flex-wrap items-center justify-end gap-1.5">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className={favoritesOnly ? ADMIN_FAVORITES_TOOLBAR_BUTTON_ACTIVE : ADMIN_FAVORITES_TOOLBAR_BUTTON_INACTIVE}
-                aria-pressed={favoritesOnly}
-                title={favoritesOnly ? 'Mostrar todos los desarrolladores' : 'Solo desarrolladores marcados como favoritos'}
-                onClick={() => setFavoritesOnly((v) => !v)}
-              >
-                <Heart
-                  className={cn(
-                    'shrink-0',
-                    favoritesOnly ? 'size-4 fill-white text-white' : 'size-3.5 fill-rose-600 text-rose-600 dark:fill-rose-400 dark:text-rose-400',
-                  )}
-                  aria-hidden
+        <div className="shrink-0 rounded-lg border border-border/70 bg-card p-2 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] dark:border-border/50 dark:bg-muted/25 dark:shadow-none sm:p-3">
+          <div className="flex flex-col gap-2">
+            <div className="min-w-0 overflow-x-auto overscroll-x-contain pb-0.5 [scrollbar-width:thin]">
+              <div className="flex w-max flex-nowrap items-center gap-1.5 pr-0.5">
+                <span className={ADMIN_FILTER_BADGE_CLASS}>
+                  <Filter className="size-3" aria-hidden />
+                  Filtros rápidos
+                </span>
+                <AdminSelect
+                  value={fechaOrden}
+                  onValueChange={(v) => setFechaOrden(v as 'newest' | 'oldest')}
+                  options={FECHA_ORDEN_DEV_OPTIONS}
+                  aria-label="Orden por fecha de alta"
+                  triggerClassName="h-8 shrink-0"
                 />
-                <span className="text-[11px] font-semibold">Favoritos</span>
-              </Button>
-              <Button variant="ghost" size="sm" type="button" className="shrink-0" onClick={clearFilters}>
-                Limpiar filtros
-              </Button>
+                <AdminSelect
+                  value={disponibilidadFilter}
+                  onValueChange={setDisponibilidadFilter}
+                  options={disponibilidadSelectOptions}
+                  aria-label="Filtrar por disponibilidad"
+                  triggerClassName="h-8 shrink-0"
+                />
+                <AdminSelect
+                  value={visaFilter}
+                  onValueChange={setVisaFilter}
+                  options={VISA_FILTER_OPTIONS}
+                  aria-label="Filtrar por visa vigente"
+                  triggerClassName="h-8 shrink-0"
+                />
+                <AdminSelect
+                  value={viajesFilter}
+                  onValueChange={setViajesFilter}
+                  options={VIAJES_FILTER_OPTIONS}
+                  aria-label="Filtrar por disponibilidad para viajar"
+                  triggerClassName="h-8 shrink-0"
+                />
+                <AdminSelect
+                  value={empleoActualFilter}
+                  onValueChange={setEmpleoActualFilter}
+                  options={EMPLEO_FILTER_OPTIONS}
+                  aria-label="Filtrar por empleo actual"
+                  triggerClassName="h-8 shrink-0"
+                />
+                <AdminSelect
+                  value={procedenciaFilter}
+                  onValueChange={setProcedenciaFilter}
+                  options={procedenciaSelectOptions}
+                  aria-label="Filtrar por procedencia"
+                  triggerClassName="h-8 shrink-0"
+                />
+              </div>
+            </div>
+            <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+              <div className="relative min-w-0 flex-1">
+                <Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
+                <input
+                  value={searchTerm}
+                  onChange={(event) => setSearchTerm(event.target.value)}
+                  placeholder="Nombre, apellido, correo o expertise…"
+                  aria-label="Buscar por nombre, correo o expertise"
+                  className={cn(
+                    'h-8 w-full pr-2 pl-8',
+                    ADMIN_FILTER_CONTROL_CLASS,
+                    'placeholder:text-muted-foreground',
+                  )}
+                />
+              </div>
+              <div className="flex shrink-0 flex-wrap items-center gap-1.5 sm:justify-end">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className={favoritesOnly ? ADMIN_FAVORITES_TOOLBAR_BUTTON_ACTIVE : ADMIN_FAVORITES_TOOLBAR_BUTTON_INACTIVE}
+                  aria-pressed={favoritesOnly}
+                  title={favoritesOnly ? 'Mostrar todos los desarrolladores' : 'Solo desarrolladores marcados como favoritos'}
+                  onClick={() => setFavoritesOnly((v) => !v)}
+                >
+                  <Heart
+                    className={cn(
+                      'shrink-0',
+                      favoritesOnly ? 'size-4 fill-white text-white' : 'size-3.5 fill-rose-600 text-rose-600 dark:fill-rose-400 dark:text-rose-400',
+                    )}
+                    aria-hidden
+                  />
+                  <span className="text-[11px] font-semibold">Favoritos</span>
+                </Button>
+                <Button variant="ghost" size="sm" type="button" className="shrink-0" onClick={clearFilters}>
+                  Limpiar filtros
+                </Button>
+              </div>
             </div>
           </div>
         </div>
@@ -621,7 +632,7 @@ export default function AppAdminDesarrolladoresPage() {
                 <th className="px-2 py-1.5 text-left font-semibold xl:px-4 xl:py-2">Contacto</th>
                 <th className="px-2 py-1.5 text-left font-semibold xl:px-4 xl:py-2">Expertise</th>
                 <th className="px-2 py-1.5 text-left font-semibold xl:px-4 xl:py-2">Documentación</th>
-                <th className="px-2 py-1.5 text-left font-semibold xl:px-4 xl:py-2">Acciones</th>
+                <th className={ADMIN_TABLE_ACTIONS_TH_CLASS}>Acciones</th>
               </tr>
             </thead>
             <tbody>
@@ -739,118 +750,134 @@ export default function AppAdminDesarrolladoresPage() {
                       </div>
                     </div>
                   </td>
-                  <td className="align-top min-w-0 px-2 py-2 xl:px-4 xl:py-2.5">
+                  <td className="align-middle px-2 py-2 text-center xl:px-4 xl:py-2.5">
                     {(() => {
                       const developerId = getDeveloperApiId(developer);
                       const isBusy = accessBusyByDeveloper[developerId] === true;
                       return (
-                    <div className="flex min-w-0 flex-wrap items-center justify-end gap-1 xl:flex-nowrap xl:gap-1.5">
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon-sm"
-                        className={ADMIN_FAVORITE_ROW_HEART_BUTTON_CLASS}
-                        aria-label={
-                          isDeveloperFavorite ? 'Quitar de favoritos' : 'Marcar como favorito'
-                        }
-                        aria-pressed={isDeveloperFavorite}
-                        onClick={() => toggleDeveloperFavorite(developer)}
-                      >
-                        <Heart
-                          className={ADMIN_FAVORITE_ROW_HEART_ICON_CLASS(isDeveloperFavorite)}
-                          aria-hidden
-                        />
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        className="h-7 shrink-0 gap-0.5 border-zinc-300 px-1.5 text-[11px] xl:h-8 xl:gap-1 xl:px-2 xl:text-xs dark:border-zinc-600 dark:bg-transparent dark:text-zinc-100 dark:hover:bg-zinc-800"
-                        onClick={() => openCvPreview(developer)}
-                      >
-                        <Eye className="size-3 shrink-0 xl:size-3.5" />
-                        Ver CV
-                      </Button>
-                      <Button
-                        asChild
-                        size="sm"
-                        className="h-7 shrink-0 gap-0.5 bg-[#0b2a55] px-1.5 text-[11px] hover:bg-[#0a2347] xl:h-8 xl:gap-1 xl:px-2 xl:text-xs dark:bg-sky-900/80 dark:hover:bg-sky-900"
-                      >
-                        <a
-                          href={
-                            developer.resumeUrl
-                              ? developer.resumeUrl
-                              : buildCvDownloadHref(developer)
-                          }
-                          download={developer.resumeUrl ? undefined : developer.cvFileName}
-                          target={developer.resumeUrl ? '_blank' : undefined}
-                          rel={developer.resumeUrl ? 'noopener noreferrer' : undefined}
-                        >
-                          <Download className="size-3 shrink-0 xl:size-3.5" />
-                          Descargar CV
-                        </a>
-                      </Button>
-                      <span
-                        className={`inline-flex size-6 shrink-0 items-center justify-center rounded-full xl:size-7 ${
-                          developer.accessEnabled
-                            ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 dark:ring-1 dark:ring-emerald-800/40'
-                            : 'bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400'
-                        }`}
-                        title={developer.accessEnabled ? 'Acceso habilitado' : 'Sin acceso'}
-                        aria-label={developer.accessEnabled ? 'Acceso habilitado' : 'Sin acceso'}
-                      >
-                        <KeyRound className="size-3.5 xl:size-4" />
-                      </span>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
+                        <div className="flex items-center justify-center gap-2 sm:gap-3">
                           <Button
                             type="button"
                             variant="ghost"
-                            size="icon-xs"
-                            className="shrink-0"
-                            disabled={isBusy}
-                            aria-label={`Acciones de acceso para ${developerFullName}`}
+                            size="icon"
+                            className={ADMIN_ROW_ACTION_ICON_BUTTON_CLASS}
+                            aria-label={
+                              isDeveloperFavorite ? 'Quitar de favoritos' : 'Marcar como favorito'
+                            }
+                            aria-pressed={isDeveloperFavorite}
+                            title={isDeveloperFavorite ? 'Quitar de favoritos' : 'Marcar como favorito'}
+                            onClick={() => toggleDeveloperFavorite(developer)}
                           >
-                            <MoreVertical className="size-4" />
+                            <Heart
+                              className={adminRowActionHeartIconClass(isDeveloperFavorite)}
+                              strokeWidth={1.5}
+                              aria-hidden
+                            />
                           </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          {developer.accessEnabled ? (
-                            <>
-                              <DropdownMenuItem
-                                onSelect={(event) => {
-                                  event.preventDefault();
-                                  runDeveloperAccessAction(developer, 'reset-password');
-                                }}
-                              >
-                                <KeyRound className="size-4" />
-                                Regenerar contraseña
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                variant="destructive"
-                                onSelect={(event) => {
-                                  event.preventDefault();
-                                  runDeveloperAccessAction(developer, 'disable-access');
-                                }}
-                              >
-                                <UserX className="size-4" />
-                                Deshabilitar acceso
-                              </DropdownMenuItem>
-                            </>
-                          ) : (
-                            <DropdownMenuItem
-                              onSelect={(event) => {
-                                event.preventDefault();
-                                runDeveloperAccessAction(developer, 'enable-access');
-                              }}
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className={ADMIN_ROW_ACTION_ICON_BUTTON_CLASS}
+                            title="Ver CV"
+                            aria-label={`Ver CV de ${developerFullName}`}
+                            onClick={() => openCvPreview(developer)}
+                          >
+                            <Eye className="size-4" strokeWidth={1.5} aria-hidden />
+                          </Button>
+                          <Button variant="ghost" size="icon" className={ADMIN_ROW_ACTION_ICON_BUTTON_CLASS} asChild>
+                            <a
+                              href={
+                                developer.resumeUrl
+                                  ? developer.resumeUrl
+                                  : buildCvDownloadHref(developer)
+                              }
+                              download={developer.resumeUrl ? undefined : developer.cvFileName}
+                              target={developer.resumeUrl ? '_blank' : undefined}
+                              rel={developer.resumeUrl ? 'noopener noreferrer' : undefined}
+                              title="Descargar CV"
+                              aria-label={`Descargar CV de ${developerFullName}`}
                             >
-                              <UserCheck className="size-4" />
-                              Habilitar acceso
-                            </DropdownMenuItem>
-                          )}
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
+                              <Download className="size-4" strokeWidth={1.5} aria-hidden />
+                            </a>
+                          </Button>
+                          <span
+                            className="inline-flex size-8 shrink-0 items-center justify-center"
+                            title={
+                              developer.accessEnabled
+                                ? 'Acceso al panel habilitado'
+                                : 'Sin acceso al panel'
+                            }
+                            aria-label={
+                              developer.accessEnabled ? 'Acceso habilitado' : 'Sin acceso al panel'
+                            }
+                          >
+                            <Key
+                              className={cn(
+                                'size-4',
+                                developer.accessEnabled
+                                  ? 'text-emerald-500 dark:text-emerald-400'
+                                  : ADMIN_ROW_ACTION_ICON_MUTED_CLASS,
+                              )}
+                              strokeWidth={1.5}
+                              aria-hidden
+                            />
+                          </span>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                className={ADMIN_ROW_ACTION_ICON_BUTTON_CLASS}
+                                disabled={isBusy}
+                                title="Más acciones de acceso"
+                                aria-label={`Más acciones de acceso para ${developerFullName}`}
+                              >
+                                {isBusy ? (
+                                  <Loader2 className="size-4 animate-spin" aria-hidden />
+                                ) : (
+                                  <MoreVertical className="size-4" strokeWidth={1.5} aria-hidden />
+                                )}
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              {developer.accessEnabled ? (
+                                <>
+                                  <DropdownMenuItem
+                                    onSelect={(event) => {
+                                      event.preventDefault();
+                                      runDeveloperAccessAction(developer, 'reset-password');
+                                    }}
+                                  >
+                                    <KeyRound className="size-4" />
+                                    Regenerar contraseña
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem
+                                    variant="destructive"
+                                    onSelect={(event) => {
+                                      event.preventDefault();
+                                      runDeveloperAccessAction(developer, 'disable-access');
+                                    }}
+                                  >
+                                    <UserX className="size-4" />
+                                    Deshabilitar acceso
+                                  </DropdownMenuItem>
+                                </>
+                              ) : (
+                                <DropdownMenuItem
+                                  onSelect={(event) => {
+                                    event.preventDefault();
+                                    runDeveloperAccessAction(developer, 'enable-access');
+                                  }}
+                                >
+                                  <UserCheck className="size-4" />
+                                  Habilitar acceso
+                                </DropdownMenuItem>
+                              )}
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
                       );
                     })()}
                   </td>
@@ -882,7 +909,13 @@ export default function AppAdminDesarrolladoresPage() {
       </section>
 
       <Dialog open={cvPreview.open} onOpenChange={closeCvPreview}>
-        <DialogContent className="flex max-h-[90vh] min-w-0 max-w-4xl flex-col gap-0 overflow-hidden p-0 sm:max-w-4xl">
+        <DialogContent
+          className={cn(
+            'flex max-h-[90vh] flex-col gap-0 overflow-hidden p-0',
+            /* Dialog base usa sm:w-auto: el iframe hace colapsar el ancho; forzar ancho tipo max-w-4xl (56rem) */
+            'w-[min(calc(100vw-2rem),56rem)] max-w-[min(calc(100vw-2rem),56rem)] sm:w-[min(calc(100vw-2rem),56rem)] sm:max-w-[min(calc(100vw-2rem),56rem)]',
+          )}
+        >
           <DialogHeader className="border-b border-zinc-200 px-6 py-4">
             <DialogTitle>Vista previa CV — {cvPreview.title}</DialogTitle>
           </DialogHeader>
@@ -906,11 +939,13 @@ export default function AppAdminDesarrolladoresPage() {
               ) : null}
             </div>
           ) : cvPreview.kind === 'pdf' && cvPreview.pdfBlobUrl ? (
-            <iframe
-              title="Vista previa del CV en PDF"
-              src={cvPreview.pdfBlobUrl}
-              className="min-h-[72vh] w-full flex-1 border-0 bg-zinc-100"
-            />
+            <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+              <iframe
+                title="Vista previa del CV en PDF"
+                src={cvPreview.pdfBlobUrl}
+                className="min-h-[72vh] w-full flex-1 border-0 bg-zinc-100"
+              />
+            </div>
           ) : (
             <pre className="max-h-[72vh] overflow-auto whitespace-pre-wrap p-6 text-left text-sm leading-relaxed text-zinc-800">
               {cvPreview.textBody ?? ''}

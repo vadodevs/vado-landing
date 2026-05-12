@@ -28,6 +28,11 @@ import {
 import { cn } from '@/lib/utils';
 import { setAdminProjectsSeenMax } from '@/lib/appNavBadges';
 import {
+  ADMIN_FIELD_INPUT_SM_CLASS,
+  ADMIN_PRIMARY_BTN_CLASS,
+  ADMIN_SUBCARD_CLASS,
+} from '@/lib/adminVadoUi';
+import {
   DEVELOPERS,
   developerProfileToAssignableRow,
   mapApiDeveloperToProfile,
@@ -69,7 +74,7 @@ function AssignedProjectCard({
       onClick={onOpen}
       className={cn(
         'group flex flex-col rounded-2xl border border-zinc-200 bg-gradient-to-b from-white to-zinc-50/80 p-5 text-left shadow-sm transition',
-        'hover:border-indigo-300 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#17304b]/25',
+        'hover:border-indigo-300 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#17304b]/25 dark:border-zinc-700 dark:from-zinc-950 dark:to-zinc-900/90 dark:hover:border-indigo-600 dark:focus-visible:ring-sky-500/30',
       )}
     >
       <div className="flex flex-wrap items-center gap-2">
@@ -83,7 +88,7 @@ function AssignedProjectCard({
           En trabajo
         </span>
       </div>
-      <h3 className="mt-3 line-clamp-2 text-lg font-semibold leading-snug text-zinc-900 group-hover:text-[#0b2a55]">
+      <h3 className="mt-3 line-clamp-2 text-lg font-semibold leading-snug text-zinc-900 group-hover:text-[#0b2a55] dark:text-zinc-100 dark:group-hover:text-sky-300">
         {p.titulo}
       </h3>
       <p className="mt-1 text-sm text-muted-foreground">{p.empresa}</p>
@@ -93,13 +98,13 @@ function AssignedProjectCard({
             <span
               key={pr.id}
               title={pr.nombre}
-              className="flex size-9 items-center justify-center rounded-full border-2 border-white bg-indigo-100 text-[11px] font-bold text-[#17304b]"
+              className="flex size-9 items-center justify-center rounded-full border-2 border-white bg-indigo-100 text-[11px] font-bold text-[#17304b] dark:border-zinc-900 dark:bg-indigo-950/70 dark:text-indigo-200"
             >
               {personInitials(pr.nombre)}
             </span>
           ))}
           {p.prospectos.length > 5 ? (
-            <span className="flex size-9 items-center justify-center rounded-full border-2 border-white bg-zinc-200 text-[10px] font-semibold text-zinc-700">
+            <span className="flex size-9 items-center justify-center rounded-full border-2 border-white bg-zinc-200 text-[10px] font-semibold text-zinc-700 dark:border-zinc-900 dark:bg-zinc-700 dark:text-zinc-200">
               +{p.prospectos.length - 5}
             </span>
           ) : null}
@@ -283,7 +288,9 @@ export default function AppAdminProyectosPage() {
               size="sm"
               className={cn(
                 'gap-1.5 rounded-lg',
-                viewMode === 'cards' ? 'bg-[#0b2a55] shadow-sm hover:bg-[#0a2347]' : '',
+                viewMode === 'cards'
+                  ? 'bg-[#0b2a55] text-white shadow-sm hover:bg-[#0a2347] dark:bg-sky-800 dark:hover:bg-sky-700'
+                  : 'text-zinc-700 hover:bg-muted/70 dark:text-zinc-200 dark:hover:bg-muted/50',
               )}
               onClick={() => setViewMode('cards')}
             >
@@ -296,7 +303,9 @@ export default function AppAdminProyectosPage() {
               size="sm"
               className={cn(
                 'gap-1.5 rounded-lg',
-                viewMode === 'list' ? 'bg-[#0b2a55] shadow-sm hover:bg-[#0a2347]' : '',
+                viewMode === 'list'
+                  ? 'bg-[#0b2a55] text-white shadow-sm hover:bg-[#0a2347] dark:bg-sky-800 dark:hover:bg-sky-700'
+                  : 'text-zinc-700 hover:bg-muted/70 dark:text-zinc-200 dark:hover:bg-muted/50',
               )}
               onClick={() => setViewMode('list')}
             >
@@ -309,7 +318,7 @@ export default function AppAdminProyectosPage() {
         {showProjectGrid ? (
           viewMode === 'cards' ? (
             <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-2 overflow-hidden">
-              <h3 className="flex shrink-0 items-center gap-2 text-xs font-semibold tracking-wide text-zinc-700 uppercase">
+              <h3 className="flex shrink-0 items-center gap-2 text-xs font-semibold tracking-wide text-zinc-700 uppercase dark:text-zinc-300">
                 <Briefcase className="size-3.5 text-indigo-600" aria-hidden />
                 {COMPANY_LEAD_STATUS_LABELS.en_curso}
               </h3>
@@ -341,7 +350,7 @@ export default function AppAdminProyectosPage() {
             </div>
           ) : (
             <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-2 overflow-hidden">
-              <h3 className="shrink-0 text-xs font-semibold tracking-wide text-zinc-700 uppercase">
+              <h3 className="shrink-0 text-xs font-semibold tracking-wide text-zinc-700 uppercase dark:text-zinc-300">
                 {COMPANY_LEAD_STATUS_LABELS.en_curso}
               </h3>
               {visibleAssignedProjects.length === 0 ? (
@@ -359,7 +368,7 @@ export default function AppAdminProyectosPage() {
                           onClick={() => setDetalleId(p.id)}
                           className="flex w-full items-center gap-3 px-3 py-2.5 text-left text-sm transition-colors hover:bg-muted/50"
                         >
-                          <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-indigo-100 text-indigo-800">
+                          <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-indigo-100 text-indigo-800 dark:bg-indigo-950/60 dark:text-indigo-200">
                             <Users className="size-4" />
                           </div>
                           <div className="min-w-0 flex-1">
@@ -408,7 +417,7 @@ export default function AppAdminProyectosPage() {
         }}
       >
         <DialogContent
-          className="max-h-[90vh] w-[min(96vw,1100px)] overflow-auto border-0 bg-gradient-to-b from-zinc-50 to-white p-0 sm:max-w-4xl"
+          className="max-h-[90vh] w-[min(96vw,1100px)] overflow-auto border-0 bg-gradient-to-b from-zinc-50 to-white p-0 sm:max-w-4xl dark:from-zinc-950 dark:to-zinc-900"
           showCloseButton
         >
           {registroAbierto ? (
@@ -435,37 +444,37 @@ export default function AppAdminProyectosPage() {
               </DialogHeader>
 
               <div className="mt-6 grid gap-4 lg:grid-cols-2">
-                <div className="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm">
+                <div className={ADMIN_SUBCARD_CLASS}>
                   <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                     Empresa
                   </p>
                   <p className="mt-1 text-sm font-medium text-foreground">{registroAbierto.empresa}</p>
                 </div>
-                <div className="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm">
+                <div className={ADMIN_SUBCARD_CLASS}>
                   <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                     Servicio / asunto
                   </p>
                   <p className="mt-1 text-sm font-medium text-foreground">{registroAbierto.servicio}</p>
                 </div>
-                <div className="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm lg:col-span-2">
+                <div className={cn(ADMIN_SUBCARD_CLASS, 'lg:col-span-2')}>
                   <div className="mb-3 flex items-center justify-between">
                     <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                       Equipo asignado
                     </p>
-                    <span className="text-xs text-zinc-500">{teamDraft.length} seleccionado(s)</span>
+                    <span className="text-xs text-zinc-500 dark:text-zinc-400">{teamDraft.length} seleccionado(s)</span>
                   </div>
                   <div className="grid gap-3 xl:grid-cols-2">
-                    <div className="rounded-lg border border-zinc-100 bg-zinc-50/40 p-2.5">
-                      <p className="mb-2 text-[11px] font-semibold tracking-wide text-zinc-600 uppercase">
+                    <div className="rounded-lg border border-zinc-100 bg-zinc-50/40 p-2.5 dark:border-zinc-700 dark:bg-zinc-900/40">
+                      <p className="mb-2 text-[11px] font-semibold tracking-wide text-zinc-600 uppercase dark:text-zinc-400">
                         Actual
                       </p>
                       <ul className="max-h-52 space-y-2 overflow-auto pr-1">
                         {teamDraft.map((pr) => (
                           <li
                             key={pr.id}
-                            className="flex items-start gap-2 rounded-md border border-zinc-100 bg-white px-2 py-2"
+                            className="flex items-start gap-2 rounded-md border border-zinc-100 bg-white px-2 py-2 dark:border-zinc-700 dark:bg-zinc-950/80"
                           >
-                            <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-[10px] font-bold text-[#17304b]">
+                            <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-[10px] font-bold text-[#17304b] dark:bg-indigo-950/70 dark:text-indigo-200">
                               {personInitials(pr.nombre)}
                             </span>
                             <div className="min-w-0">
@@ -486,8 +495,8 @@ export default function AppAdminProyectosPage() {
                         ))}
                       </ul>
                     </div>
-                    <div className="rounded-lg border border-dashed border-zinc-200 p-2.5">
-                      <p className="mb-2 inline-flex items-center gap-1 text-[11px] font-semibold tracking-wide text-zinc-600 uppercase">
+                    <div className="rounded-lg border border-dashed border-zinc-200 p-2.5 dark:border-zinc-600">
+                      <p className="mb-2 inline-flex items-center gap-1 text-[11px] font-semibold tracking-wide text-zinc-600 uppercase dark:text-zinc-400">
                         <UserPlus className="size-3.5" />
                         Agregar
                       </p>
@@ -495,7 +504,7 @@ export default function AppAdminProyectosPage() {
                         value={assignDeveloperSearch}
                         onChange={(e) => setAssignDeveloperSearch(e.target.value)}
                         placeholder="Buscar nombre/rol/correo"
-                        className="mb-2 h-8 w-full rounded-md border border-zinc-200 bg-white px-2.5 text-[11px] outline-none focus-visible:ring-2 focus-visible:ring-[#17304b]/20"
+                        className={ADMIN_FIELD_INPUT_SM_CLASS}
                       />
                       <div className="max-h-52 space-y-1.5 overflow-auto pr-1">
                         {assignDirectoryLoad === 'loading' ? (
@@ -504,7 +513,7 @@ export default function AppAdminProyectosPage() {
                           directoryFiltered.map((d) => (
                             <label
                               key={d.id}
-                              className="flex cursor-pointer items-start gap-2 rounded-md border border-zinc-100 bg-white px-2 py-2"
+                              className="flex cursor-pointer items-start gap-2 rounded-md border border-zinc-100 bg-white px-2 py-2 dark:border-zinc-700 dark:bg-zinc-950/80"
                             >
                               <Checkbox
                                 checked={teamIds.has(d.id)}
@@ -533,7 +542,7 @@ export default function AppAdminProyectosPage() {
                     <Button
                       type="button"
                       size="sm"
-                      className="w-full bg-[#0b2a55] hover:bg-[#0a2347]"
+                      className={cn('w-full', ADMIN_PRIMARY_BTN_CLASS)}
                       disabled={teamDraft.length === 0}
                       onClick={() => {
                         addAssignedProject({
@@ -556,7 +565,7 @@ export default function AppAdminProyectosPage() {
               </div>
 
               {registroAbierto.contactId.trim() !== '' ? (
-                <div className="mt-4 rounded-xl border border-zinc-200 bg-white p-4 shadow-sm">
+                <div className={cn(ADMIN_SUBCARD_CLASS, 'mt-4')}>
                   <div className="text-center">
                     <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                       Estado del lead en Compañías
@@ -572,7 +581,7 @@ export default function AppAdminProyectosPage() {
                       className={cn(
                         'h-10 min-w-[10rem] justify-center rounded-full border text-sm font-semibold shadow-xs',
                         COMPANY_LEAD_STATUS_BADGE_CLASS.completado,
-                        'hover:bg-emerald-200/90 hover:text-emerald-950',
+                        'hover:bg-emerald-200/90 hover:text-emerald-950 dark:hover:bg-emerald-900/45 dark:hover:text-emerald-50',
                       )}
                       onClick={() => {
                         persistCompanyLeadStatus(registroAbierto.contactId, 'completado');
@@ -594,7 +603,7 @@ export default function AppAdminProyectosPage() {
                       className={cn(
                         'h-10 min-w-[10rem] justify-center rounded-full border text-sm font-semibold shadow-xs',
                         COMPANY_LEAD_STATUS_BADGE_CLASS.descartado,
-                        'hover:bg-rose-200/90 hover:text-rose-950',
+                        'hover:bg-rose-200/90 hover:text-rose-950 dark:hover:bg-rose-900/45 dark:hover:text-rose-50',
                       )}
                       onClick={() => {
                         persistCompanyLeadStatus(registroAbierto.contactId, 'descartado');
@@ -623,7 +632,7 @@ export default function AppAdminProyectosPage() {
 
               <Button
                 type="button"
-                className="mt-6 w-full bg-[#0b2a55] hover:bg-[#0a2347]"
+                className={cn('mt-6 w-full', ADMIN_PRIMARY_BTN_CLASS)}
                 onClick={() => setDetalleId(null)}
               >
                 Cerrar

@@ -1,9 +1,8 @@
-import { Route, Switch, Redirect } from 'wouter'
+import { Route, Switch, Redirect, useParams } from 'wouter'
 import { useEffect } from 'react'
 import { useLocation } from 'wouter'
 import { ScrollToTop } from '@/components/ScrollToTop'
 import { JsonLd } from '@/components/JsonLd'
-import { FloatingChatWidget } from '@/components/FloatingChatWidget'
 import { getPreferredLocaleFromBrowser, isLocale } from '@/app/i18n'
 import Home from '@/pages/home'
 import SoftwareALaMedida from '@/pages/servicios/software-a-la-medida'
@@ -37,6 +36,7 @@ import AppRecruiterSettings from '@/pages/app/recruiterSettings'
 import AppAdminDesarrolladores from '@/pages/app/adminDesarrolladores'
 import AppAdminProyectos from '@/pages/app/adminProyectos'
 import AppAdminCompany from '@/pages/app/adminCompany'
+import AppAdminCanales from '@/pages/app/adminCanales'
 import AppAdminReclutadores from '@/pages/app/adminReclutadores'
 import AppAdminOfertas from '@/pages/app/adminOfertas'
 import AppAdminOfertasCandidatos from '@/pages/app/adminOfertasCandidatos'
@@ -67,6 +67,14 @@ function AdminCompanyRoute() {
   return (
     <RequireAdmin>
       <AppAdminCompany />
+    </RequireAdmin>
+  );
+}
+function AdminCanalesRoute() {
+  const { canal } = useParams<{ canal: string }>()
+  return (
+    <RequireAdmin>
+      <AppAdminCanales channel={canal ?? ''} />
     </RequireAdmin>
   );
 }
@@ -262,7 +270,6 @@ function AdminSettingsRoute() {
     </RequireAdmin>
   );
 }
-
 const AppAdminDesarrolladoresPage = withLocale(AdminDesarrolladoresRoute)
 const AppAdminProyectosPage = withLocale(AdminProyectosRoute)
 const AppAdminCompanyPage = withLocale(AdminCompanyRoute)
@@ -271,6 +278,7 @@ const AppAdminOfertasPage = withLocale(AdminOfertasRoute)
 const AppAdminOfertasCandidatosPage = withLocale(AdminOfertasCandidatosRoute)
 const AppAdminOfertasCandidatoPerfilPage = withLocale(AdminOfertasCandidatoPerfilRoute)
 const AppAdminSettingsPage = withLocale(AdminSettingsRoute)
+const AppAdminCanalesPage = withLocale(AdminCanalesRoute)
 const AppDevProfileGuardedPage = withLocale(DevProfileRoute)
 const AppDevDashboardGuardedPage = withLocale(DevDashboardRoute)
 const AppDevProjectsGuardedPage = withLocale(DevProjectsRoute)
@@ -323,13 +331,6 @@ function RootRedirect() {
     setLocation(`/${getPreferredLocaleFromBrowser()}`)
   }, [setLocation])
   return null
-}
-
-/** Chat flotante solo en páginas públicas; no en `/…/app/…` (admin, dev, empresa, reclutador). */
-function FloatingChatWidgetLandingOnly() {
-  const [location] = useLocation()
-  if (/\/app(\/|$)/.test(location)) return null
-  return <FloatingChatWidget />
 }
 
 export function Router() {
@@ -398,6 +399,7 @@ export function Router() {
       <Route path="/:lang/app/admin/ofertas" component={RedirectAdminJobsToActive} />
       <Route path="/:lang/app/admin/proyectos" component={AppAdminProyectosPage} />
       <Route path="/:lang/app/admin/company" component={AppAdminCompanyPage} />
+      <Route path="/:lang/app/admin/canales/:canal" component={AppAdminCanalesPage} />
       <Route path="/:lang/app/admin/settings" component={AppAdminSettingsPage} />
       <Route path="/:lang/app/admin" component={RedirectAdminToDesarrolladores} />
       <Route path="/:lang/app/" component={RedirectAppRootToAdmin} />
@@ -406,7 +408,6 @@ export function Router() {
       <Route path="/:lang/*" component={withLocale(NotFound)} />
       <Route component={NotFound} />
     </Switch>
-      <FloatingChatWidgetLandingOnly />
     </>
   )
 }

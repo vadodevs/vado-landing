@@ -1,7 +1,8 @@
-import { useEffect, useId, useState, type ReactNode } from 'react';
+import { useEffect, useId, useMemo, useState, type ReactNode } from 'react';
 import { Link, useLocation } from 'wouter';
 import { useTranslation } from 'react-i18next';
 import {
+  Bookmark,
   BriefcaseBusiness,
   ChevronDown,
   CircleUser,
@@ -9,11 +10,16 @@ import {
   Code2,
   FolderKanban,
   LayoutDashboard,
+  ListChecks,
   LogOut,
+  MessagesSquare,
+  PlusCircle,
   Settings,
   Sparkles,
   User,
+  UserPlus,
   UserSearch,
+  Users,
 } from 'lucide-react';
 import { VadoLogo } from '@/assets/vado-logo';
 import { PageMeta } from '@/components/PageMeta';
@@ -52,21 +58,121 @@ export type AppShellProps = {
   children: ReactNode;
   /** `hidden`: sin scroll en el cuerpo del panel (la página controla scroll interno, p. ej. tabla de leads). */
   contentOverflow?: 'scroll' | 'hidden';
+  /** Sin padding en el área de contenido: la página ocupa todo el panel bajo el header (p. ej. inbox a ancho completo). */
+  contentFlush?: boolean;
 };
 
-const sidebarBrandShell = cn(
-  '[&_[data-slot=sidebar-inner]]:!bg-[#17304b] [&_[data-slot=sidebar-inner]]:!text-white [&_[data-slot=sidebar-inner]]:rounded-xl [&_[data-slot=sidebar-inner]]:overflow-hidden',
-);
+type AppSidebarChrome = {
+  glassInner: string;
+  mobileSheet: string;
+  rowGhost: string;
+  subRowBase: string;
+  subRowMuted: string;
+  subNavText: string;
+  navActive: string;
+  footerBtn: string;
+  borderHeaderFooter: string;
+  borderSubNav: string;
+  borderSeparator: string;
+  logoRing: string;
+  iconMuted: string;
+  unreadDotRing: string;
+};
 
-const sidebarMobileSheet = cn(
-  '!border-0 !bg-[#17304b] !text-white shadow-none',
-  'rounded-xl',
-  'pt-[max(0.75rem,env(safe-area-inset-top,0px))]',
-  'pb-[max(0.75rem,env(safe-area-inset-bottom,0px))]',
-);
+/**
+ * Cristal tipo visionOS: blur + tinte oscuro translúcido (oscuro) o capa clara con cuerpo zinc (claro).
+ * Importante: el inner del Sidebar ya no usa `bg-sidebar` (en app-dark seguía siendo casi blanco → texto blanco invisible).
+ */
+function buildAppSidebarChrome(isDark: boolean): AppSidebarChrome {
+  const glassInner = isDark
+    ? cn(
+        '[&_[data-slot=sidebar-inner]]:!relative [&_[data-slot=sidebar-inner]]:!overflow-hidden [&_[data-slot=sidebar-inner]]:!rounded-3xl [&_[data-slot=sidebar-inner]]:!bg-transparent',
+        '[&_[data-slot=sidebar-inner]]:!border [&_[data-slot=sidebar-inner]]:!border-white/[0.18]',
+        '[&_[data-slot=sidebar-inner]]:!bg-gradient-to-br [&_[data-slot=sidebar-inner]]:!from-zinc-950/58 [&_[data-slot=sidebar-inner]]:!via-zinc-900/42 [&_[data-slot=sidebar-inner]]:!to-zinc-900/24',
+        '[&_[data-slot=sidebar-inner]]:!backdrop-blur-[48px] [&_[data-slot=sidebar-inner]]:!backdrop-saturate-[1.85] [&_[data-slot=sidebar-inner]]:!backdrop-brightness-[1.08]',
+        '[&_[data-slot=sidebar-inner]]:!text-zinc-100',
+        '[&_[data-slot=sidebar-inner]]:!shadow-[0_26px_64px_-18px_rgba(0,0,0,0.58),inset_0_1px_0_rgba(255,255,255,0.26),inset_0_-22px_52px_-26px_rgba(0,0,0,0.28)]',
+        '[&_[data-slot=sidebar-inner]]:!ring-1 [&_[data-slot=sidebar-inner]]:!ring-inset [&_[data-slot=sidebar-inner]]:!ring-white/[0.07]',
+      )
+    : cn(
+        '[&_[data-slot=sidebar-inner]]:!relative [&_[data-slot=sidebar-inner]]:!overflow-hidden [&_[data-slot=sidebar-inner]]:!rounded-3xl [&_[data-slot=sidebar-inner]]:!bg-transparent',
+        '[&_[data-slot=sidebar-inner]]:!border [&_[data-slot=sidebar-inner]]:!border-white/[0.42]',
+        '[&_[data-slot=sidebar-inner]]:!bg-gradient-to-br [&_[data-slot=sidebar-inner]]:!from-white/14 [&_[data-slot=sidebar-inner]]:!via-zinc-200/32 [&_[data-slot=sidebar-inner]]:!to-zinc-500/38',
+        '[&_[data-slot=sidebar-inner]]:!backdrop-blur-[40px] [&_[data-slot=sidebar-inner]]:!backdrop-saturate-[1.35]',
+        '[&_[data-slot=sidebar-inner]]:!text-zinc-900',
+        '[&_[data-slot=sidebar-inner]]:!shadow-[0_14px_44px_-10px_rgba(0,0,0,0.14),inset_0_1px_0_rgba(255,255,255,0.72),inset_0_-14px_38px_-18px_rgba(0,0,0,0.07)]',
+        '[&_[data-slot=sidebar-inner]]:!ring-1 [&_[data-slot=sidebar-inner]]:!ring-inset [&_[data-slot=sidebar-inner]]:!ring-zinc-900/[0.05]',
+      );
 
-const rowGhost =
-  'flex w-full items-center gap-2 rounded-md px-2 py-2.5 text-left text-sm text-white/85 transition-colors hover:bg-white/5';
+  const mobileSheet = isDark
+    ? cn(
+        '!relative !overflow-hidden !rounded-3xl !border !border-white/[0.18] !bg-transparent !text-zinc-100 shadow-none',
+        '!bg-gradient-to-br !from-zinc-950/58 !via-zinc-900/42 !to-zinc-900/24',
+        '!backdrop-blur-[48px] !backdrop-saturate-[1.85] !backdrop-brightness-[1.08]',
+        '!shadow-[0_26px_64px_-18px_rgba(0,0,0,0.52),inset_0_1px_0_rgba(255,255,255,0.24)]',
+        '!ring-1 !ring-inset !ring-white/[0.07]',
+        'pt-[max(0.75rem,env(safe-area-inset-top,0px))]',
+        'pb-[max(0.75rem,env(safe-area-inset-bottom,0px))]',
+      )
+    : cn(
+        '!relative !overflow-hidden !rounded-3xl !border !border-white/[0.42] !bg-transparent !text-zinc-900 shadow-none',
+        '!bg-gradient-to-br !from-white/14 !via-zinc-200/32 !to-zinc-500/38',
+        '!backdrop-blur-[40px] !backdrop-saturate-[1.35]',
+        '!shadow-[0_14px_44px_-10px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.65)]',
+        '!ring-1 !ring-inset !ring-zinc-900/[0.05]',
+        'pt-[max(0.75rem,env(safe-area-inset-top,0px))]',
+        'pb-[max(0.75rem,env(safe-area-inset-bottom,0px))]',
+      );
+
+  const navHover = isDark
+    ? 'hover:bg-white/[0.08] hover:text-white hover:shadow-[inset_0_0_0_1px_rgba(255,255,255,0.1)]'
+    : 'hover:bg-zinc-900/[0.06] hover:text-zinc-900 hover:shadow-[inset_0_0_0_1px_rgba(24,24,27,0.08)]';
+
+  const navActive = isDark
+    ? 'bg-white/[0.12] text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.16)]'
+    : 'bg-zinc-900/[0.1] text-zinc-900 shadow-[inset_0_0_0_1px_rgba(24,24,27,0.12)]';
+
+  const rowGhost = cn(
+    'flex w-full items-center gap-2 rounded-lg px-2 py-2.5 text-left text-sm transition-[background-color,box-shadow,color] duration-200',
+    isDark ? 'text-white/85' : 'text-zinc-800',
+    navHover,
+  );
+
+  const subRowBase = cn(
+    'flex min-h-10 items-center rounded-lg px-2.5 py-2 text-xs leading-snug transition-[background-color,box-shadow,color] duration-200',
+    navHover,
+  );
+
+  const subRowMuted = cn(subRowBase, isDark ? 'text-white/70' : 'text-zinc-600');
+
+  const subNavText = isDark ? 'text-white/85' : 'text-zinc-800';
+
+  const footerBtn = cn(
+    'flex w-full items-center justify-center gap-2 rounded-lg border px-3 py-2.5 text-sm font-medium transition-[background-color,box-shadow,transform] duration-200 active:scale-[0.99] group-data-[collapsible=icon]:px-2',
+    isDark
+      ? 'border-white/12 bg-white/[0.06] text-white hover:bg-white/[0.1] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.14)]'
+      : 'border-zinc-500/18 bg-white/25 text-zinc-900 hover:bg-white/35 hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.55)]',
+  );
+
+  return {
+    glassInner,
+    mobileSheet,
+    rowGhost,
+    subRowBase,
+    subRowMuted,
+    subNavText,
+    navActive,
+    footerBtn,
+    borderHeaderFooter: isDark ? 'border-b border-white/10' : 'border-b border-zinc-500/14',
+    borderSubNav: isDark ? 'border-l border-white/12' : 'border-l border-zinc-500/16',
+    borderSeparator: isDark ? 'border-t border-white/12' : 'border-t border-zinc-500/14',
+    logoRing: isDark
+      ? 'focus-visible:ring-white/35 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950'
+      : 'focus-visible:ring-zinc-400/75 focus-visible:ring-offset-2 focus-visible:ring-offset-white',
+    iconMuted: isDark ? 'text-white/70' : 'text-zinc-600',
+    unreadDotRing: isDark ? 'ring-white/28' : 'ring-zinc-200',
+  };
+}
 
 /** Solo desktop colapsado: tooltip al pasar el ratón por el icono */
 function CollapsedIconTooltip({ label, children }: { label: string; children: React.ReactElement }) {
@@ -79,6 +185,28 @@ function CollapsedIconTooltip({ label, children }: { label: string; children: Re
         {label}
       </TooltipContent>
     </Tooltip>
+  );
+}
+
+/** Sublista colapsable con transición suave de altura. */
+function SidebarAnimatedCollapse({
+  show,
+  className,
+  children,
+}: {
+  show: boolean;
+  className?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div
+      className={cn(
+        'grid transition-[grid-template-rows] duration-300 ease-[cubic-bezier(0.33, 1, 0.68, 1)] motion-reduce:transition-none',
+        show ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]',
+      )}
+    >
+      <div className={cn('min-h-0 overflow-hidden', className)}>{children}</div>
+    </div>
   );
 }
 
@@ -118,7 +246,7 @@ function VadoIntelligenceChatToggle({
       onFocus={() => setFocusWithin(true)}
       onBlur={() => setFocusWithin(false)}
       className={cn(
-        'group relative inline-flex max-w-full min-w-0 items-center gap-3 overflow-hidden rounded-2xl border px-3 py-1.5 text-left text-sm',
+        'group relative inline-flex w-max max-w-full shrink-0 items-center gap-2 overflow-hidden rounded-xl border py-1 pl-1.5 pr-2 text-left text-[13px] leading-none',
         'outline-none transition-[transform,box-shadow,border-color,background-color] duration-300 ease-out',
         pressed && 'scale-[0.97]',
         focusWithin && 'ring-2 ring-offset-2',
@@ -137,7 +265,7 @@ function VadoIntelligenceChatToggle({
     >
       <span
         className={cn(
-          'relative flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-xl',
+          'relative flex size-7 shrink-0 items-center justify-center overflow-hidden rounded-lg',
           'bg-gradient-to-br from-blue-500 via-indigo-600 to-purple-700',
           'ring-1 ring-inset ring-white/20 shadow-sm shadow-indigo-950/35',
           'transition-[transform,opacity] duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)]',
@@ -148,15 +276,15 @@ function VadoIntelligenceChatToggle({
       >
         <Sparkles
           className={cn(
-            'relative size-[1.125rem] text-white drop-shadow-sm transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] will-change-transform',
+            'relative size-3.5 text-white drop-shadow-sm transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] will-change-transform',
             pressed && 'rotate-12 scale-110',
             focusWithin && !pressed && 'scale-110',
           )}
-          strokeWidth={2.5}
+          strokeWidth={2.25}
           aria-hidden
         />
       </span>
-      <span className="min-w-0 truncate font-semibold tracking-tight">Vado Intelligence</span>
+      <span className="min-w-0 whitespace-nowrap font-semibold tracking-tight">Vado Intelligence</span>
     </button>
   );
 }
@@ -167,6 +295,7 @@ export function AppShell({
   description,
   children,
   contentOverflow = 'scroll',
+  contentFlush = false,
 }: AppShellProps) {
   const { t } = useTranslation();
   const { path } = useLocale();
@@ -181,6 +310,7 @@ export function AppShell({
   } = useAppNavBadges();
   const [offersOpen, setOffersOpen] = useState(false);
   const [recruitersOpen, setRecruitersOpen] = useState(false);
+  const [channelsOpen, setChannelsOpen] = useState(false);
   const [trabajoOpen, setTrabajoOpen] = useState(false);
   const [appThemeMode, setAppThemeMode] = useState<AppThemeMode>(() => getStoredAppTheme());
   const [sideChatExpanded, setSideChatExpanded] = useState(true);
@@ -208,6 +338,10 @@ export function AppShell({
   const hrefAdminActiveJobs = path('/app/admin/ofertas/activas');
   const hrefAdminProjects = path('/app/admin/proyectos');
   const hrefAdminCompanies = path('/app/admin/company');
+  const hrefAdminCanalesFacebook = path('/app/admin/canales/facebook');
+  const hrefAdminCanalesWhatsApp = path('/app/admin/canales/whatsapp');
+  const hrefAdminCanalesInstagram = path('/app/admin/canales/instagram');
+  const hrefAdminCanalesBotTest = path('/app/admin/canales/bot-test');
   const hrefAdminSettings = path('/app/admin/settings');
   const hrefCompanyProfile = path('/app/company/profile');
   const hrefCompanyProjects = path('/app/company/proyectos');
@@ -240,6 +374,8 @@ export function AppShell({
 
   const recruitersActive = currentAppPath.startsWith('/app/admin/reclutadores');
 
+  const channelsActive = currentAppPath.startsWith('/app/admin/canales');
+
   const nuevasAperturasActive = isActive(hrefDevDashboard) || isActive(hrefDevOverview);
   const empleosOfertasActive = isActive(hrefEmpleosOfertas);
   const guardadasActive = isActive(hrefEmpleosGuardadas);
@@ -252,6 +388,10 @@ export function AppShell({
   useEffect(() => {
     if (recruitersActive) queueMicrotask(() => setRecruitersOpen(true));
   }, [recruitersActive]);
+
+  useEffect(() => {
+    if (channelsActive) queueMicrotask(() => setChannelsOpen(true));
+  }, [channelsActive]);
 
   useEffect(() => {
     if (trabajoGroupActive) queueMicrotask(() => setTrabajoOpen(true));
@@ -283,22 +423,42 @@ export function AppShell({
     key: 'panel:developers' | 'panel:jobs' | 'panel:projects' | 'panel:companies',
   ) => hasRecruiterPanelPermission(recruiterPerms, key);
 
+  const isAppDark = appThemeMode === 'dark';
+  const sb = useMemo(() => buildAppSidebarChrome(isAppDark), [isAppDark]);
+
+  const sidebarNavSectionShell = cn(
+    'mb-3 space-y-1 rounded-2xl p-2 last:mb-0',
+    isAppDark
+      ? 'bg-white/[0.06] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] ring-1 ring-inset ring-white/[0.08]'
+      : 'bg-black/[0.035] shadow-[inset_0_1px_0_rgba(255,255,255,0.42)] ring-1 ring-inset ring-black/[0.07]',
+    'group-data-[collapsible=icon]:mb-2 group-data-[collapsible=icon]:rounded-xl group-data-[collapsible=icon]:bg-transparent group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:shadow-none group-data-[collapsible=icon]:ring-0',
+  );
+
+  const sidebarNavSectionTitle = cn(
+    'select-none px-2 pb-1.5 pt-0.5 text-[10px] font-semibold uppercase tracking-[0.12em]',
+    isAppDark ? 'text-zinc-500' : 'text-zinc-500',
+    'group-data-[collapsible=icon]:hidden',
+  );
+
+  const chevronNavClass =
+    'size-4 shrink-0 transition-transform duration-300 ease-out group-data-[collapsible=icon]:hidden motion-reduce:transition-none';
+
   const navItem = (href: string, label: string, icon?: ReactNode, showUnreadDot?: boolean) => (
     <CollapsedIconTooltip label={label}>
       <Link
         href={href}
         className={cn(
-          rowGhost,
+          sb.rowGhost,
           'group-data-[collapsible=icon]:justify-center',
-          isActive(href) && 'bg-white/10 text-white',
+          isActive(href) && sb.navActive,
         )}
       >
         {icon ? (
-          <span className="relative flex shrink-0 text-white/70 [&_svg]:size-4">
+          <span className={cn('relative flex shrink-0 [&_svg]:size-4', sb.iconMuted)}>
             {icon}
             {showUnreadDot ? (
               <span
-                className="absolute -right-0.5 -top-0.5 size-2 rounded-full bg-rose-500 ring-2 ring-[#17304b]"
+                className={cn('absolute -right-0.5 -top-0.5 size-2 rounded-full bg-rose-500 ring-2', sb.unreadDotRing)}
                 aria-hidden
               />
             ) : null}
@@ -319,7 +479,7 @@ export function AppShell({
       />
       <SidebarProvider
         className={cn(
-          sidebarBrandShell,
+          sb.glassInner,
           'min-h-svh font-sans antialiased',
           /* Marco exterior tipo ventana de Preferencias del sistema */
           appThemeMode === 'dark'
@@ -330,15 +490,18 @@ export function AppShell({
             'md:pr-[calc(400px+0.5rem)] md:transition-[padding] md:duration-200 md:ease-out',
         )}
       >
-        <Sidebar collapsible="icon" variant="floating" sheetClassName={sidebarMobileSheet}>
-          <SidebarHeader className="border-b border-white/10 px-3 py-4">
+        <Sidebar collapsible="icon" variant="floating" sheetClassName={sb.mobileSheet}>
+          <SidebarHeader className={cn('px-3 py-4', sb.borderHeaderFooter)}>
             <Link
               href={path('')}
-              className="flex w-full justify-center rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-white/40 focus-visible:ring-offset-2 focus-visible:ring-offset-[#17304b] group-data-[collapsible=icon]:py-2"
+              className={cn(
+                'flex w-full justify-center rounded-lg outline-none focus-visible:ring-2 group-data-[collapsible=icon]:py-2',
+                sb.logoRing,
+              )}
               aria-label={t('nav.home')}
             >
               <span className="flex max-w-[10.5rem] items-center justify-center [&_svg]:h-8 [&_svg]:w-auto [&_svg]:max-w-full group-data-[collapsible=icon]:max-w-10 group-data-[collapsible=icon]:[&_svg]:h-7">
-                <VadoLogo white />
+                {isAppDark ? <VadoLogo white /> : <VadoLogo />}
               </span>
             </Link>
           </SidebarHeader>
@@ -347,287 +510,443 @@ export function AppShell({
             <nav className="flex flex-col py-3" aria-label={t('sidebarDemo.appAreaNav')}>
               {isAdminSection ? (
                 <>
-                  {navItem(hrefDevelopers, t('sidebarDemo.navDevelopers'), <Code2 />, adminDevelopersUnread)}
-                  <CollapsedIconTooltip label={t('sidebarDemo.navRecruiters')}>
-                    <button
-                      type="button"
-                      onClick={() => setRecruitersOpen((v) => !v)}
-                      className={cn(
-                        rowGhost,
-                        'mb-0.5 min-h-10 group-data-[collapsible=icon]:justify-center',
-                        recruitersActive && 'bg-white/10 text-white',
-                      )}
+                  <section className={sidebarNavSectionShell} aria-labelledby="nav-admin-general">
+                    <h2 id="nav-admin-general" className={sidebarNavSectionTitle}>
+                      {t('sidebarDemo.navSectionGeneral')}
+                    </h2>
+                    {navItem(hrefDevelopers, t('sidebarDemo.navDevelopers'), <Code2 />, adminDevelopersUnread)}
+                  </section>
+
+                  <section className={sidebarNavSectionShell} aria-labelledby="nav-admin-talent">
+                    <h2 id="nav-admin-talent" className={sidebarNavSectionTitle}>
+                      {t('sidebarDemo.navSectionTalent')}
+                    </h2>
+                    <CollapsedIconTooltip label={t('sidebarDemo.navRecruiters')}>
+                      <button
+                        type="button"
+                        aria-expanded={recruitersOpen}
+                        onClick={() => setRecruitersOpen((v) => !v)}
+                        className={cn(
+                          sb.rowGhost,
+                          'min-h-10 w-full group-data-[collapsible=icon]:justify-center',
+                          recruitersActive && sb.navActive,
+                        )}
+                      >
+                        <span className={cn('relative flex shrink-0 [&_svg]:size-4', sb.iconMuted)}>
+                          <UserSearch />
+                        </span>
+                        <span className="min-w-0 flex-1 truncate text-left group-data-[collapsible=icon]:hidden">
+                          {t('sidebarDemo.navRecruiters')}
+                        </span>
+                        <ChevronDown
+                          className={cn(chevronNavClass, recruitersOpen && 'rotate-180')}
+                          aria-hidden
+                        />
+                      </button>
+                    </CollapsedIconTooltip>
+                    <SidebarAnimatedCollapse
+                      show={recruitersOpen}
+                      className="group-data-[collapsible=icon]:hidden"
                     >
-                      <span className="relative flex shrink-0 text-white/70 [&_svg]:size-4">
-                        <UserSearch />
-                      </span>
-                      <span className="min-w-0 flex-1 truncate group-data-[collapsible=icon]:hidden">
-                        {t('sidebarDemo.navRecruiters')}
-                      </span>
-                      <ChevronDown
+                      <div className={cn('ml-2 space-y-1 border-l pl-2.5', sb.borderSubNav)}>
+                        <Link
+                          href={hrefAdminCreateRecruiter}
+                          className={cn(
+                            sb.subRowBase,
+                            sb.subNavText,
+                            'gap-2',
+                            isActive(hrefAdminCreateRecruiter) && sb.navActive,
+                          )}
+                        >
+                          <UserPlus className={cn('size-4 shrink-0', sb.iconMuted)} strokeWidth={2} aria-hidden />
+                          <span className="truncate">{t('sidebarDemo.navCreateRecruiter')}</span>
+                        </Link>
+                        <Link
+                          href={hrefAdminRecruitersList}
+                          className={cn(
+                            sb.subRowBase,
+                            sb.subNavText,
+                            'gap-2',
+                            isActive(hrefAdminRecruitersList) &&
+                              !isActive(hrefAdminCreateRecruiter) &&
+                              sb.navActive,
+                          )}
+                        >
+                          <Users className={cn('size-4 shrink-0', sb.iconMuted)} strokeWidth={2} aria-hidden />
+                          <span className="truncate">{t('sidebarDemo.navRecruiterList')}</span>
+                        </Link>
+                      </div>
+                    </SidebarAnimatedCollapse>
+
+                    <CollapsedIconTooltip label={t('sidebarDemo.navJobs')}>
+                      <button
+                        type="button"
+                        aria-expanded={offersOpen}
+                        onClick={() => setOffersOpen((v) => !v)}
                         className={cn(
-                          'size-4 shrink-0 transition-transform group-data-[collapsible=icon]:hidden',
-                          recruitersOpen && 'rotate-180',
-                        )}
-                        aria-hidden
-                      />
-                    </button>
-                  </CollapsedIconTooltip>
-                  {recruitersOpen ? (
-                    <div className="ml-4 mb-1.5 space-y-2.5 border-l border-white/15 pl-3 pt-0.5 group-data-[collapsible=icon]:hidden">
-                      <Link
-                        href={hrefAdminCreateRecruiter}
-                        className={cn(
-                          'flex min-h-10 items-center rounded-lg px-2.5 py-2 text-xs leading-snug text-white/85 transition-colors hover:bg-white/10 hover:text-white',
-                          isActive(hrefAdminCreateRecruiter) && 'bg-white/10 text-white',
-                        )}
-                      >
-                        {t('sidebarDemo.navCreateRecruiter')}
-                      </Link>
-                      <Link
-                        href={hrefAdminRecruitersList}
-                        className={cn(
-                          'flex min-h-10 items-center rounded-lg px-2.5 py-2 text-xs leading-snug text-white/85 transition-colors hover:bg-white/10 hover:text-white',
-                          isActive(hrefAdminRecruitersList) &&
-                            !isActive(hrefAdminCreateRecruiter) &&
-                            'bg-white/10 text-white',
-                        )}
-                      >
-                        {t('sidebarDemo.navRecruiterList')}
-                      </Link>
-                    </div>
-                  ) : null}
-                  <CollapsedIconTooltip label={t('sidebarDemo.navJobs')}>
-                    <button
-                      type="button"
-                      onClick={() => setOffersOpen((v) => !v)}
-                      className={cn(
-                        rowGhost,
-                        'mb-0.5 min-h-10 group-data-[collapsible=icon]:justify-center',
-                        offersActive && 'bg-white/10 text-white',
-                      )}
-                    >
-                      <span className="relative flex shrink-0 text-white/70 [&_svg]:size-4">
-                        <BriefcaseBusiness />
-                      </span>
-                      <span className="min-w-0 flex-1 truncate group-data-[collapsible=icon]:hidden">
-                        {t('sidebarDemo.navJobs')}
-                      </span>
-                      <ChevronDown
-                        className={cn(
-                          'size-4 shrink-0 transition-transform group-data-[collapsible=icon]:hidden',
-                          offersOpen && 'rotate-180',
-                        )}
-                        aria-hidden
-                      />
-                    </button>
-                  </CollapsedIconTooltip>
-                  {offersOpen ? (
-                    <div className="ml-4 mb-1.5 space-y-2.5 border-l border-white/15 pl-3 pt-0.5 group-data-[collapsible=icon]:hidden">
-                      <Link
-                        href={hrefAdminCreateJob}
-                        className={cn(
-                          'flex min-h-10 items-center rounded-lg px-2.5 py-2 text-xs leading-snug text-white/85 transition-colors hover:bg-white/10 hover:text-white',
-                          isActive(hrefAdminCreateJob) && 'bg-white/10 text-white',
+                          sb.rowGhost,
+                          'min-h-10 w-full group-data-[collapsible=icon]:justify-center',
+                          offersActive && sb.navActive,
                         )}
                       >
-                        {t('sidebarDemo.navCreateJob')}
-                      </Link>
-                      <Link
-                        href={hrefAdminActiveJobs}
+                        <span className={cn('relative flex shrink-0 [&_svg]:size-4', sb.iconMuted)}>
+                          <BriefcaseBusiness />
+                        </span>
+                        <span className="min-w-0 flex-1 truncate text-left group-data-[collapsible=icon]:hidden">
+                          {t('sidebarDemo.navJobs')}
+                        </span>
+                        <ChevronDown className={cn(chevronNavClass, offersOpen && 'rotate-180')} aria-hidden />
+                      </button>
+                    </CollapsedIconTooltip>
+                    <SidebarAnimatedCollapse show={offersOpen} className="group-data-[collapsible=icon]:hidden">
+                      <div className={cn('ml-2 space-y-1 border-l pl-2.5', sb.borderSubNav)}>
+                        <Link
+                          href={hrefAdminCreateJob}
+                          className={cn(
+                            sb.subRowBase,
+                            sb.subNavText,
+                            'gap-2',
+                            isActive(hrefAdminCreateJob) && sb.navActive,
+                          )}
+                        >
+                          <PlusCircle className={cn('size-4 shrink-0', sb.iconMuted)} strokeWidth={2} aria-hidden />
+                          <span className="truncate">{t('sidebarDemo.navCreateJob')}</span>
+                        </Link>
+                        <Link
+                          href={hrefAdminActiveJobs}
+                          className={cn(
+                            sb.subRowBase,
+                            sb.subNavText,
+                            'gap-2',
+                            isActive(hrefAdminActiveJobs) && sb.navActive,
+                          )}
+                        >
+                          <ListChecks className={cn('size-4 shrink-0', sb.iconMuted)} strokeWidth={2} aria-hidden />
+                          <span className="truncate">{t('sidebarDemo.navActiveJobs')}</span>
+                        </Link>
+                      </div>
+                    </SidebarAnimatedCollapse>
+
+                    {navItem(hrefAdminProjects, t('sidebarDemo.navProjects'), <FolderKanban />, adminProjectsUnread)}
+                    {navItem(hrefAdminCompanies, t('sidebarDemo.navCompanies'), <User />, adminCompaniesUnread)}
+                  </section>
+
+                  <section className={sidebarNavSectionShell} aria-labelledby="nav-admin-channels">
+                    <h2 id="nav-admin-channels" className={sidebarNavSectionTitle}>
+                      {t('sidebarDemo.navSectionChannels')}
+                    </h2>
+                    <CollapsedIconTooltip label={t('sidebarDemo.navChannels')}>
+                      <button
+                        type="button"
+                        aria-expanded={channelsOpen}
+                        onClick={() => setChannelsOpen((v) => !v)}
                         className={cn(
-                          'flex min-h-10 items-center rounded-lg px-2.5 py-2 text-xs leading-snug text-white/85 transition-colors hover:bg-white/10 hover:text-white',
-                          isActive(hrefAdminActiveJobs) && 'bg-white/10 text-white',
+                          sb.rowGhost,
+                          'min-h-10 w-full group-data-[collapsible=icon]:justify-center',
+                          channelsActive && sb.navActive,
                         )}
                       >
-                        {t('sidebarDemo.navActiveJobs')}
-                      </Link>
-                    </div>
-                  ) : null}
-                  {navItem(hrefAdminProjects, t('sidebarDemo.navProjects'), <FolderKanban />, adminProjectsUnread)}
-                  {navItem(hrefAdminCompanies, t('sidebarDemo.navCompanies'), <User />, adminCompaniesUnread)}
-                  {navItem(hrefAdminSettings, t('sidebarDemo.navSettings'), <Settings />)}
+                        <span className={cn('relative flex shrink-0 [&_svg]:size-4', sb.iconMuted)}>
+                          <MessagesSquare />
+                        </span>
+                        <span className="min-w-0 flex-1 truncate text-left group-data-[collapsible=icon]:hidden">
+                          {t('sidebarDemo.navChannels')}
+                        </span>
+                        <ChevronDown className={cn(chevronNavClass, channelsOpen && 'rotate-180')} aria-hidden />
+                      </button>
+                    </CollapsedIconTooltip>
+                    <SidebarAnimatedCollapse show={channelsOpen} className="group-data-[collapsible=icon]:hidden">
+                      <div className={cn('ml-2 space-y-1 border-l pl-2.5', sb.borderSubNav)}>
+                        <Link
+                          href={hrefAdminCanalesFacebook}
+                          className={cn(
+                            sb.subRowBase,
+                            sb.subNavText,
+                            'flex items-center gap-2.5',
+                            isActive(hrefAdminCanalesFacebook) && sb.navActive,
+                          )}
+                        >
+                          <span
+                            className="size-2 shrink-0 rounded-full bg-[#1877F2] ring-1 ring-black/15 dark:ring-white/15"
+                            aria-hidden
+                          />
+                          <span className="truncate">{t('sidebarDemo.navChannelFacebook')}</span>
+                        </Link>
+                        <Link
+                          href={hrefAdminCanalesWhatsApp}
+                          className={cn(
+                            sb.subRowBase,
+                            sb.subNavText,
+                            'flex items-center gap-2.5',
+                            isActive(hrefAdminCanalesWhatsApp) && sb.navActive,
+                          )}
+                        >
+                          <span
+                            className="size-2 shrink-0 rounded-full bg-[#25D366] ring-1 ring-black/15 dark:ring-white/15"
+                            aria-hidden
+                          />
+                          <span className="truncate">{t('sidebarDemo.navChannelWhatsApp')}</span>
+                        </Link>
+                        <Link
+                          href={hrefAdminCanalesInstagram}
+                          className={cn(
+                            sb.subRowBase,
+                            sb.subNavText,
+                            'flex items-center gap-2.5',
+                            isActive(hrefAdminCanalesInstagram) && sb.navActive,
+                          )}
+                        >
+                          <span
+                            className="size-2 shrink-0 rounded-full bg-[#E4405F] ring-1 ring-black/15 dark:ring-white/15"
+                            aria-hidden
+                          />
+                          <span className="truncate">{t('sidebarDemo.navChannelInstagram')}</span>
+                        </Link>
+                        <Link
+                          href={hrefAdminCanalesBotTest}
+                          className={cn(
+                            sb.subRowBase,
+                            sb.subNavText,
+                            'flex items-center gap-2.5',
+                            isActive(hrefAdminCanalesBotTest) && sb.navActive,
+                          )}
+                        >
+                          <span
+                            className="size-2 shrink-0 rounded-full bg-[#14d9ce] ring-1 ring-black/15 dark:ring-white/15"
+                            aria-hidden
+                          />
+                          <span className="truncate">{t('sidebarDemo.navChannelBotTest')}</span>
+                        </Link>
+                      </div>
+                    </SidebarAnimatedCollapse>
+                  </section>
+
+                  <section className={sidebarNavSectionShell} aria-labelledby="nav-admin-account">
+                    <h2 id="nav-admin-account" className={sidebarNavSectionTitle}>
+                      {t('sidebarDemo.navSectionAccount')}
+                    </h2>
+                    {navItem(hrefAdminSettings, t('sidebarDemo.navSettings'), <Settings />)}
+                  </section>
                 </>
               ) : isRecruiterPortal ? (
                 <>
-                  {navItem(hrefRecruiterProfile, t('sidebarDemo.navProfile'), <CircleUser />)}
-                  <div
-                    className="my-2 border-t border-white/15 group-data-[collapsible=icon]:mx-1"
-                    role="separator"
-                    aria-hidden
-                  />
-                  {canRecruiterPanel('panel:developers')
-                    ? navItem(
-                        hrefRecruiterDevelopers,
-                        t('sidebarDemo.navDevelopers'),
-                        <Code2 />,
-                        adminDevelopersUnread,
-                      )
-                    : null}
-                  {canRecruiterPanel('panel:jobs') ? (
-                    <>
-                      <CollapsedIconTooltip label={t('sidebarDemo.navJobs')}>
-                        <button
-                          type="button"
-                          onClick={() => setOffersOpen((v) => !v)}
-                          className={cn(
-                            rowGhost,
-                            'mb-0.5 min-h-10 group-data-[collapsible=icon]:justify-center',
-                            offersActive && 'bg-white/10 text-white',
-                          )}
-                        >
-                          <span className="relative flex shrink-0 text-white/70 [&_svg]:size-4">
-                            <BriefcaseBusiness />
-                          </span>
-                          <span className="min-w-0 flex-1 truncate group-data-[collapsible=icon]:hidden">
-                            {t('sidebarDemo.navJobs')}
-                          </span>
-                          <ChevronDown
-                            className={cn(
-                              'size-4 shrink-0 transition-transform group-data-[collapsible=icon]:hidden',
-                              offersOpen && 'rotate-180',
-                            )}
-                            aria-hidden
-                          />
-                        </button>
-                      </CollapsedIconTooltip>
-                      {offersOpen ? (
-                        <div className="ml-4 mb-1.5 space-y-2.5 border-l border-white/15 pl-3 pt-0.5 group-data-[collapsible=icon]:hidden">
-                          <Link
-                            href={hrefRecruiterCreateJob}
-                            className={cn(
-                              'flex min-h-10 items-center rounded-lg px-2.5 py-2 text-xs leading-snug text-white/85 transition-colors hover:bg-white/10 hover:text-white',
-                              isActive(hrefRecruiterCreateJob) && 'bg-white/10 text-white',
-                            )}
-                          >
-                            {t('sidebarDemo.navCreateJob')}
-                          </Link>
-                          <Link
-                            href={hrefRecruiterActiveJobs}
-                            className={cn(
-                              'flex min-h-10 items-center rounded-lg px-2.5 py-2 text-xs leading-snug text-white/85 transition-colors hover:bg-white/10 hover:text-white',
-                              isActive(hrefRecruiterActiveJobs) && 'bg-white/10 text-white',
-                            )}
-                          >
-                            {t('sidebarDemo.navActiveJobs')}
-                          </Link>
-                        </div>
+                  <section className={sidebarNavSectionShell} aria-labelledby="nav-rec-personal">
+                    <h2 id="nav-rec-personal" className={sidebarNavSectionTitle}>
+                      {t('sidebarDemo.navSectionPersonal')}
+                    </h2>
+                    {navItem(hrefRecruiterProfile, t('sidebarDemo.navProfile'), <CircleUser />)}
+                  </section>
+
+                  {canRecruiterPanel('panel:developers') ||
+                  canRecruiterPanel('panel:jobs') ||
+                  canRecruiterPanel('panel:projects') ||
+                  canRecruiterPanel('panel:companies') ? (
+                    <section className={sidebarNavSectionShell} aria-labelledby="nav-rec-talent">
+                      <h2 id="nav-rec-talent" className={sidebarNavSectionTitle}>
+                        {t('sidebarDemo.navSectionTalent')}
+                      </h2>
+                      {canRecruiterPanel('panel:developers')
+                        ? navItem(
+                            hrefRecruiterDevelopers,
+                            t('sidebarDemo.navDevelopers'),
+                            <Code2 />,
+                            adminDevelopersUnread,
+                          )
+                        : null}
+                      {canRecruiterPanel('panel:jobs') ? (
+                        <>
+                          <CollapsedIconTooltip label={t('sidebarDemo.navJobs')}>
+                            <button
+                              type="button"
+                              aria-expanded={offersOpen}
+                              onClick={() => setOffersOpen((v) => !v)}
+                              className={cn(
+                                sb.rowGhost,
+                                'min-h-10 w-full group-data-[collapsible=icon]:justify-center',
+                                offersActive && sb.navActive,
+                              )}
+                            >
+                              <span className={cn('relative flex shrink-0 [&_svg]:size-4', sb.iconMuted)}>
+                                <BriefcaseBusiness />
+                              </span>
+                              <span className="min-w-0 flex-1 truncate text-left group-data-[collapsible=icon]:hidden">
+                                {t('sidebarDemo.navJobs')}
+                              </span>
+                              <ChevronDown className={cn(chevronNavClass, offersOpen && 'rotate-180')} aria-hidden />
+                            </button>
+                          </CollapsedIconTooltip>
+                          <SidebarAnimatedCollapse show={offersOpen} className="group-data-[collapsible=icon]:hidden">
+                            <div className={cn('ml-2 space-y-1 border-l pl-2.5', sb.borderSubNav)}>
+                              <Link
+                                href={hrefRecruiterCreateJob}
+                                className={cn(
+                                  sb.subRowBase,
+                                  sb.subNavText,
+                                  'gap-2',
+                                  isActive(hrefRecruiterCreateJob) && sb.navActive,
+                                )}
+                              >
+                                <PlusCircle
+                                  className={cn('size-4 shrink-0', sb.iconMuted)}
+                                  strokeWidth={2}
+                                  aria-hidden
+                                />
+                                <span className="truncate">{t('sidebarDemo.navCreateJob')}</span>
+                              </Link>
+                              <Link
+                                href={hrefRecruiterActiveJobs}
+                                className={cn(
+                                  sb.subRowBase,
+                                  sb.subNavText,
+                                  'gap-2',
+                                  isActive(hrefRecruiterActiveJobs) && sb.navActive,
+                                )}
+                              >
+                                <ListChecks
+                                  className={cn('size-4 shrink-0', sb.iconMuted)}
+                                  strokeWidth={2}
+                                  aria-hidden
+                                />
+                                <span className="truncate">{t('sidebarDemo.navActiveJobs')}</span>
+                              </Link>
+                            </div>
+                          </SidebarAnimatedCollapse>
+                        </>
                       ) : null}
-                    </>
+                      {canRecruiterPanel('panel:projects')
+                        ? navItem(
+                            hrefRecruiterProjects,
+                            t('sidebarDemo.navProjects'),
+                            <FolderKanban />,
+                            adminProjectsUnread,
+                          )
+                        : null}
+                      {canRecruiterPanel('panel:companies')
+                        ? navItem(
+                            hrefRecruiterCompanies,
+                            t('sidebarDemo.navCompanies'),
+                            <User />,
+                            adminCompaniesUnread,
+                          )
+                        : null}
+                    </section>
                   ) : null}
-                  {canRecruiterPanel('panel:projects')
-                    ? navItem(
-                        hrefRecruiterProjects,
-                        t('sidebarDemo.navProjects'),
-                        <FolderKanban />,
-                        adminProjectsUnread,
-                      )
-                    : null}
-                  {canRecruiterPanel('panel:companies')
-                    ? navItem(
-                        hrefRecruiterCompanies,
-                        t('sidebarDemo.navCompanies'),
-                        <User />,
-                        adminCompaniesUnread,
-                      )
-                    : null}
-                  <div
-                    className="my-2 border-t border-white/15 group-data-[collapsible=icon]:mx-1"
-                    role="separator"
-                    aria-hidden
-                  />
-                  {navItem(hrefRecruiterSettings, t('sidebarDemo.navSettings'), <Settings />)}
+
+                  <section className={sidebarNavSectionShell} aria-labelledby="nav-rec-account">
+                    <h2 id="nav-rec-account" className={sidebarNavSectionTitle}>
+                      {t('sidebarDemo.navSectionAccount')}
+                    </h2>
+                    {navItem(hrefRecruiterSettings, t('sidebarDemo.navSettings'), <Settings />)}
+                  </section>
                 </>
               ) : isCompanySection ? (
                 <>
-                  {navItem(hrefCompanyProfile, t('sidebarDemo.navProfile'), <User />)}
-                  {navItem(hrefCompanyProjects, t('sidebarDemo.navProjects'), <FolderKanban />, companyProjectsUnread)}
-                  {navItem(hrefCompanySettings, t('sidebarDemo.navSettings'), <Settings />)}
+                  <section className={sidebarNavSectionShell} aria-labelledby="nav-co-general">
+                    <h2 id="nav-co-general" className={sidebarNavSectionTitle}>
+                      {t('sidebarDemo.navSectionGeneral')}
+                    </h2>
+                    {navItem(hrefCompanyProfile, t('sidebarDemo.navProfile'), <User />)}
+                    {navItem(hrefCompanyProjects, t('sidebarDemo.navProjects'), <FolderKanban />, companyProjectsUnread)}
+                  </section>
+                  <section className={sidebarNavSectionShell} aria-labelledby="nav-co-account">
+                    <h2 id="nav-co-account" className={sidebarNavSectionTitle}>
+                      {t('sidebarDemo.navSectionAccount')}
+                    </h2>
+                    {navItem(hrefCompanySettings, t('sidebarDemo.navSettings'), <Settings />)}
+                  </section>
                 </>
               ) : isDevSection ? (
                 <>
-                  {navItem(hrefDevDashboard, t('sidebarDemo.navDashboard'), <LayoutDashboard />)}
-                  <div
-                    className="my-2 border-t border-white/15 group-data-[collapsible=icon]:mx-1"
-                    role="separator"
-                    aria-hidden
-                  />
-                  {navItem(hrefProfile, t('sidebarDemo.navProfile'), <User />)}
-                  <CollapsedIconTooltip label={t('sidebarDemo.navWork')}>
-                    <button
-                      type="button"
-                      onClick={() => setTrabajoOpen((v) => !v)}
-                      className={cn(
-                        rowGhost,
-                        'mb-0.5 min-h-10 group-data-[collapsible=icon]:justify-center',
-                        trabajoGroupActive && 'bg-white/10 text-white',
-                      )}
-                    >
-                      <span className="relative flex shrink-0 text-white/70 [&_svg]:size-4">
-                        <BriefcaseBusiness />
-                      </span>
-                      <span className="min-w-0 flex-1 truncate text-left group-data-[collapsible=icon]:hidden">
-                        {t('sidebarDemo.navWork')}
-                      </span>
-                      <ChevronDown
+                  <section className={sidebarNavSectionShell} aria-labelledby="nav-dev-overview">
+                    <h2 id="nav-dev-overview" className={sidebarNavSectionTitle}>
+                      {t('sidebarDemo.navSectionOverview')}
+                    </h2>
+                    {navItem(hrefDevDashboard, t('sidebarDemo.navDashboard'), <LayoutDashboard />)}
+                  </section>
+                  <section className={sidebarNavSectionShell} aria-labelledby="nav-dev-personal">
+                    <h2 id="nav-dev-personal" className={sidebarNavSectionTitle}>
+                      {t('sidebarDemo.navSectionPersonal')}
+                    </h2>
+                    {navItem(hrefProfile, t('sidebarDemo.navProfile'), <User />)}
+                  </section>
+                  <section className={sidebarNavSectionShell} aria-labelledby="nav-dev-work">
+                    <h2 id="nav-dev-work" className={sidebarNavSectionTitle}>
+                      {t('sidebarDemo.navSectionWorkBlock')}
+                    </h2>
+                    <CollapsedIconTooltip label={t('sidebarDemo.navWork')}>
+                      <button
+                        type="button"
+                        aria-expanded={trabajoOpen}
+                        onClick={() => setTrabajoOpen((v) => !v)}
                         className={cn(
-                          'size-4 shrink-0 transition-transform group-data-[collapsible=icon]:hidden',
-                          trabajoOpen && 'rotate-180',
-                        )}
-                        aria-hidden
-                      />
-                    </button>
-                  </CollapsedIconTooltip>
-                  {trabajoOpen ? (
-                    <div className="ml-4 mb-1.5 space-y-2.5 border-l border-white/15 pl-3 pt-0.5 group-data-[collapsible=icon]:hidden">
-                      <Link
-                        href={hrefDevDashboard}
-                        className={cn(
-                          'flex min-h-10 items-center rounded-lg px-2.5 py-2 text-xs leading-snug text-white/70 transition-colors hover:bg-white/10 hover:text-white',
-                          nuevasAperturasActive && 'bg-white/10 text-white',
+                          sb.rowGhost,
+                          'min-h-10 w-full group-data-[collapsible=icon]:justify-center',
+                          trabajoGroupActive && sb.navActive,
                         )}
                       >
-                        {t('sidebarDemo.navNuevasAperturas')}
-                      </Link>
-                      <Link
-                        href={hrefEmpleosOfertas}
-                        className={cn(
-                          'flex min-h-10 items-center rounded-lg px-2.5 py-2 text-xs leading-snug text-white/70 transition-colors hover:bg-white/10 hover:text-white',
-                          empleosOfertasActive && 'bg-white/10 text-white',
-                        )}
-                      >
-                        {t('sidebarDemo.navEmpleos')}
-                      </Link>
-                      <Link
-                        href={hrefEmpleosGuardadas}
-                        className={cn(
-                          'flex min-h-10 items-center rounded-lg px-2.5 py-2 text-xs leading-snug text-white/70 transition-colors hover:bg-white/10 hover:text-white',
-                          guardadasActive && 'bg-white/10 text-white',
-                        )}
-                      >
-                        {t('devDashboard.tabSavedJobs')}
-                      </Link>
-                    </div>
-                  ) : null}
-                  {navItem(hrefProjects, t('sidebarDemo.navProjects'), <FolderKanban />, devProjectsUnread)}
-                  {navItem(hrefEmpleosPostulacion, t('sidebarDemo.navApplications'), <ClipboardList />)}
-                  <div
-                    className="my-2 border-t border-white/15 group-data-[collapsible=icon]:mx-1"
-                    role="separator"
-                    aria-hidden
-                  />
-                  {navItem(hrefDevSettings, t('sidebarDemo.navSettings'), <Settings />)}
+                        <span className={cn('relative flex shrink-0 [&_svg]:size-4', sb.iconMuted)}>
+                          <BriefcaseBusiness />
+                        </span>
+                        <span className="min-w-0 flex-1 truncate text-left group-data-[collapsible=icon]:hidden">
+                          {t('sidebarDemo.navWork')}
+                        </span>
+                        <ChevronDown className={cn(chevronNavClass, trabajoOpen && 'rotate-180')} aria-hidden />
+                      </button>
+                    </CollapsedIconTooltip>
+                    <SidebarAnimatedCollapse show={trabajoOpen} className="group-data-[collapsible=icon]:hidden">
+                      <div className={cn('ml-2 space-y-1 border-l pl-2.5', sb.borderSubNav)}>
+                        <Link
+                          href={hrefDevDashboard}
+                          className={cn(sb.subRowMuted, 'gap-2', nuevasAperturasActive && sb.navActive)}
+                        >
+                          <LayoutDashboard
+                            className={cn('size-4 shrink-0', sb.iconMuted)}
+                            strokeWidth={2}
+                            aria-hidden
+                          />
+                          <span className="truncate">{t('sidebarDemo.navNuevasAperturas')}</span>
+                        </Link>
+                        <Link
+                          href={hrefEmpleosOfertas}
+                          className={cn(sb.subRowMuted, 'gap-2', empleosOfertasActive && sb.navActive)}
+                        >
+                          <BriefcaseBusiness
+                            className={cn('size-4 shrink-0', sb.iconMuted)}
+                            strokeWidth={2}
+                            aria-hidden
+                          />
+                          <span className="truncate">{t('sidebarDemo.navEmpleos')}</span>
+                        </Link>
+                        <Link
+                          href={hrefEmpleosGuardadas}
+                          className={cn(sb.subRowMuted, 'gap-2', guardadasActive && sb.navActive)}
+                        >
+                          <Bookmark className={cn('size-4 shrink-0', sb.iconMuted)} strokeWidth={2} aria-hidden />
+                          <span className="truncate">{t('devDashboard.tabSavedJobs')}</span>
+                        </Link>
+                      </div>
+                    </SidebarAnimatedCollapse>
+
+                    {navItem(hrefProjects, t('sidebarDemo.navProjects'), <FolderKanban />, devProjectsUnread)}
+                    {navItem(hrefEmpleosPostulacion, t('sidebarDemo.navApplications'), <ClipboardList />)}
+                  </section>
+                  <section className={sidebarNavSectionShell} aria-labelledby="nav-dev-account">
+                    <h2 id="nav-dev-account" className={sidebarNavSectionTitle}>
+                      {t('sidebarDemo.navSectionAccount')}
+                    </h2>
+                    {navItem(hrefDevSettings, t('sidebarDemo.navSettings'), <Settings />)}
+                  </section>
                 </>
               ) : null}
             </nav>
           </SidebarContent>
 
-          <SidebarFooter className="border-t border-white/10 p-2">
+          <SidebarFooter className={cn('p-2', sb.borderSeparator)}>
             <CollapsedIconTooltip label={t('sidebarDemo.logOut')}>
               {isAdminSection ? (
                 <button
                   type="button"
-                  className="flex w-full items-center justify-center gap-2 rounded-md border border-white/15 bg-white/5 px-3 py-2.5 text-sm font-medium text-white transition-colors hover:bg-white/10 group-data-[collapsible=icon]:px-2"
+                  className={sb.footerBtn}
                   onClick={() => {
                     logoutAdmin();
                     setLocation(path(''));
@@ -639,7 +958,7 @@ export function AppShell({
               ) : isRecruiterPortal ? (
                 <button
                   type="button"
-                  className="flex w-full items-center justify-center gap-2 rounded-md border border-white/15 bg-white/5 px-3 py-2.5 text-sm font-medium text-white transition-colors hover:bg-white/10 group-data-[collapsible=icon]:px-2"
+                  className={sb.footerBtn}
                   onClick={() => {
                     logoutRecruiter();
                     setLocation(path(''));
@@ -651,7 +970,7 @@ export function AppShell({
               ) : isDevSection ? (
                 <button
                   type="button"
-                  className="flex w-full items-center justify-center gap-2 rounded-md border border-white/15 bg-white/5 px-3 py-2.5 text-sm font-medium text-white transition-colors hover:bg-white/10 group-data-[collapsible=icon]:px-2"
+                  className={sb.footerBtn}
                   onClick={() => {
                     logoutDeveloper();
                     setLocation(path(''));
@@ -663,7 +982,7 @@ export function AppShell({
               ) : isCompanySection ? (
                 <button
                   type="button"
-                  className="flex w-full items-center justify-center gap-2 rounded-md border border-white/15 bg-white/5 px-3 py-2.5 text-sm font-medium text-white transition-colors hover:bg-white/10 group-data-[collapsible=icon]:px-2"
+                  className={sb.footerBtn}
                   onClick={() => {
                     logoutCompany();
                     setLocation(path(''));
@@ -675,7 +994,7 @@ export function AppShell({
               ) : (
                 <Link
                   href={path('')}
-                  className="flex w-full items-center justify-center gap-2 rounded-md border border-white/15 bg-white/5 px-3 py-2.5 text-sm font-medium text-white transition-colors hover:bg-white/10 group-data-[collapsible=icon]:px-2"
+                  className={sb.footerBtn}
                 >
                   <LogOut className="size-4 shrink-0" aria-hidden />
                   <span className="group-data-[collapsible=icon]:hidden">{t('sidebarDemo.logOut')}</span>
@@ -710,7 +1029,7 @@ export function AppShell({
             <h1 className="min-w-0 flex-1 truncate text-[17px] font-semibold tracking-tight max-md:text-sm md:text-[17px]">
               {title}
             </h1>
-            <div className="ml-auto flex shrink-0 items-center">
+            <div className="ml-auto flex w-max max-w-[min(100%,18rem)] shrink-0 items-center justify-end">
               <VadoIntelligenceChatToggle
                 expanded={sideChatExpanded}
                 onToggle={() => setSideChatExpanded((v) => !v)}
@@ -721,11 +1040,19 @@ export function AppShell({
           </header>
           <div
             className={cn(
-              'flex min-h-0 min-w-0 flex-1 flex-col px-5 py-5 max-md:px-4 max-md:py-4 max-md:pb-[max(1rem,env(safe-area-inset-bottom,0px))]',
-              contentOverflow === 'hidden'
-                ? 'gap-0 overflow-hidden overscroll-none'
-                : 'gap-6 overflow-y-auto max-md:gap-5',
-              appThemeMode === 'dark' ? 'bg-zinc-950' : 'bg-[#f2f2f7]',
+              'flex min-h-0 min-w-0 flex-1 flex-col',
+              contentFlush
+                ? cn(
+                    'overflow-hidden overscroll-none p-0 pb-[max(0px,env(safe-area-inset-bottom,0px))]',
+                    appThemeMode === 'dark' ? 'bg-zinc-950' : 'bg-[#f2f2f7]',
+                  )
+                : cn(
+                    'px-5 py-5 max-md:px-4 max-md:py-4 max-md:pb-[max(1rem,env(safe-area-inset-bottom,0px))]',
+                    contentOverflow === 'hidden'
+                      ? 'gap-0 overflow-hidden overscroll-none'
+                      : 'gap-6 overflow-y-auto max-md:gap-5',
+                    appThemeMode === 'dark' ? 'bg-zinc-950' : 'bg-[#f2f2f7]',
+                  ),
             )}
           >
             {children}

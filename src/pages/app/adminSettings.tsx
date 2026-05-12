@@ -15,7 +15,9 @@ export default function AppAdminSettings() {
       description={t('seo.appAdminJobs')}
     >
       <section id="settings" className="scroll-mt-24">
-        <h2 className="mb-2 text-xl font-semibold text-zinc-900 dark:text-zinc-100">{t('sidebarDemo.navSettings')}</h2>
+        <h2 className="mb-2 text-xl font-semibold text-foreground">
+          {t('sidebarDemo.navSettings')}
+        </h2>
         <AppThemeSettingsCard mode={themeMode} onChange={setThemeMode} />
       </section>
     </AppShell>

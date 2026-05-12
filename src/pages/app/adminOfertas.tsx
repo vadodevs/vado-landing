@@ -43,6 +43,7 @@ import {
   setRecruiterJobOfferStatus,
   updateRecruiterJobOffer,
 } from '@/lib/recruiterJobsApi';
+import { ADMIN_FIELD_INPUT_CLASS, ADMIN_PRIMARY_BTN_CLASS } from '@/lib/adminVadoUi';
 
 type Draft = Omit<JobOfferRecord, 'id' | 'status' | 'createdAt' | 'applicationsCount' | 'expiresAt'>;
 
@@ -402,9 +403,9 @@ export default function AppAdminOfertasPage() {
     >
       <section className="scroll-mt-24 space-y-4">
         {isPreviewRoute ? (
-          <div className="rounded-3xl border border-zinc-200/80 bg-white p-6 shadow-sm">
+          <div className="rounded-3xl border border-zinc-200/80 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-950">
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <h2 className="text-xl font-semibold text-zinc-900">Vista previa</h2>
+              <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">Vista previa</h2>
               <div className="flex flex-wrap items-center gap-2">
                 {previewOffer ? (
                   <Button
@@ -429,32 +430,32 @@ export default function AppAdminOfertasPage() {
               </div>
             </div>
             {!previewOffer ? (
-              <p className="mt-4 text-sm text-zinc-500">
+              <p className="mt-4 text-sm text-zinc-500 dark:text-zinc-400">
                 No encontramos la oferta para vista previa.
               </p>
             ) : (
-              <div className="mt-6 rounded-2xl border border-zinc-200 bg-zinc-50/50 p-4">
-                <h1 className="text-3xl font-black tracking-tight text-[#0f172a]">
+              <div className="mt-6 rounded-2xl border border-zinc-200 bg-zinc-50/50 p-4 dark:border-zinc-700 dark:bg-zinc-900/40">
+                <h1 className="text-3xl font-black tracking-tight text-[#0f172a] dark:text-white">
                   {previewOffer.titulo || 'LLM Engineer (AI Engineer)'}
                 </h1>
                 <div className="mt-8 flex flex-col gap-8 lg:flex-row">
                   <aside className="w-full lg:w-[220px]">
                     <div>
-                      <h5 className="text-[18px] font-bold text-[#262835]">Location</h5>
-                      <p className="mt-1 text-sm text-zinc-700">
+                      <h5 className="text-[18px] font-bold text-[#262835] dark:text-zinc-100">Location</h5>
+                      <p className="mt-1 text-sm text-zinc-700 dark:text-zinc-300">
                         {previewOffer.ubicacion.trim() || 'Mexico / Remote'}
                       </p>
                     </div>
-                    <div className="my-5 h-px bg-zinc-200" />
+                    <div className="my-5 h-px bg-zinc-200 dark:bg-zinc-700" />
                     <div>
-                      <h5 className="text-[18px] font-bold text-[#262835]">Industry</h5>
-                      <p className="mt-1 text-sm text-zinc-700">
+                      <h5 className="text-[18px] font-bold text-[#262835] dark:text-zinc-100">Industry</h5>
+                      <p className="mt-1 text-sm text-zinc-700 dark:text-zinc-300">
                         {previewOffer.industria.trim() || 'Data and Analytics'}
                       </p>
                     </div>
                   </aside>
                   <section className="min-w-0 flex-1">
-                    <div className="border-b border-zinc-200 pb-3 text-[18px] font-bold text-[#262835]">
+                    <div className="border-b border-zinc-200 pb-3 text-[18px] font-bold text-[#262835] dark:border-zinc-700 dark:text-zinc-100">
                       Overview
                     </div>
                     <div className="pt-5">
@@ -478,7 +479,7 @@ export default function AppAdminOfertasPage() {
             </h2>
             {isActiveRoute ? (
               <>
-                <p className="mt-1 text-sm text-zinc-500">
+                <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
                   Gestiona tus procesos de selección activos y finalizados.
                 </p>
                 <div className="mt-5 grid gap-3 sm:grid-cols-3">
@@ -558,22 +559,22 @@ export default function AppAdminOfertasPage() {
                 value={draft.titulo}
                 onChange={(e) => setDraft((p) => ({ ...p, titulo: e.target.value }))}
                 placeholder="Título (ej. LLM Engineer (AI Engineer))"
-                className="h-10 rounded-lg border border-zinc-200 bg-white px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-[#17304b]/20"
+                className={ADMIN_FIELD_INPUT_CLASS}
               />
               <input
                 value={draft.ubicacion}
                 onChange={(e) => setDraft((p) => ({ ...p, ubicacion: e.target.value }))}
                 placeholder="Ubicación (ej. Mexico / Remote)"
-                className="h-10 rounded-lg border border-zinc-200 bg-white px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-[#17304b]/20"
+                className={ADMIN_FIELD_INPUT_CLASS}
               />
               <input
                 value={draft.industria}
                 onChange={(e) => setDraft((p) => ({ ...p, industria: e.target.value }))}
                 placeholder="Industria (ej. Data and Analytics)"
-                className="h-10 rounded-lg border border-zinc-200 bg-white px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-[#17304b]/20"
+                className={ADMIN_FIELD_INPUT_CLASS}
               />
               <div className="md:col-span-2">
-                <span className="text-sm text-zinc-600">Overview</span>
+                <span className="text-sm text-zinc-600 dark:text-zinc-400">Overview</span>
                 <div className="mt-1">
                   <JobOverviewRichEditor
                     id="crear-oferta"
@@ -586,12 +587,12 @@ export default function AppAdminOfertasPage() {
             </div>
             <div className="mt-3 flex flex-wrap items-end gap-3">
               <label className="flex min-w-[220px] flex-1 flex-col gap-1 text-sm sm:max-w-xs">
-                <span className="text-zinc-600">Fecha de expiración (opcional)</span>
+                <span className="text-zinc-600 dark:text-zinc-400">Fecha de expiración (opcional)</span>
                 <input
                   type="date"
                   value={createExpiresAt}
                   onChange={(e) => setCreateExpiresAt(e.target.value)}
-                  className="h-10 rounded-lg border border-zinc-200 bg-white px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-[#17304b]/20"
+                  className={ADMIN_FIELD_INPUT_CLASS}
                 />
               </label>
               <div className="flex flex-1 flex-wrap items-center gap-2 sm:flex-none">
@@ -599,39 +600,39 @@ export default function AppAdminOfertasPage() {
                   type="button"
                   onClick={() => void createOffer()}
                   disabled={creating}
-                  className="bg-[#0b2a55] hover:bg-[#0a2347]"
+                  className={ADMIN_PRIMARY_BTN_CLASS}
                 >
                   <Plus className="size-4" />
                   {creating ? 'Guardando...' : 'Publicar oferta'}
                 </Button>
-                {error ? <p className="text-sm text-red-700">{error}</p> : null}
+                {error ? <p className="text-sm text-red-700 dark:text-red-400">{error}</p> : null}
               </div>
             </div>
 
-            <div className="mt-6 rounded-xl border border-zinc-200 bg-zinc-50/50 p-4">
-              <h4 className="mb-3 text-sm font-semibold text-zinc-700 uppercase">Vista previa</h4>
-              <h1 className="text-3xl font-black tracking-tight text-[#0f172a]">
+            <div className="mt-6 rounded-xl border border-zinc-200 bg-zinc-50/50 p-4 dark:border-zinc-700 dark:bg-zinc-900/40">
+              <h4 className="mb-3 text-sm font-semibold text-zinc-700 uppercase dark:text-zinc-300">Vista previa</h4>
+              <h1 className="text-3xl font-black tracking-tight text-[#0f172a] dark:text-white">
                 {draft.titulo.trim() || 'LLM Engineer (AI Engineer)'}
               </h1>
               <div className="mt-8 flex flex-col gap-8 lg:flex-row">
                 <aside className="w-full lg:w-[220px]">
                   <div>
-                    <h5 className="text-[18px] font-bold text-[#262835]">Location</h5>
-                    <p className="mt-1 text-sm text-zinc-700">
+                    <h5 className="text-[18px] font-bold text-[#262835] dark:text-zinc-100">Location</h5>
+                    <p className="mt-1 text-sm text-zinc-700 dark:text-zinc-300">
                       {draft.ubicacion.trim() || 'Mexico / Remote'}
                     </p>
                   </div>
-                  <div className="my-5 h-px bg-zinc-200" />
+                  <div className="my-5 h-px bg-zinc-200 dark:bg-zinc-700" />
                   <div>
-                    <h5 className="text-[18px] font-bold text-[#262835]">Industry</h5>
-                    <p className="mt-1 text-sm text-zinc-700">
+                    <h5 className="text-[18px] font-bold text-[#262835] dark:text-zinc-100">Industry</h5>
+                    <p className="mt-1 text-sm text-zinc-700 dark:text-zinc-300">
                       {draft.industria.trim() || 'Data and Analytics'}
                     </p>
                   </div>
                 </aside>
 
                 <section className="min-w-0 flex-1">
-                  <div className="border-b border-zinc-200 pb-3 text-[18px] font-bold text-[#262835]">
+                  <div className="border-b border-zinc-200 pb-3 text-[18px] font-bold text-[#262835] dark:border-zinc-700 dark:text-zinc-100">
                     Overview
                   </div>
                   <div className="pt-5">
@@ -659,8 +660,8 @@ export default function AppAdminOfertasPage() {
                   className="w-full bg-transparent text-sm text-zinc-900 outline-none placeholder:text-zinc-400 dark:text-zinc-100 dark:placeholder:text-zinc-500"
                 />
               </label>
-              <label className="flex h-11 shrink-0 items-center gap-2 rounded-xl border border-zinc-200 bg-white px-3 text-sm text-zinc-700">
-                <span className="text-zinc-500">Estado:</span>
+              <label className="flex h-11 shrink-0 items-center gap-2 rounded-xl border border-zinc-200 bg-white px-3 text-sm text-zinc-700 dark:border-zinc-700 dark:bg-zinc-900/80 dark:text-zinc-200">
+                <span className="text-zinc-500 dark:text-zinc-400">Estado:</span>
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value as typeof statusFilter)}
@@ -672,8 +673,8 @@ export default function AppAdminOfertasPage() {
                   <option value="borrador">Borrador</option>
                 </select>
               </label>
-              <label className="flex h-11 shrink-0 items-center gap-2 rounded-xl border border-zinc-200 bg-white px-3 text-sm text-zinc-700">
-                <CalendarDays className="size-4 text-zinc-500" />
+              <label className="flex h-11 shrink-0 items-center gap-2 rounded-xl border border-zinc-200 bg-white px-3 text-sm text-zinc-700 dark:border-zinc-700 dark:bg-zinc-900/80 dark:text-zinc-200">
+                <CalendarDays className="size-4 text-zinc-500 dark:text-zinc-400" />
                 <select
                   value={bucketFilter}
                   onChange={(e) => setBucketFilter(e.target.value as typeof bucketFilter)}
@@ -699,14 +700,16 @@ export default function AppAdminOfertasPage() {
                 >
                   Limpiar
                 </Button>
-                <div className="inline-flex h-11 overflow-hidden rounded-xl border border-zinc-200">
+                <div className="inline-flex h-11 overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-700">
                   <button
                     type="button"
                     onClick={() => setViewMode('list')}
                     title="Vista lista"
                     aria-label="Vista lista"
                     className={`inline-flex items-center justify-center px-3 ${
-                      viewMode === 'list' ? 'bg-zinc-100 text-zinc-900' : 'bg-white text-zinc-600'
+                      viewMode === 'list'
+                        ? 'bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-zinc-100'
+                        : 'bg-white text-zinc-600 dark:bg-zinc-950 dark:text-zinc-400'
                     }`}
                   >
                     <AlignJustify className="size-4" />
@@ -716,8 +719,10 @@ export default function AppAdminOfertasPage() {
                     onClick={() => setViewMode('cards')}
                     title="Vista cards"
                     aria-label="Vista cards"
-                    className={`inline-flex items-center justify-center border-l border-zinc-200 px-3 ${
-                      viewMode === 'cards' ? 'bg-zinc-100 text-zinc-900' : 'bg-white text-zinc-600'
+                    className={`inline-flex items-center justify-center border-l border-zinc-200 px-3 dark:border-zinc-700 ${
+                      viewMode === 'cards'
+                        ? 'bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-zinc-100'
+                        : 'bg-white text-zinc-600 dark:bg-zinc-950 dark:text-zinc-400'
                     }`}
                   >
                     <LayoutGrid className="size-4" />
@@ -743,10 +748,10 @@ export default function AppAdminOfertasPage() {
                 const bucketDotClass = bucket === 'por_vencer' ? 'bg-amber-500' : bucket === 'expirada' ? 'bg-rose-500' : 'bg-emerald-500';
                 const bucketPillClass =
                   bucket === 'por_vencer'
-                    ? 'bg-amber-100 text-amber-800'
+                    ? 'bg-amber-100 text-amber-800 ring-1 ring-amber-200/80 dark:bg-amber-950/45 dark:text-amber-200 dark:ring-amber-800/40'
                     : bucket === 'expirada'
-                      ? 'bg-rose-100 text-rose-800'
-                      : 'bg-emerald-100 text-emerald-800';
+                      ? 'bg-rose-100 text-rose-800 ring-1 ring-rose-200/80 dark:bg-rose-950/45 dark:text-rose-200 dark:ring-rose-800/40'
+                      : 'bg-emerald-100 text-emerald-800 ring-1 ring-emerald-200/80 dark:bg-emerald-950/45 dark:text-emerald-200 dark:ring-emerald-800/40';
 
                 const administrarMenu = (
                   <DropdownMenu>
@@ -783,7 +788,7 @@ export default function AppAdminOfertasPage() {
                 return (
                   <article
                     key={offer.id}
-                    className={`border border-zinc-100 bg-white shadow-sm ${
+                    className={`border border-zinc-100 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-950 ${
                       viewMode === 'cards' ? 'flex h-fit flex-col rounded-3xl p-4' : 'relative rounded-2xl px-4 py-3'
                     }`}
                   >
@@ -797,17 +802,19 @@ export default function AppAdminOfertasPage() {
                             </span>
                           </div>
                         </div>
-                        <p className="mt-3 truncate text-2xl font-black tracking-tight text-zinc-900">{offer.titulo}</p>
-                        <div className="mt-2 max-h-40 overflow-y-auto pr-0.5 text-left text-base leading-relaxed text-zinc-700">
+                        <p className="mt-3 truncate text-2xl font-black tracking-tight text-zinc-900 dark:text-zinc-100">
+                          {offer.titulo}
+                        </p>
+                        <div className="mt-2 max-h-40 overflow-y-auto pr-0.5 text-left text-base leading-relaxed text-zinc-700 dark:text-zinc-300">
                           <JobOverviewBody
                             overview={ensureEditorHtml(offer.overview)}
                             emptyMessage="—"
                           />
                         </div>
-                        <p className="mt-2 text-xs text-zinc-500">
+                        <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-400">
                           {offer.ubicacion} · {offer.industria}
                         </p>
-                        <div className="mt-4 flex items-center justify-between gap-3 border-t border-zinc-100 pt-3">
+                        <div className="mt-4 flex items-center justify-between gap-3 border-t border-zinc-100 pt-3 dark:border-zinc-800">
                           <button
                             type="button"
                             onClick={() =>
@@ -817,7 +824,7 @@ export default function AppAdminOfertasPage() {
                                 ),
                               )
                             }
-                            className="inline-flex h-11 min-w-[2.75rem] max-w-[9rem] items-center justify-center gap-1.5 rounded-xl border border-sky-200 bg-sky-100 px-3 text-base font-bold tabular-nums text-sky-800 shadow-sm transition hover:bg-sky-200/80 hover:ring-2 hover:ring-sky-300/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
+                            className="inline-flex h-11 min-w-[2.75rem] max-w-[9rem] items-center justify-center gap-1.5 rounded-xl border border-sky-200 bg-sky-100 px-3 text-base font-bold tabular-nums text-sky-800 shadow-sm transition hover:bg-sky-200/80 hover:ring-2 hover:ring-sky-300/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 dark:border-sky-800 dark:bg-sky-950/50 dark:text-sky-100 dark:hover:bg-sky-900/60 dark:hover:ring-sky-500/30"
                             title="Ver postulantes"
                             aria-label={`${offer.applicationsCount} postulantes, ver lista`}
                           >
@@ -830,8 +837,8 @@ export default function AppAdminOfertasPage() {
                     ) : (
                       <div className="grid w-full grid-cols-1 gap-3 md:grid-cols-[minmax(0,1fr)_auto_auto_auto] md:items-center">
                         <div className="min-w-0">
-                          <p className="truncate text-base font-semibold text-zinc-900">{offer.titulo}</p>
-                          <p className="mt-0.5 truncate text-xs text-zinc-500">
+                          <p className="truncate text-base font-semibold text-zinc-900 dark:text-zinc-100">{offer.titulo}</p>
+                          <p className="mt-0.5 truncate text-xs text-zinc-500 dark:text-zinc-400">
                             {offer.ubicacion} · {offer.industria}
                           </p>
                         </div>
@@ -851,7 +858,7 @@ export default function AppAdminOfertasPage() {
                                 ),
                               )
                             }
-                            className="inline-flex h-10 min-w-[2.5rem] max-w-[9rem] items-center justify-center gap-1.5 rounded-xl border border-sky-200 bg-sky-100 px-3 text-sm font-bold tabular-nums text-sky-800 shadow-sm transition hover:bg-sky-200/80 hover:ring-2 hover:ring-sky-300/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
+                            className="inline-flex h-10 min-w-[2.5rem] max-w-[9rem] items-center justify-center gap-1.5 rounded-xl border border-sky-200 bg-sky-100 px-3 text-sm font-bold tabular-nums text-sky-800 shadow-sm transition hover:bg-sky-200/80 hover:ring-2 hover:ring-sky-300/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 dark:border-sky-800 dark:bg-sky-950/50 dark:text-sky-100 dark:hover:bg-sky-900/60 dark:hover:ring-sky-500/30"
                             title="Ver postulantes"
                             aria-label={`${offer.applicationsCount} postulantes, ver lista`}
                           >
@@ -879,36 +886,36 @@ export default function AppAdminOfertasPage() {
             <div className="space-y-4">
               <div className="grid gap-3 sm:grid-cols-1">
                 <label className="flex flex-col gap-1 text-sm">
-                  <span className="text-zinc-600">Nombre</span>
+                  <span className="text-zinc-600 dark:text-zinc-400">Nombre</span>
                   <input
                     value={detailTitulo}
                     onChange={(e) => setDetailTitulo(e.target.value)}
-                    className="h-10 rounded-lg border border-zinc-200 px-3 outline-none focus-visible:ring-2 focus-visible:ring-[#17304b]/20"
+                    className={ADMIN_FIELD_INPUT_CLASS}
                   />
                 </label>
                 <div className="grid gap-3 sm:grid-cols-2">
                   <label className="flex flex-col gap-1 text-sm">
-                    <span className="text-zinc-600">Ubicación</span>
+                    <span className="text-zinc-600 dark:text-zinc-400">Ubicación</span>
                     <input
                       value={detailUbicacion}
                       onChange={(e) => setDetailUbicacion(e.target.value)}
                       placeholder="Ej. Mexico / Remote"
-                      className="h-10 rounded-lg border border-zinc-200 px-3 outline-none focus-visible:ring-2 focus-visible:ring-[#17304b]/20"
+                      className={ADMIN_FIELD_INPUT_CLASS}
                     />
                   </label>
                   <label className="flex flex-col gap-1 text-sm">
-                    <span className="text-zinc-600">Industria</span>
+                    <span className="text-zinc-600 dark:text-zinc-400">Industria</span>
                     <input
                       value={detailIndustria}
                       onChange={(e) => setDetailIndustria(e.target.value)}
                       placeholder="Ej. Data and Analytics"
-                      className="h-10 rounded-lg border border-zinc-200 px-3 outline-none focus-visible:ring-2 focus-visible:ring-[#17304b]/20"
+                      className={ADMIN_FIELD_INPUT_CLASS}
                     />
                   </label>
                 </div>
               </div>
               <div>
-                <span className="text-sm text-zinc-600">Overview</span>
+                <span className="text-sm text-zinc-600 dark:text-zinc-400">Overview</span>
                 <div className="mt-1">
                   <JobOverviewRichEditor
                     key={`${selectedOffer.id}-${detailEditorSession}`}
@@ -919,36 +926,39 @@ export default function AppAdminOfertasPage() {
                   />
                 </div>
               </div>
-              <div className="rounded-xl border border-zinc-200 p-3">
-                <p className="text-sm font-semibold text-zinc-800">
+              <div className="rounded-xl border border-zinc-200 p-3 dark:border-zinc-700 dark:bg-zinc-900/30">
+                <p className="text-sm font-semibold text-zinc-800 dark:text-zinc-100">
                   Aplicaciones ({detailApplicants.length})
                 </p>
                 {detailApplicants.length === 0 ? (
-                  <p className="mt-2 text-sm text-zinc-500">Sin aplicaciones registradas.</p>
+                  <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">Sin aplicaciones registradas.</p>
                 ) : (
                   <div className="mt-2 space-y-2">
                     {detailApplicants.map((a) => (
-                      <div key={a.id} className="rounded-lg bg-zinc-50 px-3 py-2 text-sm">
-                        <p className="font-medium text-zinc-900">{a.nombre}</p>
-                        <p className="text-zinc-600">{a.email}</p>
+                      <div
+                        key={a.id}
+                        className="rounded-lg bg-zinc-50 px-3 py-2 text-sm dark:bg-zinc-900/60"
+                      >
+                        <p className="font-medium text-zinc-900 dark:text-zinc-100">{a.nombre}</p>
+                        <p className="text-zinc-600 dark:text-zinc-400">{a.email}</p>
                       </div>
                     ))}
                   </div>
                 )}
               </div>
-              <div className="rounded-xl border border-zinc-200 bg-zinc-50/50 p-4">
-                <p className="text-sm font-semibold text-zinc-800">Acciones de publicación</p>
-                <p className="mt-1 text-xs text-zinc-500">
+              <div className="rounded-xl border border-zinc-200 bg-zinc-50/50 p-4 dark:border-zinc-700 dark:bg-zinc-900/40">
+                <p className="text-sm font-semibold text-zinc-800 dark:text-zinc-100">Acciones de publicación</p>
+                <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
                   Ajusta la vigencia. Si dejas la fecha vacía, se calcula a partir de la fecha de creación (
                   {EXPIRY_DAYS} días).
                 </p>
                 <label className="mt-3 flex max-w-sm flex-col gap-1 text-sm">
-                  <span className="text-zinc-600">Fecha de expiración</span>
+                  <span className="text-zinc-600 dark:text-zinc-400">Fecha de expiración</span>
                   <input
                     type="date"
                     value={detailExpiration}
                     onChange={(e) => setDetailExpiration(e.target.value)}
-                    className="h-10 rounded-lg border border-zinc-200 bg-white px-3 outline-none focus-visible:ring-2 focus-visible:ring-[#17304b]/20"
+                    className={ADMIN_FIELD_INPUT_CLASS}
                   />
                 </label>
                 <div className="mt-3 flex flex-wrap gap-2">
@@ -956,7 +966,7 @@ export default function AppAdminOfertasPage() {
                     type="button"
                     size="sm"
                     variant="outline"
-                    className="rounded-lg"
+                    className="rounded-lg dark:border-zinc-600 dark:bg-zinc-900 dark:hover:bg-zinc-800"
                     onClick={() => setDetailExpirationPreset('activa')}
                   >
                     Activa
@@ -965,7 +975,7 @@ export default function AppAdminOfertasPage() {
                     type="button"
                     size="sm"
                     variant="outline"
-                    className="rounded-lg border-amber-200 bg-amber-50 text-amber-900 hover:bg-amber-100"
+                    className="rounded-lg border-amber-200 bg-amber-50 text-amber-900 hover:bg-amber-100 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-200 dark:hover:bg-amber-950/60"
                     onClick={() => setDetailExpirationPreset('por_vencer')}
                   >
                     Por vencer
@@ -974,13 +984,13 @@ export default function AppAdminOfertasPage() {
                     type="button"
                     size="sm"
                     variant="outline"
-                    className="rounded-lg border-rose-200 bg-rose-50 text-rose-900 hover:bg-rose-100"
+                    className="rounded-lg border-rose-200 bg-rose-50 text-rose-900 hover:bg-rose-100 dark:border-rose-800 dark:bg-rose-950/40 dark:text-rose-200 dark:hover:bg-rose-950/60"
                     onClick={() => setDetailExpirationPreset('expirada')}
                   >
                     Expirada
                   </Button>
                 </div>
-                <p className="mt-2 text-xs text-zinc-500">
+                <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-400">
                   <span className="font-medium">Activa</span> y <span className="font-medium">Por vencer</span> fijan
                   fechas con margen. <span className="font-medium">Expirada</span> fija un vencimiento en el pasado.
                 </p>
@@ -989,7 +999,7 @@ export default function AppAdminOfertasPage() {
                 <Button type="button" variant="outline" onClick={() => setDetailOpen(false)}>
                   Cerrar
                 </Button>
-                <Button type="button" onClick={() => void saveDetails()} disabled={detailBusy}>
+                <Button type="button" onClick={() => void saveDetails()} disabled={detailBusy} className={ADMIN_PRIMARY_BTN_CLASS}>
                   {detailBusy ? 'Guardando...' : 'Guardar cambios'}
                 </Button>
               </div>

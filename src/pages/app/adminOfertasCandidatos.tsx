@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, BriefcaseBusiness, Users } from 'lucide-react';
+import { ArrowLeft, BriefcaseBusiness, Eye, Users } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'wouter';
 import { AppShell } from '@/components/layout/app/AppShell';
@@ -13,6 +13,7 @@ import {
   type JobOfferRecord,
 } from '@/lib/adminJobsApi';
 import { fetchRecruiterJobOffers } from '@/lib/recruiterJobsApi';
+import { ADMIN_ROW_ACTION_ICON_BUTTON_CLASS } from '@/lib/adminTableActionsUi';
 
 function formatAppliedAt(iso: string): string {
   const t = Date.parse(iso);
@@ -224,7 +225,7 @@ export default function AppAdminOfertasCandidatosPage() {
           ) : null}
 
           {error ? (
-            <p className="mt-6 text-sm text-red-700" role="alert">
+            <p className="mt-6 text-sm text-red-700 dark:text-red-400" role="alert">
               {error}
             </p>
           ) : null}
@@ -232,7 +233,7 @@ export default function AppAdminOfertasCandidatosPage() {
           {!error && offer && loadState === 'done' ? (
             <>
               {applicants.length === 0 ? (
-                <p className="mt-6 text-sm text-zinc-500">Sin postulantes registrados para esta oferta.</p>
+                <p className="mt-6 text-sm text-zinc-500 dark:text-zinc-400">Sin postulantes registrados para esta oferta.</p>
               ) : (
                 <div className="mt-6 overflow-x-auto rounded-2xl border border-zinc-200 dark:border-zinc-800">
                   <table className="w-full min-w-[520px] text-left text-sm">
@@ -244,7 +245,7 @@ export default function AppAdminOfertasCandidatosPage() {
                         <th className="px-4 py-3">Fecha</th>
                         <th className="px-4 py-3">Seguimiento</th>
                         <th className="px-4 py-3">Actualizar</th>
-                        <th className="px-4 py-3 text-right">Acciones</th>
+                        <th className="px-4 py-3 text-center font-semibold uppercase tracking-[0.12em]">Acciones</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
@@ -289,15 +290,17 @@ export default function AppAdminOfertasCandidatosPage() {
                               <option value="Rejected">No seleccionado</option>
                             </select>
                           </td>
-                          <td className="px-4 py-3 text-right">
+                          <td className="px-4 py-3 text-center">
                             <Button
                               type="button"
-                              variant="outline"
-                              size="sm"
-                              className="rounded-xl"
+                              variant="ghost"
+                              size="icon"
+                              className={ADMIN_ROW_ACTION_ICON_BUTTON_CLASS}
+                              title="Ver perfil"
+                              aria-label={`Ver perfil de ${a.nombre}`}
                               onClick={() => goApplicantProfile(a.id)}
                             >
-                              Ver perfil
+                              <Eye className="size-4" strokeWidth={1.5} aria-hidden />
                             </Button>
                           </td>
                         </tr>

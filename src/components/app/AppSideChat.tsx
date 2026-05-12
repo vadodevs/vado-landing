@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type FormEvent, type KeyboardEvent } from 'react';
-import { Send } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { ArrowUp, MessageSquarePlus } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
-import { Textarea } from '@/components/ui/textarea';
 import type { AppThemeMode } from '@/lib/appTheme';
+import { useAppSideChatState, type AppSideChatMessage } from '@/contexts/AppSideChatStateContext';
+import { postAssistantChat, type AssistantChatMessage } from '@/lib/appAssistantChat';
 import { cn } from '@/lib/utils';
 
 const MD_MIN = 768;
@@ -24,46 +25,80 @@ function useDesktopDock() {
   return wide;
 }
 
-type ChatRole = 'user' | 'assistant';
+/** Misma lógica visual que el rail lateral: vidrio translúcido + blur (visionOS-ish). */
+function chatDockGlassShell(isDark: boolean) {
+  return isDark
+    ? cn(
+        'border border-white/[0.18] bg-transparent',
+        'bg-gradient-to-br from-zinc-950/58 via-zinc-900/42 to-zinc-900/24',
+        'backdrop-blur-[48px] backdrop-saturate-[1.85] backdrop-brightness-[1.08]',
+        'shadow-[0_26px_64px_-18px_rgba(0,0,0,0.52),inset_0_1px_0_rgba(255,255,255,0.22)]',
+        'ring-1 ring-inset ring-white/[0.07]',
+      )
+    : cn(
+        'border border-white/[0.42] bg-transparent',
+        'bg-gradient-to-br from-white/14 via-zinc-200/32 to-zinc-500/38',
+        'backdrop-blur-[40px] backdrop-saturate-[1.35]',
+        'shadow-[0_14px_44px_-10px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.65)]',
+        'ring-1 ring-inset ring-zinc-900/[0.05]',
+      );
+}
 
-type ChatMessage = {
-  id: string;
-  role: ChatRole;
-  text: string;
-};
-
-const INTRO =
-  'Soy el asistente del panel. Puedes escribir dudas operativas; las respuestas automáticas son una vista previa hasta conectar datos internos.';
-
-function placeholderReply(): string {
-  return 'Gracias por tu mensaje. Esta conversación es una vista previa: pronto podremos enlazar contexto de tus pantallas (leads, desarrolladores, etc.).';
+function ThinkingDots({ isDark }: { isDark: boolean }) {
+  return (
+    <span className="inline-flex items-center gap-0.5 px-0.5" aria-hidden>
+      {[0, 1, 2].map((i) => (
+        <span
+          key={i}
+          className={cn(
+            'size-1 rounded-full motion-safe:animate-bounce',
+            isDark ? 'bg-sky-400' : 'bg-sky-500',
+          )}
+          style={{ animationDelay: `${i * 140}ms`, animationDuration: '0.85s' }}
+        />
+      ))}
+    </span>
+  );
 }
 
 function SideChatPanel({ theme }: { theme: AppThemeMode }) {
+  const { t } = useTranslation();
   const listEndRef = useRef<HTMLDivElement | null>(null);
-  const [messages, setMessages] = useState<ChatMessage[]>(() => [
-    { id: 'welcome', role: 'assistant', text: INTRO },
-  ]);
-  const [draft, setDraft] = useState('');
+  const { messages, setMessages, draft, setDraft, sending, setSending, startNewConversation } =
+    useAppSideChatState();
   const isDark = theme === 'dark';
 
   useEffect(() => {
     listEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  }, [messages, sending]);
 
-  const send = useCallback(() => {
+  const send = useCallback(async () => {
     const text = draft.trim();
-    if (!text) return;
+    if (!text || sending) return;
     setDraft('');
-    const userId = `u-${crypto.randomUUID()}`;
-    setMessages((prev) => [...prev, { id: userId, role: 'user', text }]);
-    window.setTimeout(() => {
-      setMessages((prev) => [
-        ...prev,
-        { id: `a-${crypto.randomUUID()}`, role: 'assistant', text: placeholderReply() },
-      ]);
-    }, 450);
-  }, [draft]);
+    const userMsg: AppSideChatMessage = { id: `u-${crypto.randomUUID()}`, role: 'user', text };
+    const thread = [...messages, userMsg];
+    setMessages(thread);
+    setSending(true);
+    const filtered = thread.filter((m) => !m.localOnly);
+    const apiMessages: AssistantChatMessage[] = filtered.map((m) => ({
+      role: m.role,
+      content: m.text,
+    }));
+    const result = await postAssistantChat(apiMessages);
+    setSending(false);
+    if (result.ok) {
+      setMessages((prev) => [...prev, { id: `a-${crypto.randomUUID()}`, role: 'assistant', text: result.reply }]);
+      return;
+    }
+    const errText =
+      result.reason === 'no-config'
+        ? 'Falta VITE_API_BASE_URL o VITE_ADMIN_API_BASE_URL en el front (URL del backend adminvado).'
+        : result.reason === 'no-auth'
+          ? 'No hay sesión del panel. Vuelve a iniciar sesión.'
+          : result.message?.trim() || `No se pudo contactar al asistente (${result.status ?? 'error'}).`;
+    setMessages((prev) => [...prev, { id: `a-${crypto.randomUUID()}`, role: 'assistant', text: errText }]);
+  }, [draft, messages, sending]);
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -80,16 +115,50 @@ function SideChatPanel({ theme }: { theme: AppThemeMode }) {
   return (
     <div
       className={cn(
-        'flex h-full min-h-0 flex-col',
-        isDark ? 'bg-zinc-900 text-zinc-100' : 'bg-white text-zinc-900',
+        'relative flex h-full min-h-0 flex-col overflow-hidden bg-transparent transition-shadow duration-300',
+        isDark ? 'text-zinc-100' : 'text-zinc-900',
+        sending &&
+          'shadow-[0_0_0_1px_rgba(56,189,248,0.35),0_0_32px_rgba(59,130,246,0.2)] ring-1 ring-sky-500/30',
       )}
       role="region"
       aria-label="Chat"
+      aria-busy={sending}
     >
       <div
         className={cn(
-          'min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain px-3 py-3',
-          isDark ? 'bg-zinc-950/50' : 'bg-zinc-50/80',
+          'relative z-10 flex shrink-0 items-center justify-between gap-2 border-b px-3 py-2',
+          isDark ? 'border-white/10 bg-zinc-950/30' : 'border-zinc-200/80 bg-white/30',
+        )}
+      >
+        <span
+          className={cn(
+            'min-w-0 truncate text-[12px] font-semibold tracking-tight',
+            isDark ? 'text-zinc-100' : 'text-zinc-900',
+          )}
+        >
+          Vado Intelligence
+        </span>
+        <button
+          type="button"
+          onClick={startNewConversation}
+          disabled={sending}
+          title={t('appSideChat.newChatAria')}
+          aria-label={t('appSideChat.newChatAria')}
+          className={cn(
+            'inline-flex shrink-0 items-center gap-1 rounded-lg px-2 py-1 text-[11px] font-medium transition-colors',
+            isDark
+              ? 'text-sky-300 hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40'
+              : 'text-sky-700 hover:bg-black/[0.06] disabled:cursor-not-allowed disabled:opacity-40',
+          )}
+        >
+          <MessageSquarePlus className="size-3.5" strokeWidth={2} aria-hidden />
+          {t('appSideChat.newChat')}
+        </button>
+      </div>
+      <div
+        className={cn(
+          'relative z-10 min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain px-3 py-3',
+          isDark ? 'bg-zinc-950/25 backdrop-blur-sm' : 'bg-white/20 backdrop-blur-sm',
         )}
       >
         {messages.map((m) => (
@@ -116,38 +185,82 @@ function SideChatPanel({ theme }: { theme: AppThemeMode }) {
         <div ref={listEndRef} />
       </div>
 
+      {/* Compositor: mismo lenguaje visual que el hilo (claro u oscuro según tema). */}
       <form
         onSubmit={onSubmit}
         className={cn(
-          'shrink-0 border-t p-2.5',
-          isDark ? 'border-zinc-700/80 bg-zinc-900' : 'border-zinc-200/90 bg-white',
+          'relative z-[1] shrink-0 border-t px-3 pb-3 pt-2 backdrop-blur-md',
+          isDark ? 'border-white/10 bg-zinc-950/25' : 'border-zinc-500/15 bg-white/25',
         )}
       >
-        <div className="flex items-end gap-2">
-          <Textarea
+        <div
+          className={cn(
+            'rounded-2xl border p-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] transition-[box-shadow,ring] duration-300',
+            isDark
+              ? 'border-zinc-600/90 bg-[#262626]'
+              : 'border-zinc-300/90 bg-white shadow-sm ring-1 ring-zinc-900/[0.06]',
+            sending &&
+              cn(
+                'ring-2 ring-sky-400/75 ring-offset-2 ring-offset-transparent',
+                'shadow-[0_0_0_1px_rgba(56,189,248,0.45),0_0_36px_12px_rgba(59,130,246,0.35),inset_0_0_20px_rgba(56,189,248,0.06)]',
+                'motion-safe:animate-[pulse_2.2s_ease-in-out_infinite]',
+              ),
+          )}
+        >
+          <textarea
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
             onKeyDown={onKeyDown}
-            placeholder="Escribe un mensaje…"
-            rows={2}
+            disabled={sending}
+            placeholder="Pregunta al vado intelligence…"
+            rows={3}
             className={cn(
-              'min-h-[2.75rem] resize-none rounded-xl text-[13px]',
+              'w-full min-h-[4.25rem] resize-none bg-transparent px-1.5 py-1 text-[13px] leading-relaxed outline-none focus:outline-none',
               isDark
-                ? 'border-zinc-600 bg-zinc-950/80 text-zinc-100 placeholder:text-zinc-500'
-                : 'border-zinc-200 bg-zinc-50/90 text-zinc-900 placeholder:text-zinc-500',
+                ? 'text-zinc-100 placeholder:text-zinc-500'
+                : 'text-zinc-900 placeholder:text-zinc-500',
             )}
             aria-label="Mensaje para el asistente"
           />
-          <Button
-            type="submit"
-            size="icon"
+          <div
             className={cn(
-              'size-10 shrink-0 rounded-xl bg-blue-600 text-white hover:bg-blue-500 active:bg-blue-700',
+              'mt-1 flex items-center justify-between gap-2 border-t pt-1.5',
+              isDark ? 'border-zinc-700/80' : 'border-zinc-200/90',
             )}
-            aria-label="Enviar"
           >
-            <Send className="size-4 text-white" />
-          </Button>
+            <div className="flex min-w-0 flex-1 items-center gap-1">
+              {sending ? (
+                <span
+                  className={cn(
+                    'inline-flex items-center gap-1.5 text-[11px] font-medium',
+                    isDark ? 'text-sky-400/95' : 'text-sky-600',
+                  )}
+                  role="status"
+                  aria-live="polite"
+                >
+                  Pensando
+                  <ThinkingDots isDark={isDark} />
+                </span>
+              ) : (
+                <span className="truncate pl-1 text-[11px] text-zinc-500">
+                  Enter para enviar · Shift+Enter salto
+                </span>
+              )}
+            </div>
+            <button
+              type="submit"
+              disabled={sending || !draft.trim()}
+              className={cn(
+                'inline-flex size-8 shrink-0 items-center justify-center rounded-full transition-colors',
+                isDark
+                  ? 'bg-zinc-100 text-zinc-900 shadow-sm hover:bg-white disabled:cursor-not-allowed disabled:bg-zinc-700 disabled:text-zinc-500 disabled:opacity-50'
+                  : 'bg-zinc-900 text-white shadow-sm hover:bg-zinc-800 disabled:cursor-not-allowed disabled:bg-zinc-200 disabled:text-zinc-400 disabled:opacity-50',
+              )}
+              aria-label="Enviar"
+            >
+              <ArrowUp className="size-4" strokeWidth={2.5} />
+            </button>
+          </div>
         </div>
       </form>
     </div>
@@ -168,6 +281,8 @@ export type AppSideChatDockProps = {
 /** Desktop: tarjeta ficha a la derecha con slide. Móvil: hoja controlada por el mismo estado. */
 export function AppSideChatDock({ theme, open, onOpenChange, regionId }: AppSideChatDockProps) {
   const wide = useDesktopDock();
+  const isDark = theme === 'dark';
+  const glass = chatDockGlassShell(isDark);
 
   const panel = <SideChatPanel theme={theme} />;
 
@@ -178,14 +293,12 @@ export function AppSideChatDock({ theme, open, onOpenChange, regionId }: AppSide
         style={{ width: APP_SIDE_CHAT_DESKTOP_WIDTH_PX }}
         className={cn(
           'pointer-events-auto fixed z-50 max-md:hidden',
-          'top-2 bottom-2 right-2 flex flex-col overflow-hidden rounded-xl border shadow-lg',
+          'top-2 bottom-2 right-2 flex flex-col overflow-hidden rounded-3xl',
           'transition-[transform,opacity,visibility] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] will-change-transform',
           open
             ? 'translate-x-0 opacity-100'
             : 'pointer-events-none translate-x-[calc(100%+0.75rem)] opacity-0',
-          theme === 'dark'
-            ? 'border-zinc-700/55 bg-zinc-900 shadow-black/50'
-            : 'border-white/90 bg-white shadow-md shadow-zinc-900/10',
+          glass,
         )}
         aria-label="Vado Intelligence"
         aria-hidden={!open}
@@ -201,7 +314,11 @@ export function AppSideChatDock({ theme, open, onOpenChange, regionId }: AppSide
         id={regionId}
         side="right"
         showCloseButton={false}
-        className="flex w-full max-w-md flex-col gap-0 border-l p-0 sm:max-w-md"
+        className={cn(
+          'flex w-full max-w-md flex-col gap-0 border-0 p-0 sm:max-w-md',
+          '!bg-transparent',
+          glass,
+        )}
         aria-label="Vado Intelligence"
       >
         {panel}

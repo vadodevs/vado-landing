@@ -3,6 +3,7 @@ import {
   Copy,
   Eye,
   Filter,
+  Key,
   KeyRound,
   Loader2,
   MoreVertical,
@@ -43,6 +44,12 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { ADMIN_PAGE_SIZE } from '@/lib/adminPagination';
 import { ADMIN_FILTER_BADGE_CLASS, ADMIN_FILTER_CONTROL_CLASS } from '@/lib/adminFilterUi';
+import {
+  ADMIN_ROW_ACTION_ICON_BUTTON_CLASS,
+  ADMIN_ROW_ACTION_ICON_MUTED_CLASS,
+  ADMIN_TABLE_ACTIONS_TH_CLASS,
+} from '@/lib/adminTableActionsUi';
+import { ADMIN_PRIMARY_BTN_CLASS } from '@/lib/adminVadoUi';
 import { cn } from '@/lib/utils';
 
 function formatDate(iso: string): string {
@@ -420,7 +427,7 @@ export default function AppAdminReclutadoresPage() {
                 <Button
                   type="button"
                   onClick={goCreate}
-                  className="h-8 shrink-0 bg-[#0b2a55] px-3 text-xs hover:bg-[#0a2347] dark:bg-sky-900/90 dark:hover:bg-sky-900 sm:w-auto"
+                  className={cn(ADMIN_PRIMARY_BTN_CLASS, 'h-8 shrink-0 px-3 text-xs sm:w-auto')}
                 >
                   <Plus className="size-3.5" />
                   {t('recruitersPage.createCta')}
@@ -462,7 +469,7 @@ export default function AppAdminReclutadoresPage() {
                     <th className="px-2 py-1.5 text-left font-semibold xl:px-4 xl:py-2">
                       {t('recruitersPage.tableUpdated')}
                     </th>
-                    <th className="px-2 py-1.5 text-left font-semibold xl:px-4 xl:py-2">
+                    <th className={ADMIN_TABLE_ACTIONS_TH_CLASS}>
                       {t('recruitersPage.tableActions')}
                     </th>
                   </tr>
@@ -527,44 +534,46 @@ export default function AppAdminReclutadoresPage() {
                           <td className="align-top min-w-0 px-2 py-2 text-[11px] text-zinc-600 tabular-nums dark:text-zinc-400 xl:px-4 xl:py-2.5">
                             {formatDate(r.updatedAt)}
                           </td>
-                          <td className="align-top min-w-0 px-2 py-2 xl:px-4 xl:py-2.5">
-                            <div className="flex min-w-0 flex-wrap items-center justify-end gap-1 xl:flex-nowrap xl:gap-1.5">
+                          <td className="align-middle px-2 py-2 text-center xl:px-4 xl:py-2.5">
+                            <div className="flex items-center justify-center gap-2 sm:gap-3">
                               <Button
                                 type="button"
-                                variant="outline"
-                                size="sm"
-                                className="h-7 shrink-0 gap-0.5 border-zinc-300 px-1.5 text-[11px] xl:h-8 xl:gap-1 xl:px-2 xl:text-xs dark:border-zinc-600 dark:bg-transparent dark:text-zinc-100 dark:hover:bg-zinc-800"
+                                variant="ghost"
+                                size="icon"
+                                className={ADMIN_ROW_ACTION_ICON_BUTTON_CLASS}
+                                title={t('recruitersPage.viewDetails')}
+                                aria-label={`${t('recruitersPage.viewDetails')} ${recruiterFullName}`}
                                 onClick={() => setDetailRecruiter(r)}
                               >
-                                <Eye className="size-3 shrink-0 xl:size-3.5" />
-                                {t('recruitersPage.viewDetails')}
+                                <Eye className="size-4" strokeWidth={1.5} aria-hidden />
                               </Button>
                               <Button
                                 type="button"
-                                variant="outline"
-                                size="sm"
-                                className="h-7 shrink-0 gap-0.5 border-zinc-300 px-1.5 text-[11px] xl:h-8 xl:gap-1 xl:px-2 xl:text-xs dark:border-zinc-600 dark:bg-transparent dark:text-zinc-100 dark:hover:bg-zinc-800"
+                                variant="ghost"
+                                size="icon"
+                                className={ADMIN_ROW_ACTION_ICON_BUTTON_CLASS}
+                                title={t('recruitersPage.edit')}
+                                aria-label={`${t('recruitersPage.edit')} ${recruiterFullName}`}
                                 onClick={() => goEdit(r.id)}
                               >
-                                <Pencil className="size-3 shrink-0 xl:size-3.5" />
-                                {t('recruitersPage.edit')}
+                                <Pencil className="size-4" strokeWidth={1.5} aria-hidden />
                               </Button>
                               <Button
                                 type="button"
-                                variant="outline"
-                                size="sm"
-                                className="h-7 shrink-0 gap-0.5 border-red-200 px-1.5 text-[11px] text-red-700 xl:h-8 xl:gap-1 xl:px-2 xl:text-xs dark:border-red-900/60 dark:bg-transparent dark:text-red-400 dark:hover:bg-red-950/40"
+                                variant="ghost"
+                                size="icon"
+                                className={cn(
+                                  ADMIN_ROW_ACTION_ICON_BUTTON_CLASS,
+                                  'text-zinc-400 hover:text-red-700 dark:hover:text-red-400',
+                                )}
+                                title={t('recruitersPage.delete')}
+                                aria-label={`${t('recruitersPage.delete')} ${recruiterFullName}`}
                                 onClick={() => void onDelete(r.id)}
                               >
-                                <Trash2 className="size-3 shrink-0 xl:size-3.5" />
-                                {t('recruitersPage.delete')}
+                                <Trash2 className="size-4" strokeWidth={1.5} aria-hidden />
                               </Button>
                               <span
-                                className={`inline-flex size-6 shrink-0 items-center justify-center rounded-full xl:size-7 ${
-                                  enabled
-                                    ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 dark:ring-1 dark:ring-emerald-800/40'
-                                    : 'bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400'
-                                }`}
+                                className="inline-flex size-8 shrink-0 items-center justify-center"
                                 title={
                                   enabled
                                     ? t('recruitersPage.accessActive')
@@ -576,22 +585,32 @@ export default function AppAdminReclutadoresPage() {
                                     : t('recruitersPage.accessInactive')
                                 }
                               >
-                                <KeyRound className="size-3.5 xl:size-4" />
+                                <Key
+                                  className={cn(
+                                    'size-4',
+                                    enabled
+                                      ? 'text-emerald-500 dark:text-emerald-400'
+                                      : ADMIN_ROW_ACTION_ICON_MUTED_CLASS,
+                                  )}
+                                  strokeWidth={1.5}
+                                  aria-hidden
+                                />
                               </span>
                               <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                   <Button
                                     type="button"
                                     variant="ghost"
-                                    size="icon-xs"
-                                    className="shrink-0"
+                                    size="icon"
+                                    className={ADMIN_ROW_ACTION_ICON_BUTTON_CLASS}
                                     disabled={busy}
+                                    title={t('recruitersPage.accessMenuAria')}
                                     aria-label={t('recruitersPage.accessMenuAria')}
                                   >
                                     {busy ? (
                                       <Loader2 className="size-4 animate-spin" aria-hidden />
                                     ) : (
-                                      <MoreVertical className="size-4" />
+                                      <MoreVertical className="size-4" strokeWidth={1.5} aria-hidden />
                                     )}
                                   </Button>
                                 </DropdownMenuTrigger>
@@ -878,7 +897,7 @@ export default function AppAdminReclutadoresPage() {
                   !form.lastName.trim() ||
                   !form.email.trim()
                 }
-                className="bg-[#0b2a55] hover:bg-[#0a2347] dark:bg-sky-900/90 dark:hover:bg-sky-900"
+                className={ADMIN_PRIMARY_BTN_CLASS}
               >
                 {t('recruitersPage.save')}
               </Button>

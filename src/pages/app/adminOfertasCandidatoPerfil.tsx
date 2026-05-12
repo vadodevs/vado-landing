@@ -132,7 +132,7 @@ export default function AppAdminOfertasCandidatoPerfilPage() {
             <p className="text-sm text-muted-foreground">Cargando perfil…</p>
           ) : null}
           {error ? (
-            <p className="text-sm text-red-700" role="alert">
+            <p className="text-sm text-red-700 dark:text-red-400" role="alert">
               {error}
             </p>
           ) : null}
