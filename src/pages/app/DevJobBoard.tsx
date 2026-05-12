@@ -26,7 +26,8 @@ import { cn } from '@/lib/utils';
 
 const DASHBOARD_OPENINGS_COUNT = 100;
 const DASHBOARD_RECENT_COUNT = 20;
-const NEW_OPENINGS_MIN_HOURS = 1;
+/** Incluir vacantes recién publicadas (antes había un mínimo de 1 h que las ocultaba al instante). */
+const NEW_OPENINGS_MIN_HOURS = 0;
 const NEW_OPENINGS_MAX_HOURS = 72;
 
 function appPathWithoutLocale(wouterLocation: string): string {
@@ -80,10 +81,12 @@ function relativeOrShortDate(iso: string | undefined | null, locale: string): st
 }
 
 function isWithinNewOpeningsWindow(job: PublicJobListItem): boolean {
-  const baseMs = Date.parse(String(job.updatedAt ?? job.createdAt ?? ''));
-  if (!Number.isFinite(baseMs)) return false;
-  const ageMs = Date.now() - baseMs;
-  if (ageMs < 0) return false;
+  const raw = job.updatedAt ?? job.createdAt;
+  const baseMs = Date.parse(String(raw ?? ''));
+  // Sin fechas del API (p. ej. GET /jobs con sólo grupo `common`): no aplicar ventana temporal.
+  if (!Number.isFinite(baseMs)) return true;
+  // Reloj del cliente detrás del servidor: tratar como recién publicado.
+  const ageMs = Math.max(0, Date.now() - baseMs);
   const ageHours = ageMs / (60 * 60 * 1000);
   return ageHours >= NEW_OPENINGS_MIN_HOURS && ageHours <= NEW_OPENINGS_MAX_HOURS;
 }
@@ -391,6 +394,9 @@ export function DevJobBoard({ variant }: DevJobBoardProps) {
               <div className="space-y-2">
                 <h2 className="text-lg font-bold text-zinc-900 sm:text-xl">{t('devDashboard.filterEmptyTitle')}</h2>
                 <p className="text-[15px] leading-relaxed text-zinc-600">{t('devDashboard.noFilterResults')}</p>
+                {variant === 'dashboard' ? (
+                  <p className="text-[13px] leading-relaxed text-zinc-500">{t('devDashboard.noFilterResultsDashboardHint')}</p>
+                ) : null}
               </div>
             </div>
           </div>

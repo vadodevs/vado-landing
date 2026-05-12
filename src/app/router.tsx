@@ -3,6 +3,7 @@ import { useEffect } from 'react'
 import { useLocation } from 'wouter'
 import { ScrollToTop } from '@/components/ScrollToTop'
 import { JsonLd } from '@/components/JsonLd'
+import { FloatingChatWidget } from '@/components/FloatingChatWidget'
 import { getPreferredLocaleFromBrowser, isLocale } from '@/app/i18n'
 import Home from '@/pages/home'
 import SoftwareALaMedida from '@/pages/servicios/software-a-la-medida'
@@ -324,6 +325,13 @@ function RootRedirect() {
   return null
 }
 
+/** Chat flotante solo en páginas públicas; no en `/…/app/…` (admin, dev, empresa, reclutador). */
+function FloatingChatWidgetLandingOnly() {
+  const [location] = useLocation()
+  if (/\/app(\/|$)/.test(location)) return null
+  return <FloatingChatWidget />
+}
+
 export function Router() {
   return (
     <>
@@ -336,7 +344,7 @@ export function Router() {
       <Route path="/:lang/services/custom-software" component={withLocale(SoftwareALaMedida)} />
       <Route path="/:lang/services/ai-solutions" component={withLocale(SolucionesIA)} />
       <Route path="/:lang/services/staff-augmentation" component={withLocale(AmpliacionDePersonal)} />
-      <Route path="/:lang/services/developers-on-demand" component={withLocale(DevelopersOnDemand)} />
+      <Route path="/:lang/services/it-staff-agumentation" component={withLocale(DevelopersOnDemand)} />
       <Route path="/:lang/our-work/:slug" component={withLocale(NuestroTrabajoProject)} />
       <Route path="/:lang/our-work" component={withLocale(NuestroTrabajo)} />
       <Route path="/:lang/company/articles/:articleName" component={withLocale(ArticleRouter)} />
@@ -398,6 +406,7 @@ export function Router() {
       <Route path="/:lang/*" component={withLocale(NotFound)} />
       <Route component={NotFound} />
     </Switch>
+      <FloatingChatWidgetLandingOnly />
     </>
   )
 }

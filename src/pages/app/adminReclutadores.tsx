@@ -42,6 +42,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { ADMIN_PAGE_SIZE } from '@/lib/adminPagination';
+import { ADMIN_FILTER_BADGE_CLASS, ADMIN_FILTER_CONTROL_CLASS } from '@/lib/adminFilterUi';
+import { cn } from '@/lib/utils';
 
 function formatDate(iso: string): string {
   const t = Date.parse(iso);
@@ -364,91 +366,103 @@ export default function AppAdminReclutadoresPage() {
       pathWithoutLang={pathWithoutLang}
       title={pageTitle}
       description={isListRoute ? 'Admin panel' : t('seo.appAdminRecruiters')}
+      contentOverflow={isListRoute ? 'hidden' : 'scroll'}
     >
       {isListRoute ? (
-        <section id="recruiters" className="min-w-0 scroll-mt-24">
-          <div className="mb-5 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-              <h2 className="text-4xl font-black tracking-tight text-[#0b1f3a] dark:text-zinc-50">
-                {t('recruitersPage.listTitle')}
-              </h2>
-              <p className="mt-1 text-base text-muted-foreground">{t('recruitersPage.listSubtitle')}</p>
-              {loadState === 'loading' ? (
-                <p className="mt-2 text-sm text-muted-foreground">{t('recruitersPage.loadingList')}</p>
-              ) : null}
-              {!apiBase ? (
-                <p className="mt-2 text-sm text-amber-800 dark:text-amber-300/95">{t('recruitersPage.envMissingApi')}</p>
-              ) : null}
-              {listError ? <p className="mt-2 text-sm text-red-700 dark:text-red-400">{listError}</p> : null}
-              {accessActionError ? (
-                <p className="mt-2 text-sm text-red-700 dark:text-red-400">{accessActionError}</p>
-              ) : null}
-              {loadState === 'done' && !listError && totalCount > 0 ? (
-                <p className="mt-1 text-sm text-emerald-800 dark:text-emerald-400/90">
-                  {totalCount}{' '}
-                  {totalCount === 1
-                    ? t('recruitersPage.inDirectoryOne')
-                    : t('recruitersPage.inDirectoryMany')}
-                </p>
-              ) : null}
-            </div>
-            <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center lg:max-w-2xl lg:justify-end">
-              <div className="relative w-full max-w-md flex-1">
-                <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
-                <input
-                  id="recruiters-name-search"
-                  value={nameInput}
-                  onChange={(e) => setNameInput(e.target.value)}
-                  placeholder={t('recruitersPage.searchPlaceholder')}
-                  aria-label={t('recruitersPage.searchByName')}
-                  autoComplete="off"
-                  className="h-11 w-full rounded-xl border border-zinc-200 bg-white pr-3 pl-9 text-sm outline-none focus-visible:ring-2 focus-visible:ring-[#17304b]/20 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:focus-visible:ring-zinc-500/30"
-                />
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+        <section
+          id="recruiters"
+          className="flex min-h-0 min-w-0 flex-1 flex-col gap-2 overflow-hidden scroll-mt-24"
+        >
+          <div className="min-h-0 shrink-0 space-y-2">
+            <div className="flex flex-col gap-2 lg:flex-row lg:items-start lg:justify-between">
+              <div className="min-w-0">
+                <h2 className="text-xl font-semibold tracking-tight text-[#0b1f3a] dark:text-zinc-50">
+                  {t('recruitersPage.listTitle')}
+                </h2>
+                <p className="text-xs text-muted-foreground">{t('recruitersPage.listSubtitle')}</p>
+                {loadState === 'loading' ? (
+                  <p className="mt-1 text-xs text-muted-foreground">{t('recruitersPage.loadingList')}</p>
+                ) : null}
+                {!apiBase ? (
+                  <p className="mt-1 text-xs text-amber-800 dark:text-amber-300/95">{t('recruitersPage.envMissingApi')}</p>
+                ) : null}
+                {listError ? <p className="mt-1 text-xs text-red-700 dark:text-red-400">{listError}</p> : null}
+                {accessActionError ? (
+                  <p className="mt-1 text-xs text-red-700 dark:text-red-400">{accessActionError}</p>
+                ) : null}
+                {loadState === 'done' && !listError && totalCount > 0 ? (
+                  <p className="mt-0.5 text-xs text-emerald-800 dark:text-emerald-400/90">
+                    {totalCount}{' '}
+                    {totalCount === 1
+                      ? t('recruitersPage.inDirectoryOne')
+                      : t('recruitersPage.inDirectoryMany')}
+                  </p>
+                ) : null}
               </div>
-              <Button
-                type="button"
-                onClick={goCreate}
-                className="h-11 shrink-0 bg-[#0b2a55] px-4 hover:bg-[#0a2347] dark:bg-sky-900/90 dark:hover:bg-sky-900 sm:w-auto"
-              >
-                <Plus className="size-4" />
-                {t('recruitersPage.createCta')}
-              </Button>
+              <div className="flex w-full shrink-0 flex-col gap-2 sm:flex-row sm:items-center lg:max-w-xl lg:justify-end">
+                <div className="relative w-full max-w-md flex-1">
+                  <Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
+                  <input
+                    id="recruiters-name-search"
+                    value={nameInput}
+                    onChange={(e) => setNameInput(e.target.value)}
+                    placeholder={t('recruitersPage.searchPlaceholder')}
+                    aria-label={t('recruitersPage.searchByName')}
+                    autoComplete="off"
+                    className={cn(
+                      'h-8 w-full pr-2 pl-8',
+                      ADMIN_FILTER_CONTROL_CLASS,
+                      'placeholder:text-muted-foreground',
+                    )}
+                  />
+                </div>
+                <Button
+                  type="button"
+                  onClick={goCreate}
+                  className="h-8 shrink-0 bg-[#0b2a55] px-3 text-xs hover:bg-[#0a2347] dark:bg-sky-900/90 dark:hover:bg-sky-900 sm:w-auto"
+                >
+                  <Plus className="size-3.5" />
+                  {t('recruitersPage.createCta')}
+                </Button>
+              </div>
             </div>
           </div>
 
-          <div className="min-w-0 overflow-hidden rounded-2xl border border-zinc-100 bg-white p-3 shadow-sm dark:border-zinc-800 dark:bg-zinc-950/60 dark:shadow-none">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-2 rounded-lg bg-zinc-50 px-3 py-2 text-xs font-semibold tracking-wide text-zinc-700 uppercase dark:bg-zinc-800/80 dark:text-zinc-300">
-                <Filter className="size-3.5" />
+          <div className="shrink-0 rounded-lg border border-border/70 bg-card p-2 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] dark:border-border/50 dark:bg-muted/25 dark:shadow-none">
+            <div className="flex w-full flex-wrap items-center justify-between gap-1.5">
+              <span className={ADMIN_FILTER_BADGE_CLASS}>
+                <Filter className="size-3" aria-hidden />
                 {t('recruitersPage.quickFiltersLabel')}
               </span>
-              <Button variant="ghost" size="sm" className="w-full justify-end sm:ml-auto sm:w-auto" type="button" onClick={clearFilters}>
+              <Button variant="ghost" size="sm" type="button" className="shrink-0" onClick={clearFilters}>
                 {t('recruitersPage.clearFilters')}
               </Button>
             </div>
           </div>
 
-          <div className="mt-4 overflow-hidden rounded-2xl border border-zinc-100 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-950/60 dark:shadow-none">
-            <div className="overflow-x-auto xl:overflow-x-visible">
-              <table className="w-full min-w-0 table-fixed border-collapse text-left text-sm">
+          <div className="isolate flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-lg border border-border/70 bg-card shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] dark:border-border/50 dark:bg-muted/20 dark:shadow-none">
+            <div className="relative min-h-0 min-w-0 flex-1 overflow-hidden">
+              <div className="absolute inset-0 overflow-auto overscroll-contain rounded-t-lg">
+              <table className="w-full min-w-0 table-fixed border-collapse text-left text-[12px]">
                 <colgroup>
                   <col className="w-[22%]" />
                   <col className="w-[30%]" />
                   <col className="w-[16%]" />
                   <col className="w-[32%]" />
                 </colgroup>
-                <thead className="bg-zinc-50/70 text-xs tracking-wide text-zinc-600 uppercase dark:bg-zinc-800/95 dark:text-zinc-400">
+                <thead className="sticky top-0 z-10 border-b border-border/60 bg-muted text-[10px] tracking-[0.05em] text-muted-foreground uppercase dark:bg-muted">
                   <tr>
-                    <th className="px-3 py-2.5 text-left font-semibold xl:px-5 xl:py-3">
+                    <th className="px-2 py-1.5 text-left font-semibold xl:px-4 xl:py-2">
                       {t('recruitersPage.tableName')}
                     </th>
-                    <th className="px-3 py-2.5 text-left font-semibold xl:px-5 xl:py-3">
+                    <th className="px-2 py-1.5 text-left font-semibold xl:px-4 xl:py-2">
                       {t('recruitersPage.tableContact')}
                     </th>
-                    <th className="px-3 py-2.5 text-left font-semibold xl:px-5 xl:py-3">
+                    <th className="px-2 py-1.5 text-left font-semibold xl:px-4 xl:py-2">
                       {t('recruitersPage.tableUpdated')}
                     </th>
-                    <th className="px-3 py-2.5 text-left font-semibold xl:px-5 xl:py-3">
+                    <th className="px-2 py-1.5 text-left font-semibold xl:px-4 xl:py-2">
                       {t('recruitersPage.tableActions')}
                     </th>
                   </tr>
@@ -456,13 +470,13 @@ export default function AppAdminReclutadoresPage() {
                 <tbody>
                   {loadState === 'loading' ? (
                     <tr className="border-t border-zinc-100 dark:border-zinc-800">
-                      <td colSpan={4} className="px-3 py-8 text-center text-muted-foreground xl:px-5">
+                      <td colSpan={4} className="px-3 py-4 text-center text-muted-foreground xl:px-5">
                         {t('recruitersPage.loadingList')}
                       </td>
                     </tr>
                   ) : rows.length === 0 ? (
                     <tr className="border-t border-zinc-100 dark:border-zinc-800">
-                      <td colSpan={4} className="px-3 py-8 text-center text-muted-foreground xl:px-5">
+                      <td colSpan={4} className="px-3 py-4 text-center text-muted-foreground xl:px-5">
                         {nameFilter.trim()
                           ? t('recruitersPage.noSearchResults')
                           : t('recruitersPage.empty')}
@@ -472,20 +486,25 @@ export default function AppAdminReclutadoresPage() {
                     rows.map((r) => {
                       const enabled = accessByRecruiterId[r.id] === true;
                       const busy = accessBusyByRecruiterId[r.id] === true;
+                      const recruiterFullName = `${r.firstName} ${r.lastName}`.trim();
                       return (
                         <tr key={r.id} className="border-t border-zinc-100 dark:border-zinc-800">
-                          <td className="align-top min-w-0 px-3 py-3 xl:px-5 xl:py-4">
-                            <div className="flex min-w-0 items-center gap-2 xl:gap-3">
-                              <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-indigo-100 text-xs font-semibold text-[#17304b] xl:size-10 xl:text-sm dark:bg-indigo-950/70 dark:text-indigo-200">
+                          <td className="align-top min-w-0 px-2 py-2 xl:px-4 xl:py-2.5">
+                            <div className="flex min-w-0 items-center gap-1.5 xl:gap-2">
+                              <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-indigo-100 text-[11px] font-semibold text-[#17304b] xl:size-9 xl:text-xs dark:bg-indigo-950/70 dark:text-indigo-200">
                                 {recruiterInitials(r.firstName, r.lastName)}
                               </div>
                               <div className="min-w-0">
-                                <p className="truncate font-semibold text-zinc-900 dark:text-zinc-100">{r.firstName}</p>
-                                <p className="truncate font-semibold text-zinc-900 dark:text-zinc-100">{r.lastName}</p>
+                                <p
+                                  className="truncate font-semibold text-zinc-900 dark:text-zinc-100"
+                                  title={recruiterFullName}
+                                >
+                                  {recruiterFullName}
+                                </p>
                               </div>
                             </div>
                           </td>
-                          <td className="align-top min-w-0 px-3 py-3 xl:px-5 xl:py-4">
+                          <td className="align-top min-w-0 px-2 py-2 xl:px-4 xl:py-2.5">
                             <div className="flex min-w-0 items-center gap-1">
                               <p className="min-w-0 truncate text-zinc-800 dark:text-zinc-300" title={r.email}>
                                 {r.email}
@@ -496,7 +515,7 @@ export default function AppAdminReclutadoresPage() {
                                 size="icon-xs"
                                 onClick={() => copyEmail(r.email)}
                                 title={t('recruitersPage.copyEmail')}
-                                aria-label={`${t('recruitersPage.copyEmail')} ${r.firstName}`}
+                                aria-label={`${t('recruitersPage.copyEmail')} ${recruiterFullName}`}
                               >
                                 <Copy className="size-3.5" />
                               </Button>
@@ -505,43 +524,43 @@ export default function AppAdminReclutadoresPage() {
                               <p className="text-xs text-emerald-600 dark:text-emerald-400">{t('recruitersPage.copyEmailInline')}</p>
                             ) : null}
                           </td>
-                          <td className="align-top min-w-0 px-3 py-3 text-xs text-zinc-600 tabular-nums dark:text-zinc-400 xl:px-5 xl:py-4">
+                          <td className="align-top min-w-0 px-2 py-2 text-[11px] text-zinc-600 tabular-nums dark:text-zinc-400 xl:px-4 xl:py-2.5">
                             {formatDate(r.updatedAt)}
                           </td>
-                          <td className="align-top min-w-0 px-3 py-3 xl:px-5 xl:py-4">
+                          <td className="align-top min-w-0 px-2 py-2 xl:px-4 xl:py-2.5">
                             <div className="flex min-w-0 flex-wrap items-center justify-end gap-1 xl:flex-nowrap xl:gap-1.5">
                               <Button
                                 type="button"
                                 variant="outline"
                                 size="sm"
-                                className="h-8 shrink-0 gap-1 border-zinc-300 px-2 text-xs xl:h-9 xl:gap-1.5 xl:px-3 xl:text-sm dark:border-zinc-600 dark:bg-transparent dark:text-zinc-100 dark:hover:bg-zinc-800"
+                                className="h-7 shrink-0 gap-0.5 border-zinc-300 px-1.5 text-[11px] xl:h-8 xl:gap-1 xl:px-2 xl:text-xs dark:border-zinc-600 dark:bg-transparent dark:text-zinc-100 dark:hover:bg-zinc-800"
                                 onClick={() => setDetailRecruiter(r)}
                               >
-                                <Eye className="size-3.5 shrink-0 xl:size-4" />
+                                <Eye className="size-3 shrink-0 xl:size-3.5" />
                                 {t('recruitersPage.viewDetails')}
                               </Button>
                               <Button
                                 type="button"
                                 variant="outline"
                                 size="sm"
-                                className="h-8 shrink-0 gap-1 border-zinc-300 px-2 text-xs xl:h-9 xl:gap-1.5 xl:px-3 xl:text-sm dark:border-zinc-600 dark:bg-transparent dark:text-zinc-100 dark:hover:bg-zinc-800"
+                                className="h-7 shrink-0 gap-0.5 border-zinc-300 px-1.5 text-[11px] xl:h-8 xl:gap-1 xl:px-2 xl:text-xs dark:border-zinc-600 dark:bg-transparent dark:text-zinc-100 dark:hover:bg-zinc-800"
                                 onClick={() => goEdit(r.id)}
                               >
-                                <Pencil className="size-3.5 shrink-0 xl:size-4" />
+                                <Pencil className="size-3 shrink-0 xl:size-3.5" />
                                 {t('recruitersPage.edit')}
                               </Button>
                               <Button
                                 type="button"
                                 variant="outline"
                                 size="sm"
-                                className="h-8 shrink-0 gap-1 border-red-200 px-2 text-xs text-red-700 xl:h-9 xl:gap-1.5 xl:px-3 xl:text-sm dark:border-red-900/60 dark:bg-transparent dark:text-red-400 dark:hover:bg-red-950/40"
+                                className="h-7 shrink-0 gap-0.5 border-red-200 px-1.5 text-[11px] text-red-700 xl:h-8 xl:gap-1 xl:px-2 xl:text-xs dark:border-red-900/60 dark:bg-transparent dark:text-red-400 dark:hover:bg-red-950/40"
                                 onClick={() => void onDelete(r.id)}
                               >
-                                <Trash2 className="size-3.5 shrink-0 xl:size-4" />
+                                <Trash2 className="size-3 shrink-0 xl:size-3.5" />
                                 {t('recruitersPage.delete')}
                               </Button>
                               <span
-                                className={`inline-flex size-7 shrink-0 items-center justify-center rounded-full ${
+                                className={`inline-flex size-6 shrink-0 items-center justify-center rounded-full xl:size-7 ${
                                   enabled
                                     ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 dark:ring-1 dark:ring-emerald-800/40'
                                     : 'bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400'
@@ -557,7 +576,7 @@ export default function AppAdminReclutadoresPage() {
                                     : t('recruitersPage.accessInactive')
                                 }
                               >
-                                <KeyRound className="size-4" />
+                                <KeyRound className="size-3.5 xl:size-4" />
                               </span>
                               <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
@@ -620,6 +639,7 @@ export default function AppAdminReclutadoresPage() {
                   )}
                 </tbody>
               </table>
+              </div>
             </div>
             {loadState === 'done' && totalCount > 0 ? (
               <AdminTablePagination
@@ -628,9 +648,11 @@ export default function AppAdminReclutadoresPage() {
                 pageSize={ADMIN_PAGE_SIZE}
                 onPageChange={setListPage}
                 nounPlural="reclutadores"
+                className="shrink-0 gap-1 border-border/60 bg-muted/20 px-3 py-2 text-xs sm:flex-row sm:items-center sm:justify-between sm:px-4 dark:bg-muted/10"
               />
             ) : null}
           </div>
+        </section>
 
           <Dialog open={detailRecruiter != null} onOpenChange={(open) => !open && setDetailRecruiter(null)}>
             <DialogContent className="max-w-lg gap-0 overflow-hidden p-0 sm:max-w-lg">
@@ -750,7 +772,7 @@ export default function AppAdminReclutadoresPage() {
               </div>
             </DialogContent>
           </Dialog>
-        </section>
+        </div>
       ) : (
         <section className="scroll-mt-24 mx-auto max-w-3xl space-y-6">
           <div className="flex items-center gap-2">

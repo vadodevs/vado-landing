@@ -2,6 +2,7 @@ import * as React from "react"
 import * as DialogPrimitive from "@radix-ui/react-dialog"
 import { XIcon } from "lucide-react"
 
+import { APP_THEME_CHANGE_EVENT, getStoredAppTheme } from "@/lib/appTheme"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 
@@ -45,34 +46,75 @@ function DialogOverlay({
   )
 }
 
+const dialogMotion =
+  "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 duration-200"
+
 function DialogContent({
   className,
   children,
   showCloseButton = true,
+  useAppDark = false,
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Content> & {
   showCloseButton?: boolean
+  /** Portales van a `body`; alinea claro/oscuro con el tema del panel app (no forzar siempre oscuro). */
+  useAppDark?: boolean
 }) {
+  const [appThemeIsDark, setAppThemeIsDark] = React.useState(
+    () => getStoredAppTheme() === "dark",
+  )
+
+  React.useEffect(() => {
+    if (!useAppDark) return
+    const sync = () => setAppThemeIsDark(getStoredAppTheme() === "dark")
+    sync()
+    window.addEventListener(APP_THEME_CHANGE_EVENT, sync)
+    return () => window.removeEventListener(APP_THEME_CHANGE_EVENT, sync)
+  }, [useAppDark])
+
+  const closeBtn = showCloseButton ? (
+    <DialogPrimitive.Close
+      data-slot="dialog-close"
+      className="text-foreground ring-offset-background focus:ring-ring data-[state=open]:bg-accent data-[state=open]:text-muted-foreground absolute top-3 right-3 z-10 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
+    >
+      <XIcon />
+      <span className="sr-only">Close</span>
+    </DialogPrimitive.Close>
+  ) : null
+
   return (
     <DialogPortal data-slot="dialog-portal">
       <DialogOverlay />
       <DialogPrimitive.Content
         data-slot="dialog-content"
         className={cn(
-          "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border p-6 shadow-lg duration-200 outline-none sm:max-w-lg",
-          className
+          dialogMotion,
+          "fixed top-[50%] left-[50%] z-50 w-[calc(100%-1rem)] translate-x-[-50%] translate-y-[-50%] outline-none sm:w-auto",
+          useAppDark
+            ? "max-w-none border-0 bg-transparent p-0 shadow-none"
+            : cn(
+                "bg-background grid max-w-[calc(100%-2rem)] gap-4 rounded-lg border p-6 text-foreground shadow-lg sm:max-w-lg",
+                className,
+              ),
         )}
         {...props}
       >
-        {children}
-        {showCloseButton && (
-          <DialogPrimitive.Close
-            data-slot="dialog-close"
-            className="ring-offset-background focus:ring-ring data-[state=open]:bg-accent data-[state=open]:text-muted-foreground absolute top-4 right-4 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
+        {useAppDark ? (
+          <div
+            className={cn(
+              "relative grid w-full max-w-[calc(100%-2rem)] gap-4 rounded-lg border border-border bg-background p-6 text-foreground shadow-lg sm:max-w-lg",
+              appThemeIsDark && "app-dark",
+              className,
+            )}
           >
-            <XIcon />
-            <span className="sr-only">Close</span>
-          </DialogPrimitive.Close>
+            {children}
+            {closeBtn}
+          </div>
+        ) : (
+          <>
+            {children}
+            {closeBtn}
+          </>
         )}
       </DialogPrimitive.Content>
     </DialogPortal>

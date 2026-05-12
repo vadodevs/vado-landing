@@ -5,6 +5,7 @@ import {
   Download,
   Eye,
   Filter,
+  Heart,
   KeyRound,
   Loader2,
   MoreVertical,
@@ -14,6 +15,7 @@ import {
   XCircle,
 } from 'lucide-react';
 import { useLocation } from 'wouter';
+import { AdminSelect, type AdminSelectOption } from '@/components/app/AdminSelect';
 import { AdminTablePagination } from '@/components/app/AdminTablePagination';
 import { ADMIN_PAGE_SIZE, slicePage } from '@/lib/adminPagination';
 import { AppShell } from '@/components/layout/app/AppShell';
@@ -34,13 +36,44 @@ import {
   buildCvDownloadHref,
   buildCvPlainText,
   developerInitials,
+  getDeveloperDirectoryRowKey,
   mapApiDeveloperToProfile,
   type ApiDeveloperPayload,
   type DeveloperProfile,
 } from '@/lib/devDevelopers';
 import {
+  loadDeveloperFavoriteIds,
+  persistDeveloperFavoriteIds,
+  toggleDeveloperFavoriteId,
+} from '@/lib/developerFavorites';
+import {
   setAdminDevelopersSeenMax,
 } from '@/lib/appNavBadges';
+import { ADMIN_FILTER_BADGE_CLASS, ADMIN_FILTER_CONTROL_CLASS, ADMIN_FAVORITES_TOOLBAR_BUTTON_ACTIVE, ADMIN_FAVORITES_TOOLBAR_BUTTON_INACTIVE, ADMIN_FAVORITE_ROW_HEART_BUTTON_CLASS, ADMIN_FAVORITE_ROW_HEART_ICON_CLASS } from '@/lib/adminFilterUi';
+import { cn } from '@/lib/utils';
+
+const FECHA_ORDEN_DEV_OPTIONS: AdminSelectOption[] = [
+  { value: 'newest', label: 'Más nuevos primero' },
+  { value: 'oldest', label: 'Más viejos primero' },
+];
+
+const VISA_FILTER_OPTIONS: AdminSelectOption[] = [
+  { value: '', label: 'Visa vigente' },
+  { value: 'si', label: 'Si' },
+  { value: 'no', label: 'No' },
+];
+
+const VIAJES_FILTER_OPTIONS: AdminSelectOption[] = [
+  { value: '', label: 'Viajes' },
+  { value: 'si', label: 'Disponible' },
+  { value: 'no', label: 'No disponible' },
+];
+
+const EMPLEO_FILTER_OPTIONS: AdminSelectOption[] = [
+  { value: '', label: 'Empleo actual' },
+  { value: 'si', label: 'Trabaja actualmente' },
+  { value: 'no', label: 'Sin empleo actual' },
+];
 
 /** Texto para comparar búsquedas: minúsculas, sin acentos comunes, espacios colapsados. */
 function searchFold(s: string): string {
@@ -78,6 +111,8 @@ export default function AppAdminDesarrolladoresPage() {
     password: string;
   }>({ open: false, title: '', email: '', password: '' });
   const [copiedPassword, setCopiedPassword] = useState(false);
+  const [devFavoriteIds, setDevFavoriteIds] = useState<Set<string>>(() => loadDeveloperFavoriteIds());
+  const [favoritesOnly, setFavoritesOnly] = useState(false);
 
   useEffect(() => {
     const base = import.meta.env.VITE_API_BASE_URL;
@@ -228,6 +263,21 @@ export default function AppAdminDesarrolladoresPage() {
     [developers],
   );
 
+  const disponibilidadSelectOptions = useMemo(
+    (): AdminSelectOption[] => [
+      { value: '', label: 'Disponibilidad' },
+      ...disponibilidadOptions.map((o) => ({ value: o, label: o })),
+    ],
+    [disponibilidadOptions],
+  );
+  const procedenciaSelectOptions = useMemo(
+    (): AdminSelectOption[] => [
+      { value: '', label: 'Procedencia' },
+      ...procedenciaOptions.map((o) => ({ value: o, label: o })),
+    ],
+    [procedenciaOptions],
+  );
+
   const filteredDevelopers = useMemo(() => {
     const filtered = developers.filter((developer) => {
       const matchesSearch = matchesDeveloperSearch(searchTerm, developer);
@@ -244,13 +294,15 @@ export default function AppAdminDesarrolladoresPage() {
       const matchesProcedencia =
         procedenciaFilter === '' || developer.procedencia === procedenciaFilter;
 
+      const favKey = getDeveloperDirectoryRowKey(developer);
       return (
         matchesSearch &&
         matchesDisponibilidad &&
         matchesVisa &&
         matchesViajes &&
         matchesEmpleoActual &&
-        matchesProcedencia
+        matchesProcedencia &&
+        (!favoritesOnly || devFavoriteIds.has(favKey))
       );
     });
 
@@ -269,6 +321,8 @@ export default function AppAdminDesarrolladoresPage() {
     procedenciaFilter,
     fechaOrden,
     developers,
+    favoritesOnly,
+    devFavoriteIds,
   ]);
 
   const paginatedDevelopers = useMemo(
@@ -286,6 +340,7 @@ export default function AppAdminDesarrolladoresPage() {
     empleoActualFilter,
     procedenciaFilter,
     fechaOrden,
+    favoritesOnly,
   ]);
 
   useEffect(() => {
@@ -301,7 +356,17 @@ export default function AppAdminDesarrolladoresPage() {
     setEmpleoActualFilter('');
     setProcedenciaFilter('');
     setFechaOrden('newest');
+    setFavoritesOnly(false);
     setDevPage(1);
+  };
+
+  const toggleDeveloperFavorite = (developer: DeveloperProfile) => {
+    const id = getDeveloperDirectoryRowKey(developer);
+    setDevFavoriteIds((prev) => {
+      const next = toggleDeveloperFavoriteId(prev, id);
+      persistDeveloperFavoriteIds(next);
+      return next;
+    });
   };
 
   const copyEmail = (email: string) => {
@@ -401,178 +466,198 @@ export default function AppAdminDesarrolladoresPage() {
       pathWithoutLang={`${portalBase}/desarrolladores`}
       title="Desarrolladores"
       description="Admin panel"
+      contentOverflow="hidden"
     >
-      <section id="developers" className="min-w-0 scroll-mt-24">
-        <div className="mb-5 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-          <div>
-            <h2 className="text-4xl font-black tracking-tight text-[#0b1f3a] dark:text-zinc-50">
-              Gente Talentosa
-            </h2>
-            <p className="mt-1 text-base text-muted-foreground">
-              Administra y filtra el directorio global de desarrolladores.
-            </p>
-            {apiLoad === 'loading' ? (
-              <p className="mt-2 text-sm text-muted-foreground">Cargando desarrolladores…</p>
-            ) : null}
-            {apiError === 'no-config' ? (
-              <p className="mt-2 text-sm text-amber-800 dark:text-amber-300/95">
-                Configura{' '}
-                <code className="rounded bg-amber-100 px-1 dark:bg-amber-950/80 dark:text-amber-200">
-                  VITE_API_BASE_URL
-                </code>{' '}
-                en el entorno para listar postulaciones desde la base de datos.
-              </p>
-            ) : null}
-            {apiError === 'failed' ? (
-              <p className="mt-2 text-sm text-red-700 dark:text-red-400">
-                No se pudo cargar el listado. Comprueba la API y vuelve a intentar.
-              </p>
-            ) : null}
-            {accessActionError ? (
-              <p className="mt-2 text-sm text-red-700 dark:text-red-400">{accessActionError}</p>
-            ) : null}
-            {apiLoad === 'done' && apiError === 'none' && developers.length > 0 ? (
-              <p className="mt-1 text-sm text-emerald-800 dark:text-emerald-400/90">
-                {developers.length}{' '}
-                {developers.length === 1 ? 'postulación' : 'postulaciones'} en el directorio.
-              </p>
-            ) : null}
-            {apiLoad === 'done' && apiError === 'none' && developers.length === 0 ? (
-              <p className="mt-1 text-sm text-muted-foreground">
-                Aún no hay postulaciones registradas en la base de datos.
-              </p>
-            ) : null}
-          </div>
-          <div className="relative w-full max-w-md">
-            <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
-            <input
-              value={searchTerm}
-              onChange={(event) => setSearchTerm(event.target.value)}
-              placeholder="Nombre, apellido, correo o expertise…"
-              aria-label="Buscar por nombre, correo o expertise"
-              className="h-11 w-full rounded-xl border border-zinc-200 bg-white pr-3 pl-9 text-sm outline-none focus-visible:ring-2 focus-visible:ring-[#17304b]/20 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:focus-visible:ring-zinc-500/30"
-            />
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+      <section
+        id="developers"
+        className="flex min-h-0 min-w-0 flex-1 flex-col gap-2 overflow-hidden scroll-mt-24"
+      >
+        <div className="min-h-0 shrink-0 space-y-2">
+          <div className="min-w-0">
+              <h2 className="text-xl font-semibold tracking-tight text-[#0b1f3a] dark:text-zinc-50">
+                Gente Talentosa
+              </h2>
+              {apiLoad === 'loading' ? (
+                <p className="mt-1 text-xs text-muted-foreground">Cargando desarrolladores…</p>
+              ) : null}
+              {apiError === 'no-config' ? (
+                <p className="mt-1 text-xs text-amber-800 dark:text-amber-300/95">
+                  Configura{' '}
+                  <code className="rounded bg-amber-100 px-1 dark:bg-amber-950/80 dark:text-amber-200">
+                    VITE_API_BASE_URL
+                  </code>{' '}
+                  para listar desde la base de datos.
+                </p>
+              ) : null}
+              {apiError === 'failed' ? (
+                <p className="mt-1 text-xs text-red-700 dark:text-red-400">
+                  No se pudo cargar el listado. Comprueba la API.
+                </p>
+              ) : null}
+              {accessActionError ? (
+                <p className="mt-1 text-xs text-red-700 dark:text-red-400">{accessActionError}</p>
+              ) : null}
+              {apiLoad === 'done' && apiError === 'none' && developers.length > 0 ? (
+                <p className="mt-0.5 text-xs text-emerald-800 dark:text-emerald-400/90">
+                  {developers.length}{' '}
+                  {developers.length === 1 ? 'postulación' : 'postulaciones'} en el directorio.
+                </p>
+              ) : null}
+              {apiLoad === 'done' && apiError === 'none' && developers.length === 0 ? (
+                <p className="mt-0.5 text-xs text-muted-foreground">
+                  Aún no hay postulaciones en la base de datos.
+                </p>
+              ) : null}
           </div>
         </div>
 
-        <div className="min-w-0 overflow-hidden rounded-2xl border border-zinc-100 bg-white p-3 shadow-sm dark:border-zinc-800 dark:bg-zinc-950/60 dark:shadow-none">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="inline-flex items-center gap-2 rounded-lg bg-zinc-50 px-3 py-2 text-xs font-semibold tracking-wide text-zinc-700 uppercase dark:bg-zinc-800/80 dark:text-zinc-300">
-              <Filter className="size-3.5" />
-              Filtros rapidos
+        <div className="shrink-0 rounded-lg border border-border/70 bg-card p-2 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] dark:border-border/50 dark:bg-muted/25 dark:shadow-none">
+          <div className="flex w-full flex-wrap items-center gap-1.5">
+            <span className={ADMIN_FILTER_BADGE_CLASS}>
+              <Filter className="size-3" aria-hidden />
+              Filtros rápidos
             </span>
-            <select
-              value={fechaOrden}
-              onChange={(event) => setFechaOrden(event.target.value as 'newest' | 'oldest')}
-              className="h-9 rounded-lg border border-zinc-200 bg-white px-3 text-sm outline-none dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-200"
-            >
-              <option value="newest">Más nuevos primero</option>
-              <option value="oldest">Más viejos primero</option>
-            </select>
-            <select
-              value={disponibilidadFilter}
-              onChange={(event) => setDisponibilidadFilter(event.target.value)}
-              className="h-9 rounded-lg border border-zinc-200 bg-white px-3 text-sm outline-none dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-200"
-            >
-              <option value="">Disponibilidad</option>
-              {disponibilidadOptions.map((option) => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
-            <select
-              value={visaFilter}
-              onChange={(event) => setVisaFilter(event.target.value)}
-              className="h-9 rounded-lg border border-zinc-200 bg-white px-3 text-sm outline-none dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-200"
-            >
-              <option value="">Visa vigente</option>
-              <option value="si">Si</option>
-              <option value="no">No</option>
-            </select>
-            <select
-              value={viajesFilter}
-              onChange={(event) => setViajesFilter(event.target.value)}
-              className="h-9 rounded-lg border border-zinc-200 bg-white px-3 text-sm outline-none dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-200"
-            >
-              <option value="">Viajes</option>
-              <option value="si">Disponible</option>
-              <option value="no">No disponible</option>
-            </select>
-            <select
-              value={empleoActualFilter}
-              onChange={(event) => setEmpleoActualFilter(event.target.value)}
-              className="h-9 rounded-lg border border-zinc-200 bg-white px-3 text-sm outline-none dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-200"
-            >
-              <option value="">Empleo actual</option>
-              <option value="si">Trabaja actualmente</option>
-              <option value="no">Sin empleo actual</option>
-            </select>
-            <select
-              value={procedenciaFilter}
-              onChange={(event) => setProcedenciaFilter(event.target.value)}
-              className="h-9 rounded-lg border border-zinc-200 bg-white px-3 text-sm outline-none dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-200"
-            >
-              <option value="">Procedencia</option>
-              {procedenciaOptions.map((option) => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="w-full justify-end sm:ml-auto sm:w-auto"
-              onClick={clearFilters}
-            >
-              Limpiar filtros
-            </Button>
+            <div className="relative w-full min-w-0 max-w-md shrink-0 sm:min-w-[12rem] sm:max-w-[280px]">
+              <Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
+              <input
+                value={searchTerm}
+                onChange={(event) => setSearchTerm(event.target.value)}
+                placeholder="Nombre, apellido, correo o expertise…"
+                aria-label="Buscar por nombre, correo o expertise"
+                className={cn(
+                  'h-8 w-full pr-2 pl-8',
+                  ADMIN_FILTER_CONTROL_CLASS,
+                  'placeholder:text-muted-foreground',
+                )}
+              />
+            </div>
+            <div className="flex min-w-0 flex-1 flex-wrap items-center gap-1.5">
+              <AdminSelect
+                value={fechaOrden}
+                onValueChange={(v) => setFechaOrden(v as 'newest' | 'oldest')}
+                options={FECHA_ORDEN_DEV_OPTIONS}
+                aria-label="Orden por fecha de alta"
+                triggerClassName="h-8 shrink-0"
+              />
+              <AdminSelect
+                value={disponibilidadFilter}
+                onValueChange={setDisponibilidadFilter}
+                options={disponibilidadSelectOptions}
+                aria-label="Filtrar por disponibilidad"
+                triggerClassName="h-8 shrink-0"
+              />
+              <AdminSelect
+                value={visaFilter}
+                onValueChange={setVisaFilter}
+                options={VISA_FILTER_OPTIONS}
+                aria-label="Filtrar por visa vigente"
+                triggerClassName="h-8 shrink-0"
+              />
+              <AdminSelect
+                value={viajesFilter}
+                onValueChange={setViajesFilter}
+                options={VIAJES_FILTER_OPTIONS}
+                aria-label="Filtrar por disponibilidad para viajar"
+                triggerClassName="h-8 shrink-0"
+              />
+              <AdminSelect
+                value={empleoActualFilter}
+                onValueChange={setEmpleoActualFilter}
+                options={EMPLEO_FILTER_OPTIONS}
+                aria-label="Filtrar por empleo actual"
+                triggerClassName="h-8 shrink-0"
+              />
+              <AdminSelect
+                value={procedenciaFilter}
+                onValueChange={setProcedenciaFilter}
+                options={procedenciaSelectOptions}
+                aria-label="Filtrar por procedencia"
+                triggerClassName="h-8 shrink-0"
+              />
+            </div>
+            <div className="ml-auto flex shrink-0 flex-wrap items-center justify-end gap-1.5">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className={favoritesOnly ? ADMIN_FAVORITES_TOOLBAR_BUTTON_ACTIVE : ADMIN_FAVORITES_TOOLBAR_BUTTON_INACTIVE}
+                aria-pressed={favoritesOnly}
+                title={favoritesOnly ? 'Mostrar todos los desarrolladores' : 'Solo desarrolladores marcados como favoritos'}
+                onClick={() => setFavoritesOnly((v) => !v)}
+              >
+                <Heart
+                  className={cn(
+                    'shrink-0',
+                    favoritesOnly ? 'size-4 fill-white text-white' : 'size-3.5 fill-rose-600 text-rose-600 dark:fill-rose-400 dark:text-rose-400',
+                  )}
+                  aria-hidden
+                />
+                <span className="text-[11px] font-semibold">Favoritos</span>
+              </Button>
+              <Button variant="ghost" size="sm" type="button" className="shrink-0" onClick={clearFilters}>
+                Limpiar filtros
+              </Button>
+            </div>
           </div>
         </div>
 
-        <div className="mt-4 overflow-hidden rounded-2xl border border-zinc-100 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-950/60 dark:shadow-none">
-          <div className="overflow-x-auto xl:overflow-x-visible">
-            <table className="w-full min-w-0 table-fixed border-collapse text-left text-sm">
+        <div className="isolate flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-lg border border-border/70 bg-card shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] dark:border-border/50 dark:bg-muted/20 dark:shadow-none">
+          <div className="relative min-h-0 min-w-0 flex-1 overflow-hidden">
+            <div className="absolute inset-0 overflow-auto overscroll-contain rounded-t-lg">
+            <table className="w-full min-w-0 table-fixed border-collapse text-left text-[12px]">
               <colgroup>
-                <col className="w-[16%]" />
-                <col className="w-[18%]" />
-                <col className="w-[22%]" />
+                <col className="w-[14%]" />
+                <col className="w-[12%]" />
+                <col className="w-[17%]" />
                 <col className="w-[20%]" />
-                <col className="w-[24%]" />
+                <col className="w-[19%]" />
+                <col className="w-[18%]" />
               </colgroup>
-            <thead className="bg-zinc-50/70 text-xs tracking-wide text-zinc-600 uppercase dark:bg-zinc-800/95 dark:text-zinc-400">
+            <thead className="sticky top-0 z-10 border-b border-border/60 bg-muted text-[10px] tracking-[0.05em] text-muted-foreground uppercase dark:bg-muted">
               <tr>
-                <th className="px-3 py-2.5 text-left font-semibold xl:px-5 xl:py-3">Nombre</th>
-                <th className="px-3 py-2.5 text-left font-semibold xl:px-5 xl:py-3">Contacto</th>
-                <th className="px-3 py-2.5 text-left font-semibold xl:px-5 xl:py-3">Expertise</th>
-                <th className="px-3 py-2.5 text-left font-semibold xl:px-5 xl:py-3">Documentacion</th>
-                <th className="px-3 py-2.5 text-left font-semibold xl:px-5 xl:py-3">Acciones</th>
+                <th className="px-2 py-1.5 text-left font-semibold xl:px-4 xl:py-2">Nombre</th>
+                <th className="px-2 py-1.5 text-left font-semibold xl:px-4 xl:py-2">Disponibilidad</th>
+                <th className="px-2 py-1.5 text-left font-semibold xl:px-4 xl:py-2">Contacto</th>
+                <th className="px-2 py-1.5 text-left font-semibold xl:px-4 xl:py-2">Expertise</th>
+                <th className="px-2 py-1.5 text-left font-semibold xl:px-4 xl:py-2">Documentación</th>
+                <th className="px-2 py-1.5 text-left font-semibold xl:px-4 xl:py-2">Acciones</th>
               </tr>
             </thead>
             <tbody>
-              {paginatedDevelopers.map((developer) => (
+              {paginatedDevelopers.map((developer) => {
+                const developerFullName = `${developer.nombre} ${developer.apellido}`.trim();
+                const developerFavoriteKey = getDeveloperDirectoryRowKey(developer);
+                const isDeveloperFavorite = devFavoriteIds.has(developerFavoriteKey);
+                return (
                 <tr
                   key={developer.rowKey ?? developer.correo}
-                  className="border-t border-zinc-100 dark:border-zinc-800"
+                  className="border-t border-zinc-100 transition-colors hover:bg-muted/30 dark:border-zinc-800 dark:hover:bg-muted/15"
                 >
-                  <td className="align-top min-w-0 px-3 py-3 xl:px-5 xl:py-4">
-                    <div className="flex min-w-0 items-center gap-2 xl:gap-3">
-                      <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-indigo-100 text-xs font-semibold text-[#17304b] xl:size-10 xl:text-sm dark:bg-indigo-950/70 dark:text-indigo-200">
+                  <td className="align-top min-w-0 px-2 py-2 xl:px-4 xl:py-2.5">
+                    <div className="flex min-w-0 items-center gap-1.5 xl:gap-2">
+                      <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-indigo-100 text-[11px] font-semibold text-[#17304b] xl:size-9 xl:text-xs dark:bg-indigo-950/70 dark:text-indigo-200">
                         {developerInitials(developer)}
                       </div>
                       <div className="min-w-0">
-                        <p className="truncate font-semibold text-zinc-900 dark:text-zinc-100">{developer.nombre}</p>
-                        <p className="truncate font-semibold text-zinc-900 dark:text-zinc-100">{developer.apellido}</p>
-                        <span
-                          className={`mt-1 inline-block rounded-full px-2 py-0.5 text-[11px] font-medium ${badgeColorByDisponibilidad[developer.disponibilidad] ?? 'bg-zinc-100 text-zinc-700 dark:bg-zinc-700/90 dark:text-zinc-200 dark:ring-1 dark:ring-zinc-600'}`}
+                        <p
+                          className="truncate font-semibold text-zinc-900 dark:text-zinc-100"
+                          title={developerFullName}
                         >
-                          {developer.disponibilidad}
-                        </span>
+                          {developerFullName}
+                        </p>
                       </div>
                     </div>
                   </td>
-                  <td className="align-top min-w-0 px-3 py-3 xl:px-5 xl:py-4">
+                  <td className="align-top min-w-0 px-2 py-2 xl:px-4 xl:py-2.5">
+                    <span
+                      className={`inline-block max-w-full truncate rounded-full px-2 py-0.5 text-[11px] font-medium ${badgeColorByDisponibilidad[developer.disponibilidad] ?? 'bg-zinc-100 text-zinc-700 dark:bg-zinc-700/90 dark:text-zinc-200 dark:ring-1 dark:ring-zinc-600'}`}
+                      title={developer.disponibilidad}
+                    >
+                      {developer.disponibilidad}
+                    </span>
+                  </td>
+                  <td className="align-top min-w-0 px-2 py-2 xl:px-4 xl:py-2.5">
                     <div className="flex min-w-0 items-center gap-1">
                       <p className="min-w-0 truncate text-zinc-800 dark:text-zinc-300" title={developer.correo}>
                         {developer.correo}
@@ -583,7 +668,7 @@ export default function AppAdminDesarrolladoresPage() {
                         size="icon-xs"
                         onClick={() => copyEmail(developer.correo)}
                         title="Copiar correo"
-                        aria-label={`Copiar correo de ${developer.nombre}`}
+                        aria-label={`Copiar correo de ${developerFullName}`}
                       >
                         <Copy className="size-3.5" />
                       </Button>
@@ -592,20 +677,20 @@ export default function AppAdminDesarrolladoresPage() {
                       <p className="text-xs text-emerald-600 dark:text-emerald-400">Correo copiado</p>
                     ) : null}
                   </td>
-                  <td className="align-top min-w-0 px-3 py-3 xl:px-5 xl:py-4">
-                    <div className="flex min-w-0 max-w-full flex-wrap gap-1">
+                  <td className="align-top min-w-0 px-2 py-2 xl:px-4 xl:py-2.5">
+                    <div className="flex min-h-0 min-w-0 max-w-full flex-wrap gap-1">
                       {developer.expertis.map((skill) => (
                         <span
                           key={skill}
-                          className="rounded-md bg-indigo-50 px-2 py-1 text-xs font-medium text-indigo-700 dark:bg-indigo-950/55 dark:text-indigo-200 dark:ring-1 dark:ring-indigo-800/50"
+                          className="rounded-md bg-indigo-50 px-1.5 py-0.5 text-[11px] font-medium text-indigo-700 dark:bg-indigo-950/55 dark:text-indigo-200 dark:ring-1 dark:ring-indigo-800/50"
                         >
                           {skill}
                         </span>
                       ))}
                     </div>
                   </td>
-                  <td className="align-top min-w-0 px-3 py-3 xl:px-5 xl:py-4">
-                    <div className="space-y-1.5 text-xs">
+                  <td className="align-top min-w-0 px-2 py-2 xl:px-4 xl:py-2.5">
+                    <div className="space-y-1 text-[11px]">
                       <div className="flex items-center gap-1.5">
                         {developer.visaVigente ? (
                           <CheckCircle2 className="size-3.5 text-emerald-500" />
@@ -654,7 +739,7 @@ export default function AppAdminDesarrolladoresPage() {
                       </div>
                     </div>
                   </td>
-                  <td className="align-top min-w-0 px-3 py-3 xl:px-5 xl:py-4">
+                  <td className="align-top min-w-0 px-2 py-2 xl:px-4 xl:py-2.5">
                     {(() => {
                       const developerId = getDeveloperApiId(developer);
                       const isBusy = accessBusyByDeveloper[developerId] === true;
@@ -662,18 +747,34 @@ export default function AppAdminDesarrolladoresPage() {
                     <div className="flex min-w-0 flex-wrap items-center justify-end gap-1 xl:flex-nowrap xl:gap-1.5">
                       <Button
                         type="button"
+                        variant="ghost"
+                        size="icon-sm"
+                        className={ADMIN_FAVORITE_ROW_HEART_BUTTON_CLASS}
+                        aria-label={
+                          isDeveloperFavorite ? 'Quitar de favoritos' : 'Marcar como favorito'
+                        }
+                        aria-pressed={isDeveloperFavorite}
+                        onClick={() => toggleDeveloperFavorite(developer)}
+                      >
+                        <Heart
+                          className={ADMIN_FAVORITE_ROW_HEART_ICON_CLASS(isDeveloperFavorite)}
+                          aria-hidden
+                        />
+                      </Button>
+                      <Button
+                        type="button"
                         variant="outline"
                         size="sm"
-                        className="h-8 shrink-0 gap-1 border-zinc-300 px-2 text-xs xl:h-9 xl:gap-1.5 xl:px-3 xl:text-sm dark:border-zinc-600 dark:bg-transparent dark:text-zinc-100 dark:hover:bg-zinc-800"
+                        className="h-7 shrink-0 gap-0.5 border-zinc-300 px-1.5 text-[11px] xl:h-8 xl:gap-1 xl:px-2 xl:text-xs dark:border-zinc-600 dark:bg-transparent dark:text-zinc-100 dark:hover:bg-zinc-800"
                         onClick={() => openCvPreview(developer)}
                       >
-                        <Eye className="size-3.5 shrink-0 xl:size-4" />
+                        <Eye className="size-3 shrink-0 xl:size-3.5" />
                         Ver CV
                       </Button>
                       <Button
                         asChild
                         size="sm"
-                        className="h-8 shrink-0 gap-1 bg-[#0b2a55] px-2 text-xs hover:bg-[#0a2347] xl:h-9 xl:gap-1.5 xl:px-3 xl:text-sm dark:bg-sky-900/80 dark:hover:bg-sky-900"
+                        className="h-7 shrink-0 gap-0.5 bg-[#0b2a55] px-1.5 text-[11px] hover:bg-[#0a2347] xl:h-8 xl:gap-1 xl:px-2 xl:text-xs dark:bg-sky-900/80 dark:hover:bg-sky-900"
                       >
                         <a
                           href={
@@ -685,12 +786,12 @@ export default function AppAdminDesarrolladoresPage() {
                           target={developer.resumeUrl ? '_blank' : undefined}
                           rel={developer.resumeUrl ? 'noopener noreferrer' : undefined}
                         >
-                          <Download className="size-3.5 shrink-0 xl:size-4" />
+                          <Download className="size-3 shrink-0 xl:size-3.5" />
                           Descargar CV
                         </a>
                       </Button>
                       <span
-                        className={`inline-flex size-7 shrink-0 items-center justify-center rounded-full ${
+                        className={`inline-flex size-6 shrink-0 items-center justify-center rounded-full xl:size-7 ${
                           developer.accessEnabled
                             ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 dark:ring-1 dark:ring-emerald-800/40'
                             : 'bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400'
@@ -698,7 +799,7 @@ export default function AppAdminDesarrolladoresPage() {
                         title={developer.accessEnabled ? 'Acceso habilitado' : 'Sin acceso'}
                         aria-label={developer.accessEnabled ? 'Acceso habilitado' : 'Sin acceso'}
                       >
-                        <KeyRound className="size-4" />
+                        <KeyRound className="size-3.5 xl:size-4" />
                       </span>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -708,7 +809,7 @@ export default function AppAdminDesarrolladoresPage() {
                             size="icon-xs"
                             className="shrink-0"
                             disabled={isBusy}
-                            aria-label={`Acciones de acceso para ${developer.nombre}`}
+                            aria-label={`Acciones de acceso para ${developerFullName}`}
                           >
                             <MoreVertical className="size-4" />
                           </Button>
@@ -754,10 +855,11 @@ export default function AppAdminDesarrolladoresPage() {
                     })()}
                   </td>
                 </tr>
-              ))}
+                );
+              })}
               {filteredDevelopers.length === 0 ? (
                 <tr className="border-t border-zinc-100 dark:border-zinc-800">
-                  <td colSpan={5} className="px-3 py-6 text-center text-muted-foreground xl:px-5">
+                  <td colSpan={6} className="px-3 py-4 text-center text-muted-foreground xl:px-5">
                     {developers.length === 0
                       ? 'No hay desarrolladores para mostrar.'
                       : 'No hay resultados con la búsqueda o los filtros seleccionados.'}
@@ -766,6 +868,7 @@ export default function AppAdminDesarrolladoresPage() {
               ) : null}
             </tbody>
           </table>
+            </div>
           </div>
           <AdminTablePagination
             page={devPage}
@@ -773,6 +876,7 @@ export default function AppAdminDesarrolladoresPage() {
             pageSize={ADMIN_PAGE_SIZE}
             onPageChange={setDevPage}
             nounPlural="desarrolladores"
+            className="shrink-0 gap-1 border-border/60 bg-muted/20 px-3 py-2 text-xs sm:flex-row sm:items-center sm:justify-between sm:px-4 dark:bg-muted/10"
           />
         </div>
       </section>
@@ -848,6 +952,7 @@ export default function AppAdminDesarrolladoresPage() {
           </div>
         </DialogContent>
       </Dialog>
+      </div>
     </AppShell>
   );
 }

@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useId, useState, type ReactNode } from 'react';
 import { Link, useLocation } from 'wouter';
 import { useTranslation } from 'react-i18next';
 import {
@@ -11,6 +11,7 @@ import {
   LayoutDashboard,
   LogOut,
   Settings,
+  Sparkles,
   User,
   UserSearch,
 } from 'lucide-react';
@@ -26,9 +27,8 @@ import {
   logoutRecruiter,
 } from '@/lib/recruiterAuth';
 import { hasRecruiterPanelPermission } from '@/lib/recruiterPanel';
-import { APP_THEME_CHANGE_EVENT, getStoredAppTheme, type AppThemeMode } from '@/lib/appTheme';
+import { APP_THEME_CHANGE_EVENT, APP_THEME_STORAGE_KEY, getStoredAppTheme, type AppThemeMode } from '@/lib/appTheme';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import {
   Sidebar,
@@ -42,6 +42,7 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { AppSideChatDock } from '@/components/app/AppSideChat';
 import { useAppNavBadges } from '@/contexts/AppNavBadgesContext';
 
 export type AppShellProps = {
@@ -49,6 +50,8 @@ export type AppShellProps = {
   title: string;
   description: string;
   children: ReactNode;
+  /** `hidden`: sin scroll en el cuerpo del panel (la página controla scroll interno, p. ej. tabla de leads). */
+  contentOverflow?: 'scroll' | 'hidden';
 };
 
 const sidebarBrandShell = cn(
@@ -84,7 +87,87 @@ function normalizePath(p: string) {
   return x === '' ? '/' : x;
 }
 
-export function AppShell({ pathWithoutLang, title, description, children }: AppShellProps) {
+/** Alterna el panel Vado Intelligence: icono IA y texto de marca. */
+function VadoIntelligenceChatToggle({
+  expanded,
+  onToggle,
+  isDark,
+  controlsId,
+}: {
+  expanded: boolean;
+  onToggle: () => void;
+  isDark: boolean;
+  controlsId: string;
+}) {
+  const [pressed, setPressed] = useState(false);
+  const [focusWithin, setFocusWithin] = useState(false);
+
+  return (
+    <button
+      type="button"
+      aria-expanded={expanded}
+      aria-controls={controlsId}
+      aria-label={expanded ? 'Ocultar Vado Intelligence' : 'Abrir Vado Intelligence'}
+      onClick={onToggle}
+      onPointerDown={() => setPressed(true)}
+      onPointerUp={() => setPressed(false)}
+      onPointerCancel={() => setPressed(false)}
+      onPointerLeave={(e) => {
+        if (e.buttons === 0) setPressed(false);
+      }}
+      onFocus={() => setFocusWithin(true)}
+      onBlur={() => setFocusWithin(false)}
+      className={cn(
+        'group relative inline-flex max-w-full min-w-0 items-center gap-3 overflow-hidden rounded-2xl border px-3 py-1.5 text-left text-sm',
+        'outline-none transition-[transform,box-shadow,border-color,background-color] duration-300 ease-out',
+        pressed && 'scale-[0.97]',
+        focusWithin && 'ring-2 ring-offset-2',
+        isDark
+          ? cn(
+              'border-zinc-600/60 bg-zinc-800/50 text-zinc-100 shadow-sm shadow-black/25',
+              'hover:border-zinc-500 hover:bg-zinc-800/80',
+              focusWithin && 'ring-emerald-400/75 ring-offset-zinc-900',
+            )
+          : cn(
+              'border-zinc-200/95 bg-white/75 text-zinc-900 shadow-sm shadow-zinc-900/[0.06]',
+              'hover:border-zinc-300 hover:bg-white',
+              focusWithin && 'ring-zinc-400/80 ring-offset-white',
+            ),
+      )}
+    >
+      <span
+        className={cn(
+          'relative flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-xl',
+          'bg-gradient-to-br from-blue-500 via-indigo-600 to-purple-700',
+          'ring-1 ring-inset ring-white/20 shadow-sm shadow-indigo-950/35',
+          'transition-[transform,opacity] duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)]',
+          (pressed || focusWithin) && 'scale-95',
+          focusWithin && !pressed && 'scale-[1.06]',
+        )}
+        aria-hidden
+      >
+        <Sparkles
+          className={cn(
+            'relative size-[1.125rem] text-white drop-shadow-sm transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] will-change-transform',
+            pressed && 'rotate-12 scale-110',
+            focusWithin && !pressed && 'scale-110',
+          )}
+          strokeWidth={2.5}
+          aria-hidden
+        />
+      </span>
+      <span className="min-w-0 truncate font-semibold tracking-tight">Vado Intelligence</span>
+    </button>
+  );
+}
+
+export function AppShell({
+  pathWithoutLang,
+  title,
+  description,
+  children,
+  contentOverflow = 'scroll',
+}: AppShellProps) {
   const { t } = useTranslation();
   const { path } = useLocale();
   const [, setLocation] = useLocation();
@@ -99,7 +182,9 @@ export function AppShell({ pathWithoutLang, title, description, children }: AppS
   const [offersOpen, setOffersOpen] = useState(false);
   const [recruitersOpen, setRecruitersOpen] = useState(false);
   const [trabajoOpen, setTrabajoOpen] = useState(false);
-  const [appThemeMode, setAppThemeMode] = useState<AppThemeMode>('light');
+  const [appThemeMode, setAppThemeMode] = useState<AppThemeMode>(() => getStoredAppTheme());
+  const [sideChatExpanded, setSideChatExpanded] = useState(true);
+  const vadoIntelPanelId = useId();
   const canonicalPath = path(pathWithoutLang);
 
   const currentAppPath = normalizePath(pathWithoutLang);
@@ -161,22 +246,29 @@ export function AppShell({ pathWithoutLang, title, description, children }: AppS
   const trabajoGroupActive = nuevasAperturasActive || empleosOfertasActive || guardadasActive;
 
   useEffect(() => {
-    if (offersActive) setOffersOpen(true);
+    if (offersActive) queueMicrotask(() => setOffersOpen(true));
   }, [offersActive]);
 
   useEffect(() => {
-    if (recruitersActive) setRecruitersOpen(true);
+    if (recruitersActive) queueMicrotask(() => setRecruitersOpen(true));
   }, [recruitersActive]);
 
   useEffect(() => {
-    if (trabajoGroupActive) setTrabajoOpen(true);
+    if (trabajoGroupActive) queueMicrotask(() => setTrabajoOpen(true));
   }, [trabajoGroupActive]);
 
   useEffect(() => {
     const sync = () => setAppThemeMode(getStoredAppTheme());
     sync();
     window.addEventListener(APP_THEME_CHANGE_EVENT, sync);
-    return () => window.removeEventListener(APP_THEME_CHANGE_EVENT, sync);
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === APP_THEME_STORAGE_KEY) sync();
+    };
+    window.addEventListener('storage', onStorage);
+    return () => {
+      window.removeEventListener(APP_THEME_CHANGE_EVENT, sync);
+      window.removeEventListener('storage', onStorage);
+    };
   }, []);
 
   useEffect(() => {
@@ -228,8 +320,14 @@ export function AppShell({ pathWithoutLang, title, description, children }: AppS
       <SidebarProvider
         className={cn(
           sidebarBrandShell,
-          'min-h-svh font-sans',
-          appThemeMode === 'dark' ? 'app-dark bg-zinc-950 text-zinc-100' : 'bg-zinc-100',
+          'min-h-svh font-sans antialiased',
+          /* Marco exterior tipo ventana de Preferencias del sistema */
+          appThemeMode === 'dark'
+            ? 'app-dark bg-black text-zinc-100'
+            : 'bg-[#d1d1d6] text-zinc-900',
+          /* Panel Vado Intelligence (md+): hueco cuando está expandido */
+          sideChatExpanded &&
+            'md:pr-[calc(400px+0.5rem)] md:transition-[padding] md:duration-200 md:ease-out',
         )}
       >
         <Sidebar collapsible="icon" variant="floating" sheetClassName={sidebarMobileSheet}>
@@ -591,35 +689,55 @@ export function AppShell({ pathWithoutLang, title, description, children }: AppS
 
         <SidebarInset
           className={cn(
-            'flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border shadow-sm',
+            'flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border shadow-lg',
             appThemeMode === 'dark'
-              ? 'border-zinc-800/80 bg-zinc-900'
-              : 'border-zinc-300/80 bg-zinc-200',
+              ? 'border-zinc-700/55 bg-zinc-900 shadow-black/50'
+              : 'border-white/90 bg-white shadow-md shadow-zinc-900/10',
             'm-2 max-md:mx-2.5 max-md:mt-2 max-md:mb-[max(0.5rem,env(safe-area-inset-bottom,0px))]',
             'max-md:min-h-0 max-md:flex-1',
           )}
         >
           <header
             className={cn(
-              'flex h-14 max-md:h-12 shrink-0 items-center gap-2 border-b px-4 max-md:gap-1.5 max-md:px-3',
+              'flex h-[52px] max-md:h-12 shrink-0 items-center gap-2 border-b px-5 max-md:gap-1.5 max-md:px-3',
               appThemeMode === 'dark'
-                ? 'border-zinc-800/70 bg-zinc-900/95'
-                : 'border-zinc-300/70 bg-zinc-200/98',
+                ? 'border-white/[0.07] bg-zinc-900'
+                : 'border-black/[0.06] bg-white',
             )}
           >
             <SidebarTrigger className="-ml-1 max-md:size-8" />
             <Separator orientation="vertical" className="mr-1 hidden data-[orientation=vertical]:h-4 md:block" />
-            <h1 className="min-w-0 flex-1 truncate text-base font-semibold max-md:text-sm md:text-lg">{title}</h1>
-            <div className="ml-auto flex shrink-0 items-center gap-2">
-              <Button variant="outline" size="sm" className="max-md:h-8 max-md:px-2 max-md:text-xs" asChild>
-                <Link href={path('')}>{t('sidebarDemo.backHome')}</Link>
-              </Button>
+            <h1 className="min-w-0 flex-1 truncate text-[17px] font-semibold tracking-tight max-md:text-sm md:text-[17px]">
+              {title}
+            </h1>
+            <div className="ml-auto flex shrink-0 items-center">
+              <VadoIntelligenceChatToggle
+                expanded={sideChatExpanded}
+                onToggle={() => setSideChatExpanded((v) => !v)}
+                isDark={appThemeMode === 'dark'}
+                controlsId={vadoIntelPanelId}
+              />
             </div>
           </header>
-          <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-10 overflow-y-auto p-6 max-md:gap-8 max-md:p-4 max-md:pb-[max(1rem,env(safe-area-inset-bottom,0px))]">
+          <div
+            className={cn(
+              'flex min-h-0 min-w-0 flex-1 flex-col px-5 py-5 max-md:px-4 max-md:py-4 max-md:pb-[max(1rem,env(safe-area-inset-bottom,0px))]',
+              contentOverflow === 'hidden'
+                ? 'gap-0 overflow-hidden overscroll-none'
+                : 'gap-6 overflow-y-auto max-md:gap-5',
+              appThemeMode === 'dark' ? 'bg-zinc-950' : 'bg-[#f2f2f7]',
+            )}
+          >
             {children}
           </div>
         </SidebarInset>
+
+        <AppSideChatDock
+          theme={appThemeMode}
+          open={sideChatExpanded}
+          onOpenChange={setSideChatExpanded}
+          regionId={vadoIntelPanelId}
+        />
       </SidebarProvider>
     </>
   );

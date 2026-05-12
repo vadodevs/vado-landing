@@ -5,7 +5,7 @@
     "customSoftware": "Software a la medida",
     "aiSolutions": "Soluciones IA",
     "staffAugmentation": "Ampliación de personal",
-    "developersOnDemand": "Developers On Demand",
+    "developersOnDemand": "IT Staff Augmentation",
     "ourWork": "Nuestro trabajo",
     "company": "Compañía",
     "vadoInsights": "Vado Insights",
@@ -114,7 +114,7 @@
     "customSoftware": "Desarrollo de software a la medida: aplicaciones web, móviles y plataformas que se adaptan a tu negocio.",
     "aiSolutions": "Soluciones de inteligencia artificial a la medida: automatización, análisis de datos y productos impulsados por IA.",
     "staffAugmentation": "Ampliación de personal tecnológico: equipos de desarrollo dedicados y perfiles senior para tu proyecto.",
-    "developersOnDemand": "Developers on demand: del alineamiento contigo hasta la entrega—recorrido oscuro de cómo toma forma tu producto.",
+    "developersOnDemand": "Nearshore IT Staff Augmentation en México: ingeniería senior alineada a tu producto y ahorro frente a contratar en EE. UU.",
     "ourWork": "Casos de éxito y proyectos de Vado Devs: desarrollo web, apps, plataformas SaaS y soluciones digitales.",
     "vadoInsights": "Artículos y reflexiones sobre tecnología, talento, nearshore y tendencias digitales por Vado Devs.",
     "cultureAndTalent": "Cultura y talento en Vado: cómo trabajamos, valores y oportunidades para unirse al equipo.",
@@ -185,7 +185,8 @@
     "workModeRemote": "Remoto",
     "workModeOnsite": "Presencia",
     "workModeHybrid": "Híbrido",
-    "noFilterResults": "Ninguna oferta coincide con la búsqueda o el filtro de modalidad.",
+    "noFilterResults": "Ninguna oferta coincide con la búsqueda o la categoría seleccionada.",
+    "noFilterResultsDashboardHint": "En el inicio solo se muestran vacantes publicadas o actualizadas en las últimas 72 horas. En «Empleos → Ofertas» está el listado completo.",
     "newOpeningBadge": "Nueva",
     "resultCount": "{{count}} ofertas",
     "viewShort": "Vista",
@@ -240,7 +241,7 @@
     "navJobs": "Ofertas laborales",
     "navCreateJob": "Crear oferta",
     "navActiveJobs": "Ofertas activas",
-    "navCompanies": "Compañías",
+    "navCompanies": "Leads",
     "adminRecruitersIntro": "Aquí podrás gestionar reclutadores y su relación con candidatos y proyectos. Esta sección está lista para conectarse a tu API cuando definas el modelo de datos.",
     "adminJobsIntro": "Aquí podrás publicar, editar y cerrar ofertas laborales para atraer talento. Esta sección está lista para conectarse a tu API cuando definas el flujo de vacantes.",
     "companyProjectsLoading": "Cargando datos de la solicitud...",
@@ -1703,32 +1704,23 @@
         "tagline": "Sigue desplazándote—la línea de tiempo corre dentro de una sola tarjeta, de la primera llamada al producto en producción.",
         "scrollHint": "Desplazar"
       },
-      "journey": {
-        "label": "EL RECORRIDO",
-        "titleLine1": "Del diálogo",
-        "titleLine2": "al software en producción",
-        "subtitle": "Sigue bajando—dentro de la tarjeta la línea avanza y se desbloquea cada fase.",
-        "inCardHint": "Desplázate para ver el proceso dentro de esta tarjeta",
-        "steps": {
-          "client": {
-            "short": "Cliente",
-            "title": "Hablar con el cliente",
-            "description": "Alineamos objetivos, restricciones, usuarios y plazos. Sin plantillas vacías—prioridades claras para que el alcance refleje lo que realmente necesitas."
+      "painQuantification": {
+        "title": "Why Choose Vado",
+        "items": {
+          "capital": {
+            "title": "Savings · same specialization",
+            "metric": "65% Efficiency Gain",
+            "usLine": "US Senior: $150 - $250/hr",
+            "vadoLine": "Vado Nearshore: $50 - $70/hr"
           },
-          "team": {
-            "short": "Equipo",
-            "title": "Sumar a los developers",
-            "description": "Emparejamos ingenieros con tu stack y tu cultura. Conoces candidatos que ya filtramos; cuando das el sí, entran a tus rituales con responsabilidades definidas."
+          "inaction": {
+            "label": "El costo de la inacción",
+            "headline": "Burn Rate Optimization",
+            "body": "$158 mil millones anuales se desperdician por ineficiencias en EE. UU.; recorta tus costos operativos de ingeniería en más de un 60% con infra estable y alto rendimiento."
           },
-          "build": {
-            "short": "Producto",
-            "title": "Armar el producto",
-            "description": "Iteraciones, demos y backlog transparente para que el avance se vea. Revisiones y calidad para que el código sea mantenible—no una carrera a un MVP frágil."
-          },
-          "launch": {
-            "short": "Entrega",
-            "title": "Entregar el producto final",
-            "description": "Lanzamiento, monitoreo y transferencia para que tu equipo opere con confianza. Seguimos disponibles para ajustes cuando entren uso y feedback."
+          "speed": {
+            "label": "Velocidad",
+            "body": "Integre «pods» de ingeniería en 7-10 días, eliminando los 120 días promedio que toma una contratación interna."
           }
         }
       },

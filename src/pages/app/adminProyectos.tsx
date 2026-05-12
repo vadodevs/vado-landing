@@ -261,17 +261,19 @@ export default function AppAdminProyectosPage() {
       pathWithoutLang={`${portalBase}/proyectos`}
       title={t('sidebarDemo.navProjects')}
       description={t('seo.appAdminProjects')}
+      contentOverflow="hidden"
     >
-      <section className="scroll-mt-24">
-        <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+      <section className="flex min-h-0 min-w-0 flex-1 flex-col gap-2 overflow-hidden scroll-mt-24">
+        <div className="flex shrink-0 flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h2 className="text-2xl font-semibold text-foreground">Proyectos</h2>
+            <h2 className="text-xl font-semibold text-foreground">Proyectos</h2>
             {projectsLoad === 'loading' ? (
-              <p className="mt-2 text-sm text-muted-foreground">Cargando proyectos…</p>
+              <p className="mt-1 text-xs text-muted-foreground">Cargando proyectos…</p>
             ) : null}
           </div>
           <div
-            className="inline-flex w-fit rounded-xl border border-zinc-200 bg-zinc-50/80 p-1"
+            className="inline-flex w-fit shrink-0 rounded-lg border border-border bg-muted/40 p-0.5"
             role="group"
             aria-label="Modo de vista"
           >
@@ -306,60 +308,63 @@ export default function AppAdminProyectosPage() {
 
         {showProjectGrid ? (
           viewMode === 'cards' ? (
-            <div>
-              <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold tracking-wide text-zinc-700 uppercase">
-                <Briefcase className="size-4 text-indigo-600" aria-hidden />
+            <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-2 overflow-hidden">
+              <h3 className="flex shrink-0 items-center gap-2 text-xs font-semibold tracking-wide text-zinc-700 uppercase">
+                <Briefcase className="size-3.5 text-indigo-600" aria-hidden />
                 {COMPANY_LEAD_STATUS_LABELS.en_curso}
               </h3>
               {visibleAssignedProjects.length === 0 ? (
-                <p className="rounded-2xl border border-dashed border-zinc-200 bg-zinc-50/50 px-4 py-10 text-center text-sm text-muted-foreground">
+                <p className="shrink-0 rounded-xl border border-dashed border-border bg-muted/20 px-4 py-6 text-center text-sm text-muted-foreground">
                   {emptyProjectsMessage}
                 </p>
               ) : (
                 <>
-                  <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                    {paginatedVisibleProjects.map((p) => (
-                      <AssignedProjectCard key={p.id} p={p} onOpen={() => setDetalleId(p.id)} />
-                    ))}
+                  <div className="relative min-h-0 min-w-0 flex-1 overflow-hidden">
+                    <div className="absolute inset-0 overflow-auto overscroll-contain rounded-t-lg">
+                      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                        {paginatedVisibleProjects.map((p) => (
+                          <AssignedProjectCard key={p.id} p={p} onOpen={() => setDetalleId(p.id)} />
+                        ))}
+                      </div>
+                    </div>
                   </div>
-                  <div className="mt-4 overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
-                    <AdminTablePagination
-                      page={projectPage}
-                      totalItems={visibleAssignedProjects.length}
-                      pageSize={ADMIN_PAGE_SIZE}
-                      onPageChange={setProjectPage}
-                      nounPlural="proyectos"
-                      className="border-t-0"
-                    />
-                  </div>
+                  <AdminTablePagination
+                    page={projectPage}
+                    totalItems={visibleAssignedProjects.length}
+                    pageSize={ADMIN_PAGE_SIZE}
+                    onPageChange={setProjectPage}
+                    nounPlural="proyectos"
+                    className="shrink-0 gap-1 rounded-lg border border-border/70 bg-card px-3 py-2 text-xs sm:flex-row sm:items-center sm:justify-between sm:px-4 dark:bg-muted/20"
+                  />
                 </>
               )}
             </div>
           ) : (
-            <div>
-              <h3 className="mb-2 text-sm font-semibold tracking-wide text-zinc-700 uppercase">
+            <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-2 overflow-hidden">
+              <h3 className="shrink-0 text-xs font-semibold tracking-wide text-zinc-700 uppercase">
                 {COMPANY_LEAD_STATUS_LABELS.en_curso}
               </h3>
               {visibleAssignedProjects.length === 0 ? (
-                <p className="rounded-xl border border-dashed border-border px-4 py-8 text-center text-sm text-muted-foreground">
+                <p className="shrink-0 rounded-xl border border-dashed border-border px-4 py-6 text-center text-sm text-muted-foreground">
                   {emptyProjectsMessage}
                 </p>
               ) : (
-                <div className="overflow-hidden rounded-xl border border-border bg-card">
-                  <ul className="divide-y divide-border">
+                <div className="isolate flex min-h-0 flex-1 flex-col overflow-hidden rounded-lg border border-border bg-card">
+                  <div className="relative min-h-0 min-w-0 flex-1 overflow-hidden">
+                    <ul className="absolute inset-0 divide-y divide-border overflow-auto overscroll-contain rounded-t-lg">
                     {paginatedVisibleProjects.map((p) => (
                       <li key={p.id}>
                         <button
                           type="button"
                           onClick={() => setDetalleId(p.id)}
-                          className="flex w-full items-center gap-4 px-4 py-3.5 text-left transition-colors hover:bg-muted/50"
+                          className="flex w-full items-center gap-3 px-3 py-2.5 text-left text-sm transition-colors hover:bg-muted/50"
                         >
-                          <div className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-indigo-100 text-indigo-800">
-                            <Users className="size-5" />
+                          <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-indigo-100 text-indigo-800">
+                            <Users className="size-4" />
                           </div>
                           <div className="min-w-0 flex-1">
                             <p className="font-medium text-foreground">{p.titulo}</p>
-                            <p className="truncate text-sm text-muted-foreground">
+                            <p className="truncate text-xs text-muted-foreground">
                               {p.empresa} · {p.prospectos.length} en equipo · {formatFecha(p.createdAt)}
                             </p>
                           </div>
@@ -371,18 +376,19 @@ export default function AppAdminProyectosPage() {
                           >
                             En trabajo
                           </span>
-                          <ChevronRight className="size-5 shrink-0 text-muted-foreground" aria-hidden />
+                          <ChevronRight className="size-4 shrink-0 text-muted-foreground" aria-hidden />
                         </button>
                       </li>
                     ))}
-                  </ul>
+                    </ul>
+                  </div>
                   <AdminTablePagination
                     page={projectPage}
                     totalItems={visibleAssignedProjects.length}
                     pageSize={ADMIN_PAGE_SIZE}
                     onPageChange={setProjectPage}
                     nounPlural="proyectos"
-                    className="border-border bg-card border-t"
+                    className="shrink-0 gap-1 border-border/60 bg-muted/20 px-3 py-2 text-xs sm:flex-row sm:items-center sm:justify-between sm:px-4 dark:bg-muted/10"
                   />
                 </div>
               )}
@@ -390,6 +396,7 @@ export default function AppAdminProyectosPage() {
           )
         ) : null}
       </section>
+      </div>
 
       <Dialog
         open={abierto}

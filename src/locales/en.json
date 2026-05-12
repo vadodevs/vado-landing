@@ -5,7 +5,7 @@
     "customSoftware": "Custom software",
     "aiSolutions": "AI solutions",
     "staffAugmentation": "Staff augmentation",
-    "developersOnDemand": "Developers On Demand",
+    "developersOnDemand": "IT Staff Augmentation",
     "ourWork": "Our work",
     "company": "Company",
     "vadoInsights": "Vado Insights",
@@ -114,7 +114,7 @@
     "customSoftware": "Custom software development: web apps, mobile apps, and platforms built for your business.",
     "aiSolutions": "Custom AI solutions: automation, data analytics, and AI-powered products.",
     "staffAugmentation": "Tech staff augmentation: dedicated development teams and senior talent for your project.",
-    "developersOnDemand": "Developers on demand: from client alignment to delivery—a dark, focused walkthrough of how your product takes shape.",
+    "developersOnDemand": "Nearshore IT staff augmentation in Mexico: senior engineers aligned to your product roadmap with strong savings vs. US hiring.",
     "ourWork": "Case studies and projects by Vado Devs: web, apps, SaaS platforms, and digital solutions.",
     "vadoInsights": "Articles on technology, talent, nearshore, and digital trends by Vado Devs.",
     "cultureAndTalent": "Culture and talent at Vado: how we work, our values, and opportunities to join the team.",
@@ -185,7 +185,8 @@
     "workModeRemote": "Remote",
     "workModeOnsite": "On-site",
     "workModeHybrid": "Hybrid",
-    "noFilterResults": "No jobs match your search or workplace filter.",
+    "noFilterResults": "No jobs match your search or the selected category.",
+    "noFilterResultsDashboardHint": "The home view only shows jobs posted or updated in the last 72 hours. Open Jobs → All openings for the full list.",
     "newOpeningBadge": "New",
     "resultCount": "{{count}} openings",
     "viewShort": "View",
@@ -240,7 +241,7 @@
     "navJobs": "Job openings",
     "navCreateJob": "Create job",
     "navActiveJobs": "Active jobs",
-    "navCompanies": "Companies",
+    "navCompanies": "Leads",
     "adminRecruitersIntro": "Manage recruiters and how they relate to candidates and projects. This area is ready to wire to your API once you define the data model.",
     "adminJobsIntro": "Publish, edit, and close job openings to attract talent. This area is ready to wire to your API once you define the vacancies flow.",
     "companyProjectsLoading": "Loading request data...",
@@ -1699,32 +1700,23 @@
         "tagline": "Keep scrolling—the timeline runs inside one card, from first call to shipped product.",
         "scrollHint": "Scroll"
       },
-      "journey": {
-        "label": "THE JOURNEY",
-        "titleLine1": "From dialogue",
-        "titleLine2": "to shipped software",
-        "subtitle": "Scroll down—inside the card, the timeline fills and each phase unlocks.",
-        "inCardHint": "Scroll to run the process inside this card",
-        "steps": {
-          "client": {
-            "short": "Client",
-            "title": "Talk with the client",
-            "description": "We clarify goals, constraints, users, and timelines. No generic decks—just aligned priorities so scope and expectations match what you actually need."
+      "painQuantification": {
+        "title": "Why Choose Vado",
+        "items": {
+          "capital": {
+            "title": "Savings · same specialization",
+            "metric": "65% efficiency gain",
+            "usLine": "US Senior: $150 - $250/hr",
+            "vadoLine": "Vado Nearshore: $50 - $70/hr"
           },
-          "team": {
-            "short": "Team",
-            "title": "Bring developers on board",
-            "description": "We match engineers to your stack and culture. You meet candidates we shortlist; once you say yes, they plug into your rituals with clear ownership."
+          "inaction": {
+            "label": "The cost of inaction",
+            "headline": "Burn rate optimization",
+            "body": "$158B a year vanishes into operational waste in the US—still cut engineering spend 60%+ with lean infrastructure that performs."
           },
-          "build": {
-            "short": "Build",
-            "title": "Build the product",
-            "description": "Iterations, demos, and transparent backlog so progress is visible. Quality gates and reviews keep the codebase maintainable—not a rush to a brittle MVP."
-          },
-          "launch": {
-            "short": "Ship",
-            "title": "Ship the finished product",
-            "description": "Release, monitoring, and handoff so your side can operate confidently. We stay available for refinements as usage and feedback roll in."
+          "speed": {
+            "label": "Speed",
+            "body": "Spin up engineering pods in 7–10 days—instead of the ~120-day average for internal hiring cycles."
           }
         }
       },

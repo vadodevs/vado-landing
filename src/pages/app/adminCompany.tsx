@@ -4,6 +4,7 @@ import {
   Copy,
   Eye,
   Filter,
+  Heart,
   KeyRound,
   Mail,
   MoreVertical,
@@ -16,9 +17,11 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'wouter';
 import { useAdminAssignedProjects } from '@/contexts/AdminAssignedProjectsContext';
+import { AdminSelect, type AdminSelectOption } from '@/components/app/AdminSelect';
 import { AdminTablePagination } from '@/components/app/AdminTablePagination';
 import { ADMIN_PAGE_SIZE, slicePage } from '@/lib/adminPagination';
 import { AppShell } from '@/components/layout/app/AppShell';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -44,7 +47,6 @@ import {
 } from '@/lib/companyAdminContact';
 import {
   COMPANY_LEAD_STATUSES,
-  COMPANY_LEAD_STATUS_BADGE_CLASS,
   COMPANY_LEAD_STATUS_DOT_CLASS,
   COMPANY_LEAD_STATUS_LABELS,
   applyCompanyLeadStatusOverride,
@@ -66,11 +68,50 @@ import {
 import {
   setAdminCompaniesSeenMax,
 } from '@/lib/appNavBadges';
+import {
+  getChatWidgetBudgetQualification,
+  isChatWidgetLeadMessage,
+  parseChatWidgetDetailRows,
+} from '@/lib/chatWidgetLead';
+import {
+  loadLeadFavoriteIds,
+  persistLeadFavoriteIds,
+  toggleLeadFavoriteId,
+} from '@/lib/companyLeadFavorites';
+import { ADMIN_FILTER_BADGE_CLASS, ADMIN_FILTER_CONTROL_CLASS, ADMIN_FAVORITES_TOOLBAR_BUTTON_ACTIVE, ADMIN_FAVORITES_TOOLBAR_BUTTON_INACTIVE, ADMIN_FAVORITE_ROW_HEART_BUTTON_CLASS, ADMIN_FAVORITE_ROW_HEART_ICON_CLASS } from '@/lib/adminFilterUi';
 import { cn } from '@/lib/utils';
 
 type TimeFilter = 'todos' | 'hoy' | 'semana' | 'mes';
 
 type FlowStep = 'detalle' | 'prospectos' | 'confirmacion' | 'exito';
+
+const PERIODO_FILTER_OPTIONS: AdminSelectOption[] = [
+  { value: 'todos', label: 'Periodo: todos' },
+  { value: 'hoy', label: 'Periodo: hoy' },
+  { value: 'semana', label: 'Periodo: esta semana' },
+  { value: 'mes', label: 'Periodo: este mes' },
+];
+
+const LEAD_QUALITY_OPTIONS: AdminSelectOption[] = [
+  { value: 'todos', label: 'Leads: todos' },
+  { value: 'calificados', label: 'Leads: calificados' },
+  { value: 'no_calificados', label: 'Leads: no calificados' },
+];
+
+const FECHA_ORDEN_OPTIONS: AdminSelectOption[] = [
+  { value: 'newest', label: 'Más nuevos primero' },
+  { value: 'oldest', label: 'Más viejos primero' },
+];
+
+const LEAD_STATUS_TABLE_OPTIONS: AdminSelectOption[] = COMPANY_LEAD_STATUSES.map((s) => ({
+  value: s,
+  label: COMPANY_LEAD_STATUS_LABELS[s],
+}));
+
+const ESTADO_FILTER_OPTIONS: AdminSelectOption[] = [
+  { value: '', label: 'Estado: todos' },
+  ...COMPANY_LEAD_STATUSES.map((s) => ({ value: s, label: COMPANY_LEAD_STATUS_LABELS[s] })),
+];
 
 function formatDateOnly(d: Date): string {
   const y = d.getFullYear();
@@ -161,6 +202,39 @@ function leadInitials(nombre: string): string {
     return `${parts[0][0] ?? ''}${parts[1][0] ?? ''}`.toUpperCase();
   }
   return (parts[0]?.slice(0, 2) || '??').toUpperCase();
+}
+
+function digitsOnly(s: string): string {
+  return s.replace(/\D/g, '');
+}
+
+/** Lead creado desde el chat: filas extra (sin duplicar cabecera del modal). */
+function chatWidgetDetailForAdmin(contact: CompanyContact): {
+  isWidget: boolean;
+  rows: { label: string; value: string }[];
+} {
+  const mensaje = contact.mensaje.trim();
+  if (!isChatWidgetLeadMessage(mensaje)) {
+    return { isWidget: false, rows: [] };
+  }
+  const widgetRows = parseChatWidgetDetailRows(mensaje);
+  if (widgetRows.length === 0) {
+    return { isWidget: true, rows: [] };
+  }
+  const filtered = widgetRows.filter((row) => {
+    const l = row.label.toLowerCase();
+    const v = row.value.trim();
+    if (l === 'empresa' && v === contact.empresa.trim()) return false;
+    if (l === 'correo' && v.toLowerCase() === contact.correo.trim().toLowerCase()) return false;
+    if (l === 'teléfono' || l === 'telefono') {
+      const t = contact.telefono.trim();
+      if (t === '—' || t === '-' || t === '') return true;
+      if (digitsOnly(v) === digitsOnly(t)) return false;
+    }
+    if (l === 'nombre' && v === contact.nombre.trim()) return false;
+    return true;
+  });
+  return { isWidget: true, rows: filtered.length > 0 ? filtered : widgetRows };
 }
 
 function matchesTimeFilter(fechaSolicitud: string, filter: TimeFilter, now: Date): boolean {
@@ -254,11 +328,15 @@ export default function AppAdminCompanyPage() {
   const [copied, setCopied] = useState(false);
   const [copiedLeadEmail, setCopiedLeadEmail] = useState<string | null>(null);
   const [timeFilter, setTimeFilter] = useState<TimeFilter>('todos');
+  const [leadQualityFilter, setLeadQualityFilter] = useState<'todos' | 'calificados' | 'no_calificados'>('todos');
   const [searchTerm, setSearchTerm] = useState('');
   const [fechaOrden, setFechaOrden] = useState<'newest' | 'oldest'>('newest');
   const [asuntoFilter, setAsuntoFilter] = useState('');
-  /** Vacío = todos los estados; si hay valores, solo filas con uno de esos estados. */
-  const [estadoFilterSelection, setEstadoFilterSelection] = useState<CompanyLeadStatus[]>([]);
+  /** Vacío = todos los estados; si hay valor, solo filas con ese estado (mismo patrón que el select de Leads). */
+  const [estadoFilter, setEstadoFilter] = useState<'' | CompanyLeadStatus>('');
+  const [leadFavoriteIds, setLeadFavoriteIds] = useState<Set<string>>(() => loadLeadFavoriteIds());
+  /** Si está activo, solo leads marcados con el corazón en la tabla. */
+  const [favoritesOnly, setFavoritesOnly] = useState(false);
   const [companyPage, setCompanyPage] = useState(1);
   const [leadStatusOverrides, setLeadStatusOverrides] = useState<
     Record<string, CompanyLeadStatus>
@@ -392,14 +470,31 @@ export default function AppAdminCompanyPage() {
     [contacts],
   );
 
+  const asuntoSelectOptions = useMemo(
+    (): AdminSelectOption[] => [
+      { value: '', label: 'Asunto: todos' },
+      ...asuntoOptions.map((a) => ({ value: a, label: a })),
+    ],
+    [asuntoOptions],
+  );
+
   const filteredContacts = useMemo(() => {
     const filtered = contacts.filter((c) => {
       const estado = getCompanyLeadStatus(leadStatusOverrides, c.id);
+      const budgetQ = getChatWidgetBudgetQualification(c.mensaje);
+      const matchesQuality =
+        leadQualityFilter === 'todos'
+          ? true
+          : leadQualityFilter === 'calificados'
+            ? budgetQ !== 'unqualified'
+            : budgetQ === 'unqualified';
       return (
         matchesTimeFilter(c.fechaSolicitud, timeFilter, now) &&
         matchesCompanySearch(searchTerm, c) &&
+        matchesQuality &&
         (asuntoFilter === '' || c.servicio === asuntoFilter) &&
-        (estadoFilterSelection.length === 0 || estadoFilterSelection.includes(estado))
+        (estadoFilter === '' || estado === estadoFilter) &&
+        (!favoritesOnly || leadFavoriteIds.has(c.id))
       );
     });
     return [...filtered].sort((a, b) => {
@@ -408,7 +503,19 @@ export default function AppAdminCompanyPage() {
       if (ta === tb) return 0;
       return fechaOrden === 'oldest' ? ta - tb : tb - ta;
     });
-  }, [contacts, timeFilter, now, searchTerm, fechaOrden, asuntoFilter, estadoFilterSelection, leadStatusOverrides]);
+  }, [
+    contacts,
+    timeFilter,
+    leadQualityFilter,
+    now,
+    searchTerm,
+    fechaOrden,
+    asuntoFilter,
+    estadoFilter,
+    leadStatusOverrides,
+    favoritesOnly,
+    leadFavoriteIds,
+  ]);
 
   const paginatedContacts = useMemo(
     () => slicePage(filteredContacts, companyPage, ADMIN_PAGE_SIZE),
@@ -417,17 +524,19 @@ export default function AppAdminCompanyPage() {
 
   useEffect(() => {
     queueMicrotask(() => setCompanyPage(1));
-  }, [searchTerm, timeFilter, fechaOrden, asuntoFilter, estadoFilterSelection]);
+  }, [searchTerm, timeFilter, leadQualityFilter, fechaOrden, asuntoFilter, estadoFilter, favoritesOnly]);
 
   useEffect(() => {
     const tp = Math.max(1, Math.ceil(filteredContacts.length / ADMIN_PAGE_SIZE));
     queueMicrotask(() => setCompanyPage((p) => Math.min(p, tp)));
   }, [filteredContacts.length]);
 
-  const toggleEstadoFilter = (s: CompanyLeadStatus) => {
-    setEstadoFilterSelection((prev) =>
-      prev.includes(s) ? prev.filter((x) => x !== s) : [...prev, s],
-    );
+  const toggleLeadFavorite = (id: string) => {
+    setLeadFavoriteIds((prev) => {
+      const next = toggleLeadFavoriteId(prev, id);
+      persistLeadFavoriteIds(next);
+      return next;
+    });
   };
 
   const updateLeadStatus = (id: string, next: CompanyLeadStatus) => {
@@ -443,10 +552,12 @@ export default function AppAdminCompanyPage() {
 
   const clearFilters = () => {
     setTimeFilter('todos');
+    setLeadQualityFilter('todos');
     setSearchTerm('');
     setFechaOrden('newest');
     setAsuntoFilter('');
-    setEstadoFilterSelection([]);
+    setEstadoFilter('');
+    setFavoritesOnly(false);
   };
 
   const openDetail = (contact: CompanyContact) => {
@@ -574,140 +685,155 @@ export default function AppAdminCompanyPage() {
       });
   };
 
+  const leadDetailWidget = useMemo(
+    () =>
+      selected
+        ? chatWidgetDetailForAdmin(selected)
+        : { isWidget: false as const, rows: [] as { label: string; value: string }[] },
+    [selected],
+  );
+
   return (
     <AppShell
       pathWithoutLang={`${portalBase}/company`}
       title={t('sidebarDemo.navCompanies')}
       description={t('seo.appAdminCompanies')}
+      contentOverflow="hidden"
     >
-      <section className="min-w-0 scroll-mt-24">
-        <h2 className="mb-2 text-2xl font-semibold text-foreground">Compañías</h2>
-        {contactsLoad === 'loading' ? (
-          <p className="mb-4 text-sm text-muted-foreground">Cargando solicitudes…</p>
-        ) : null}
-        {contactsError === 'no-config' ? (
-          <p className="mb-4 text-sm text-amber-800 dark:text-amber-300/95">
-            Sin{' '}
-            <code className="rounded bg-amber-100 px-1 dark:bg-amber-950/80 dark:text-amber-200">
-              VITE_API_BASE_URL
-            </code>{' '}
-            se muestran datos de demostración. Con la API configurada verás aquí los envíos del formulario
-            de contacto.
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+      <section className="flex min-h-0 min-w-0 flex-1 flex-col gap-2 overflow-hidden scroll-mt-24">
+        {/* Intro + filtros: siempre visibles; el scroll solo está en la tabla */}
+        <div className="min-h-0 shrink-0 space-y-2">
+          <p className="text-xs leading-snug text-muted-foreground">
+            Solicitudes del formulario y del widget; filtra para acotar la lista.
           </p>
-        ) : null}
-        {contactsError === 'fail' ? (
-          <p className="mb-4 text-sm text-red-700 dark:text-red-400">
-            No se pudo cargar el listado desde la API. Revisa la red o el servidor.
-          </p>
-        ) : null}
-        {companyAccessError ? (
-          <p className="mb-4 text-sm text-red-700 dark:text-red-400">{companyAccessError}</p>
-        ) : null}
-        {contactsSource === 'api' && contactsLoad === 'done' && contactsError === 'none' ? (
-          <p className="mb-4 text-sm text-emerald-800 dark:text-emerald-400/90">
-            {contacts.length === 0
-              ? 'Aún no hay solicitudes desde el formulario de contacto.'
-              : `${contacts.length} solicitud(es) desde el formulario de contacto.`}
-          </p>
-        ) : null}
+          {contactsLoad === 'loading' ? (
+            <p className="text-sm text-muted-foreground">Cargando solicitudes…</p>
+          ) : null}
+          {contactsError === 'no-config' ? (
+            <p className="text-sm text-amber-800 dark:text-amber-300/95">
+              Sin{' '}
+              <code className="rounded bg-amber-100 px-1 dark:bg-amber-950/80 dark:text-amber-200">
+                VITE_API_BASE_URL
+              </code>{' '}
+              se muestran datos de demostración. Con la API configurada verás aquí los envíos del formulario
+              de contacto.
+            </p>
+          ) : null}
+          {contactsError === 'fail' ? (
+            <p className="text-sm text-red-700 dark:text-red-400">
+              No se pudo cargar el listado desde la API. Revisa la red o el servidor.
+            </p>
+          ) : null}
+          {companyAccessError ? (
+            <p className="text-sm text-red-700 dark:text-red-400">{companyAccessError}</p>
+          ) : null}
+          {contactsSource === 'api' && contactsLoad === 'done' && contactsError === 'none' ? (
+            <p className="text-sm text-emerald-800 dark:text-emerald-400/90">
+              {contacts.length === 0
+                ? 'Aún no hay solicitudes desde el formulario de contacto.'
+                : `${contacts.length} solicitud(es) desde el formulario de contacto.`}
+            </p>
+          ) : null}
 
-        <div className="mb-4 overflow-hidden rounded-2xl border border-zinc-100 bg-white p-3 shadow-sm dark:border-zinc-800 dark:bg-zinc-950/60 dark:shadow-none">
-          <div className="flex flex-col gap-3 lg:flex-row lg:flex-wrap lg:items-center">
-            <span className="inline-flex w-fit items-center gap-2 rounded-lg bg-zinc-50 px-3 py-2 text-xs font-semibold tracking-wide text-zinc-700 uppercase dark:bg-zinc-800/80 dark:text-zinc-300">
-              <Filter className="size-3.5" aria-hidden />
-              Filtros rápidos
-            </span>
-            <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
-              <select
-                value={timeFilter}
-                onChange={(e) => setTimeFilter(e.target.value as TimeFilter)}
-                className="h-9 rounded-lg border border-zinc-200 bg-white px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-[#17304b]/20 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-200 dark:focus-visible:ring-zinc-500/30"
-                aria-label="Periodo"
-              >
-                <option value="todos">Periodo: todos</option>
-                <option value="hoy">Periodo: hoy</option>
-                <option value="semana">Periodo: esta semana</option>
-                <option value="mes">Periodo: este mes</option>
-              </select>
-              <select
-                value={asuntoFilter}
-                onChange={(e) => setAsuntoFilter(e.target.value)}
-                className="h-9 w-full min-w-0 rounded-lg border border-zinc-200 bg-white px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-[#17304b]/20 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-200 dark:focus-visible:ring-zinc-500/30 sm:min-w-[12rem] sm:max-w-[280px]"
-                aria-label="Filtrar por asunto"
-              >
-                <option value="">Asunto: todos</option>
-                {asuntoOptions.map((asunto) => (
-                  <option key={asunto} value={asunto}>
-                    {asunto}
-                  </option>
-                ))}
-              </select>
-              <select
-                value={fechaOrden}
-                onChange={(e) => setFechaOrden(e.target.value as 'newest' | 'oldest')}
-                className="h-9 rounded-lg border border-zinc-200 bg-white px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-[#17304b]/20 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-200 dark:focus-visible:ring-zinc-500/30"
-                aria-label="Orden por fecha"
-              >
-                <option value="newest">Más nuevos primero</option>
-                <option value="oldest">Más viejos primero</option>
-              </select>
-              <div className="relative w-full min-w-0 max-w-md flex-1 sm:min-w-[12rem]">
-                <Search
-                  className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
-                  aria-hidden
-                />
-                <input
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  placeholder="Nombre, empresa, correo o asunto…"
-                  aria-label="Buscar por nombre, empresa, correo o asunto"
-                  className="h-9 w-full rounded-lg border border-zinc-200 bg-white pr-3 pl-9 text-sm outline-none focus-visible:ring-2 focus-visible:ring-[#17304b]/20 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:focus-visible:ring-zinc-500/30"
-                />
-              </div>
-              <Button variant="ghost" size="sm" type="button" className="shrink-0" onClick={clearFilters}>
-                Limpiar filtros
-              </Button>
-            </div>
-            <div className="flex w-full flex-col gap-2 border-t border-zinc-100 pt-3 dark:border-zinc-800 lg:pl-0">
-              <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-                <span className="text-[11px] font-semibold tracking-wide text-zinc-600 uppercase dark:text-zinc-400">
-                  Filtrar por estado
-                </span>
-                <span className="text-[11px] text-zinc-500 dark:text-zinc-500">
-                  Pulsa uno o varios. Sin ninguno activo se muestran todos.
-                </span>
-              </div>
-              <div className="flex flex-wrap gap-2" role="group" aria-label="Filtrar por estado del lead">
-                {COMPANY_LEAD_STATUSES.map((s) => {
-                  const on = estadoFilterSelection.includes(s);
-                  return (
-                    <button
-                      key={s}
-                      type="button"
-                      onClick={() => toggleEstadoFilter(s)}
-                      aria-pressed={on}
+        <div className="rounded-lg border border-border/70 bg-card shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] dark:border-border/50 dark:bg-muted/25 dark:shadow-none">
+          <div className="flex flex-col gap-2 p-2 sm:p-3">
+            <div className="flex flex-col gap-2 lg:flex-row lg:flex-wrap lg:items-center">
+              <span className={ADMIN_FILTER_BADGE_CLASS}>
+                <Filter className="size-3" aria-hidden />
+                Filtros rápidos
+              </span>
+              <div className="flex min-w-0 flex-1 flex-wrap items-center gap-1.5">
+                <div className="flex min-w-0 flex-1 flex-wrap items-center gap-1.5">
+                  <AdminSelect
+                    value={timeFilter}
+                    onValueChange={(v) => setTimeFilter(v as TimeFilter)}
+                    options={PERIODO_FILTER_OPTIONS}
+                    aria-label="Periodo"
+                    triggerClassName="h-8 shrink-0"
+                  />
+                  <AdminSelect
+                    value={asuntoFilter}
+                    onValueChange={setAsuntoFilter}
+                    options={asuntoSelectOptions}
+                    aria-label="Filtrar por asunto"
+                    triggerClassName="h-8 w-full min-w-0 sm:min-w-[12rem] sm:max-w-[280px]"
+                  />
+                  <AdminSelect
+                    value={leadQualityFilter}
+                    onValueChange={(v) =>
+                      setLeadQualityFilter(v as 'todos' | 'calificados' | 'no_calificados')
+                    }
+                    options={LEAD_QUALITY_OPTIONS}
+                    aria-label="Tipo de lead"
+                    triggerClassName="h-8 shrink-0"
+                  />
+                  <AdminSelect
+                    value={estadoFilter}
+                    onValueChange={(v) => setEstadoFilter(v === '' ? '' : (v as CompanyLeadStatus))}
+                    options={ESTADO_FILTER_OPTIONS}
+                    aria-label="Filtrar por estado del lead"
+                    triggerClassName="h-8 min-w-[10.5rem] max-w-[min(100%,18rem)] shrink-0"
+                  />
+                  <AdminSelect
+                    value={fechaOrden}
+                    onValueChange={(v) => setFechaOrden(v as 'newest' | 'oldest')}
+                    options={FECHA_ORDEN_OPTIONS}
+                    aria-label="Orden por fecha"
+                    triggerClassName="h-8 shrink-0"
+                  />
+                  <div className="relative w-full min-w-0 max-w-md flex-1 sm:min-w-[12rem]">
+                    <Search
+                      className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground"
+                      aria-hidden
+                    />
+                    <input
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      placeholder="Nombre, empresa, correo o asunto…"
+                      aria-label="Buscar por nombre, empresa, correo o asunto"
                       className={cn(
-                        'rounded-full px-2.5 py-1 text-[11px] font-medium transition outline-none focus-visible:ring-2 focus-visible:ring-[#17304b]/30 dark:focus-visible:ring-zinc-500/40',
-                        on
-                          ? cn(
-                              COMPANY_LEAD_STATUS_BADGE_CLASS[s],
-                              'ring-2 ring-zinc-400/80 ring-offset-1 dark:ring-zinc-500 dark:ring-offset-zinc-950',
-                            )
-                          : 'border border-dashed border-zinc-300 bg-white text-zinc-600 hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-900/80 dark:text-zinc-400 dark:hover:bg-zinc-800',
+                        'h-8 w-full pr-2 pl-8',
+                        ADMIN_FILTER_CONTROL_CLASS,
+                        'placeholder:text-muted-foreground',
                       )}
-                    >
-                      {COMPANY_LEAD_STATUS_LABELS[s]}
-                    </button>
-                  );
-                })}
+                    />
+                  </div>
+                </div>
+                <div className="ml-auto flex shrink-0 flex-wrap items-center justify-end gap-1.5">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className={favoritesOnly ? ADMIN_FAVORITES_TOOLBAR_BUTTON_ACTIVE : ADMIN_FAVORITES_TOOLBAR_BUTTON_INACTIVE}
+                    aria-pressed={favoritesOnly}
+                    title={favoritesOnly ? 'Mostrar todos los leads' : 'Solo leads marcados como favoritos'}
+                    onClick={() => setFavoritesOnly((v) => !v)}
+                  >
+                    <Heart
+                      className={cn(
+                        'shrink-0',
+                        favoritesOnly ? 'size-4 fill-white text-white' : 'size-3.5 fill-rose-600 text-rose-600 dark:fill-rose-400 dark:text-rose-400',
+                      )}
+                      aria-hidden
+                    />
+                    <span className="text-[11px] font-semibold">Favoritos</span>
+                  </Button>
+                  <Button variant="ghost" size="sm" type="button" className="shrink-0" onClick={clearFilters}>
+                    Limpiar filtros
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
         </div>
+        </div>
 
-        <div className="mt-2 overflow-hidden rounded-2xl border border-zinc-100 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-950/60 dark:shadow-none">
-          <div className="overflow-x-auto xl:overflow-x-visible">
-            <table className="w-full min-w-0 table-fixed border-collapse text-left text-sm">
+        {/* Panel de tabla: ocupa el alto restante; solo este bloque central hace scroll */}
+        <div className="isolate flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-lg border border-border/70 bg-card shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] dark:border-border/50 dark:bg-muted/20 dark:shadow-none">
+          <div className="relative min-h-0 min-w-0 flex-1 overflow-hidden">
+            <div className="absolute inset-0 overflow-auto overscroll-contain rounded-t-lg">
+            <table className="w-full min-w-0 table-fixed border-collapse text-left text-[12px]">
               <colgroup>
                 <col className="w-[12%]" />
                 <col className="w-[13%]" />
@@ -717,36 +843,68 @@ export default function AppAdminCompanyPage() {
                 <col className="w-[18%]" />
                 <col className="w-[24%]" />
               </colgroup>
-            <thead className="bg-zinc-50/70 text-xs tracking-wide text-zinc-600 uppercase dark:bg-zinc-800/95 dark:text-zinc-400">
+            <thead className="sticky top-0 z-10 border-b border-border/60 bg-muted text-[10px] tracking-[0.05em] text-muted-foreground uppercase dark:bg-muted">
               <tr>
-                <th className="px-3 py-2.5 text-left font-semibold xl:px-5 xl:py-3">Nombre</th>
-                <th className="px-3 py-2.5 text-left font-semibold xl:px-5 xl:py-3">Contacto</th>
-                <th className="px-3 py-2.5 text-left font-semibold xl:px-5 xl:py-3">Empresa</th>
-                <th className="px-3 py-2.5 text-left font-semibold xl:px-5 xl:py-3">Asunto</th>
-                <th className="px-3 py-2.5 text-left font-semibold xl:px-5 xl:py-3">Estado</th>
-                <th className="px-3 py-2.5 text-left font-semibold xl:px-5 xl:py-3">Mensaje</th>
-                <th className="px-3 py-2.5 text-left font-semibold xl:px-5 xl:py-3">Acciones</th>
+                <th className="px-2 py-1.5 text-left font-semibold xl:px-4 xl:py-2">Nombre</th>
+                <th className="px-2 py-1.5 text-left font-semibold xl:px-4 xl:py-2">Contacto</th>
+                <th className="px-2 py-1.5 text-left font-semibold xl:px-4 xl:py-2">Empresa</th>
+                <th className="px-2 py-1.5 text-left font-semibold xl:px-4 xl:py-2">Asunto</th>
+                <th className="px-2 py-1.5 text-left font-semibold xl:px-4 xl:py-2">Estado</th>
+                <th className="px-2 py-1.5 text-left font-semibold xl:px-4 xl:py-2">Mensaje</th>
+                <th className="px-2 py-1.5 text-left font-semibold xl:px-4 xl:py-2">Acciones</th>
               </tr>
             </thead>
             <tbody>
               {paginatedContacts.map((contact) => {
                 const leadEstado = getCompanyLeadStatus(leadStatusOverrides, contact.id);
+                const budgetQ = getChatWidgetBudgetQualification(contact.mensaje);
+                const isFavorite = leadFavoriteIds.has(contact.id);
                 return (
-                <tr key={contact.id} className="border-t border-zinc-100 dark:border-zinc-800">
-                  <td className="align-top min-w-0 px-3 py-3 xl:px-5 xl:py-4">
-                    <div className="flex min-w-0 items-center gap-2 xl:gap-3">
-                      <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-indigo-100 text-xs font-semibold text-[#17304b] xl:size-10 xl:text-sm dark:bg-indigo-950/70 dark:text-indigo-200">
+                <tr
+                  key={contact.id}
+                  className="border-t border-border/55 transition-colors hover:bg-muted/35 dark:hover:bg-muted/20"
+                >
+                  <td
+                    className="align-top min-w-0 py-2 pr-2 pl-2 xl:py-2.5 xl:pr-4 xl:pl-3"
+                    title={
+                      budgetQ === 'qualified'
+                        ? 'Presupuesto: dentro del rango referido ($5k USD/mes o más)'
+                        : budgetQ === 'unqualified'
+                          ? 'Presupuesto: fuera del rango (No + monto mensual indicado)'
+                          : undefined
+                    }
+                  >
+                    <div className="flex min-w-0 items-center gap-2.5">
+                    {budgetQ === 'qualified' || budgetQ === 'unqualified' ? (
+                      <span
+                        className={cn(
+                          'h-10 w-1.5 shrink-0 self-center rounded-full sm:h-11',
+                          'ring-1 ring-inset',
+                          budgetQ === 'qualified'
+                            ? 'bg-emerald-600 ring-white/25 dark:bg-emerald-400 dark:ring-white/15'
+                            : 'bg-red-700 ring-white/25 dark:bg-red-600 dark:ring-white/15',
+                        )}
+                        aria-hidden
+                      />
+                    ) : null}
+                    {budgetQ !== 'unknown' ? (
+                      <span className="sr-only">
+                        {budgetQ === 'qualified'
+                          ? 'Lead calificado por presupuesto'
+                          : 'Lead no calificado por presupuesto'}
+                      </span>
+                    ) : null}
+                    <div className="flex min-w-0 flex-1 items-center gap-1.5 xl:gap-2">
+                      <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-indigo-100 text-[11px] font-semibold text-[#17304b] xl:size-9 xl:text-xs dark:bg-indigo-950/70 dark:text-indigo-200">
                         {leadInitials(contact.nombre)}
                       </div>
-                      <div className="min-w-0">
+                      <div className="min-w-0 flex-1">
                         <p className="truncate font-semibold text-zinc-900 dark:text-zinc-100">{contact.nombre}</p>
-                        <span className="mt-1 inline-block rounded-full bg-zinc-100 px-2 py-0.5 text-[11px] font-medium text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
-                          {contact.fechaSolicitud}
-                        </span>
                       </div>
                     </div>
+                    </div>
                   </td>
-                  <td className="align-top min-w-0 px-3 py-3 xl:px-5 xl:py-4">
+                  <td className="align-top min-w-0 px-2 py-2 xl:px-4 xl:py-2.5">
                     <div className="flex min-w-0 items-center gap-1">
                       <p className="min-w-0 flex-1 truncate text-zinc-800 dark:text-zinc-300" title={contact.correo}>
                         {contact.correo}
@@ -767,18 +925,18 @@ export default function AppAdminCompanyPage() {
                     ) : null}
                     <p className="text-zinc-700 dark:text-zinc-400">{contact.telefono}</p>
                   </td>
-                  <td className="align-top min-w-0 px-3 py-3 xl:px-5 xl:py-4">
+                  <td className="align-top min-w-0 px-2 py-2 xl:px-4 xl:py-2.5">
                     <p className="truncate font-medium text-zinc-900 dark:text-zinc-100" title={contact.empresa}>
                       {contact.empresa}
                     </p>
                   </td>
-                  <td className="align-top min-w-0 px-3 py-3 xl:px-5 xl:py-4">
-                    <span className="inline-block max-w-full truncate rounded-md bg-indigo-50 px-2 py-1 text-xs font-medium text-indigo-700 dark:bg-indigo-950/55 dark:text-indigo-200 dark:ring-1 dark:ring-indigo-800/50">
+                  <td className="align-top min-w-0 px-2 py-2 xl:px-4 xl:py-2.5">
+                    <span className="inline-block max-w-full truncate rounded-md bg-indigo-50 px-1.5 py-0.5 text-[11px] font-medium text-indigo-700 dark:bg-indigo-950/55 dark:text-indigo-200 dark:ring-1 dark:ring-indigo-800/50">
                       {contact.servicio}
                     </span>
                   </td>
-                  <td className="align-top min-w-0 px-3 py-3 xl:px-5 xl:py-4">
-                    <div className="flex min-w-0 items-center gap-2">
+                  <td className="align-top min-w-0 px-2 py-2 xl:px-4 xl:py-2.5">
+                    <div className="flex min-w-0 items-center gap-1.5">
                       <span
                         className={cn(
                           'size-2.5 shrink-0 rounded-full',
@@ -787,24 +945,21 @@ export default function AppAdminCompanyPage() {
                         title={COMPANY_LEAD_STATUS_LABELS[leadEstado]}
                         aria-hidden
                       />
-                      <select
+                      <AdminSelect
                         value={leadEstado}
-                        onChange={(e) =>
-                          updateLeadStatus(contact.id, e.target.value as CompanyLeadStatus)
+                        onValueChange={(v) =>
+                          updateLeadStatus(contact.id, v as CompanyLeadStatus)
                         }
-                        className="h-9 min-w-0 flex-1 rounded-lg border border-zinc-200 bg-white px-2 text-xs text-zinc-900 outline-none focus-visible:ring-2 focus-visible:ring-[#17304b]/20 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100 dark:focus-visible:ring-zinc-500/30"
+                        options={LEAD_STATUS_TABLE_OPTIONS}
                         aria-label={`Estado de ${contact.nombre}`}
-                      >
-                        {COMPANY_LEAD_STATUSES.map((s) => (
-                          <option key={s} value={s}>
-                            {COMPANY_LEAD_STATUS_LABELS[s]}
-                          </option>
-                        ))}
-                      </select>
+                        triggerClassName="h-8 min-w-0 flex-1 text-[11px]"
+                        contentMatchTriggerWidth={false}
+                        contentClassName="min-w-[12rem]"
+                      />
                     </div>
                   </td>
-                  <td className="align-top min-w-0 px-3 py-3 xl:px-5 xl:py-4">
-                    <p className="text-muted-foreground line-clamp-4 min-w-0 text-xs leading-relaxed">
+                  <td className="align-top min-w-0 px-2 py-2 xl:px-4 xl:py-2.5">
+                    <p className="text-muted-foreground line-clamp-3 min-w-0 text-[11px] leading-snug">
                       {contact.mensaje.trim() !== '' ? (
                         contact.mensaje
                       ) : (
@@ -812,30 +967,44 @@ export default function AppAdminCompanyPage() {
                       )}
                     </p>
                   </td>
-                  <td className="align-top min-w-0 px-3 py-3 xl:px-5 xl:py-4">
+                  <td className="align-top min-w-0 px-2 py-2 xl:px-4 xl:py-2.5">
                     <div className="flex min-w-0 flex-wrap items-center justify-end gap-1 xl:flex-nowrap xl:gap-1.5">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon-sm"
+                        className={ADMIN_FAVORITE_ROW_HEART_BUTTON_CLASS}
+                        aria-label={isFavorite ? 'Quitar de favoritos' : 'Marcar como favorito'}
+                        aria-pressed={isFavorite}
+                        onClick={() => toggleLeadFavorite(contact.id)}
+                      >
+                        <Heart
+                          className={ADMIN_FAVORITE_ROW_HEART_ICON_CLASS(isFavorite)}
+                          aria-hidden
+                        />
+                      </Button>
                       <Button
                         type="button"
                         variant="outline"
                         size="sm"
-                        className="h-8 shrink-0 gap-1 border-zinc-300 px-2 text-xs xl:h-9 xl:gap-1.5 xl:px-3 xl:text-sm dark:border-zinc-600 dark:bg-transparent dark:text-zinc-100 dark:hover:bg-zinc-800"
+                        className="h-7 shrink-0 gap-0.5 border-zinc-300 px-1.5 text-[11px] xl:h-8 xl:gap-1 xl:px-2 xl:text-xs dark:border-zinc-600 dark:bg-transparent dark:text-zinc-100 dark:hover:bg-zinc-800"
                         onClick={() => openDetail(contact)}
                       >
-                        <Eye className="size-3.5 shrink-0 xl:size-4" />
+                        <Eye className="size-3 shrink-0 xl:size-3.5" />
                         Ver
                       </Button>
                       <Button
                         type="button"
                         size="sm"
-                        className="h-8 shrink-0 gap-1 bg-[#0b2a55] px-2 text-xs hover:bg-[#0a2347] xl:h-9 xl:gap-1.5 xl:px-3 xl:text-sm dark:bg-sky-900/80 dark:hover:bg-sky-900"
+                        className="h-7 shrink-0 gap-0.5 bg-[#0b2a55] px-1.5 text-[11px] hover:bg-[#0a2347] xl:h-8 xl:gap-1 xl:px-2 xl:text-xs dark:bg-sky-900/80 dark:hover:bg-sky-900"
                         onClick={() => openAssignLead(contact)}
                       >
-                        <UserPlus className="size-3.5 shrink-0 xl:size-4" />
+                        <UserPlus className="size-3 shrink-0 xl:size-3.5" />
                         Asignar
                       </Button>
                       <span
                         className={cn(
-                          'inline-flex size-7 shrink-0 items-center justify-center rounded-full',
+                          'inline-flex size-6 shrink-0 items-center justify-center rounded-full xl:size-7',
                           companyAccessById[contact.id]
                             ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 dark:ring-1 dark:ring-emerald-800/40'
                             : 'bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400',
@@ -847,7 +1016,7 @@ export default function AppAdminCompanyPage() {
                           companyAccessById[contact.id] ? 'Acceso habilitado' : 'Sin acceso'
                         }
                       >
-                        <KeyRound className="size-4" />
+                        <KeyRound className="size-3.5 xl:size-4" />
                       </span>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -904,8 +1073,8 @@ export default function AppAdminCompanyPage() {
               );
               })}
               {filteredContacts.length === 0 && contactsLoad === 'done' ? (
-                <tr className="border-t border-zinc-100 dark:border-zinc-800">
-                  <td colSpan={7} className="px-3 py-6 text-center text-muted-foreground xl:px-5">
+                <tr className="border-t border-border/55">
+                  <td colSpan={7} className="px-3 py-4 text-center text-muted-foreground xl:px-5">
                     {contacts.length === 0
                       ? 'No hay contactos para mostrar.'
                       : 'No hay contactos con los filtros u orden seleccionados.'}
@@ -914,6 +1083,7 @@ export default function AppAdminCompanyPage() {
               ) : null}
             </tbody>
           </table>
+            </div>
           </div>
           <AdminTablePagination
             page={companyPage}
@@ -921,6 +1091,7 @@ export default function AppAdminCompanyPage() {
             pageSize={ADMIN_PAGE_SIZE}
             onPageChange={setCompanyPage}
             nounPlural="leads"
+            className="shrink-0 gap-1 border-border/60 bg-muted/20 px-3 py-2 text-xs sm:flex-row sm:items-center sm:justify-between sm:px-4 dark:bg-muted/10"
           />
         </div>
       </section>
@@ -938,110 +1109,163 @@ export default function AppAdminCompanyPage() {
         }}
       >
         <DialogContent
-          className={cn(
-            'max-h-[90vh] overflow-y-auto',
-            flowStep === 'confirmacion' ? 'sm:max-w-md' : 'sm:max-w-lg',
-          )}
+          useAppDark
           showCloseButton
+          className={cn(
+            flowStep === 'detalle' &&
+              'flex max-h-[min(92svh,900px)] min-h-0 flex-col gap-0 overflow-hidden !p-4 sm:!p-5 sm:max-w-6xl',
+            flowStep === 'prospectos' && 'max-h-[85vh] overflow-y-auto sm:max-w-lg',
+            flowStep === 'confirmacion' && 'max-h-[85vh] overflow-y-auto sm:max-w-md',
+            flowStep === 'exito' && 'max-h-[85vh] overflow-y-auto sm:max-w-lg',
+          )}
         >
           {selected && flowStep === 'detalle' ? (
             <>
-              <DialogHeader>
-                <DialogTitle className="text-xl">{selected.nombre}</DialogTitle>
-                <DialogDescription>{selected.empresa}</DialogDescription>
+              <DialogHeader className="shrink-0 space-y-1 pr-8 text-left">
+                <DialogTitle className="text-lg leading-tight">{selected.nombre}</DialogTitle>
+                <DialogDescription className="line-clamp-1">{selected.empresa}</DialogDescription>
               </DialogHeader>
 
-              <div className="space-y-4 pt-1">
-                <div className="rounded-lg border border-border p-4">
-                  <Label htmlFor="lead-estado-detalle" className="text-xs uppercase tracking-wide text-muted-foreground">
-                    Estado del lead
-                  </Label>
-                  <div className="mt-2 flex items-center gap-2">
-                    <span
-                      className={cn(
-                        'size-2.5 shrink-0 rounded-full',
-                        COMPANY_LEAD_STATUS_DOT_CLASS[
-                          getCompanyLeadStatus(leadStatusOverrides, selected.id)
-                        ],
-                      )}
-                      aria-hidden
-                    />
-                    <select
-                      id="lead-estado-detalle"
-                      value={getCompanyLeadStatus(leadStatusOverrides, selected.id)}
-                      onChange={(e) =>
-                        updateLeadStatus(selected.id, e.target.value as CompanyLeadStatus)
-                      }
-                      className="flex h-10 min-w-0 flex-1 rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900 outline-none focus-visible:ring-2 focus-visible:ring-[#17304b]/20 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100 dark:focus-visible:ring-zinc-500/30"
+              <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-hidden pt-2 lg:flex-row lg:gap-5">
+                <aside className="flex w-full shrink-0 flex-col gap-2 lg:w-[280px] lg:max-w-[300px]">
+                  <div className="rounded-lg border border-border bg-muted/30 p-2.5">
+                    <Label
+                      htmlFor="lead-estado-detalle"
+                      className="text-[10px] uppercase tracking-wide text-muted-foreground"
                     >
-                      {COMPANY_LEAD_STATUSES.map((s) => (
-                        <option key={s} value={s}>
-                          {COMPANY_LEAD_STATUS_LABELS[s]}
-                        </option>
-                      ))}
-                    </select>
+                      Estado del lead
+                    </Label>
+                    <div className="mt-1.5 flex items-center gap-2">
+                      <span
+                        className={cn(
+                          'size-2 shrink-0 rounded-full',
+                          COMPANY_LEAD_STATUS_DOT_CLASS[
+                            getCompanyLeadStatus(leadStatusOverrides, selected.id)
+                          ],
+                        )}
+                        aria-hidden
+                      />
+                      <AdminSelect
+                        id="lead-estado-detalle"
+                        value={getCompanyLeadStatus(leadStatusOverrides, selected.id)}
+                        onValueChange={(v) =>
+                          updateLeadStatus(selected.id, v as CompanyLeadStatus)
+                        }
+                        options={LEAD_STATUS_TABLE_OPTIONS}
+                        aria-label="Estado del lead"
+                        triggerClassName="h-9 min-w-0 flex-1 text-xs"
+                        contentMatchTriggerWidth={false}
+                        contentClassName="min-w-[12rem]"
+                      />
+                    </div>
                   </div>
-                </div>
-                <div className="rounded-lg border border-border bg-muted/40 p-4">
-                  <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                    Asunto
-                  </p>
-                  <p className="mt-1 font-medium text-foreground">{selected.servicio}</p>
-                </div>
+                  <div className="rounded-lg border border-border bg-muted/30 p-2.5">
+                    <p className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+                      Asunto
+                    </p>
+                    <p className="mt-0.5 line-clamp-2 text-sm font-medium leading-snug text-foreground">
+                      {leadDetailWidget.isWidget ? 'Widget de contacto (web)' : selected.servicio}
+                    </p>
+                  </div>
 
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <div className="flex items-start gap-2 rounded-lg border border-border p-3">
-                    <Mail className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
-                    <div className="min-w-0 flex-1">
-                      <p className="text-xs text-muted-foreground">Correo</p>
-                      <p className="break-all text-sm font-medium">{selected.correo}</p>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        className="mt-2 h-8"
-                        onClick={() => copyEmail(selected.correo)}
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-1">
+                    <div className="flex min-h-0 items-start gap-2 rounded-lg border border-border p-2.5">
+                      <Mail className="mt-0.5 size-3.5 shrink-0 text-muted-foreground" />
+                      <div className="min-w-0 flex-1">
+                        <p className="text-[10px] text-muted-foreground">Correo</p>
+                        <p className="truncate text-xs font-medium text-foreground" title={selected.correo}>
+                          {selected.correo}
+                        </p>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="mt-1.5 h-7 gap-1 px-2 text-[11px]"
+                          onClick={() => copyEmail(selected.correo)}
+                        >
+                          <Copy className="size-3" />
+                          {copied ? 'Copiado' : 'Copiar'}
+                        </Button>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-2 rounded-lg border border-border p-2.5">
+                      <Phone className="mt-0.5 size-3.5 shrink-0 text-muted-foreground" />
+                      <div className="min-w-0">
+                        <p className="text-[10px] text-muted-foreground">Teléfono</p>
+                        <p className="truncate text-xs font-medium text-foreground" title={selected.telefono}>
+                          {selected.telefono}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="flex min-h-0 items-start gap-2 rounded-lg border border-border p-2.5">
+                      <Building2 className="mt-0.5 size-3.5 shrink-0 text-muted-foreground" />
+                      <div className="min-w-0">
+                        <p className="text-[10px] text-muted-foreground">Empresa</p>
+                        <p className="truncate text-xs font-medium text-foreground" title={selected.empresa}>
+                          {selected.empresa}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="rounded-lg border border-border p-2.5">
+                      <p className="text-[10px] text-muted-foreground">Fecha</p>
+                      <p className="text-xs font-medium text-foreground">{selected.fechaSolicitud}</p>
+                    </div>
+                  </div>
+                </aside>
+
+                <section className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden border-t border-border pt-3 lg:border-t-0 lg:border-l lg:pl-5 lg:pt-0">
+                  <div className="flex shrink-0 flex-wrap items-center gap-2">
+                    <p className="text-[10px] font-medium tracking-wide text-muted-foreground uppercase">
+                      {leadDetailWidget.isWidget ? 'Cuestionario' : 'Mensaje'}
+                    </p>
+                    {leadDetailWidget.isWidget ? (
+                      <Badge
+                        variant="secondary"
+                        className="text-[9px] font-normal tracking-wide uppercase"
                       >
-                        <Copy className="size-3.5" />
-                        {copied ? 'Copiado' : 'Copiar correo'}
-                      </Button>
+                        Chat en sitio
+                      </Badge>
+                    ) : null}
+                  </div>
+                  {selected.mensaje.trim() === '' ? (
+                    <p className="mt-2 text-xs text-muted-foreground">(sin mensaje enviado)</p>
+                  ) : leadDetailWidget.isWidget && leadDetailWidget.rows.length > 0 ? (
+                    <div className="mt-2 grid min-h-0 auto-rows-min grid-cols-2 gap-1.5 overflow-hidden 2xl:grid-cols-3">
+                      {leadDetailWidget.rows.map((row, idx) => {
+                        const val = row.value.trim() !== '' ? row.value : '—';
+                        return (
+                          <div
+                            key={`${idx}-${row.label}`}
+                            className="rounded-md border border-border bg-muted/20 px-2 py-1.5"
+                          >
+                            <p className="text-[10px] font-medium leading-tight text-muted-foreground">
+                              {row.label}
+                            </p>
+                            <p
+                              className="mt-0.5 line-clamp-2 text-xs font-medium text-foreground"
+                              title={val}
+                            >
+                              {val}
+                            </p>
+                          </div>
+                        );
+                      })}
                     </div>
-                  </div>
-                  <div className="flex items-start gap-2 rounded-lg border border-border p-3">
-                    <Phone className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
-                    <div>
-                      <p className="text-xs text-muted-foreground">Telefono</p>
-                      <p className="text-sm font-medium">{selected.telefono}</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-2 rounded-lg border border-border p-3">
-                  <Building2 className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
-                  <div>
-                    <p className="text-xs text-muted-foreground">Empresa</p>
-                    <p className="text-sm font-medium">{selected.empresa}</p>
-                  </div>
-                </div>
-
-                <div className="rounded-lg border border-border p-3">
-                  <p className="text-xs text-muted-foreground">Fecha de recepción</p>
-                  <p className="text-sm font-medium">{selected.fechaSolicitud}</p>
-                </div>
-
-                <div>
-                  <p className="text-xs font-medium text-muted-foreground">Mensaje (formulario)</p>
-                  <p className="mt-2 rounded-md bg-muted/80 px-3 py-2.5 text-sm leading-relaxed text-foreground">
-                    {selected.mensaje.trim() !== '' ? (
-                      selected.mensaje
-                    ) : (
-                      <span className="text-muted-foreground">(sin mensaje enviado)</span>
-                    )}
-                  </p>
-                </div>
+                  ) : (
+                    <p
+                      className="mt-2 line-clamp-[10] rounded-md border border-border bg-muted/30 px-2 py-1.5 text-xs leading-snug break-words whitespace-pre-wrap text-foreground"
+                      title={selected.mensaje}
+                    >
+                      {selected.mensaje}
+                    </p>
+                  )}
+                </section>
               </div>
 
-              <DialogFooter>
+              <DialogFooter className="mt-2 shrink-0 border-t border-border pt-3">
                 <Button
                   type="button"
                   className="w-full bg-[#0b2a55] hover:bg-[#0a2347] dark:bg-sky-900/90 dark:hover:bg-sky-900 sm:w-auto"
@@ -1255,7 +1479,7 @@ export default function AppAdminCompanyPage() {
           setCompanyAccessDialog((prev) => ({ ...prev, open }));
         }}
       >
-        <DialogContent className="max-w-md">
+        <DialogContent useAppDark className="max-w-md">
           <DialogHeader>
             <DialogTitle>{companyAccessDialog.title}</DialogTitle>
           </DialogHeader>
@@ -1289,6 +1513,7 @@ export default function AppAdminCompanyPage() {
           </div>
         </DialogContent>
       </Dialog>
+      </div>
     </AppShell>
   );
 }

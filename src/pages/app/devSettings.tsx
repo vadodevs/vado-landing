@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { AppShell } from '@/components/layout/app/AppShell';
@@ -11,17 +11,13 @@ import { devAuthorizedFetch, getDevAccessToken } from '@/lib/devAuth';
 
 export default function AppDevSettings() {
   const { t } = useTranslation();
-  const [themeMode, setThemeMode] = useState<AppThemeMode>('light');
+  const [themeMode, setThemeMode] = useState<AppThemeMode>(() => getStoredAppTheme());
   const [newPassword, setNewPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [savingPassword, setSavingPassword] = useState(false);
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const [passwordSuccess, setPasswordSuccess] = useState<string | null>(null);
   const apiBase = String(import.meta.env.VITE_API_BASE_URL ?? '').trim().replace(/\/$/, '');
-
-  useEffect(() => {
-    setThemeMode(getStoredAppTheme());
-  }, []);
 
   const changePassword = () => {
     const pw = newPassword.trim();

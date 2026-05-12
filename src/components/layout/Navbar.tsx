@@ -34,7 +34,7 @@ const serviciosPaths = [
   { path: '/services/custom-software', labelKey: 'nav.customSoftware' as const },
   { path: '/services/ai-solutions', labelKey: 'nav.aiSolutions' as const },
   { path: '/services/staff-augmentation', labelKey: 'nav.staffAugmentation' as const },
-  { path: '/services/developers-on-demand', labelKey: 'nav.developersOnDemand' as const },
+  { path: '/services/it-staff-agumentation', labelKey: 'nav.developersOnDemand' as const },
 ];
 
 const companiaPaths = [

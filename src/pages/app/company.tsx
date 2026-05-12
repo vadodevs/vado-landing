@@ -39,23 +39,23 @@ export default function AppCompanyPage() {
       description={t('seo.appCompany')}
     >
       <section id="profile" className="scroll-mt-24">
-        <h2 className="mb-2 text-2xl font-semibold text-foreground">Contactos de Compañias</h2>
-        <p className="mb-5 max-w-prose text-muted-foreground">
+        <h2 className="mb-1 text-xl font-semibold text-foreground">Contactos de compañías</h2>
+        <p className="mb-3 max-w-prose text-sm text-muted-foreground">
           Lista de contactos interesados en servicios de Vado.
         </p>
 
-        <div className="space-y-4">
+        <div className="space-y-2">
           {companyContacts.map((contact) => (
             <article
               key={`${contact.correo}-${contact.telefono}`}
-              className="rounded-xl border border-border bg-card p-4 shadow-sm"
+              className="rounded-lg border border-border bg-card p-3 shadow-sm"
             >
-              <p className="text-sm font-medium text-primary">{contact.servicio}</p>
-              <h3 className="mt-1 text-lg font-semibold text-foreground">{contact.nombre}</h3>
-              <p className="text-sm text-muted-foreground">{contact.correo}</p>
-              <p className="text-sm text-muted-foreground">{contact.empresa}</p>
-              <p className="text-sm text-muted-foreground">{contact.telefono}</p>
-              <p className="mt-3 rounded-md bg-muted px-3 py-2 text-sm text-muted-foreground">
+              <p className="text-xs font-medium text-primary">{contact.servicio}</p>
+              <h3 className="mt-0.5 text-base font-semibold text-foreground">{contact.nombre}</h3>
+              <p className="text-xs text-muted-foreground">{contact.correo}</p>
+              <p className="text-xs text-muted-foreground">{contact.empresa}</p>
+              <p className="text-xs text-muted-foreground">{contact.telefono}</p>
+              <p className="mt-2 rounded-md bg-muted px-2 py-1.5 text-xs text-muted-foreground">
                 {contact.mensaje}
               </p>
             </article>

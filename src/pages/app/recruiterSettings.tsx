@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AppShell } from '@/components/layout/app/AppShell';
 import { AppThemeSettingsCard } from '@/components/app/AppThemeSettingsCard';
@@ -6,11 +6,7 @@ import { getStoredAppTheme, type AppThemeMode } from '@/lib/appTheme';
 
 export default function AppRecruiterSettings() {
   const { t } = useTranslation();
-  const [themeMode, setThemeMode] = useState<AppThemeMode>('light');
-
-  useEffect(() => {
-    setThemeMode(getStoredAppTheme());
-  }, []);
+  const [themeMode, setThemeMode] = useState<AppThemeMode>(() => getStoredAppTheme());
 
   return (
     <AppShell
