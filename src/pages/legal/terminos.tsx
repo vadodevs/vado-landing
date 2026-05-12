@@ -49,11 +49,7 @@ export default function TerminosDelServicio() {
         pathWithoutLang="/info/terms-of-service"
       />
       <MainLayout>
-        <main
-          id="main-content"
-          className="bg-background py-12 md:py-16 lg:py-20"
-          aria-label={TERMS_TITLE}
-        >
+        <div className="bg-background py-12 md:py-16 lg:py-20">
           <CenterContainer>
             <article
               className="flex flex-col gap-10"
@@ -1111,7 +1107,7 @@ export default function TerminosDelServicio() {
               </section>
             </article>
           </CenterContainer>
-        </main>
+        </div>
       </MainLayout>
     </>
   );

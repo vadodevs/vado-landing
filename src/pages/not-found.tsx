@@ -9,7 +9,7 @@ export const NotFound = () => {
   const { path } = useLocale();
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-white px-4">
+    <main id="main-content" className="flex min-h-screen flex-col items-center justify-center bg-white px-4">
       <PageTitle title={t('notFound.title')} />
       <div className="flex flex-col items-center gap-2 text-center">
         <p className="text-6xl font-bold text-primary sm:text-7xl md:text-8xl">

@@ -31,7 +31,7 @@ export function MaggioreCasePage() {
       />
 
       <CenterContainer className="flex flex-col gap-10 lg:flex-row lg:items-start lg:gap-12">
-        <main className="min-w-0 flex-1">
+        <div className="min-w-0 flex-1">
           <MaggioreOverviewSection />
           <img
             src="/case-studies/maggiore/maggiore-slide1.webp"
@@ -52,7 +52,7 @@ export function MaggioreCasePage() {
           />
           <MaggioreResultsSection />
           <CaseStudyCtaSection caseStudyId="maggiore" accentColor={MAGGIORE_ACCENT} />
-        </main>
+        </div>
         <aside className="w-full shrink-0 pb-4 lg:w-80 lg:self-stretch">
           <MaggioreProjectSidebar />
         </aside>

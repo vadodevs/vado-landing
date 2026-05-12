@@ -32,7 +32,7 @@ export function SenderoCasePage() {
       />
 
       <CenterContainer className="flex flex-col gap-10 lg:flex-row lg:items-start lg:gap-12">
-        <main className="min-w-0 flex-1">
+        <div className="min-w-0 flex-1">
           <SenderoOverviewSection />
           <img
             src="/case-studies/sendero-crm/sendero-slide1.webp"
@@ -53,7 +53,7 @@ export function SenderoCasePage() {
           />
           <SenderoResultsSection />
           <CaseStudyCtaSection caseStudyId="sendero" accentColor={SENDERO_ACCENT} />
-        </main>
+        </div>
         <aside className="w-full shrink-0 pb-4 lg:w-80 lg:self-stretch">
           <SenderoProjectSidebar />
         </aside>

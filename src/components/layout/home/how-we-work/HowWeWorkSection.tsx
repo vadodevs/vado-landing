@@ -29,7 +29,7 @@ export function HowWeWorkSection() {
   const { path } = useLocale();
 
   return (
-    <section className="border-t border-neutral-200 bg-white py-14 md:py-20 lg:py-24">
+    <section className="bg-white py-14 md:py-20 lg:py-24">
       <CenterContainer>
         <div className="mx-auto max-w-6xl">
           <div className="text-center">

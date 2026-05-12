@@ -32,7 +32,7 @@ export function CipresesCasePage() {
       />
 
       <CenterContainer className="flex flex-col gap-10 lg:flex-row lg:items-start lg:gap-12">
-        <main className="min-w-0 flex-1">
+        <div className="min-w-0 flex-1">
           <CipresesOverviewSection />
           <img
             src="/case-studies/criadero-cipreses/criadero-slide1.webp"
@@ -53,7 +53,7 @@ export function CipresesCasePage() {
           />
           <CipresesResultsSection />
           <CaseStudyCtaSection caseStudyId="cipreses" accentColor={CIPRESES_ACCENT} />
-        </main>
+        </div>
         <aside className="w-full shrink-0 pb-4 lg:w-80 lg:self-stretch">
           <CipresesProjectSidebar />
         </aside>

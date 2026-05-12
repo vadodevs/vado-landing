@@ -36,7 +36,7 @@ export function EbmCasePage() {
       />
 
       <CenterContainer className="flex flex-col gap-10 lg:flex-row lg:items-start lg:gap-12">
-        <main className="min-w-0 flex-1">
+        <div className="min-w-0 flex-1">
           <EbmOverviewSection />
           <img
             src="/case-studies/ebm/ebm-slide1.webp"
@@ -57,7 +57,7 @@ export function EbmCasePage() {
           />
           <EbmResultsSection />
           <CaseStudyCtaSection caseStudyId="ebm" accentColor={EBM_ACCENT} />
-        </main>
+        </div>
         <aside className="w-full shrink-0 pb-4 lg:w-80 lg:self-stretch">
           <EbmProjectSidebar />
         </aside>

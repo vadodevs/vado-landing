@@ -37,6 +37,9 @@ export type ServiceTabsSectionProps = {
   variant?: 'default' | 'imageHero';
   /** Imagen de fondo cuando se usa la variante imageHero */
   backgroundImageSrc?: string;
+  /** Ratio intrínseco para CLS (Lighthouse); obligatorio si hay `backgroundImageSrc`. */
+  backgroundImageWidth?: number;
+  backgroundImageHeight?: number;
 };
 
 export function ServiceTabsSection({
@@ -51,6 +54,8 @@ export function ServiceTabsSection({
   disableTabTextSelection,
   variant = 'default',
   backgroundImageSrc,
+  backgroundImageWidth,
+  backgroundImageHeight,
 }: ServiceTabsSectionProps) {
   const { path } = useLocale();
   const [activeTab, setActiveTab] = useState<string>(tabs[0]?.id ?? '');
@@ -121,6 +126,11 @@ export function ServiceTabsSection({
                     <img
                       src={backgroundImageSrc}
                       alt=""
+                      width={backgroundImageWidth}
+                      height={backgroundImageHeight}
+                      loading="lazy"
+                      decoding="async"
+                      fetchPriority="low"
                       className="h-full w-full object-cover object-center"
                       aria-hidden
                     />
@@ -137,7 +147,11 @@ export function ServiceTabsSection({
                       <p className="mt-3 text-base leading-relaxed text-white/90 md:text-lg">
                         {tabs.find((t) => t.id === activeTab)?.description}
                       </p>
-                      <Link href={path(ctaHref)} className="mt-6 inline-block">
+                      <Link
+                        href={path(ctaHref)}
+                        className="mt-6 inline-block"
+                        aria-label={ctaText}
+                      >
                         <Button
                           size="lg"
                           className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg px-6 py-5 text-sm font-bold md:text-base"
@@ -171,7 +185,11 @@ export function ServiceTabsSection({
                       <p className="mt-3 text-base leading-relaxed text-white/90 md:text-lg">
                         {tabs.find((t) => t.id === activeTab)?.description}
                       </p>
-                      <Link href={path(ctaHref)} className="mt-6 inline-block">
+                      <Link
+                        href={path(ctaHref)}
+                        className="mt-6 inline-block"
+                        aria-label={ctaText}
+                      >
                         <Button
                           size="lg"
                           className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg px-6 py-5 text-sm font-bold md:text-base"

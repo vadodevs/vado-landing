@@ -1,16 +1,22 @@
+import { Suspense } from 'react';
 import { useParams } from 'wouter';
-import { ARTICULO_PAGES } from './articleRegistry';
+import { RoutePageFallback } from '@/components/layout/RoutePageFallback';
+import { ARTICULO_LAZY_PAGES, isArticuloSlug } from './articleRegistry';
 import { NotFound } from '@/pages/not-found';
 
 export default function ArticleRouter() {
   const params = useParams<{ articleName?: string }>();
   const articleName = params?.articleName ?? '';
 
-  const ArticlePage = articleName ? ARTICULO_PAGES[articleName] : undefined;
-
-  if (!ArticlePage) {
+  if (!isArticuloSlug(articleName)) {
     return <NotFound />;
   }
 
-  return <ArticlePage />;
+  const ArticlePage = ARTICULO_LAZY_PAGES[articleName];
+
+  return (
+    <Suspense fallback={<RoutePageFallback />}>
+      <ArticlePage />
+    </Suspense>
+  );
 }

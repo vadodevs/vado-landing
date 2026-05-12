@@ -14,7 +14,8 @@
     "contactUs": "Contáctanos",
     "menu": "Menú",
     "openMenu": "Abrir menú",
-    "closeMenu": "Cerrar menú"
+    "closeMenu": "Cerrar menú",
+    "logoHome": "Vado Devs — Inicio"
   },
   "seo": {
     "home": "Vado Devs: software a la medida, desarrollo web, apps y soluciones digitales. Llevamos tu negocio del reto al resultado.",
@@ -970,6 +971,7 @@
       "ctaButton": "Hablemos"
     },
     "nearshoreBento": {
+      "a11yHeading": "Detalle de beneficios nearshore",
       "kicker": "Staff augmentation",
       "title": "Beneficios nearshore que se acumulan con el tiempo",
       "subtitle": "Cinco razones concretas para sumar talento LATAM con Vado—pensado para encajar con equipos en EE. UU.",
@@ -998,14 +1000,14 @@
       "card2Description": "Nuestro software personalizado está diseñado para crecer e integrarse contigo. Simplificamos tus procesos y acompañamos la evolución de tu negocio con soluciones escalables y eficientes listas para trabajar.",
       "card3Title": "Tecnología Innovadora con Protección Garantizada",
       "card3Description": "Software de alto rendimiento con seguridad incorporada para proteger tu negocio.",
-      "moreInfo": "Más Información",
+      "moreInfo": "Explorar software a la medida",
       "bgAlt": "Fondo decorativo"
     },
     "aiSolutions": {
       "label": "SOLUCIONES DE IA",
       "title": "Soluciones de IA que se adaptan a tu negocio",
       "description": "Impulsamos tu negocio con soluciones de inteligencia artificial diseñadas para automatizar tareas, mejorar la atención al cliente, analizar grandes volúmenes de datos y tomar decisiones más inteligentes.",
-      "moreInfo": "Más Información",
+      "moreInfo": "Explorar soluciones de IA",
       "startProject": "Empecemos tu proyecto",
       "bgAlt": "Fondo decorativo",
       "mockupImageAlt": "Mockup de landing de soluciones de IA"
@@ -1021,7 +1023,7 @@
       "label": "NUESTROS CLIENTES",
       "titlePart1": "Historias reales",
       "titlePart2": "Impacto real",
-      "moreInfo": "Más Información",
+      "moreInfo": "Ver casos y portafolio",
       "startProject": "Empecemos tu proyecto",
       "items": {
         "1": {
@@ -1048,7 +1050,7 @@
       "label": "AMPLIACIÓN DE PERSONAL",
       "title": "Fortalece tu equipo con talento especializado",
       "description": "Ofrecemos soluciones de ampliación de personal diseñadas para tus necesidades únicas.",
-      "moreInfo": "Más información",
+      "moreInfo": "Conocer ampliación de personal",
       "startProject": "Empecemos tu proyecto",
       "imageAlt": "Equipo trabajando en espacio de coworking"
     },
@@ -1091,7 +1093,7 @@
       "titlePart1": "Soluciones tecnológicas",
       "titlePart2": "alineadas a tus objetivos",
       "description": "Nos integramos con tu forma de trabajar para que obtengas resultados sin complicaciones. Desde entender tu necesidad, implementarla y dar soporte. Al finalizar, el código te pertenece, dándote control total sobre tu solución.",
-      "moreInfo": "Más Información",
+      "moreInfo": "Cómo entregamos software a la medida",
       "startProject": "Empecemos tu proyecto",
       "mainIconAlt": "Alianza y colaboración",
       "sub1IconAlt": "Evolución y mejora continua",
@@ -1134,7 +1136,8 @@
       "description": "Ofrecemos consultoría gratuita para explorar cómo Vado Devs puede impulsar tu proyecto.",
       "benefit1": "Evaluación gratuita de talento y necesidades",
       "benefit2": "Estrategia personalizada para tu proyecto",
-      "benefit3": "Acceso directo a especialistas Vado"
+      "benefit3": "Acceso directo a especialistas Vado",
+      "loadingForm": "Cargando formulario de contacto"
     },
     "ctaContact": {
       "titlePart1": "¡TODA GRAN RELACIÓN",
@@ -1410,7 +1413,7 @@
         "label": "Nuestros clientes",
         "titlePart1": "Historias reales",
         "titlePart2": "Impacto real",
-        "moreInfo": "Más información",
+        "moreInfo": "Ver casos y portafolio",
         "startProject": "Empecemos tu proyecto",
         "insightsLabel": "Vado Insights",
         "items": {

@@ -32,6 +32,8 @@ export function SoftwareTabsSection() {
       disableTabTextSelection
       variant="imageHero"
       backgroundImageSrc="/team-vado/vado-team-23.webp"
+      backgroundImageWidth={1200}
+      backgroundImageHeight={800}
     />
   );
 }

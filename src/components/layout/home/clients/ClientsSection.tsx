@@ -22,6 +22,10 @@ function TestimonialAvatar({
       <img
         src={src}
         alt={alt}
+        width={40}
+        height={40}
+        loading="lazy"
+        decoding="async"
         className="h-8 w-8 shrink-0 rounded-full object-cover md:h-10 md:w-10"
       />
     );
@@ -45,19 +49,25 @@ export function ClientsSection() {
     <section className="relative -mt-24 overflow-visible bg-white pt-24 pb-12 md:-mt-32 md:pt-32 md:pb-16 lg:-mt-40 lg:pt-40 lg:pb-20">
       {/* Fondo onda: cubre toda la section y se extiende sobre la section de arriba */}
       <div className="absolute inset-0 overflow-hidden">
-        <img
-          src="/backgrounds/bg-cut.webp"
-          alt=""
-          loading="lazy"
-          className="pointer-events-none absolute -top-1/3 left-0 h-[140%] w-full object-cover object-top"
-          aria-hidden
-        />
+      <img
+        src="/backgrounds/bg-cut.webp"
+        alt=""
+        width={1600}
+        height={807}
+        loading="lazy"
+        decoding="async"
+        className="pointer-events-none absolute -top-1/3 left-0 h-[140%] w-full object-cover object-top"
+        aria-hidden
+      />
       </div>
 
       <img
         src="/backgrounds/decoration-blue.webp"
         alt=""
+        width={1478}
+        height={1856}
         loading="lazy"
+        decoding="async"
         className="pointer-events-none absolute top-1/4 right-0 h-auto w-[200px] max-w-[40%] opacity-80 md:w-[240px] lg:top-1/5 lg:w-[280px]"
         aria-hidden
       />

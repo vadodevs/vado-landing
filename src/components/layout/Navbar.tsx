@@ -1,213 +1,13 @@
-import { useLayoutEffect, useRef, useState } from 'react';
+import { lazy, Suspense, useLayoutEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'wouter';
 import { useTranslation } from 'react-i18next';
-import { Menu, X } from 'lucide-react';
 import { VadoLogo } from '@/assets/vado-logo';
-import { Button } from '@/components/ui/button';
 import { CenterContainer } from '@/components/layout/CenterContainer';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion';
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from '@/components/ui/drawer';
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-} from '@/components/ui/navigation-menu';
 import { cn } from '@/lib/utils';
 import { useLocale } from '@/hooks/useLocale';
 
-const serviciosPaths = [
-  { path: '/services/custom-software', labelKey: 'nav.customSoftware' as const },
-  { path: '/services/ai-solutions', labelKey: 'nav.aiSolutions' as const },
-  { path: '/services/staff-augmentation', labelKey: 'nav.staffAugmentation' as const },
-];
-
-const companiaPaths = [
-  { path: '/company/vado-insights', labelKey: 'nav.vadoInsights' as const },
-  { path: '/company/culture-and-talent', labelKey: 'nav.cultureAndTalent' as const },
-];
-
-function NavLink({
-  href,
-  children,
-  onClick,
-  className,
-  exact,
-}: {
-  href: string;
-  children: React.ReactNode;
-  onClick?: () => void;
-  className?: string;
-  exact?: boolean;
-}) {
-  const [location] = useLocation();
-  const base = href.replace(/\/$/, '') || '/';
-  const locationNorm = location.replace(/\/$/, '') || '/';
-  const isActiveRoute = exact
-    ? locationNorm === base
-    : locationNorm === base || (base !== '/' && locationNorm.startsWith(base + '/'));
-
-  return (
-    <Link
-      href={href}
-      onClick={onClick}
-      className={cn(
-        'text-foreground hover:text-primary text-lg font-medium transition-colors',
-        isActiveRoute && 'text-primary',
-        className,
-      )}
-    >
-      {children}
-    </Link>
-  );
-}
-
-function LangSwitcher({ className, overlay }: { className?: string; overlay?: boolean }) {
-  const { locale } = useLocale();
-  const [location] = useLocation();
-  const enPath = location.replace(/^\/[^/]+/, '/en');
-  const esPath = location.replace(/^\/[^/]+/, '/es');
-
-  const inactive = overlay
-    ? 'text-white/75 hover:text-white'
-    : 'text-muted-foreground hover:text-foreground';
-
-  return (
-    <div className={cn('flex items-center gap-1 text-sm', className)}>
-      <Link
-        href={enPath}
-        className={cn(
-          'rounded px-2 py-1 font-medium transition-colors',
-          locale === 'en' ? 'text-primary font-semibold' : inactive,
-        )}
-      >
-        EN
-      </Link>
-      <span className={cn(overlay ? 'text-white/35' : 'text-muted-foreground')}>|</span>
-      <Link
-        href={esPath}
-        className={cn(
-          'rounded px-2 py-1 font-medium transition-colors',
-          locale === 'es' ? 'text-primary font-semibold' : inactive,
-        )}
-      >
-        ES
-      </Link>
-    </div>
-  );
-}
-
-function MobileMenuContent({ onLinkClick }: { onLinkClick?: () => void }) {
-  const { t } = useTranslation();
-  const { path } = useLocale();
-  const [location] = useLocation();
-  const loc = location.replace(/\/$/, '') || '/';
-  const isServiciosActive = loc.startsWith(path('/services'));
-  const isCompaniaActive = loc.startsWith(path('/company'));
-
-  return (
-    <nav className="flex flex-1 flex-col overflow-y-auto">
-      <div className="space-y-0 px-4 py-2">
-        <NavLink
-          href={path('')}
-          onClick={onLinkClick}
-          exact
-          className="block rounded-lg py-3.5 text-base font-medium"
-        >
-          {t('nav.home')}
-        </NavLink>
-
-        <Accordion type="single" collapsible className="w-full px-0">
-          <AccordionItem value="servicios" className="border-border border-b">
-            <AccordionTrigger
-              className={cn(
-                'text-foreground hover:text-primary data-[state=open]:text-primary py-3.5 text-base font-medium hover:no-underline',
-                isServiciosActive && 'text-primary font-semibold',
-              )}
-            >
-              {t('nav.services')}
-            </AccordionTrigger>
-            <AccordionContent>
-              <ul className="space-y-0.5 pb-2">
-                {serviciosPaths.map(({ path: p, labelKey }) => (
-                  <li key={p}>
-                    <NavLink
-                      href={path(p)}
-                      onClick={onLinkClick}
-                      className="block rounded-lg py-2.5 pl-3 text-[15px]"
-                    >
-                      {t(labelKey)}
-                    </NavLink>
-                  </li>
-                ))}
-              </ul>
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
-
-        <div className="border-border border-b">
-          <NavLink
-            href={path('/our-work')}
-            onClick={onLinkClick}
-            className="block rounded-lg py-3.5 text-base font-medium"
-          >
-            {t('nav.ourWork')}
-          </NavLink>
-        </div>
-
-        <Accordion type="single" collapsible className="w-full px-0">
-          <AccordionItem value="compania" className="border-border border-b">
-            <AccordionTrigger
-              className={cn(
-                'text-foreground hover:text-primary data-[state=open]:text-primary py-3.5 text-base font-medium hover:no-underline',
-                isCompaniaActive && 'text-primary font-semibold',
-              )}
-            >
-              {t('nav.company')}
-            </AccordionTrigger>
-            <AccordionContent>
-              <ul className="space-y-0.5 pb-2">
-                {companiaPaths.map(({ path: p, labelKey }) => (
-                  <li key={p}>
-                    <NavLink
-                      href={path(p)}
-                      onClick={onLinkClick}
-                      className="block rounded-lg py-2.5 pl-3 text-[15px]"
-                    >
-                      {t(labelKey)}
-                    </NavLink>
-                  </li>
-                ))}
-              </ul>
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
-      </div>
-
-      <div className="border-border mt-auto border-t p-4">
-        <Link href={path('/contact')} onClick={onLinkClick} className="block">
-          <Button className="h-12 w-full rounded-xl text-base font-semibold" size="lg">
-            {t('nav.contactUs')}
-          </Button>
-        </Link>
-      </div>
-    </nav>
-  );
-}
+const NavbarMobileBundle = lazy(() => import('@/components/layout/NavbarMobileBundle'));
+const NavbarDesktopBundle = lazy(() => import('@/components/layout/NavbarDesktopBundle'));
 
 const SCROLL_ELEVATE_PX = 8;
 /** Cuánto se mueve el navbar respecto al delta de scroll (0–1): más bajo = más “poco a poco” */
@@ -234,23 +34,14 @@ export function Navbar() {
   );
   const [navHiddenReduced, setNavHiddenReduced] = useState(false);
   const [navHeaderHeight, setNavHeaderHeight] = useState(88);
+  /** Synced with ResizeObserver; read during scroll/resize to avoid forced layout (offsetHeight). */
+  const navHeaderHeightRef = useRef(88);
   const headerRef = useRef<HTMLElement>(null);
   const lastScrollY = useRef(0);
   const { t } = useTranslation();
   const { path } = useLocale();
   const [location] = useLocation();
-  const loc = location.replace(/\/$/, '') || '/';
   const homePath = path('');
-  const isHomeActive = loc === homePath.replace(/\/$/, '') || loc === '/';
-  const nuestroTrabajoPath = path('/our-work');
-  const isNuestroTrabajoActive =
-    loc === nuestroTrabajoPath || loc.startsWith(nuestroTrabajoPath + '/');
-  const serviciosBase = path('/services');
-  const isServiciosActive = loc.startsWith(serviciosBase);
-  const companiaBase = path('/company');
-  const isCompaniaActive = loc.startsWith(companiaBase);
-  const contactoPath = path('/contact');
-  const isContactoActive = loc === contactoPath;
 
   const overlay = !elevated;
 
@@ -272,9 +63,14 @@ export function Navbar() {
   useLayoutEffect(() => {
     const el = headerRef.current;
     if (!el) return;
-    const ro = new ResizeObserver(() => setNavHeaderHeight(el.offsetHeight));
+    const syncHeight = () => {
+      const h = el.offsetHeight;
+      navHeaderHeightRef.current = h;
+      setNavHeaderHeight(h);
+    };
+    const ro = new ResizeObserver(syncHeight);
     ro.observe(el);
-    setNavHeaderHeight(el.offsetHeight);
+    syncHeight();
     return () => ro.disconnect();
   }, [location]);
 
@@ -292,8 +88,6 @@ export function Navbar() {
         setElevated(false);
       }
     }
-
-    const headerHeight = () => headerRef.current?.offsetHeight ?? 80;
 
     const onScroll = () => {
       const y = window.scrollY;
@@ -351,7 +145,7 @@ export function Navbar() {
         return;
       }
 
-      const h = headerHeight();
+      const h = navHeaderHeightRef.current;
 
       if (delta > 0) {
         setRevealTransition(false);
@@ -368,7 +162,7 @@ export function Navbar() {
         setNavHiddenReduced(false);
         return;
       }
-      const h = headerHeight();
+      const h = navHeaderHeightRef.current;
       setNavOffsetY((off) => Math.min(0, Math.max(off, -h)));
     };
 
@@ -426,178 +220,44 @@ export function Navbar() {
       )}
     >
       <CenterContainer className="flex h-14 items-center justify-between">
-        <Link href={homePath} className="flex shrink-0 size-28 items-center">
+        <Link
+          href={homePath}
+          className="flex shrink-0 size-28 items-center"
+          aria-label={t('nav.logoHome')}
+        >
           <VadoLogo white={overlay} />
         </Link>
 
-        <div className="flex items-center gap-2 lg:hidden">
-          <LangSwitcher className="shrink-0" overlay={overlay} />
-          <Drawer open={drawerOpen} onOpenChange={setDrawerOpen} direction="right">
-            <DrawerTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                aria-label={t('nav.openMenu')}
-                className={cn(
-                  overlay &&
-                    'text-white hover:bg-white/10 hover:text-white focus-visible:ring-white/40',
-                )}
-              >
-                <Menu className="size-6" />
-              </Button>
-            </DrawerTrigger>
-            <DrawerContent className="border-border bg-background flex h-full max-h-dvh w-[min(85vw,320px)] flex-col rounded-none border-l shadow-xl [&>div:first-child]:hidden">
-              <DrawerHeader className="flex shrink-0 flex-row items-center justify-between gap-4 px-5 py-4">
-                <DrawerTitle className="sr-only">{t('nav.menu')}</DrawerTitle>
-                <Link
-                  href={homePath}
-                  onClick={() => setDrawerOpen(false)}
-                  className="flex shrink-0 items-center"
-                >
-                  <VadoLogo />
-                </Link>
-                <DrawerClose asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    aria-label={t('nav.closeMenu')}
-                    className="rounded-full"
-                  >
-                    <X className="size-5" />
-                  </Button>
-                </DrawerClose>
-              </DrawerHeader>
-              <MobileMenuContent onLinkClick={() => setDrawerOpen(false)} />
-            </DrawerContent>
-          </Drawer>
-        </div>
-
-        <div className="hidden flex-1 items-center justify-end gap-1 lg:flex">
-          <NavigationMenu viewport={false} className="max-w-none justify-end">
-            <NavigationMenuList className="gap-1">
-              <NavigationMenuItem>
-                <NavigationMenuLink asChild>
-                  <Link
-                    href={homePath}
-                    className={cn(
-                      'inline-flex h-9 w-max items-center justify-center rounded-lg bg-transparent px-4 py-2 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
-                      overlay
-                        ? 'text-white hover:text-white/90 focus:text-white focus-visible:ring-white/40 focus-visible:ring-offset-transparent'
-                        : 'text-foreground hover:text-primary focus:text-primary focus-visible:ring-ring/50',
-                      isHomeActive && 'text-primary font-semibold',
-                    )}
-                  >
-                    {t('nav.home')}
-                  </Link>
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <NavigationMenuTrigger
-                  className={cn(
-                    'hover:bg-transparent focus:bg-transparent data-[state=open]:bg-transparent',
-                    overlay &&
-                      'text-white hover:text-white/90 hover:bg-white/10 focus:bg-white/10 focus:text-white data-[state=open]:text-white data-[state=open]:bg-white/10 [&_svg]:text-white',
-                    !overlay &&
-                      'data-[state=open]:text-primary data-[state=open]:bg-transparent',
-                    isServiciosActive && 'text-primary font-semibold',
-                  )}
-                >
-                  {t('nav.services')}
-                </NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <ul className="grid min-w-56 gap-0.5 px-2 py-1">
-                    {serviciosPaths.map(({ path: p, labelKey }) => {
-                      const href = path(p);
-                      const isActive = loc === href || loc.startsWith(href + '/');
-                      return (
-                        <li key={p}>
-                          <NavigationMenuLink asChild>
-                            <Link
-                              href={href}
-                              className={cn(
-                                'text-foreground hover:text-primary focus:text-primary block rounded-lg px-3 py-2 text-sm no-underline transition-colors outline-none select-none focus:outline-none',
-                                isActive && 'text-primary font-semibold',
-                              )}
-                            >
-                              {t(labelKey)}
-                            </Link>
-                          </NavigationMenuLink>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <NavigationMenuLink asChild>
-                  <Link
-                    href={path('/our-work')}
-                    className={cn(
-                      'inline-flex h-9 w-max items-center justify-center rounded-lg bg-transparent px-4 py-2 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
-                      overlay
-                        ? 'text-white hover:text-white/90 focus:text-white focus-visible:ring-white/40 focus-visible:ring-offset-transparent'
-                        : 'text-foreground hover:text-primary focus:text-primary focus-visible:ring-ring/50',
-                      isNuestroTrabajoActive && 'text-primary font-semibold',
-                    )}
-                  >
-                    {t('nav.ourWork')}
-                  </Link>
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <NavigationMenuTrigger
-                  className={cn(
-                    'hover:bg-transparent focus:bg-transparent data-[state=open]:bg-transparent',
-                    overlay &&
-                      'text-white hover:text-white/90 hover:bg-white/10 focus:bg-white/10 focus:text-white data-[state=open]:text-white data-[state=open]:bg-white/10 [&_svg]:text-white',
-                    !overlay &&
-                      'data-[state=open]:text-primary data-[state=open]:bg-transparent',
-                    isCompaniaActive && 'text-primary font-semibold',
-                  )}
-                >
-                  {t('nav.company')}
-                </NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <ul className="grid min-w-52 gap-1 px-3 py-2">
-                    {companiaPaths.map(({ path: p, labelKey }) => {
-                      const href = path(p);
-                      const isActive = loc === href || loc.startsWith(href + '/');
-                      return (
-                        <li key={p}>
-                          <NavigationMenuLink asChild>
-                            <Link
-                              href={href}
-                              className={cn(
-                                'text-foreground hover:text-primary focus:text-primary block rounded-lg px-4 py-2.5 text-sm no-underline transition-colors outline-none select-none focus:outline-none',
-                                isActive && 'text-primary font-semibold',
-                              )}
-                            >
-                              {t(labelKey)}
-                            </Link>
-                          </NavigationMenuLink>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-            </NavigationMenuList>
-          </NavigationMenu>
-          <LangSwitcher className="ml-1 shrink-0" overlay={overlay} />
-          <Button
-            asChild
-            size="default"
-            variant={overlay || isContactoActive ? 'outline' : 'default'}
-            className={cn(
-              'ml-2 shrink-0',
-              overlay &&
-                'border-white bg-transparent text-white hover:bg-white/15 hover:text-white',
-              elevated && isContactoActive && 'border-primary text-primary',
-            )}
+        {!isDesktopNav ? (
+          <Suspense
+            fallback={
+              <div className="flex items-center gap-2" aria-hidden>
+                <div className="bg-muted/30 h-8 w-16 shrink-0 rounded-md" />
+                <div className="bg-muted/30 size-10 shrink-0 rounded-md" />
+              </div>
+            }
           >
-            <Link href={path('/contact')}>{t('nav.contactUs')}</Link>
-          </Button>
-        </div>
+            <NavbarMobileBundle
+              overlay={overlay}
+              drawerOpen={drawerOpen}
+              onOpenChange={setDrawerOpen}
+            />
+          </Suspense>
+        ) : null}
+
+        {isDesktopNav ? (
+          <Suspense
+            fallback={
+              <div className="ml-auto flex flex-1 items-center justify-end gap-2" aria-hidden>
+                <div className="bg-muted/40 h-9 w-[min(16rem,42vw)] max-w-[50vw] rounded-lg" />
+                <div className="bg-muted/40 h-8 w-14 rounded-md" />
+                <div className="bg-muted/40 h-9 w-24 rounded-lg" />
+              </div>
+            }
+          >
+            <NavbarDesktopBundle overlay={overlay} elevated={elevated} />
+          </Suspense>
+        ) : null}
       </CenterContainer>
     </header>
   );

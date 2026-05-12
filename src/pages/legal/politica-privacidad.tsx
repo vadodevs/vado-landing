@@ -47,11 +47,7 @@ export default function PoliticaDePrivacidad() {
         canonicalPath={canonicalPath}
       />
       <MainLayout>
-        <main
-          id="main-content"
-          className="bg-background py-12 md:py-16 lg:py-20"
-          aria-label={PRIVACY_POLICY_TITLE}
-        >
+        <div className="bg-background py-12 md:py-16 lg:py-20">
           <CenterContainer>
             <article
               className="flex flex-col gap-10"
@@ -1179,7 +1175,7 @@ export default function PoliticaDePrivacidad() {
               </section>
             </article>
           </CenterContainer>
-        </main>
+        </div>
       </MainLayout>
     </>
   );

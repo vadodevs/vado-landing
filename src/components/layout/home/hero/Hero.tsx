@@ -1,12 +1,6 @@
-import { useMemo } from 'react';
+import { lazy, Suspense, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'wouter';
-import { motion, useReducedMotion } from 'motion/react';
-import { useLocale } from '@/hooks/useLocale';
-import { cn } from '@/lib/utils';
-import { CenterContainer } from '@/components/layout/CenterContainer';
-import { TrustedBrands } from '@/components/layout/home/brands/TrustedBrands';
-import WorldMap, { type MapProps } from '@/components/ui/world-map';
 import {
   ArrowRight,
   ChevronsDown,
@@ -16,11 +10,34 @@ import {
   UsersRound,
   type LucideIcon,
 } from 'lucide-react';
+import { useLocale } from '@/hooks/useLocale';
+import { cn } from '@/lib/utils';
+import { CenterContainer } from '@/components/layout/CenterContainer';
+import type { MapProps } from '@/components/ui/world-map';
+
+const WorldMap = lazy(() =>
+  import('@/components/ui/world-map').then((m) => ({ default: m.default })),
+);
+
+const TrustedBrandsLazy = lazy(async () => {
+  const m = await import('@/components/layout/home/brands/TrustedBrands');
+  return { default: m.TrustedBrands };
+});
 
 /** Hermosillo — hub; destinos con etiquetas traducibles */
 const HERMOSILLO = { lat: 11.07, lng: -113.95 } as const;
 
-const heroEase = [0.22, 1, 0.36, 1] as const;
+function usePrefersReducedMotion(): boolean {
+  return useSyncExternalStore(
+    (onStoreChange) => {
+      const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+      mq.addEventListener('change', onStoreChange);
+      return () => mq.removeEventListener('change', onStoreChange);
+    },
+    () => window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+    () => false,
+  );
+}
 
 function FocusCardHeader({
   icon: Icon,
@@ -37,7 +54,7 @@ function FocusCardHeader({
   return (
     <div className="flex items-start gap-3">
       <span
-        className="bg-gray-50 text-primary flex size-11 shrink-0 items-center justify-center rounded-xl md:size-12"
+        className="bg-gray-50 text-primary-strong flex size-11 shrink-0 items-center justify-center rounded-xl md:size-12"
         aria-hidden
       >
         <Icon className="size-5 md:size-[1.375rem]" strokeWidth={1.75} />
@@ -45,13 +62,13 @@ function FocusCardHeader({
       <div className="min-w-0">
         <h3
           className={cn(
-            'text-base font-semibold tracking-tight text-black md:text-lg',
+            'text-base font-medium tracking-tight text-black md:text-lg',
             titleClassName,
           )}
         >
           {t(titleKey)}
         </h3>
-        <p className="text-white mt-1.5 text-sm font-medium leading-snug text-pretty md:text-[15px]">
+        <p className="mt-1.5 text-sm font-medium leading-snug text-pretty text-neutral-600 md:text-[15px]">
           {t(taglineKey)}
         </p>
       </div>
@@ -66,9 +83,9 @@ function FocusBulletList({ translationKeys }: { translationKeys: readonly string
       {translationKeys.map((key) => (
         <li
           key={key}
-          className="text-primary flex gap-3 text-sm font-medium leading-snug text-pretty md:text-[15px]"
+          className="text-primary-strong flex gap-3 text-sm font-medium leading-snug text-pretty md:text-[15px]"
         >
-          <span className="bg-primary mt-2 size-1.5 shrink-0 rounded-full" aria-hidden />
+          <span className="bg-primary-strong mt-2 size-1.5 shrink-0 rounded-full" aria-hidden />
           <span>{t(key)}</span>
         </li>
       ))}
@@ -79,7 +96,32 @@ function FocusBulletList({ translationKeys }: { translationKeys: readonly string
 export function Hero() {
   const { t } = useTranslation();
   const { path } = useLocale();
-  const reduceMotion = useReducedMotion();
+  const reduceMotion = usePrefersReducedMotion();
+  const brandsSentinelRef = useRef<HTMLDivElement>(null);
+  const [showTrustedBrands, setShowTrustedBrands] = useState(false);
+
+  useEffect(() => {
+    const el = brandsSentinelRef.current;
+    if (!el) return;
+    if (typeof IntersectionObserver === 'undefined') {
+      setShowTrustedBrands(true);
+      return;
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) {
+            setShowTrustedBrands(true);
+            io.disconnect();
+            break;
+          }
+        }
+      },
+      { rootMargin: '360px 0px 480px 0px', threshold: 0 },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
 
   const worldMapDots = useMemo(
     (): NonNullable<MapProps['dots']> => [
@@ -142,12 +184,16 @@ export function Hero() {
       <div className="relative -mt-20 min-h-[100svh] w-full">
         <div className="pointer-events-none absolute inset-0 overflow-hidden bg-black" aria-hidden>
           <div className="absolute top-1/2 left-1/2 aspect-[2/1] w-[max(100vw,200vh)] -translate-x-1/2 -translate-y-1/2 lg:max-w-[min(96rem,96vw)] xl:max-w-[min(80rem,92vw)] 2xl:max-w-[min(84rem,90vw)]">
-            <WorldMap
-              variant="fill"
-              dots={worldMapDots}
-              lineColor="var(--primary)"
-              className="size-full"
-            />
+            <Suspense
+              fallback={<div className="size-full bg-black" aria-hidden />}
+            >
+              <WorldMap
+                variant="fill"
+                dots={worldMapDots}
+                lineColor="var(--primary)"
+                className="size-full"
+              />
+            </Suspense>
           </div>
         </div>
 
@@ -157,37 +203,24 @@ export function Hero() {
         />
 
         <div className="pointer-events-none absolute inset-x-0 bottom-8 z-[9] flex justify-center sm:bottom-10">
-          <motion.div
-            className="flex flex-col items-center gap-1 text-white/75"
-            initial={false}
-            animate={reduceMotion ? { y: 0 } : { y: [0, 8, 0] }}
-            transition={
-              reduceMotion
-                ? { duration: 0 }
-                : {
-                    duration: 1.8,
-                    repeat: Infinity,
-                    ease: 'easeInOut',
-                  }
-            }
-            aria-label={t('home.scrollDownHint')}
+          <div
+            className={cn(
+              'flex flex-col items-center gap-1 text-white/75',
+              !reduceMotion && 'hero-chevron-bob',
+            )}
           >
+            <span className="sr-only">{t('home.scrollDownHint')}</span>
             <ChevronsDown
               className="size-9 drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)] sm:size-10"
               strokeWidth={1.75}
               aria-hidden
             />
-          </motion.div>
+          </div>
         </div>
 
         <div className="relative z-10 flex min-h-[100svh] items-center">
           <CenterContainer className="flex w-full justify-end">
-            <motion.div
-              className="pointer-events-auto flex max-w-xl flex-col items-end text-right text-white"
-              initial={{ opacity: reduceMotion ? 1 : 0 }}
-              animate={{ opacity: 1 }}
-              transition={reduceMotion ? { duration: 0 } : { duration: 2, ease: heroEase }}
-            >
+            <div className="pointer-events-auto flex max-w-xl flex-col items-end text-right text-white">
               <p className="mt-5 max-w-xl text-base leading-relaxed text-pretty text-white/95 drop-shadow sm:text-lg md:text-xl">
                 Growing globally, project by project
               </p>
@@ -215,15 +248,15 @@ export function Hero() {
                   </div>
                 </Link>
               </div>
-            </motion.div>
+            </div>
           </CenterContainer>
         </div>
       </div>
 
-      <div className="relative border-t bg-white py-12 md:py-16 lg:py-20">
+      <div className="relative bg-white py-12 md:py-16 lg:py-20">
         <CenterContainer>
           <div className="mx-auto max-w-4xl text-center">
-            <h2 className="text-primary text-2xl font-semibold tracking-tight md:text-3xl">
+            <h2 className="text-primary-strong text-2xl font-semibold tracking-tight md:text-3xl">
               {t('home.worldMapTitle')}
             </h2>
             <ul className="mt-10 grid grid-cols-1 gap-10 sm:grid-cols-3 sm:gap-8 sm:divide-x sm:divide-neutral-200">
@@ -248,7 +281,7 @@ export function Hero() {
                   key={index}
                   className="flex flex-col items-center justify-center gap-3 px-4 text-center sm:px-6"
                 >
-                  <span className="text-primary text-4xl font-semibold tracking-tight md:text-5xl">
+                  <span className="text-primary-strong text-4xl font-semibold tracking-tight md:text-5xl">
                     {stat.value}
                   </span>
                   <span className="max-w-[18rem] text-base leading-snug font-semibold text-pretty text-neutral-900 md:text-lg">
@@ -260,23 +293,30 @@ export function Hero() {
                 </li>
               ))}
             </ul>
-            <p className="mt-10 text-pretty text-neutral-600 md:text-lg">
-              {t('home.worldMapSubtitle')}
-            </p>
+            <p className="mt-10 text-pretty text-neutral-600 md:text-lg">{t('home.worldMapSubtitle')}</p>
           </div>
         </CenterContainer>
       </div>
 
-      <TrustedBrands />
+      <div ref={brandsSentinelRef} className="h-px w-full" aria-hidden />
+      {showTrustedBrands ? (
+        <Suspense
+          fallback={<div className="min-h-[12rem] w-full bg-background" aria-hidden />}
+        >
+          <TrustedBrandsLazy />
+        </Suspense>
+      ) : (
+        <div className="min-h-[12rem] w-full bg-background" aria-hidden />
+      )}
 
-      <div className="relative  bg-neutral-100 py-12 md:py-16 lg:py-20">
+      <div className="relative bg-neutral-100 py-12 md:py-16 lg:py-20">
         <CenterContainer>
           <div className="mx-auto max-w-5xl">
-            <h2 className="text-primary text-center text-2xl font-semibold tracking-tight md:text-3xl">
+            <h2 className="text-primary-strong text-center text-2xl font-semibold tracking-tight md:text-3xl">
               {t('home.focusSectionTitle')}
             </h2>
             <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-3">
-              <article className="bg-white flex flex-col gap-6 rounded-2xl  p-6 md:col-span-3 md:flex-row md:items-stretch md:gap-8 md:p-8">
+              <article className="bg-white flex flex-col gap-6 rounded-2xl p-6 md:col-span-3 md:flex-row md:items-stretch md:gap-8 md:p-8">
                 <div className="min-w-0 flex-1">
                   <FocusCardHeader
                     icon={Rocket}
@@ -298,17 +338,17 @@ export function Hero() {
                 </div>
                 <div className="flex shrink-0 flex-col gap-3 sm:flex-row sm:items-stretch md:flex-col md:justify-center md:border-l md:border-primary/15 md:pl-8">
                   <div className="bg-white flex flex-1 flex-col justify-center rounded-xl border border-neutral-200/80 px-4 py-3">
-                    <p className="text-primary text-base font-semibold">{t('home.focusCardMvpPriceMvp')}</p>
+                    <p className="text-primary-strong text-base font-semibold">{t('home.focusCardMvpPriceMvp')}</p>
                     <p className="text-gray-500 mt-1 text-xs font-medium">{t('home.focusCardMvpPriceMvpHint')}</p>
                   </div>
                   <div className="bg-white flex flex-1 flex-col justify-center rounded-xl border border-neutral-200/80 px-4 py-3">
-                    <p className="text-primary text-base font-semibold">{t('home.focusCardMvpPriceProd')}</p>
+                    <p className="text-primary-strong text-base font-semibold">{t('home.focusCardMvpPriceProd')}</p>
                     <p className="text-gray-500 mt-1 text-xs font-medium">{t('home.focusCardMvpPriceProdHint')}</p>
                   </div>
                 </div>
               </article>
 
-              <article className="flex flex-col rounded-2xl bg-white p-6 shadow-sm md:p-7">
+              <article className="flex flex-col rounded-2xl bg-white p-6 md:p-7">
                 <FocusCardHeader
                   icon={UsersRound}
                   titleKey="home.focusCardStaffTitle"
@@ -327,7 +367,7 @@ export function Hero() {
                 />
               </article>
 
-              <article className="flex flex-col rounded-2xl bg-white p-6 shadow-sm md:p-7">
+              <article className="flex flex-col rounded-2xl bg-white p-6 md:p-7">
                 <FocusCardHeader
                   icon={Layers2}
                   titleKey="home.focusCardConsultingTitle"
@@ -346,7 +386,7 @@ export function Hero() {
                 />
               </article>
 
-              <article className="flex flex-col rounded-2xl bg-white p-6 shadow-sm md:p-7">
+              <article className="flex flex-col rounded-2xl bg-white p-6 md:p-7">
                 <FocusCardHeader
                   icon={Sparkles}
                   titleKey="home.focusCardAiTitle"

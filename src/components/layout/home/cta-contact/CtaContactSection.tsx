@@ -1,6 +1,10 @@
+import { lazy, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CenterContainer } from '@/components/layout/CenterContainer';
-import { ContactForm } from '@/components/layout/home/cta-contact/ContactForm';
+
+const ContactForm = lazy(() =>
+  import('@/components/layout/home/cta-contact/ContactForm').then((m) => ({ default: m.ContactForm })),
+);
 
 const BENEFIT_KEYS = [
   'home.ctaContactEmbed.benefit1',
@@ -27,7 +31,16 @@ export function CtaContactSection() {
             <ul className="space-y-3">
               {BENEFIT_KEYS.map((key) => (
                 <li key={key} className="flex items-center gap-3">
-                  <img src="/icons/check.svg" alt="" className="size-6 shrink-0" aria-hidden />
+                  <img
+                    src="/icons/check.svg"
+                    alt=""
+                    width={24}
+                    height={24}
+                    loading="lazy"
+                    decoding="async"
+                    className="size-6 shrink-0"
+                    aria-hidden
+                  />
                   <span className="text-muted-foreground text-sm leading-relaxed md:text-base">
                     {t(key)}
                   </span>
@@ -39,7 +52,20 @@ export function CtaContactSection() {
 
         {/* Columna derecha: formulario en tarjeta blanca */}
         <div className="min-w-0 flex-1 lg:max-w-[52%]">
-          <ContactForm />
+          <Suspense
+            fallback={
+              <div
+                role="status"
+                aria-live="polite"
+                aria-busy="true"
+                className="bg-muted/40 flex min-h-[min(70vh,560px)] w-full animate-pulse rounded-2xl border border-neutral-200/80"
+              >
+                <span className="sr-only">{t('home.ctaContactEmbed.loadingForm')}</span>
+              </div>
+            }
+          >
+            <ContactForm />
+          </Suspense>
         </div>
       </CenterContainer>
     </section>

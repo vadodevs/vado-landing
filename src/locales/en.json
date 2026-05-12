@@ -14,7 +14,8 @@
     "contactUs": "Contact us",
     "menu": "Menu",
     "openMenu": "Open menu",
-    "closeMenu": "Close menu"
+    "closeMenu": "Close menu",
+    "logoHome": "Vado Devs — Home"
   },
   "seo": {
     "home": "Vado Devs: custom software, web and app development, and digital solutions. From challenge to result.",
@@ -966,6 +967,7 @@
       "ctaButton": "Start a conversation"
     },
     "nearshoreBento": {
+      "a11yHeading": "Nearshore benefits in detail",
       "kicker": "Staff augmentation",
       "title": "Nearshore benefits that compound over time",
       "subtitle": "Five practical reasons teams choose LATAM augmentation with Vado—designed to fit US-led delivery.",
@@ -994,14 +996,14 @@
       "card2Description": "Our personalized software is designed to grow and integrate with you. We simplify your processes and support the evolution of your business with scalable, efficient solutions ready to work.",
       "card3Title": "Innovative Technology with Guaranteed Protection",
       "card3Description": "High-performance software with built-in security to protect your business.",
-      "moreInfo": "More Information",
+      "moreInfo": "Explore custom software services",
       "bgAlt": "Decorative background"
     },
     "aiSolutions": {
       "label": "AI SOLUTIONS",
       "title": "AI solutions that adapt to your business",
       "description": "We drive your business with artificial intelligence solutions designed to automate tasks, improve customer service, analyze large volumes of data and make smarter decisions.",
-      "moreInfo": "More Information",
+      "moreInfo": "Explore AI solutions",
       "startProject": "Let's start your project",
       "bgAlt": "Decorative background",
       "mockupImageAlt": "AI solutions landing page mockup"
@@ -1017,7 +1019,7 @@
       "label": "OUR CLIENTS",
       "titlePart1": "Real stories",
       "titlePart2": "Real impact",
-      "moreInfo": "More Information",
+      "moreInfo": "See our work and case studies",
       "startProject": "Let's start your project",
       "items": {
         "1": {
@@ -1044,7 +1046,7 @@
       "label": "STAFF AUGMENTATION",
       "title": "Strengthen your team with specialized talent",
       "description": "We offer staff augmentation solutions designed for your unique needs.",
-      "moreInfo": "More information",
+      "moreInfo": "Learn about staff augmentation",
       "startProject": "Let's start your project",
       "imageAlt": "Team working in coworking space"
     },
@@ -1087,7 +1089,7 @@
       "titlePart1": "Technology solutions",
       "titlePart2": "aligned with your goals",
       "description": "We integrate with your way of working so you get results without complications. From understanding your needs, implementing them, and providing support. When we're done, the code belongs to you, giving you full control over your solution.",
-      "moreInfo": "More Information",
+      "moreInfo": "Learn how we deliver custom software",
       "startProject": "Let's start your project",
       "mainIconAlt": "Partnership and collaboration",
       "sub1IconAlt": "Evolution and continuous improvement",
@@ -1130,7 +1132,8 @@
       "description": "We offer free consulting to explore how Vado Devs can boost your project.",
       "benefit1": "Free assessment of talent and needs",
       "benefit2": "Personalized strategy for your project",
-      "benefit3": "Direct access to Vado specialists"
+      "benefit3": "Direct access to Vado specialists",
+      "loadingForm": "Loading contact form"
     },
     "ctaContact": {
       "titlePart1": "EVERY GREAT RELATIONSHIP",
@@ -1406,7 +1409,7 @@
         "label": "Our clients",
         "titlePart1": "Real stories",
         "titlePart2": "Real impact",
-        "moreInfo": "More information",
+        "moreInfo": "See our work and case studies",
         "startProject": "Let's start your project",
         "insightsLabel": "Vado Insights",
         "items": {

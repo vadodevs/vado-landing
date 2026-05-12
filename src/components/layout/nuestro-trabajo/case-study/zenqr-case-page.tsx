@@ -29,7 +29,7 @@ export function ZenqurCasePage() {
       />
 
       <CenterContainer className="flex flex-col gap-10 lg:flex-row lg:items-start lg:gap-12">
-        <main className="min-w-0 flex-1">
+        <div className="min-w-0 flex-1">
           <ZenqrOverviewSection />
           <img
             src="/case-studies/zenqr/zenqr-slide1.webp"
@@ -50,7 +50,7 @@ export function ZenqurCasePage() {
           />
           <ZenqrResultsSection />
           <CaseStudyCtaSection caseStudyId="zenqr" accentColor={ZENQR_ACCENT} />
-        </main>
+        </div>
         <aside className="w-full shrink-0 pb-4 lg:w-80 lg:self-stretch">
           <ZenqrProjectSidebar />
         </aside>

@@ -4,8 +4,7 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import { Link } from 'wouter';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from '@/hooks/useLocale';
-import { CheckCircle2, Info } from 'lucide-react';
-import { FaArrowLeft } from 'react-icons/fa';
+import { ArrowLeft, CheckCircle2, Info } from 'lucide-react';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
@@ -1075,7 +1074,7 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
                               if (applyCvInputRef.current) applyCvInputRef.current.value = '';
                             }}
                           >
-                            <FaArrowLeft className="mr-1.5 size-3.5 shrink-0" aria-hidden />
+                            <ArrowLeft className="mr-1.5 size-3.5 shrink-0" aria-hidden />
                             {t('home.ctaContact.applyForm.changeSubject')}
                           </Button>
                         </div>

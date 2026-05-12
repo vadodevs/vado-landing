@@ -30,6 +30,10 @@ export function PhoneMockup({ src, alt = '', children, className }: PhoneMockupP
               src={src}
               alt={alt}
               className="h-full w-full object-cover object-top"
+              width={390}
+              height={845}
+              loading="lazy"
+              decoding="async"
             />
           ) : (
             children ?? (

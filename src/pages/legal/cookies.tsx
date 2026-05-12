@@ -22,7 +22,7 @@ export default function Cookies() {
         pathWithoutLang="/info/cookies"
       />
       <MainLayout>
-        <main id="main-content" className="bg-background py-12 md:py-16 lg:py-20" aria-label="Cookie Policy">
+        <div className="bg-background py-12 md:py-16 lg:py-20">
           <CenterContainer>
             <article className="flex flex-col gap-10" itemScope itemType="https://schema.org/WebPage">
               <header className="flex flex-col gap-2">
@@ -419,7 +419,7 @@ export default function Cookies() {
               </section>
             </article>
           </CenterContainer>
-        </main>
+        </div>
       </MainLayout>
     </>
   );

@@ -31,7 +31,7 @@ export function Footer() {
         <div className="flex flex-col gap-10 md:flex-row md:flex-wrap md:justify-between md:gap-x-8 lg:gap-x-12">
           {/* Brand + social */}
           <div className="flex flex-col gap-4">
-            <Link href={path('')} className="inline-block">
+            <Link href={path('')} className="inline-block" aria-label={t('nav.logoHome')}>
               <VadoLogo white />
             </Link>
             <p className="text-sm font-medium text-white/90">{t('footer.stayConnected')}</p>

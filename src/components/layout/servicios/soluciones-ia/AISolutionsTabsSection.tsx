@@ -34,7 +34,9 @@ export function AISolutionsTabsSection() {
       description={t('services.aiSolutions.solutions.description')}
       tabLabelWrap
       variant="imageHero"
-      backgroundImageSrc="/ai-section.png"
+      backgroundImageSrc="/ai-section.webp"
+      backgroundImageWidth={1032}
+      backgroundImageHeight={629}
     />
   );
 }
