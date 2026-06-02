@@ -1,4 +1,12 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ChangeEvent,
+  type ReactNode,
+} from 'react';
 import {
   Bot,
   ChevronLeft,
@@ -12,8 +20,9 @@ import {
   Search,
   Send,
   Smile,
+  X,
 } from 'lucide-react';
-import { Redirect } from 'wouter';
+import { Link, Redirect } from 'wouter';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import { AppShell } from '@/components/layout/app/AppShell';
@@ -27,16 +36,44 @@ import {
   type AssistantChatMessage,
   type InboxLeadChannel,
 } from '@/lib/appAssistantChat';
+import {
+  fetchInboxConversations,
+  fetchInboxMessages,
+  fetchWhatsappLinkStatus,
+  markInboxConversationRead,
+  sendInboxImage,
+  sendInboxMessage,
+  type InboxConversationDto,
+  type InboxMessageDto,
+} from '@/lib/adminInboxApi';
+import {
+  loadInboxMessageMediaUrl,
+  readFileAsBase64,
+  releaseInboxMessageMediaUrl,
+} from '@/lib/inboxMessageMedia';
+import { isAdminChannel, type AdminChannel } from '@/lib/adminCanalesChannel';
 
-export type AdminChannel = 'facebook' | 'whatsapp' | 'instagram' | 'bot-test';
+type ChatMsg = {
+  id: string;
+  from: 'them' | 'us';
+  text: string;
+  time: string;
+  mediaType?: string | null;
+  hasMedia?: boolean;
+  /** Vista previa local mientras se sube (solo optimista). */
+  localMediaUrl?: string | null;
+};
 
-const CHANNELS: readonly AdminChannel[] = ['facebook', 'whatsapp', 'instagram', 'bot-test'];
+const WHATSAPP_IMAGE_MAX_BYTES = 8 * 1024 * 1024;
 
-export function isAdminChannel(s: string): s is AdminChannel {
-  return (CHANNELS as readonly string[]).includes(s);
+const INBOX_CONVERSATION_UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+function isRealInboxConversationId(id: string): boolean {
+  return INBOX_CONVERSATION_UUID_RE.test(id);
 }
 
-type ChatMsg = { id: string; from: 'them' | 'us'; text: string; time: string };
+const MEDIA_PREVIEW_LABELS = /^\[(Imagen|Video|Audio|Documento|Sticker)\]$/;
 
 const BOT_TEST_THREAD_SESSION_KEY = 'vado.adminCanales.botTestThread.v1';
 
@@ -81,7 +118,320 @@ export type InboxConversation = {
   initials: string;
   timeLabel: string;
   messages: ChatMsg[];
+  lastPreview?: string;
+  unreadCount?: number;
 };
+
+type InboxDataSource = 'mock' | 'bot-test' | 'whatsapp-api';
+
+type WhatsappGate = 'loading' | 'linked' | 'not-linked' | 'no-auth' | 'error';
+
+function WhatsappInboxEmpty({ gate }: { gate: WhatsappGate }) {
+  const { t } = useTranslation();
+  const { path } = useLocale();
+
+  return (
+    <div className="flex h-full min-h-0 flex-1 flex-col items-center justify-center bg-[#f0f2f5] px-6 py-12 text-center dark:bg-[#111b21]">
+      <div className="flex size-16 items-center justify-center rounded-full bg-[#128c7e] text-white shadow-md">
+        <WhatsAppGlyph className="size-8" />
+      </div>
+      {gate === 'loading' ? (
+        <p className="mt-6 text-sm text-zinc-600 dark:text-zinc-400">{t('adminCanales.whatsappLoadingChats')}</p>
+      ) : gate === 'no-auth' ? (
+        <>
+          <h2 className="mt-6 text-lg font-semibold text-zinc-900 dark:text-zinc-50">
+            {t('adminCanales.inboxAuthRequired')}
+          </h2>
+          <p className="mt-2 max-w-md text-sm text-zinc-600 dark:text-zinc-400">
+            {t('adminCanales.inboxAuthRequiredBody')}
+          </p>
+          <Button asChild className="mt-6 bg-[#128c7e] hover:bg-[#0f7669]">
+            <Link href={path('/login?next=admin')}>{t('adminCanales.inboxAuthLogin')}</Link>
+          </Button>
+        </>
+      ) : (
+        <>
+          <h2 className="mt-6 text-lg font-semibold text-zinc-900 dark:text-zinc-50">
+            {t('adminCanales.whatsappNotLinkedTitle')}
+          </h2>
+          <p className="mt-2 max-w-md text-sm text-zinc-600 dark:text-zinc-400">
+            {t('adminCanales.whatsappNotLinkedBody')}
+          </p>
+          <Button asChild className="mt-6 bg-[#128c7e] hover:bg-[#0f7669]">
+            <Link href={path('/app/admin/settings#whatsapp')}>{t('adminCanales.whatsappGoToSettings')}</Link>
+          </Button>
+        </>
+      )}
+    </div>
+  );
+}
+
+function initialsForContact(name: string, externalId: string): string {
+  const trimmed = name.trim();
+  if (trimmed.length >= 2 && !/^\d+$/.test(trimmed.replace(/\D/g, ''))) {
+    const parts = trimmed.split(/\s+/).filter(Boolean);
+    if (parts.length >= 2) {
+      return `${parts[0]![0] ?? ''}${parts[1]![0] ?? ''}`.toUpperCase();
+    }
+    return trimmed.slice(0, 2).toUpperCase();
+  }
+  const digits = externalId.replace(/\D/g, '');
+  return digits.length >= 2 ? digits.slice(-2) : 'WA';
+}
+
+function formatInboxTimeLabel(iso: string, t: TFunction): string {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '';
+  const now = new Date();
+  if (d.toDateString() === now.toDateString()) {
+    return formatChatTime(d);
+  }
+  const yesterday = new Date(now);
+  yesterday.setDate(yesterday.getDate() - 1);
+  if (d.toDateString() === yesterday.toDateString()) {
+    return t('adminCanales.whatsappYesterday');
+  }
+  return d.toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
+}
+
+function mapConversationDto(c: InboxConversationDto, t: TFunction): InboxConversation {
+  const name = c.contactName?.trim() || c.externalId;
+  return {
+    id: c.id,
+    name,
+    initials: initialsForContact(name, c.externalId),
+    timeLabel: formatInboxTimeLabel(c.lastMessageAt, t),
+    messages: [],
+    lastPreview: c.lastMessagePreview?.trim() || undefined,
+    unreadCount: c.unreadCount,
+  };
+}
+
+function mapMessageDto(m: InboxMessageDto): ChatMsg {
+  const sentAt = new Date(m.sentAt);
+  return {
+    id: m.id,
+    from: m.direction === 'outbound' ? 'us' : 'them',
+    text: m.body,
+    time: Number.isNaN(sentAt.getTime()) ? '' : formatChatTime(sentAt),
+    mediaType: m.mediaType ?? null,
+    hasMedia: m.hasMedia ?? Boolean(m.mediaType),
+  };
+}
+
+function messageExpectsMedia(msg: ChatMsg): boolean {
+  return Boolean(msg.mediaType) && (msg.hasMedia ?? false);
+}
+
+function getBubbleVariantForList(msg: ChatMsg): 'text' | 'media' {
+  if (!messageExpectsMedia(msg) && !msg.localMediaUrl) return 'text';
+  const isImage = msg.mediaType === 'image' || msg.mediaType === 'sticker';
+  if (!isImage) return 'text';
+  const showText =
+    msg.text.trim().length > 0 && !MEDIA_PREVIEW_LABELS.test(msg.text.trim());
+  return showText ? 'text' : 'media';
+}
+
+type WhatsappMessageLayout = {
+  hasMedia: boolean;
+  isImage: boolean;
+  isSticker: boolean;
+  isVideo: boolean;
+  isMediaMessage: boolean;
+  showText: boolean;
+  bubbleVariant: 'text' | 'media';
+};
+
+function getWhatsappMessageLayout(msg: ChatMsg, mediaSrc: string | null): WhatsappMessageLayout {
+  const isImage = msg.mediaType === 'image';
+  const isSticker = msg.mediaType === 'sticker';
+  const isVideo = msg.mediaType === 'video';
+  const hasMedia = Boolean(mediaSrc);
+  const showText =
+    msg.text.trim().length > 0 && !MEDIA_PREVIEW_LABELS.test(msg.text.trim());
+  const imageOnly = (isImage || isSticker) && hasMedia && !showText;
+  return {
+    hasMedia,
+    isImage,
+    isSticker,
+    isVideo,
+    isMediaMessage: Boolean(msg.mediaType),
+    showText,
+    bubbleVariant: imageOnly ? 'media' : 'text',
+  };
+}
+
+function WaMediaLightbox({
+  src,
+  open,
+  onClose,
+  closeLabel,
+}: {
+  src: string;
+  open: boolean;
+  onClose: () => void;
+  closeLabel: string;
+}) {
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', onKey);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.body.style.overflow = prev;
+    };
+  }, [open, onClose]);
+
+  if (!open) return null;
+
+  return (
+    <div
+      className="fixed inset-0 z-[200] flex items-center justify-center bg-[#0b141a]/96 p-4 sm:p-8"
+      role="dialog"
+      aria-modal="true"
+      onClick={onClose}
+    >
+      <button
+        type="button"
+        onClick={onClose}
+        className="absolute top-3 right-3 z-10 flex size-10 items-center justify-center rounded-full text-white/90 transition-colors hover:bg-white/10 hover:text-white"
+        aria-label={closeLabel}
+      >
+        <X className="size-6" strokeWidth={1.75} aria-hidden />
+      </button>
+      <img
+        src={src}
+        alt=""
+        className="max-h-[min(90vh,900px)] max-w-[min(95vw,1200px)] select-none object-contain"
+        onClick={(e) => e.stopPropagation()}
+        draggable={false}
+      />
+    </div>
+  );
+}
+
+function useWhatsappMessageMedia(msg: ChatMsg) {
+  const localUrl = msg.localMediaUrl ?? null;
+  const expectsMedia = messageExpectsMedia(msg) || Boolean(localUrl);
+  const fetchId =
+    !localUrl && expectsMedia && msg.id && !msg.id.startsWith('opt-') ? msg.id : null;
+
+  const [fetchedSrc, setFetchedSrc] = useState<string | null>(null);
+  const [fetchState, setFetchState] = useState<'idle' | 'loading' | 'ready' | 'error'>(() =>
+    fetchId ? 'loading' : 'idle',
+  );
+
+  useEffect(() => {
+    if (!fetchId) return;
+    let cancelled = false;
+    void loadInboxMessageMediaUrl(fetchId).then((url) => {
+      if (cancelled) return;
+      if (url) {
+        setFetchedSrc(url);
+        setFetchState('ready');
+      } else {
+        setFetchState('error');
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [fetchId]);
+
+  useEffect(() => {
+    const id = msg.id;
+    return () => {
+      if (id && !id.startsWith('opt-')) {
+        releaseInboxMessageMediaUrl(id);
+      }
+    };
+  }, [msg.id]);
+
+  const mediaSrc = localUrl ?? fetchedSrc;
+  const mediaState = localUrl ? ('ready' as const) : fetchState;
+  return { mediaSrc, mediaState, expectsMedia };
+}
+
+function WaMessageContent({ msg, t }: { msg: ChatMsg; t: TFunction }) {
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const { mediaSrc, mediaState, expectsMedia } = useWhatsappMessageMedia(msg);
+
+  const layout = getWhatsappMessageLayout(msg, mediaSrc);
+  const { hasMedia, isImage, isSticker, isVideo, showText } = layout;
+  const src = mediaSrc ?? '';
+  const showLoading =
+    expectsMedia && !hasMedia && (mediaState === 'loading' || mediaState === 'idle');
+  const showError = expectsMedia && !hasMedia && mediaState === 'error';
+
+  return (
+    <>
+      {(isImage || isSticker) && hasMedia ? (
+        <button
+          type="button"
+          onClick={() => setLightboxOpen(true)}
+          className={cn(
+            'relative block w-full min-h-[120px] cursor-zoom-in overflow-hidden rounded-[6px] bg-[#dfe5e7] text-left dark:bg-[#3b4a54]',
+            isSticker ? 'max-w-[200px] min-h-0' : 'max-w-[min(100%,330px)]',
+          )}
+          aria-label={t('adminCanales.whatsappImageZoom')}
+        >
+          <img
+            src={src}
+            alt=""
+            loading="lazy"
+            decoding="async"
+            draggable={false}
+            className={cn(
+              'block h-auto w-full object-contain',
+              isSticker ? 'max-h-48' : 'max-h-[min(420px,55vh)]',
+            )}
+          />
+        </button>
+      ) : null}
+      {isVideo && hasMedia ? (
+        <div className="mb-0.5 max-w-[min(100%,330px)] overflow-hidden rounded-[6px] bg-black">
+          <video
+            src={src}
+            controls
+            playsInline
+            preload="metadata"
+            className="block max-h-[min(360px,50vh)] w-full"
+          />
+        </div>
+      ) : null}
+      {showLoading ? (
+        <p className="min-w-[200px] py-8 text-center text-sm text-zinc-500 dark:text-zinc-400">
+          {t('adminCanales.whatsappMediaLoading')}
+        </p>
+      ) : null}
+      {showError ? (
+        <p className="text-sm italic text-zinc-500 dark:text-zinc-400">
+          {t('adminCanales.whatsappMediaUnavailable')}
+        </p>
+      ) : null}
+      {showText ? (
+        <p
+          className={cn(
+            'whitespace-pre-wrap break-words',
+            hasMedia && (isImage || isSticker || isVideo) && 'mt-1 px-0.5',
+          )}
+        >
+          {msg.text}
+        </p>
+      ) : null}
+      <WaMediaLightbox
+        src={src}
+        open={lightboxOpen && hasMedia && (isImage || isSticker)}
+        onClose={() => setLightboxOpen(false)}
+        closeLabel={t('adminCanales.whatsappImageClose')}
+      />
+    </>
+  );
+}
 
 function lastPreview(messages: ChatMsg[], max = 46): string {
   const last = messages[messages.length - 1];
@@ -298,12 +648,15 @@ function WaMessageBubble({
   from,
   children,
   time,
+  variant = 'text',
 }: {
   from: 'them' | 'us';
   children: ReactNode;
   time: string;
+  variant?: 'text' | 'media';
 }) {
   const us = from === 'us';
+  const isMedia = variant === 'media';
   return (
     <div className={cn('relative max-w-[min(100%,920px)]', us ? 'ml-4 md:ml-10' : '')}>
       {!us ? (
@@ -319,21 +672,31 @@ function WaMessageBubble({
       )}
       <div
         className={cn(
-          'relative z-[1] rounded-lg px-2.5 py-1.5 text-[14.2px] leading-snug shadow-[0_1px_0.5px_rgba(0,0,0,0.13)] ring-1 ring-black/[0.04] dark:ring-white/[0.06]',
+          'relative z-[1] rounded-lg text-[14.2px] leading-snug shadow-[0_1px_0.5px_rgba(0,0,0,0.13)] ring-1 ring-black/[0.04] dark:ring-white/[0.06]',
+          isMedia ? 'overflow-hidden p-[3px]' : 'px-2.5 py-1.5',
           us
             ? 'rounded-br-sm bg-[#d9fdd3] text-zinc-900 dark:bg-[#005c4b] dark:text-emerald-50'
             : 'rounded-bl-sm bg-white text-zinc-900 dark:bg-[#202c33] dark:text-zinc-100',
         )}
       >
         {children}
-        <p
-          className={cn(
-            'mt-0.5 flex items-center justify-end gap-1 text-[11px] tabular-nums text-zinc-500 dark:text-zinc-400',
-            us && 'text-emerald-900/75 dark:text-emerald-100/75',
-          )}
-        >
-          <span>{time}</span>
-        </p>
+        {isMedia ? (
+          <span
+            className="pointer-events-none absolute bottom-2 right-2 z-[2] rounded-md bg-black/55 px-1.5 py-0.5 text-[11px] leading-none font-medium tabular-nums text-white shadow-sm"
+            aria-hidden
+          >
+            {time}
+          </span>
+        ) : (
+          <p
+            className={cn(
+              'mt-0.5 flex items-center justify-end gap-1 text-[11px] tabular-nums text-zinc-500 dark:text-zinc-400',
+              us && 'text-emerald-900/75 dark:text-emerald-100/75',
+            )}
+          >
+            <span>{time}</span>
+          </p>
+        )}
       </div>
     </div>
   );
@@ -342,27 +705,40 @@ function WaMessageBubble({
 type InboxProps = {
   channel: AdminChannel;
   chrome: ChannelChrome;
-  isInteractive: boolean;
+  dataSource: InboxDataSource;
 };
 
-function ChannelWhatsAppInbox({ channel, chrome, isInteractive }: InboxProps) {
+function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
+  const isMock = dataSource === 'mock';
+  const isBotTest = dataSource === 'bot-test';
+  const isWhatsappApi = dataSource === 'whatsapp-api';
+  const isInteractive = !isMock;
   const { t } = useTranslation();
+  const { path } = useLocale();
   const isMd = useIsDesktopMd();
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  const baseConversations = useMemo(() => buildInboxConversations(channel, t), [channel, t]);
+  const mockConversations = useMemo(() => buildInboxConversations(channel, t), [channel, t]);
   const [dynamicRows, setDynamicRows] = useState<InboxConversation[]>([]);
+  const [whatsappRows, setWhatsappRows] = useState<InboxConversation[]>([]);
+  const [whatsappLoadState, setWhatsappLoadState] = useState<'idle' | 'loading' | 'error' | 'ok'>('idle');
+  const [whatsappListError, setWhatsappListError] = useState<string | null>(null);
+  const [messagesById, setMessagesById] = useState<Record<string, ChatMsg[]>>({});
+  const [whatsappGate, setWhatsappGate] = useState<WhatsappGate>('loading');
+  const [whatsappInstanceName, setWhatsappInstanceName] = useState('');
 
   const conversations = useMemo(
-    () => [...dynamicRows, ...baseConversations],
-    [dynamicRows, baseConversations],
+    () => (isWhatsappApi ? whatsappRows : [...dynamicRows, ...mockConversations]),
+    [dynamicRows, isWhatsappApi, mockConversations, whatsappRows],
   );
 
-  const [selectedId, setSelectedId] = useState(() => buildInboxConversations(channel, t)[0]?.id ?? '');
+  const [selectedId, setSelectedId] = useState(() =>
+    isWhatsappApi ? '' : (mockConversations[0]?.id ?? ''),
+  );
   const [mobileShowThread, setMobileShowThread] = useState(false);
 
   const [botThread, setBotThread] = useState<ChatMsg[]>(() => {
-    if (!isInteractive) return [];
+    if (!isBotTest) return [];
     const welcome: ChatMsg = {
       id: 'welcome',
       from: 'them',
@@ -383,15 +759,130 @@ function ChannelWhatsAppInbox({ channel, chrome, isInteractive }: InboxProps) {
     if (prevChannelRef.current === channel) return;
     prevChannelRef.current = channel;
     setDynamicRows([]);
-    const first = buildInboxConversations(channel, t)[0]?.id ?? '';
-    setSelectedId(first);
+    setWhatsappRows([]);
+    setMessagesById({});
+    setWhatsappLoadState('idle');
+    setWhatsappListError(null);
+    setWhatsappGate('loading');
+    setSelectedId(isWhatsappApi ? '' : (buildInboxConversations(channel, t)[0]?.id ?? ''));
     setMobileShowThread(false);
   }, [channel, t]);
 
+  const refreshWhatsappLink = useCallback(async (): Promise<boolean> => {
+    const res = await fetchWhatsappLinkStatus();
+    if (res.ok) {
+      setWhatsappInstanceName(res.data.instanceName);
+      if (res.data.linked) {
+        setWhatsappGate('linked');
+        return true;
+      }
+      setWhatsappGate('not-linked');
+      return false;
+    }
+    if (res.reason === 'no-auth') {
+      setWhatsappGate('no-auth');
+    } else if (res.reason === 'no-config') {
+      setWhatsappGate('error');
+    } else {
+      setWhatsappGate('not-linked');
+    }
+    return false;
+  }, []);
+
+  const reloadWhatsappConversations = useCallback(async () => {
+    const res = await fetchInboxConversations('whatsapp');
+    if (!res.ok) {
+      if (res.reason === 'no-auth') {
+        setWhatsappGate('no-auth');
+        return;
+      }
+      setWhatsappLoadState('error');
+      setWhatsappListError(
+        res.reason === 'no-config'
+          ? t('adminCanales.botErrorNoConfig')
+          : res.message?.trim() || t('adminCanales.whatsappLoadError'),
+      );
+      return;
+    }
+    setWhatsappListError(null);
+    setWhatsappLoadState('ok');
+    const rows = res.data.map((c) => mapConversationDto(c, t));
+    setWhatsappRows(rows);
+    setSelectedId((prev) => {
+      if (prev && rows.some((r) => r.id === prev)) return prev;
+      return rows[0]?.id ?? '';
+    });
+  }, [t]);
+
   useEffect(() => {
-    if (!isInteractive) return;
+    if (!isWhatsappApi) return;
+    let cancelled = false;
+    const run = async () => {
+      setWhatsappGate('loading');
+      const linked = await refreshWhatsappLink();
+      if (cancelled || !linked) return;
+      setWhatsappLoadState('loading');
+      await reloadWhatsappConversations();
+    };
+    void run();
+    const interval = window.setInterval(() => {
+      void refreshWhatsappLink().then((linked) => {
+        if (linked) void reloadWhatsappConversations();
+      });
+    }, 15_000);
+    return () => {
+      cancelled = true;
+      window.clearInterval(interval);
+    };
+  }, [isWhatsappApi, refreshWhatsappLink, reloadWhatsappConversations]);
+
+  useEffect(() => {
+    if (!isWhatsappApi || whatsappGate !== 'linked') return;
+    let cancelled = false;
+    const run = async () => {
+      setWhatsappLoadState((s) => (s === 'ok' ? 'ok' : 'loading'));
+      await reloadWhatsappConversations();
+      if (cancelled) return;
+    };
+    void run();
+    const interval = window.setInterval(() => {
+      void reloadWhatsappConversations();
+    }, 10_000);
+    return () => {
+      cancelled = true;
+      window.clearInterval(interval);
+    };
+  }, [isWhatsappApi, whatsappGate, reloadWhatsappConversations]);
+
+  const reloadThreadMessages = useCallback(async (conversationId: string) => {
+    const res = await fetchInboxMessages(conversationId);
+    if (!res.ok) return;
+    setMessagesById((prev) => ({ ...prev, [conversationId]: res.data.map(mapMessageDto) }));
+  }, []);
+
+  useEffect(() => {
+    if (!isWhatsappApi || !selectedId || !isRealInboxConversationId(selectedId)) return;
+    let cancelled = false;
+    const run = async () => {
+      await reloadThreadMessages(selectedId);
+      if (cancelled) return;
+      await markInboxConversationRead(selectedId);
+      setWhatsappRows((prev) =>
+        prev.map((r) => (r.id === selectedId ? { ...r, unreadCount: 0 } : r)),
+      );
+    };
+    void run();
+    const interval = window.setInterval(() => void reloadThreadMessages(selectedId), 5_000);
+    return () => {
+      cancelled = true;
+      window.clearInterval(interval);
+    };
+  }, [isWhatsappApi, selectedId, reloadThreadMessages]);
+
+  useEffect(() => {
+    if (!isBotTest) return;
     persistBotThreadToSession(botThread);
-  }, [botThread, isInteractive]);
+  }, [botThread, isBotTest]);
 
   const selected = useMemo(
     () => conversations.find((c) => c.id === selectedId) ?? conversations[0],
@@ -399,17 +890,119 @@ function ChannelWhatsAppInbox({ channel, chrome, isInteractive }: InboxProps) {
   );
 
   const threadMessages = useMemo(() => {
-    if (isInteractive && selected?.id === 'bot') return botThread;
+    if (isBotTest && selected?.id === 'bot') return botThread;
+    if (isWhatsappApi && selectedId) return messagesById[selectedId] ?? [];
     return selected?.messages ?? [];
-  }, [isInteractive, selected?.id, selected?.messages, botThread]);
+  }, [isBotTest, isWhatsappApi, selected?.id, selected?.messages, selectedId, botThread, messagesById]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
   }, [threadMessages, sending, selectedId]);
 
+  const imageInputRef = useRef<HTMLInputElement>(null);
+
+  const sendWhatsappImage = useCallback(
+    async (file: File) => {
+      if (!selectedId || sending) return;
+      if (!file.type.startsWith('image/')) {
+        window.alert(t('adminCanales.whatsappImageTypeError'));
+        return;
+      }
+      if (file.size > WHATSAPP_IMAGE_MAX_BYTES) {
+        window.alert(t('adminCanales.whatsappImageSizeError'));
+        return;
+      }
+
+      const caption = draft.trim();
+      setDraft('');
+      setSending(true);
+
+      const localPreview = URL.createObjectURL(file);
+      const optimisticId = `opt-${crypto.randomUUID()}`;
+      const optimistic: ChatMsg = {
+        id: optimisticId,
+        from: 'us',
+        text: caption || '[Imagen]',
+        time: formatChatTime(new Date()),
+        mediaType: 'image',
+        hasMedia: true,
+        localMediaUrl: localPreview,
+      };
+      setMessagesById((prev) => ({
+        ...prev,
+        [selectedId]: [...(prev[selectedId] ?? []), optimistic],
+      }));
+
+      try {
+        const base64 = await readFileAsBase64(file);
+        const res = await sendInboxImage(selectedId, {
+          imageBase64: base64,
+          mimetype: file.type,
+          caption: caption || undefined,
+        });
+        if (!res.ok) {
+          setMessagesById((prev) => ({
+            ...prev,
+            [selectedId]: (prev[selectedId] ?? []).filter((m) => m.id !== optimisticId),
+          }));
+          if (caption) setDraft(caption);
+          window.alert(
+            res.reason === 'no-auth'
+              ? t('adminCanales.inboxAuthRequired')
+              : res.message?.trim() || t('adminCanales.whatsappSendError'),
+          );
+        } else {
+          await reloadThreadMessages(selectedId);
+          await reloadWhatsappConversations();
+        }
+      } catch {
+        setMessagesById((prev) => ({
+          ...prev,
+          [selectedId]: (prev[selectedId] ?? []).filter((m) => m.id !== optimisticId),
+        }));
+        if (caption) setDraft(caption);
+        window.alert(t('adminCanales.whatsappSendError'));
+      } finally {
+        URL.revokeObjectURL(localPreview);
+        setSending(false);
+      }
+    },
+    [draft, sending, selectedId, reloadThreadMessages, reloadWhatsappConversations, t],
+  );
+
+  const sendWhatsapp = useCallback(async () => {
+    const text = draft.trim();
+    if (!text || sending || !selectedId) return;
+    setDraft('');
+    setSending(true);
+    const optimisticId = `opt-${crypto.randomUUID()}`;
+    const optimistic: ChatMsg = {
+      id: optimisticId,
+      from: 'us',
+      text,
+      time: formatChatTime(new Date()),
+    };
+    setMessagesById((prev) => ({
+      ...prev,
+      [selectedId]: [...(prev[selectedId] ?? []), optimistic],
+    }));
+    const res = await sendInboxMessage(selectedId, text);
+    if (!res.ok) {
+      setMessagesById((prev) => ({
+        ...prev,
+        [selectedId]: (prev[selectedId] ?? []).filter((m) => m.id !== optimisticId),
+      }));
+      setDraft(text);
+    } else {
+      await reloadThreadMessages(selectedId);
+      await reloadWhatsappConversations();
+    }
+    setSending(false);
+  }, [draft, sending, selectedId, reloadThreadMessages, reloadWhatsappConversations]);
+
   const sendBot = useCallback(async () => {
     const text = draft.trim();
-    if (!text || sending || !isInteractive) return;
+    if (!text || sending || !isBotTest) return;
     setDraft('');
     const userMsg: ChatMsg = {
       id: `u-${crypto.randomUUID()}`,
@@ -443,7 +1036,12 @@ function ChannelWhatsAppInbox({ channel, chrome, isInteractive }: InboxProps) {
       time: formatChatTime(new Date()),
     };
     setBotThread((prev) => [...prev, reply]);
-  }, [draft, sending, isInteractive, botThread, channel, t]);
+  }, [draft, sending, isBotTest, botThread, channel, t]);
+
+  const handleSend = useCallback(() => {
+    if (isBotTest) void sendBot();
+    else if (isWhatsappApi) void sendWhatsapp();
+  }, [isBotTest, isWhatsappApi, sendBot, sendWhatsapp]);
 
   const openThread = (id: string) => {
     setSelectedId(id);
@@ -451,7 +1049,8 @@ function ChannelWhatsAppInbox({ channel, chrome, isInteractive }: InboxProps) {
   };
 
   const startNewChat = useCallback(() => {
-    if (channel === 'bot-test' && isInteractive) {
+    if (isWhatsappApi) return;
+    if (channel === 'bot-test' && isBotTest) {
       const welcome: ChatMsg = {
         id: 'welcome',
         from: 'them',
@@ -490,12 +1089,32 @@ function ChannelWhatsAppInbox({ channel, chrome, isInteractive }: InboxProps) {
     ]);
     setSelectedId(id);
     if (!isMd) setMobileShowThread(true);
-  }, [channel, isInteractive, isMd, t]);
+  }, [channel, isBotTest, isMd, isWhatsappApi, t]);
 
   const backToList = () => setMobileShowThread(false);
 
+  const inputPlaceholder = isBotTest
+    ? t('adminCanales.botInputPlaceholder')
+    : isWhatsappApi
+      ? t('adminCanales.whatsappInputPlaceholder')
+      : t('adminCanales.mockInputPlaceholder');
+  const inputAria = isBotTest
+    ? t('adminCanales.botInputAria')
+    : isWhatsappApi
+      ? t('adminCanales.whatsappInputAria')
+      : t('adminCanales.mockInputAria');
+  const sendAria = isBotTest
+    ? t('adminCanales.botSend')
+    : isWhatsappApi
+      ? t('adminCanales.whatsappSend')
+      : t('adminCanales.botSend');
+
   const showListPane = isMd || !mobileShowThread;
   const showThreadPane = isMd || mobileShowThread;
+
+  if (isWhatsappApi && whatsappGate !== 'linked') {
+    return <WhatsappInboxEmpty gate={whatsappGate} />;
+  }
 
   return (
     <div
@@ -523,19 +1142,27 @@ function ChannelWhatsAppInbox({ channel, chrome, isInteractive }: InboxProps) {
             <p className="truncate text-[13px] font-semibold text-zinc-900 dark:text-zinc-100">
               {t('adminCanales.inboxChatsTitle')}
             </p>
-            <p className="truncate text-[11px] text-zinc-500 dark:text-zinc-400">{t('adminCanales.inboxYourAccount')}</p>
+            <p className="truncate text-[11px] text-zinc-500 dark:text-zinc-400">
+              {isWhatsappApi
+                ? t('adminCanales.inboxYourAccountWhatsapp', {
+                    instance: whatsappInstanceName.trim() || '…',
+                  })
+                : t('adminCanales.inboxYourAccount')}
+            </p>
           </div>
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            className="size-10 shrink-0 rounded-full text-zinc-600 hover:bg-black/[0.06] dark:text-zinc-300 dark:hover:bg-white/10"
-            title={t('adminCanales.inboxToolbarNewChat')}
-            aria-label={t('adminCanales.inboxToolbarNewChat')}
-            onClick={startNewChat}
-          >
-            <MessageSquarePlus className="size-[22px]" strokeWidth={1.5} />
-          </Button>
+          {!isWhatsappApi ? (
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="size-10 shrink-0 rounded-full text-zinc-600 hover:bg-black/[0.06] dark:text-zinc-300 dark:hover:bg-white/10"
+              title={t('adminCanales.inboxToolbarNewChat')}
+              aria-label={t('adminCanales.inboxToolbarNewChat')}
+              onClick={startNewChat}
+            >
+              <MessageSquarePlus className="size-[22px]" strokeWidth={1.5} />
+            </Button>
+          ) : null}
           <Button
             type="button"
             variant="ghost"
@@ -563,16 +1190,40 @@ function ChannelWhatsAppInbox({ channel, chrome, isInteractive }: InboxProps) {
         </div>
 
         <div className="min-h-0 flex-1 overflow-y-auto bg-white dark:bg-[#111b21]" role="listbox" aria-label={t('sidebarDemo.navChannels')}>
+          {isWhatsappApi && whatsappLoadState === 'loading' && conversations.length === 0 ? (
+            <p className="px-4 py-8 text-center text-sm text-zinc-500">{t('adminCanales.whatsappLoadingChats')}</p>
+          ) : null}
+          {isWhatsappApi && whatsappLoadState === 'error' ? (
+            <p className="px-4 py-8 text-center text-sm text-red-600 dark:text-red-400">
+              {whatsappListError ?? t('adminCanales.whatsappLoadError')}
+            </p>
+          ) : null}
+          {isWhatsappApi && whatsappLoadState === 'ok' && conversations.length === 0 ? (
+            <div className="px-4 py-8 text-center text-sm text-zinc-500">
+              <p>{t('adminCanales.whatsappEmptyChats')}</p>
+              <p className="mt-2 text-xs text-zinc-400 dark:text-zinc-500">
+                {t('adminCanales.whatsappEmptyChatsWebhookHint')}
+              </p>
+              <Button asChild variant="link" className="mt-2 h-auto p-0 text-[#128c7e]">
+                <Link href={path('/app/admin/settings#whatsapp')}>{t('adminCanales.whatsappGoToSettings')}</Link>
+              </Button>
+            </div>
+          ) : null}
           {conversations.map((c) => {
             const active = c.id === selectedId;
             const rowPreview =
-              isInteractive && c.id === 'bot'
+              isBotTest && c.id === 'bot'
                 ? lastPreview(threadMessages) || '—'
-                : lastPreview(c.messages) || '—';
+                : isWhatsappApi
+                  ? c.lastPreview || '—'
+                  : lastPreview(c.messages) || '—';
             const rowTime =
-              isInteractive && c.id === 'bot'
+              isBotTest && c.id === 'bot'
                 ? threadMessages[threadMessages.length - 1]?.time ?? c.timeLabel
-                : c.messages[c.messages.length - 1]?.time ?? c.timeLabel;
+                : isWhatsappApi
+                  ? c.timeLabel
+                  : c.messages[c.messages.length - 1]?.time ?? c.timeLabel;
+            const unread = (c.unreadCount ?? 0) > 0;
             return (
               <button
                 key={c.id}
@@ -599,11 +1250,25 @@ function ChannelWhatsAppInbox({ channel, chrome, isInteractive }: InboxProps) {
                 <div className="min-w-0 flex-1">
                   <div className="flex items-baseline justify-between gap-2">
                     <span className="truncate text-[15px] font-medium text-zinc-900 dark:text-zinc-50">{c.name}</span>
-                    <span className="shrink-0 text-[11px] text-emerald-700 tabular-nums dark:text-emerald-400/90">
+                    <span
+                      className={cn(
+                        'shrink-0 text-[11px] tabular-nums',
+                        unread
+                          ? 'font-semibold text-[#25d366]'
+                          : 'text-emerald-700 dark:text-emerald-400/90',
+                      )}
+                    >
                       {rowTime}
                     </span>
                   </div>
-                  <p className="truncate text-[13px] text-zinc-500 dark:text-zinc-400">{rowPreview}</p>
+                  <div className="flex items-center gap-2">
+                    <p className="min-w-0 flex-1 truncate text-[13px] text-zinc-500 dark:text-zinc-400">{rowPreview}</p>
+                    {unread ? (
+                      <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-[#25d366] text-[11px] font-semibold text-white">
+                        {c.unreadCount! > 9 ? '9+' : c.unreadCount}
+                      </span>
+                    ) : null}
+                  </div>
                 </div>
               </button>
             );
@@ -646,8 +1311,10 @@ function ChannelWhatsAppInbox({ channel, chrome, isInteractive }: InboxProps) {
 
         <div className="relative z-[1] flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
           <div className="min-h-0 min-w-0 flex-1 basis-0 overflow-y-auto overflow-x-hidden overscroll-contain px-2 py-3 md:px-4">
-            {threadMessages.length === 0 && !isInteractive ? (
+            {threadMessages.length === 0 && isMock ? (
               <p className="py-8 text-center text-sm text-zinc-500">{t('adminCanales.inboxTapChat')}</p>
+            ) : threadMessages.length === 0 && isWhatsappApi && selectedId ? (
+              <p className="py-8 text-center text-sm text-zinc-500">{t('adminCanales.whatsappLoadingChats')}</p>
             ) : (
               <div className="flex flex-col gap-1">
                 <div className="mx-auto mb-2 rounded-md bg-white/80 px-3 py-0.5 text-[11px] font-medium text-zinc-600 shadow-sm dark:bg-[#182229]/90 dark:text-zinc-400">
@@ -679,12 +1346,20 @@ function ChannelWhatsAppInbox({ channel, chrome, isInteractive }: InboxProps) {
                         )}
                       </div>
                     ) : null}
-                    <WaMessageBubble from={m.from} time={m.time}>
-                      <p className="whitespace-pre-wrap break-words">{m.text}</p>
+                    <WaMessageBubble
+                      from={m.from}
+                      time={m.time}
+                      variant={isWhatsappApi ? getBubbleVariantForList(m) : 'text'}
+                    >
+                      {isWhatsappApi ? (
+                        <WaMessageContent key={m.id} msg={m} t={t} />
+                      ) : (
+                        <p className="whitespace-pre-wrap break-words">{m.text}</p>
+                      )}
                     </WaMessageBubble>
                   </div>
                 ))}
-                {sending && isInteractive ? (
+                {sending && isBotTest ? (
                   <div className="flex items-end justify-start gap-2 px-1">
                     <div
                       className={cn(
@@ -709,7 +1384,7 @@ function ChannelWhatsAppInbox({ channel, chrome, isInteractive }: InboxProps) {
                 className="flex items-center gap-1.5"
                 onSubmit={(e) => {
                   e.preventDefault();
-                  sendBot();
+                  handleSend();
                 }}
               >
                 <Button
@@ -721,22 +1396,40 @@ function ChannelWhatsAppInbox({ channel, chrome, isInteractive }: InboxProps) {
                 >
                   <Plus className="size-6" strokeWidth={1.25} />
                 </Button>
+                <input
+                  ref={imageInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  className="sr-only"
+                  tabIndex={-1}
+                  aria-hidden
+                  onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                    const file = e.target.files?.[0];
+                    e.target.value = '';
+                    if (file && isWhatsappApi) void sendWhatsappImage(file);
+                  }}
+                />
                 <Button
                   type="button"
                   variant="ghost"
                   size="icon"
                   className="size-10 shrink-0 rounded-full text-zinc-500 hover:bg-zinc-200/90 dark:text-zinc-400 dark:hover:bg-zinc-600/60"
                   title={t('adminCanales.inboxAttach')}
+                  disabled={sending || !selectedId || !isRealInboxConversationId(selectedId)}
+                  onClick={() => imageInputRef.current?.click()}
                 >
                   <Paperclip className="size-[22px]" strokeWidth={1.5} />
                 </Button>
                 <Input
                   value={draft}
                   onChange={(e) => setDraft(e.target.value)}
-                  placeholder={t('adminCanales.botInputPlaceholder')}
+                  placeholder={inputPlaceholder}
                   className="min-h-11 flex-1 rounded-lg border-0 bg-white px-3 py-2.5 text-[15px] shadow-sm ring-1 ring-black/[0.06] dark:bg-[#2a3942] dark:text-zinc-100 dark:ring-white/10"
-                  aria-label={t('adminCanales.botInputAria')}
-                  disabled={sending}
+                  aria-label={inputAria}
+                  disabled={
+                    sending ||
+                    (isWhatsappApi && (!selectedId || !isRealInboxConversationId(selectedId)))
+                  }
                   maxLength={2000}
                   autoComplete="off"
                 />
@@ -762,8 +1455,8 @@ function ChannelWhatsAppInbox({ channel, chrome, isInteractive }: InboxProps) {
                   type="submit"
                   size="icon"
                   className="size-11 shrink-0 rounded-full bg-[#00a884] text-white shadow-md hover:bg-[#008f72] dark:bg-[#00a884]"
-                  disabled={sending || !draft.trim()}
-                  aria-label={t('adminCanales.botSend')}
+                  disabled={sending || !draft.trim() || (isWhatsappApi && !selectedId)}
+                  aria-label={sendAria}
                 >
                   <Send className="size-[22px]" strokeWidth={1.5} />
                 </Button>
@@ -830,7 +1523,11 @@ export default function AppAdminCanales({ channel }: { channel: string }) {
       contentFlush
     >
       <div className="flex h-full min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
-        <ChannelWhatsAppInbox channel={ch} chrome={chrome} isInteractive={ch === 'bot-test'} />
+        <ChannelWhatsAppInbox
+          channel={ch}
+          chrome={chrome}
+          dataSource={ch === 'bot-test' ? 'bot-test' : ch === 'whatsapp' ? 'whatsapp-api' : 'mock'}
+        />
       </div>
     </AppShell>
   );

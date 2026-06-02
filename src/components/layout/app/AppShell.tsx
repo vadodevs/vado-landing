@@ -50,6 +50,7 @@ import {
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { AppSideChatDock } from '@/components/app/AppSideChat';
 import { useAppNavBadges } from '@/contexts/AppNavBadgesContext';
+import { AdminChannelNavIcon } from '@/components/admin/AdminChannelIcons';
 
 export type AppShellProps = {
   pathWithoutLang: string;
@@ -666,10 +667,7 @@ export function AppShell({
                             isActive(hrefAdminCanalesFacebook) && sb.navActive,
                           )}
                         >
-                          <span
-                            className="size-2 shrink-0 rounded-full bg-[#1877F2] ring-1 ring-black/15 dark:ring-white/15"
-                            aria-hidden
-                          />
+                          <AdminChannelNavIcon channel="facebook" />
                           <span className="truncate">{t('sidebarDemo.navChannelFacebook')}</span>
                         </Link>
                         <Link
@@ -681,10 +679,7 @@ export function AppShell({
                             isActive(hrefAdminCanalesWhatsApp) && sb.navActive,
                           )}
                         >
-                          <span
-                            className="size-2 shrink-0 rounded-full bg-[#25D366] ring-1 ring-black/15 dark:ring-white/15"
-                            aria-hidden
-                          />
+                          <AdminChannelNavIcon channel="whatsapp" />
                           <span className="truncate">{t('sidebarDemo.navChannelWhatsApp')}</span>
                         </Link>
                         <Link
@@ -696,10 +691,7 @@ export function AppShell({
                             isActive(hrefAdminCanalesInstagram) && sb.navActive,
                           )}
                         >
-                          <span
-                            className="size-2 shrink-0 rounded-full bg-[#E4405F] ring-1 ring-black/15 dark:ring-white/15"
-                            aria-hidden
-                          />
+                          <AdminChannelNavIcon channel="instagram" />
                           <span className="truncate">{t('sidebarDemo.navChannelInstagram')}</span>
                         </Link>
                         <Link
@@ -711,10 +703,7 @@ export function AppShell({
                             isActive(hrefAdminCanalesBotTest) && sb.navActive,
                           )}
                         >
-                          <span
-                            className="size-2 shrink-0 rounded-full bg-[#14d9ce] ring-1 ring-black/15 dark:ring-white/15"
-                            aria-hidden
-                          />
+                          <AdminChannelNavIcon channel="bot-test" />
                           <span className="truncate">{t('sidebarDemo.navChannelBotTest')}</span>
                         </Link>
                       </div>

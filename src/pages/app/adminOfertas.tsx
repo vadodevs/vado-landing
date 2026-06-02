@@ -169,7 +169,9 @@ export default function AppAdminOfertasPage() {
     if (location.includes('/candidatos')) return;
     if (location.includes('/crear')) return;
     if (location.includes('/preview/')) return;
-    void reloadOffers(false);
+    queueMicrotask(() => {
+      void reloadOffers(false);
+    });
   }, [location, reloadOffers, ofertasBase]);
 
   useEffect(() => {

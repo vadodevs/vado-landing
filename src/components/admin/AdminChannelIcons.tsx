@@ -1,4 +1,8 @@
+import { Bot } from 'lucide-react';
+import { FaFacebook, FaInstagram } from 'react-icons/fa';
 import { cn } from '@/lib/utils';
+
+export type AdminChannelSlug = 'facebook' | 'whatsapp' | 'instagram' | 'bot-test';
 
 /** Logo WhatsApp (relleno), color vía `text-*` o `currentColor`. */
 export function WhatsAppGlyph({ className }: { className?: string }) {
@@ -15,4 +19,25 @@ export function WhatsAppGlyph({ className }: { className?: string }) {
       />
     </svg>
   );
+}
+
+/** Icono de marca para sidebar / listas (Facebook, WhatsApp, Instagram, Bot test). */
+export function AdminChannelNavIcon({
+  channel,
+  className,
+}: {
+  channel: AdminChannelSlug;
+  className?: string;
+}) {
+  const iconClass = cn('size-4 shrink-0', className);
+  switch (channel) {
+    case 'facebook':
+      return <FaFacebook className={cn(iconClass, 'text-[#1877F2]')} aria-hidden />;
+    case 'whatsapp':
+      return <WhatsAppGlyph className={cn(iconClass, 'text-[#25D366]')} />;
+    case 'instagram':
+      return <FaInstagram className={cn(iconClass, 'text-[#E4405F]')} aria-hidden />;
+    case 'bot-test':
+      return <Bot className={cn(iconClass, 'text-[#14d9ce]')} strokeWidth={2} aria-hidden />;
+  }
 }

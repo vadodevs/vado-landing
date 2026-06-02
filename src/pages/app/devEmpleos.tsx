@@ -139,29 +139,32 @@ export default function AppDevEmpleosPage() {
   }, []);
 
   useEffect(() => {
-    if (!apiBase) {
-      setJobsError(t('devEmpleosPage.configError'));
-      setJobsLoading(false);
-      return;
-    }
-    const token = getDevAccessToken();
     let cancelled = false;
-    setJobsLoading(true);
-    setJobsError(null);
-    const load = token
-      ? fetchDeveloperPostedJobs(apiBase, token, 100)
-      : fetchPublicPostedJobs(apiBase, 100);
-    void load
-      .then((data) => {
-        if (cancelled) return;
-        setRows(data);
-      })
-      .catch(() => {
-        if (!cancelled) setJobsError(t('devEmpleosPage.loadError'));
-      })
-      .finally(() => {
-        if (!cancelled) setJobsLoading(false);
-      });
+
+    queueMicrotask(() => {
+      if (!apiBase) {
+        setJobsError(t('devEmpleosPage.configError'));
+        setJobsLoading(false);
+        return;
+      }
+      const token = getDevAccessToken();
+      setJobsLoading(true);
+      setJobsError(null);
+      const load = token
+        ? fetchDeveloperPostedJobs(apiBase, token, 100)
+        : fetchPublicPostedJobs(apiBase, 100);
+      void load
+        .then((data) => {
+          if (cancelled) return;
+          setRows(data);
+        })
+        .catch(() => {
+          if (!cancelled) setJobsError(t('devEmpleosPage.loadError'));
+        })
+        .finally(() => {
+          if (!cancelled) setJobsLoading(false);
+        });
+    });
 
     return () => {
       cancelled = true;
@@ -212,7 +215,9 @@ export default function AppDevEmpleosPage() {
 
   useEffect(() => {
     if (!isPostulacion) return;
-    void loadApplications();
+    queueMicrotask(() => {
+      void loadApplications();
+    });
   }, [isPostulacion, loadApplications]);
 
   useEffect(() => {
@@ -239,7 +244,9 @@ export default function AppDevEmpleosPage() {
     const jid = params.get('job');
     if (!jid) return;
     const found = rows.find((j) => j.id === jid);
-    if (found) setSelected(found);
+    if (found) {
+      queueMicrotask(() => setSelected(found));
+    }
   }, [location, rows, jobsLoading, isPostulacion]);
 
   const emptyJobs = !jobsLoading && !jobsError && rows.length === 0;
