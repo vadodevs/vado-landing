@@ -709,7 +709,7 @@ export default function AppAdminCompanyPage() {
       description={t('seo.appAdminCompanies')}
       contentOverflow="hidden"
     >
-      <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+      <div className="flex h-0 min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
       <section className="flex min-h-0 min-w-0 flex-1 flex-col gap-2 overflow-hidden scroll-mt-24">
         {/* Intro + filtros: siempre visibles; el scroll solo está en la tabla */}
         <div className="min-h-0 shrink-0 space-y-2">
@@ -840,7 +840,7 @@ export default function AppAdminCompanyPage() {
         </div>
 
         {/* Panel de tabla: ocupa el alto restante; solo este bloque central hace scroll */}
-        <div className="isolate flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-lg border border-border/70 bg-card shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] dark:border-border/50 dark:bg-muted/20 dark:shadow-none">
+        <div className="isolate flex h-0 min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-lg border border-border/70 bg-card shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] dark:border-border/50 dark:bg-muted/20 dark:shadow-none">
           <div className="relative min-h-0 min-w-0 flex-1 overflow-hidden">
             <div className="absolute inset-0 overflow-auto overscroll-contain rounded-t-lg">
             <table className="w-full min-w-0 table-fixed border-collapse text-left text-[12px]">

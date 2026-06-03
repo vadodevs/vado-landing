@@ -61,6 +61,8 @@ export type AppShellProps = {
   contentOverflow?: 'scroll' | 'hidden';
   /** Sin padding en el área de contenido: la página ocupa todo el panel bajo el header (p. ej. inbox a ancho completo). */
   contentFlush?: boolean;
+  /** Oculta el título de página (p. ej. inbox WhatsApp con chrome propio). */
+  hidePageTitle?: boolean;
 };
 
 type AppSidebarChrome = {
@@ -299,6 +301,7 @@ export function AppShell({
   children,
   contentOverflow = 'scroll',
   contentFlush = false,
+  hidePageTitle = false,
 }: AppShellProps) {
   const { t } = useTranslation();
   const { path } = useLocale();
@@ -483,14 +486,12 @@ export function AppShell({
       <SidebarProvider
         className={cn(
           sb.glassInner,
-          'min-h-svh font-sans antialiased',
+          'flex h-svh max-h-svh min-h-0 w-full overflow-x-hidden overflow-y-hidden font-sans antialiased',
           /* Marco exterior tipo ventana de Preferencias del sistema */
           appThemeMode === 'dark'
             ? 'app-dark bg-black text-zinc-100'
             : 'bg-[#d1d1d6] text-zinc-900',
-          /* Panel Vado Intelligence (md+): hueco cuando está expandido */
-          sideChatExpanded &&
-            'md:pr-[calc(400px+0.5rem)] md:transition-[padding] md:duration-200 md:ease-out',
+          sideChatExpanded && 'md:transition-[padding] md:duration-200 md:ease-out',
         )}
       >
         <Sidebar collapsible="icon" variant="floating" sheetClassName={sb.mobileSheet}>
@@ -509,7 +510,7 @@ export function AppShell({
             </Link>
           </SidebarHeader>
 
-          <SidebarContent className="gap-0 px-2 pb-2">
+          <SidebarContent className="min-h-0 flex-1 gap-0 overflow-y-auto overscroll-y-contain px-2 pb-2">
             <nav className="flex flex-col py-3" aria-label={t('sidebarDemo.appAreaNav')}>
               {isAdminSection ? (
                 <>
@@ -932,7 +933,12 @@ export function AppShell({
             </nav>
           </SidebarContent>
 
-          <SidebarFooter className={cn('p-2', sb.borderSeparator)}>
+          <SidebarFooter
+            className={cn(
+              'mt-auto shrink-0 border-t p-2 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))]',
+              sb.borderSeparator,
+            )}
+          >
             <CollapsedIconTooltip label={t('sidebarDemo.logOut')}>
               {isAdminSection ? (
                 <button
@@ -999,28 +1005,50 @@ export function AppShell({
 
         <SidebarInset
           className={cn(
-            'flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border shadow-lg',
+            'flex min-h-0 w-full min-w-0 flex-1 flex-col overflow-hidden rounded-xl border shadow-lg',
+            /* Misma altura visual que el sidebar flotante (p-2 → 1rem vertical) */
+            'h-[calc(100svh-1rem)] max-h-[calc(100svh-1rem)]',
+            'ml-0 mt-2 mb-2 max-md:mx-2 max-md:mt-2',
+            sideChatExpanded
+              ? 'md:mr-[calc(400px+0.75rem)]'
+              : 'mr-2 max-md:mr-2',
+            'max-md:mb-[max(0.5rem,env(safe-area-inset-bottom,0px))]',
+            'max-md:h-[calc(100svh-1rem-env(safe-area-inset-bottom,0px))] max-md:max-h-[calc(100svh-1rem-env(safe-area-inset-bottom,0px))]',
             appThemeMode === 'dark'
               ? 'border-zinc-700/55 bg-zinc-900 shadow-black/50'
               : 'border-white/90 bg-white shadow-md shadow-zinc-900/10',
-            'm-2 max-md:mx-2.5 max-md:mt-2 max-md:mb-[max(0.5rem,env(safe-area-inset-bottom,0px))]',
-            'max-md:min-h-0 max-md:flex-1',
+
           )}
         >
           <header
             className={cn(
-              'flex h-[52px] max-md:h-12 shrink-0 items-center gap-2 border-b px-5 max-md:gap-1.5 max-md:px-3',
+              'flex shrink-0 items-center gap-2 border-b max-md:gap-1.5 max-md:px-3',
+              hidePageTitle ? 'h-11 px-3 max-md:h-10' : 'h-[52px] px-5 max-md:h-12',
               appThemeMode === 'dark'
                 ? 'border-white/[0.07] bg-zinc-900'
                 : 'border-black/[0.06] bg-white',
             )}
           >
             <SidebarTrigger className="-ml-1 max-md:size-8" />
-            <Separator orientation="vertical" className="mr-1 hidden data-[orientation=vertical]:h-4 md:block" />
-            <h1 className="min-w-0 flex-1 truncate text-[17px] font-semibold tracking-tight max-md:text-sm md:text-[17px]">
-              {title}
-            </h1>
-            <div className="ml-auto flex w-max max-w-[min(100%,18rem)] shrink-0 items-center justify-end">
+            {!hidePageTitle ? (
+              <>
+                <Separator
+                  orientation="vertical"
+                  className="mr-1 hidden data-[orientation=vertical]:h-4 md:block"
+                />
+                <h1 className="min-w-0 flex-1 truncate text-[17px] font-semibold tracking-tight max-md:text-sm md:text-[17px]">
+                  {title}
+                </h1>
+              </>
+            ) : (
+              <div className="min-w-0 flex-1" aria-hidden />
+            )}
+            <div
+              className={cn(
+                'flex w-max max-w-[min(100%,18rem)] shrink-0 items-center justify-end',
+                hidePageTitle ? '' : 'ml-auto',
+              )}
+            >
               <VadoIntelligenceChatToggle
                 expanded={sideChatExpanded}
                 onToggle={() => setSideChatExpanded((v) => !v)}
@@ -1038,10 +1066,17 @@ export function AppShell({
                     appThemeMode === 'dark' ? 'bg-zinc-950' : 'bg-[#f2f2f7]',
                   )
                 : cn(
-                    'px-5 py-5 max-md:px-4 max-md:py-4 max-md:pb-[max(1rem,env(safe-area-inset-bottom,0px))]',
                     contentOverflow === 'hidden'
-                      ? 'gap-0 overflow-hidden overscroll-none'
-                      : 'gap-6 overflow-y-auto max-md:gap-5',
+                      ? cn(
+                          'flex h-0 min-h-0 flex-1 flex-col gap-0 overflow-hidden overscroll-none',
+                          'px-4 py-3 max-md:px-3 max-md:py-3',
+                          'max-md:pb-[max(0.75rem,env(safe-area-inset-bottom,0px))]',
+                        )
+                      : cn(
+                          'gap-6 overflow-y-auto max-md:gap-5',
+                          'px-5 py-5 max-md:px-4 max-md:py-4',
+                          'max-md:pb-[max(1rem,env(safe-area-inset-bottom,0px))]',
+                        ),
                     appThemeMode === 'dark' ? 'bg-zinc-950' : 'bg-[#f2f2f7]',
                   ),
             )}

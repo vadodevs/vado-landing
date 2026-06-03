@@ -376,7 +376,7 @@ export default function AppAdminReclutadoresPage() {
       contentOverflow={isListRoute ? 'hidden' : 'scroll'}
     >
       {isListRoute ? (
-        <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+        <div className="flex h-0 min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
         <section
           id="recruiters"
           className="flex min-h-0 min-w-0 flex-1 flex-col gap-2 overflow-hidden scroll-mt-24"
@@ -448,7 +448,7 @@ export default function AppAdminReclutadoresPage() {
             </div>
           </div>
 
-          <div className="isolate flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-lg border border-border/70 bg-card shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] dark:border-border/50 dark:bg-muted/20 dark:shadow-none">
+          <div className="isolate flex h-0 min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-lg border border-border/70 bg-card shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] dark:border-border/50 dark:bg-muted/20 dark:shadow-none">
             <div className="relative min-h-0 min-w-0 flex-1 overflow-hidden">
               <div className="absolute inset-0 overflow-auto overscroll-contain rounded-t-lg">
               <table className="w-full min-w-0 table-fixed border-collapse text-left text-[12px]">

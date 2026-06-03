@@ -268,7 +268,7 @@ export default function AppAdminProyectosPage() {
       description={t('seo.appAdminProjects')}
       contentOverflow="hidden"
     >
-      <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+      <div className="flex h-0 min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
       <section className="flex min-h-0 min-w-0 flex-1 flex-col gap-2 overflow-hidden scroll-mt-24">
         <div className="flex shrink-0 flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <div>
@@ -358,7 +358,7 @@ export default function AppAdminProyectosPage() {
                   {emptyProjectsMessage}
                 </p>
               ) : (
-                <div className="isolate flex min-h-0 flex-1 flex-col overflow-hidden rounded-lg border border-border bg-card">
+                <div className="isolate flex h-0 min-h-0 flex-1 flex-col overflow-hidden rounded-lg border border-border bg-card">
                   <div className="relative min-h-0 min-w-0 flex-1 overflow-hidden">
                     <ul className="absolute inset-0 divide-y divide-border overflow-auto overscroll-contain rounded-t-lg">
                     {paginatedVisibleProjects.map((p) => (

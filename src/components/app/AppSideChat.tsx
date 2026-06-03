@@ -1,4 +1,13 @@
-import { useCallback, useEffect, useLayoutEffect, useRef, useState, type FormEvent, type KeyboardEvent } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type FormEvent,
+  type KeyboardEvent,
+} from 'react';
 import { ArrowUp, MessageSquarePlus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
@@ -293,14 +302,17 @@ export function AppSideChatDock({ theme, open, onOpenChange, regionId }: AppSide
     return (
       <aside
         id={regionId}
-        style={{ width: APP_SIDE_CHAT_DESKTOP_WIDTH_PX }}
+        style={
+          {
+            '--side-chat-width': `${APP_SIDE_CHAT_DESKTOP_WIDTH_PX}px`,
+          } as CSSProperties
+        }
         className={cn(
-          'pointer-events-auto fixed z-50 max-md:hidden',
-          'top-2 bottom-2 right-2 flex flex-col overflow-hidden rounded-3xl',
-          'transition-[transform,opacity,visibility] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] will-change-transform',
+          'fixed z-50 flex flex-col overflow-hidden rounded-3xl max-md:hidden',
+          'top-2 bottom-2 transition-[transform,opacity,visibility,width] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] will-change-transform',
           open
-            ? 'translate-x-0 opacity-100'
-            : 'pointer-events-none translate-x-[calc(100%+0.75rem)] opacity-0',
+            ? 'pointer-events-auto visible right-2 w-[var(--side-chat-width,400px)] translate-x-0 opacity-100'
+            : 'pointer-events-none invisible right-0 w-0 max-w-0 translate-x-full overflow-hidden opacity-0',
           glass,
         )}
         aria-label="Vado Intelligence"

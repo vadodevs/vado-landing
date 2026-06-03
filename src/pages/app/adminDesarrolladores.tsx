@@ -475,12 +475,12 @@ export default function AppAdminDesarrolladoresPage() {
       description="Admin panel"
       contentOverflow="hidden"
     >
-      <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+      <div className="flex h-0 min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
       <section
         id="developers"
-        className="flex min-h-0 min-w-0 flex-1 flex-col gap-2 overflow-hidden scroll-mt-24"
+        className="flex h-0 min-h-0 min-w-0 flex-1 flex-col gap-1.5 overflow-hidden scroll-mt-24"
       >
-        <div className="min-h-0 shrink-0 space-y-2">
+        <div className="shrink-0 space-y-1">
           <div className="min-w-0">
               <h2 className="text-xl font-semibold tracking-tight text-[#0b1f3a] dark:text-zinc-50">
                 Gente Talentosa
@@ -613,7 +613,7 @@ export default function AppAdminDesarrolladoresPage() {
           </div>
         </div>
 
-        <div className="isolate flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-lg border border-border/70 bg-card shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] dark:border-border/50 dark:bg-muted/20 dark:shadow-none">
+        <div className="isolate flex h-0 min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-lg border border-border/70 bg-card shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] dark:border-border/50 dark:bg-muted/20 dark:shadow-none">
           <div className="relative min-h-0 min-w-0 flex-1 overflow-hidden">
             <div className="absolute inset-0 overflow-auto overscroll-contain rounded-t-lg">
             <table className="w-full min-w-0 table-fixed border-collapse text-left text-[12px]">
@@ -894,7 +894,8 @@ export default function AppAdminDesarrolladoresPage() {
                 </tr>
               ) : null}
             </tbody>
-          </table>
+            </table>
+            <div className="h-2 shrink-0" aria-hidden />
             </div>
           </div>
           <AdminTablePagination
@@ -903,7 +904,7 @@ export default function AppAdminDesarrolladoresPage() {
             pageSize={ADMIN_PAGE_SIZE}
             onPageChange={setDevPage}
             nounPlural="desarrolladores"
-            className="shrink-0 gap-1 border-border/60 bg-muted/20 px-3 py-2 text-xs sm:flex-row sm:items-center sm:justify-between sm:px-4 dark:bg-muted/10"
+            className="shrink-0 gap-1 border-border/60 bg-muted/20 px-3 py-2.5 text-xs sm:flex-row sm:items-center sm:justify-between sm:px-4 dark:bg-muted/10"
           />
         </div>
       </section>
