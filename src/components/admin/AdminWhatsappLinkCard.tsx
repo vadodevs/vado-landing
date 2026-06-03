@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'wouter';
 import { Loader2 } from 'lucide-react';
@@ -7,6 +7,9 @@ import { cn } from '@/lib/utils';
 import { useLocale } from '@/hooks/useLocale';
 import {
   configureWhatsappWebhook,
+  importWhatsappHistoryAfterLink,
+  relinkWhatsappForHistory,
+  syncWhatsappChats,
   disconnectWhatsapp,
   fetchWhatsappConnect,
   fetchWhatsappLinkStatus,
@@ -44,11 +47,15 @@ export function AdminWhatsappLinkCard() {
   const [linking, setLinking] = useState(false);
   const [disconnecting, setDisconnecting] = useState(false);
   const [syncingWebhook, setSyncingWebhook] = useState(false);
+  const [importingHistory, setImportingHistory] = useState(false);
+  const [historyImportMessage, setHistoryImportMessage] = useState<string | null>(null);
+  const syncInFlightRef = useRef(false);
+  const pendingHistoryImportRef = useRef(false);
   const [error, setError] = useState<string | null>(null);
 
   const managerUrl = String(import.meta.env.VITE_EVOLUTION_MANAGER_URL ?? '').trim();
 
-  const refreshStatus = useCallback(async () => {
+  const refreshStatus = useCallback(async (): Promise<WhatsappLinkStatusDto | null> => {
     const res = await fetchWhatsappLinkStatus();
     if (res.ok) {
       setLinkStatus(res.data);
@@ -62,6 +69,29 @@ export function AdminWhatsappLinkCard() {
       setError(t('adminSettings.whatsappStatusError'));
     }
     return null;
+  }, [t]);
+
+  const runHistoryImport = useCallback(async () => {
+    setImportingHistory(true);
+    setHistoryImportMessage(t('adminSettings.whatsappHistoryImporting'));
+    setError(null);
+    try {
+      const res = await importWhatsappHistoryAfterLink();
+      if (!res.ok) {
+        setError(t('adminSettings.whatsappConnectError'));
+        return;
+      }
+      setHistoryImportMessage(
+        t('adminSettings.whatsappHistoryImportDone', {
+          chats: res.data.evolutionChatCount,
+          total: res.data.total,
+          messages: res.data.messagesImported,
+        }),
+      );
+    } finally {
+      setImportingHistory(false);
+      pendingHistoryImportRef.current = false;
+    }
   }, [t]);
 
   useEffect(() => {
@@ -83,16 +113,23 @@ export function AdminWhatsappLinkCard() {
       void refreshStatus().then((status) => {
         if (status?.linked) {
           setLinking(false);
-          setConnectPayload(null);
+          if (pendingHistoryImportRef.current) {
+            void runHistoryImport();
+          }
+          if (!pendingHistoryImportRef.current) {
+            setConnectPayload(null);
+          }
         }
       });
     }, 3000);
     return () => window.clearInterval(interval);
-  }, [linking, connectPayload, refreshStatus]);
+  }, [linking, connectPayload, refreshStatus, runHistoryImport]);
 
   const handleLink = async () => {
+    pendingHistoryImportRef.current = false;
     setLinking(true);
     setError(null);
+    setHistoryImportMessage(null);
     const res = await fetchWhatsappConnect();
     if (!res.ok) {
       setLinking(false);
@@ -107,19 +144,67 @@ export function AdminWhatsappLinkCard() {
     await refreshStatus();
   };
 
+  const handleRelinkForHistory = async () => {
+    if (syncInFlightRef.current) return;
+    const ok = window.confirm(t('adminSettings.whatsappRelinkConfirm'));
+    if (!ok) return;
+
+    syncInFlightRef.current = true;
+    setLinking(true);
+    setError(null);
+    setHistoryImportMessage(null);
+    pendingHistoryImportRef.current = true;
+
+    try {
+      const res = await relinkWhatsappForHistory();
+      if (!res.ok) {
+        setError(t('adminSettings.whatsappConnectError'));
+        pendingHistoryImportRef.current = false;
+        setLinking(false);
+        return;
+      }
+      setConnectPayload({
+        state: res.data.state,
+        qrcodeBase64: res.data.qrcodeBase64,
+        pairingCode: res.data.pairingCode,
+        message: res.data.message,
+      });
+      setLinkStatus((prev) =>
+        prev
+          ? { ...prev, linked: false, state: res.data.state === 'open' ? 'open' : 'connecting' }
+          : prev,
+      );
+      await refreshStatus();
+    } finally {
+      syncInFlightRef.current = false;
+    }
+  };
+
   const handleSyncWebhook = async () => {
+    if (syncInFlightRef.current) return;
+    syncInFlightRef.current = true;
     setSyncingWebhook(true);
     setError(null);
-    const res = await configureWhatsappWebhook();
-    setSyncingWebhook(false);
-    if (!res.ok) {
-      setError(t('adminSettings.whatsappConnectError'));
-      return;
+    try {
+      const webhookRes = await configureWhatsappWebhook();
+      if (!webhookRes.ok) {
+        setError(t('adminSettings.whatsappConnectError'));
+        return;
+      }
+      const chatsRes = await syncWhatsappChats();
+      if (!chatsRes.ok) {
+        setError(t('adminSettings.whatsappConnectError'));
+        return;
+      }
+      await refreshStatus();
+    } finally {
+      syncInFlightRef.current = false;
+      setSyncingWebhook(false);
     }
-    await refreshStatus();
   };
 
   const handleDisconnect = async () => {
+    pendingHistoryImportRef.current = false;
     setDisconnecting(true);
     setError(null);
     const res = await disconnectWhatsapp();
@@ -130,6 +215,7 @@ export function AdminWhatsappLinkCard() {
     }
     setConnectPayload(null);
     setLinking(false);
+    setHistoryImportMessage(null);
     await refreshStatus();
   };
 
@@ -141,13 +227,15 @@ export function AdminWhatsappLinkCard() {
       ? t('adminSettings.whatsappConnecting')
       : t('adminSettings.whatsappDisconnected');
 
+  const showQrPanel =
+    linking || connectPayload?.qrcodeBase64 || connectPayload?.pairingCode || importingHistory;
+
   return (
     <div
       id="whatsapp"
       className="scroll-mt-24 rounded-xl border border-border bg-card p-5 shadow-sm md:p-6"
     >
       <h3 className="text-lg font-semibold text-foreground">{t('adminSettings.whatsappTitle')}</h3>
-      <p className="mt-1 text-sm text-muted-foreground">{t('adminSettings.whatsappDescription')}</p>
 
       <div className="mt-4 flex flex-wrap items-center gap-2">
         <span
@@ -169,37 +257,41 @@ export function AdminWhatsappLinkCard() {
         </p>
       ) : null}
 
+      {historyImportMessage ? (
+        <p className="mt-3 text-sm text-emerald-700 dark:text-emerald-300">{historyImportMessage}</p>
+      ) : null}
+
       {loadingStatus ? (
         <div className="mt-6 flex items-center gap-2 text-sm text-muted-foreground">
           <Loader2 className="size-4 animate-spin" aria-hidden />
           {t('adminSettings.whatsappConnecting')}
         </div>
-      ) : linked ? (
+      ) : linked && !showQrPanel ? (
         <div className="mt-6 space-y-4">
           <p className="text-sm text-foreground">{t('adminSettings.whatsappLinkedSuccess')}</p>
-          <p
-            className={cn(
-              'text-sm',
-              linkStatus?.webhookConfigured
-                ? 'text-emerald-700 dark:text-emerald-400'
-                : 'text-amber-800 dark:text-amber-200',
-            )}
-          >
-            {linkStatus?.webhookConfigured
-              ? t('adminSettings.whatsappWebhookOk')
-              : t('adminSettings.whatsappWebhookPending')}
-          </p>
-          {linkStatus?.webhookCallbackUrl ? (
-            <p className="break-all text-xs text-muted-foreground">
-              {t('adminSettings.whatsappWebhookUrl')}: {linkStatus.webhookCallbackUrl}
-            </p>
-          ) : null}
+          <p className="text-xs text-muted-foreground">{t('adminSettings.whatsappHistoryHint')}</p>
           <div className="flex flex-wrap gap-2">
+            <Button
+              type="button"
+              variant="default"
+              size="sm"
+              disabled={importingHistory || syncingWebhook || disconnecting}
+              onClick={() => void handleRelinkForHistory()}
+            >
+              {importingHistory ? (
+                <>
+                  <Loader2 className="mr-2 size-4 animate-spin" aria-hidden />
+                  {t('adminSettings.whatsappResyncHistory')}
+                </>
+              ) : (
+                t('adminSettings.whatsappResyncHistory')
+              )}
+            </Button>
             <Button
               type="button"
               variant="secondary"
               size="sm"
-              disabled={syncingWebhook}
+              disabled={syncingWebhook || importingHistory}
               onClick={() => void handleSyncWebhook()}
             >
               {syncingWebhook ? (
@@ -215,19 +307,53 @@ export function AdminWhatsappLinkCard() {
               type="button"
               variant="outline"
               size="sm"
-              disabled={disconnecting}
+              disabled={disconnecting || importingHistory}
               onClick={() => void handleDisconnect()}
             >
-            {disconnecting ? (
-              <>
-                <Loader2 className="mr-2 size-4 animate-spin" aria-hidden />
-                {t('adminSettings.whatsappDisconnect')}
-              </>
-            ) : (
-              t('adminSettings.whatsappDisconnect')
-            )}
-          </Button>
+              {disconnecting ? (
+                <>
+                  <Loader2 className="mr-2 size-4 animate-spin" aria-hidden />
+                  {t('adminSettings.whatsappDisconnect')}
+                </>
+              ) : (
+                t('adminSettings.whatsappDisconnect')
+              )}
+            </Button>
           </div>
+        </div>
+      ) : showQrPanel ? (
+        <div className="mt-6 space-y-4">
+          <p className="text-sm text-muted-foreground">
+            {importingHistory
+              ? t('adminSettings.whatsappHistoryImporting')
+              : t('adminSettings.whatsappRelinkScanHint')}
+          </p>
+          {importingHistory ? (
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Loader2 className="size-4 animate-spin" aria-hidden />
+              {t('adminSettings.whatsappHistoryImporting')}
+            </div>
+          ) : null}
+          {connectPayload?.qrcodeBase64 ? (
+            <div className="flex flex-col items-start gap-3">
+              <img
+                src={connectPayload.qrcodeBase64}
+                alt=""
+                className="max-w-[min(280px,100%)] rounded-lg border border-border bg-white p-2 shadow-sm"
+              />
+            </div>
+          ) : null}
+          {connectPayload?.pairingCode ? (
+            <div className="rounded-lg border border-border bg-muted/40 p-4">
+              <p className="text-sm font-medium text-foreground">{t('adminSettings.whatsappPairingHint')}</p>
+              <p className="mt-2 font-mono text-2xl tracking-widest text-foreground">
+                {formatPairingCode(connectPayload.pairingCode)}
+              </p>
+            </div>
+          ) : null}
+          {linking && !importingHistory && !connectPayload?.qrcodeBase64 && !connectPayload?.pairingCode ? (
+            <p className="text-sm text-muted-foreground">{t('adminSettings.whatsappWaitingScan')}</p>
+          ) : null}
         </div>
       ) : (
         <div className="mt-6 space-y-4">
@@ -241,30 +367,6 @@ export function AdminWhatsappLinkCard() {
               t('adminSettings.whatsappLinkButton')
             )}
           </Button>
-
-          {connectPayload?.qrcodeBase64 ? (
-            <div className="flex flex-col items-start gap-3">
-              <p className="text-sm text-muted-foreground">{t('adminSettings.whatsappQrHint')}</p>
-              <img
-                src={connectPayload.qrcodeBase64}
-                alt=""
-                className="max-w-[min(280px,100%)] rounded-lg border border-border bg-white p-2 shadow-sm"
-              />
-            </div>
-          ) : null}
-
-          {connectPayload?.pairingCode ? (
-            <div className="rounded-lg border border-border bg-muted/40 p-4">
-              <p className="text-sm font-medium text-foreground">{t('adminSettings.whatsappPairingHint')}</p>
-              <p className="mt-2 font-mono text-2xl tracking-widest text-foreground">
-                {formatPairingCode(connectPayload.pairingCode)}
-              </p>
-            </div>
-          ) : null}
-
-          {linking && !connectPayload?.qrcodeBase64 && !connectPayload?.pairingCode ? (
-            <p className="text-sm text-muted-foreground">{t('adminSettings.whatsappWaitingScan')}</p>
-          ) : null}
         </div>
       )}
 

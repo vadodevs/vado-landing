@@ -1,5 +1,11 @@
 import { getAdminAccessToken } from '@/lib/adminAuth';
 
+function stripBase64Payload(value: string): string {
+  const trimmed = value.trim();
+  const match = /^data:[^;]+;base64,(.+)$/is.exec(trimmed);
+  return (match?.[1] ?? trimmed).replace(/\s/g, '');
+}
+
 const blobUrlCache = new Map<string, string>();
 const inflight = new Map<string, Promise<string | null>>();
 
@@ -18,14 +24,52 @@ export function releaseInboxMessageMediaUrl(messageId: string): void {
   inflight.delete(messageId);
 }
 
+/** Limpia blobs al cambiar de conversación (no en cada re-render del hilo). */
+export function releaseAllInboxMessageMediaUrls(): void {
+  for (const id of blobUrlCache.keys()) {
+    releaseInboxMessageMediaUrl(id);
+  }
+}
+
 function base64ToBlob(base64: string, mimeType: string): Blob | null {
   try {
-    const binary = atob(base64);
+    const raw = stripBase64Payload(base64);
+    const binary = atob(raw);
     const bytes = new Uint8Array(binary.length);
     for (let i = 0; i < binary.length; i += 1) {
       bytes[i] = binary.charCodeAt(i);
     }
     return new Blob([bytes], { type: mimeType || 'image/jpeg' });
+  } catch {
+    return null;
+  }
+}
+
+async function fetchMediaAsBlob(messageId: string, base: string, token: string): Promise<Blob | null> {
+  const headers = { Authorization: `Bearer ${token}` };
+  const binaryUrl = `${base}/admin/inbox/messages/${encodeURIComponent(messageId)}/media`;
+
+  try {
+    const res = await fetch(binaryUrl, { headers });
+    if (res.ok) {
+      const blob = await res.blob();
+      if (blob.size > 0) return blob;
+    }
+  } catch {
+    /* fallback JSON */
+  }
+
+  try {
+    const res = await fetch(
+      `${base}/admin/inbox/messages/${encodeURIComponent(messageId)}/media-data`,
+      { headers },
+    );
+    if (!res.ok) return null;
+
+    const data = (await res.json()) as { base64?: string; mimeType?: string };
+    const raw = typeof data.base64 === 'string' ? data.base64.trim() : '';
+    if (!raw) return null;
+    return base64ToBlob(raw, data.mimeType ?? 'image/jpeg');
   } catch {
     return null;
   }
@@ -44,17 +88,7 @@ export async function loadInboxMessageMediaUrl(messageId: string): Promise<strin
     if (!base || !token) return null;
 
     try {
-      const res = await fetch(
-        `${base}/admin/inbox/messages/${encodeURIComponent(messageId)}/media-data`,
-        { headers: { Authorization: `Bearer ${token}` } },
-      );
-      if (!res.ok) return null;
-
-      const data = (await res.json()) as { base64?: string; mimeType?: string };
-      const raw = typeof data.base64 === 'string' ? data.base64.trim() : '';
-      if (!raw) return null;
-
-      const blob = base64ToBlob(raw, data.mimeType ?? 'image/jpeg');
+      const blob = await fetchMediaAsBlob(messageId, base, token);
       if (!blob?.size) return null;
 
       const url = URL.createObjectURL(blob);

@@ -7,9 +7,16 @@ import {
   type ChangeEvent,
   type ReactNode,
 } from 'react';
+import { createPortal } from 'react-dom';
 import {
   Bot,
+  Check,
+  CheckCheck,
+  ChevronDown,
   ChevronLeft,
+  ChevronUp,
+  ClipboardCopy,
+  Clock,
   Facebook,
   Instagram,
   MessageSquarePlus,
@@ -20,6 +27,7 @@ import {
   Search,
   Send,
   Smile,
+  Sparkles,
   X,
 } from 'lucide-react';
 import { Link, Redirect } from 'wouter';
@@ -27,7 +35,16 @@ import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import { AppShell } from '@/components/layout/app/AppShell';
 import { WhatsAppGlyph } from '@/components/admin/AdminChannelIcons';
+import { InboxAccountAvatar } from '@/components/admin/InboxAccountAvatar';
+import { InboxContactAvatar } from '@/components/admin/InboxContactAvatar';
 import { Button } from '@/components/ui/button';
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { useLocale } from '@/hooks/useLocale';
@@ -37,8 +54,15 @@ import {
   type InboxLeadChannel,
 } from '@/lib/appAssistantChat';
 import {
+  formatInboxContactName,
+  formatInboxMessagePreview,
+  isTechnicalInboxLabel,
+} from '@/lib/inboxDisplay';
+import {
   fetchInboxConversations,
   fetchInboxMessages,
+  syncWhatsappChats,
+  type InboxDeliveryStatus,
   fetchWhatsappLinkStatus,
   markInboxConversationRead,
   sendInboxImage,
@@ -49,8 +73,16 @@ import {
 import {
   loadInboxMessageMediaUrl,
   readFileAsBase64,
-  releaseInboxMessageMediaUrl,
+  releaseAllInboxMessageMediaUrls,
 } from '@/lib/inboxMessageMedia';
+import {
+  loadInboxAccountAvatarUrl,
+  releaseInboxAccountAvatarUrl,
+} from '@/lib/inboxAccountAvatar';
+import {
+  loadInboxContactAvatarUrl,
+  releaseAllInboxContactAvatarUrls,
+} from '@/lib/inboxContactAvatar';
 import { isAdminChannel, type AdminChannel } from '@/lib/adminCanalesChannel';
 
 type ChatMsg = {
@@ -62,6 +94,8 @@ type ChatMsg = {
   hasMedia?: boolean;
   /** Vista previa local mientras se sube (solo optimista). */
   localMediaUrl?: string | null;
+  /** Solo salientes (nosotros): reloj / ✓ / ✓✓ / ✓✓ azul. */
+  deliveryStatus?: InboxDeliveryStatus | null;
 };
 
 const WHATSAPP_IMAGE_MAX_BYTES = 8 * 1024 * 1024;
@@ -120,6 +154,10 @@ export type InboxConversation = {
   messages: ChatMsg[];
   lastPreview?: string;
   unreadCount?: number;
+  externalId?: string;
+  contactPhone?: string | null;
+  hasProfilePicture?: boolean;
+  isGroup?: boolean;
 };
 
 type InboxDataSource = 'mock' | 'bot-test' | 'whatsapp-api';
@@ -194,16 +232,23 @@ function formatInboxTimeLabel(iso: string, t: TFunction): string {
   return d.toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
 }
 
-function mapConversationDto(c: InboxConversationDto, t: TFunction): InboxConversation {
-  const name = c.contactName?.trim() || c.externalId;
+function mapConversationDto(c: InboxConversationDto, t: TFunction): InboxConversation | null {
+  const name = formatInboxContactName(c.contactName, c.externalId, t);
+  if (isTechnicalInboxLabel(name)) return null;
+  const preview = formatInboxMessagePreview(c.lastMessagePreview, t);
+  const isGroup = c.externalId.startsWith('g:');
   return {
     id: c.id,
     name,
     initials: initialsForContact(name, c.externalId),
     timeLabel: formatInboxTimeLabel(c.lastMessageAt, t),
     messages: [],
-    lastPreview: c.lastMessagePreview?.trim() || undefined,
+    lastPreview: preview,
     unreadCount: c.unreadCount,
+    externalId: c.externalId,
+    contactPhone: c.contactPhone ?? null,
+    hasProfilePicture: c.hasProfilePicture ?? false,
+    isGroup,
   };
 }
 
@@ -216,11 +261,99 @@ function mapMessageDto(m: InboxMessageDto): ChatMsg {
     time: Number.isNaN(sentAt.getTime()) ? '' : formatChatTime(sentAt),
     mediaType: m.mediaType ?? null,
     hasMedia: m.hasMedia ?? Boolean(m.mediaType),
+    deliveryStatus:
+      m.direction === 'outbound' ? (m.deliveryStatus ?? 'sent') : undefined,
   };
+}
+
+function WaDeliveryTicks({
+  status,
+  title,
+}: {
+  status: InboxDeliveryStatus | null | undefined;
+  title: string;
+}) {
+  const s = status ?? 'sent';
+  const className = 'size-[15px] shrink-0 stroke-[2.25]';
+  const wrap = (icon: ReactNode) => (
+    <span className="inline-flex" title={title} aria-label={title}>
+      {icon}
+    </span>
+  );
+  if (s === 'pending') {
+    return wrap(<Clock className={cn(className, 'opacity-70')} aria-hidden />);
+  }
+  if (s === 'error') {
+    return wrap(<Clock className={cn(className, 'text-red-500')} aria-hidden />);
+  }
+  if (s === 'delivered') {
+    return wrap(<CheckCheck className={cn(className, 'opacity-75')} aria-hidden />);
+  }
+  if (s === 'read' || s === 'played') {
+    return wrap(
+      <CheckCheck className={cn(className, 'text-sky-300')} aria-hidden />,
+    );
+  }
+  return wrap(<Check className={cn(className, 'opacity-75')} aria-hidden />);
+}
+
+function deliveryStatusAriaLabel(status: InboxDeliveryStatus | null | undefined, t: TFunction): string {
+  switch (status ?? 'sent') {
+    case 'pending':
+      return t('adminCanales.whatsappStatusPending');
+    case 'delivered':
+      return t('adminCanales.whatsappStatusDelivered');
+    case 'read':
+      return t('adminCanales.whatsappStatusRead');
+    case 'played':
+      return t('adminCanales.whatsappStatusPlayed');
+    case 'error':
+      return t('adminCanales.whatsappDeliveryFailed');
+    default:
+      return t('adminCanales.whatsappStatusSent');
+  }
 }
 
 function messageExpectsMedia(msg: ChatMsg): boolean {
   return Boolean(msg.mediaType) && (msg.hasMedia ?? false);
+}
+
+function normalizeThreadSearchQuery(query: string): string {
+  return query.trim().toLowerCase();
+}
+
+function messageMatchesThreadSearch(msg: ChatMsg, query: string): boolean {
+  const q = normalizeThreadSearchQuery(query);
+  if (!q) return false;
+  return msg.text.toLowerCase().includes(q);
+}
+
+function HighlightedMessageText({ text, query }: { text: string; query: string }) {
+  const q = query.trim();
+  if (!q) return <>{text}</>;
+
+  const lower = text.toLowerCase();
+  const qLower = q.toLowerCase();
+  const parts: ReactNode[] = [];
+  let start = 0;
+  let idx = lower.indexOf(qLower);
+
+  while (idx !== -1) {
+    if (idx > start) parts.push(text.slice(start, idx));
+    parts.push(
+      <mark
+        key={`${idx}-${q.length}`}
+        className="rounded-sm bg-teal-400/45 text-inherit dark:bg-teal-500/55"
+      >
+        {text.slice(idx, idx + q.length)}
+      </mark>,
+    );
+    start = idx + q.length;
+    idx = lower.indexOf(qLower, start);
+  }
+
+  if (start < text.length) parts.push(text.slice(start));
+  return <>{parts}</>;
 }
 
 function getBubbleVariantForList(msg: ChatMsg): 'text' | 'media' {
@@ -286,11 +419,11 @@ function WaMediaLightbox({
     };
   }, [open, onClose]);
 
-  if (!open) return null;
+  if (!open || !src) return null;
 
-  return (
+  return createPortal(
     <div
-      className="fixed inset-0 z-[200] flex items-center justify-center bg-[#0b141a]/96 p-4 sm:p-8"
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-[#0b141a]/96 p-4 sm:p-8"
       role="dialog"
       aria-modal="true"
       onClick={onClose}
@@ -310,7 +443,8 @@ function WaMediaLightbox({
         onClick={(e) => e.stopPropagation()}
         draggable={false}
       />
-    </div>
+    </div>,
+    document.body,
   );
 }
 
@@ -328,36 +462,49 @@ function useWhatsappMessageMedia(msg: ChatMsg) {
   useEffect(() => {
     if (!fetchId) return;
     let cancelled = false;
-    void loadInboxMessageMediaUrl(fetchId).then((url) => {
+    let attempt = 0;
+
+    const run = async () => {
+      setFetchState('loading');
+      const url = await loadInboxMessageMediaUrl(fetchId);
       if (cancelled) return;
       if (url) {
         setFetchedSrc(url);
         setFetchState('ready');
-      } else {
-        setFetchState('error');
+        return;
       }
-    });
+      attempt += 1;
+      if (attempt < 4) {
+        window.setTimeout(() => void run(), 1200 * attempt);
+        return;
+      }
+      setFetchState('error');
+    };
+
+    void run();
     return () => {
       cancelled = true;
     };
   }, [fetchId]);
-
-  useEffect(() => {
-    const id = msg.id;
-    return () => {
-      if (id && !id.startsWith('opt-')) {
-        releaseInboxMessageMediaUrl(id);
-      }
-    };
-  }, [msg.id]);
 
   const mediaSrc = localUrl ?? fetchedSrc;
   const mediaState = localUrl ? ('ready' as const) : fetchState;
   return { mediaSrc, mediaState, expectsMedia };
 }
 
-function WaMessageContent({ msg, t }: { msg: ChatMsg; t: TFunction }) {
+function WaMessageContent({
+  msg,
+  t,
+  messenger = false,
+  searchQuery = '',
+}: {
+  msg: ChatMsg;
+  t: TFunction;
+  messenger?: boolean;
+  searchQuery?: string;
+}) {
   const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
   const { mediaSrc, mediaState, expectsMedia } = useWhatsappMessageMedia(msg);
 
   const layout = getWhatsappMessageLayout(msg, mediaSrc);
@@ -367,15 +514,28 @@ function WaMessageContent({ msg, t }: { msg: ChatMsg; t: TFunction }) {
     expectsMedia && !hasMedia && (mediaState === 'loading' || mediaState === 'idle');
   const showError = expectsMedia && !hasMedia && mediaState === 'error';
 
+  const openLightbox = () => {
+    if (!src) return;
+    setLightboxSrc(src);
+    setLightboxOpen(true);
+  };
+
+  const closeLightbox = () => {
+    setLightboxOpen(false);
+    setLightboxSrc(null);
+  };
+
   return (
     <>
       {(isImage || isSticker) && hasMedia ? (
         <button
           type="button"
-          onClick={() => setLightboxOpen(true)}
+          onClick={openLightbox}
           className={cn(
-            'relative block w-full min-h-[120px] cursor-zoom-in overflow-hidden rounded-[6px] bg-[#dfe5e7] text-left dark:bg-[#3b4a54]',
-            isSticker ? 'max-w-[200px] min-h-0' : 'max-w-[min(100%,330px)]',
+            messenger
+              ? 'relative block w-fit max-w-[min(85vw,360px)] cursor-zoom-in overflow-hidden rounded-xl bg-zinc-900/80 text-left shadow-xl ring-1 ring-white/10'
+              : 'relative block w-fit max-w-[min(85vw,330px)] cursor-zoom-in overflow-hidden rounded-[6px] bg-[#dfe5e7] text-left shadow-[0_1px_0.5px_rgba(0,0,0,0.13)] ring-1 ring-black/[0.06] dark:bg-[#3b4a54] dark:ring-white/[0.08]',
+            isSticker && 'max-w-[200px]',
           )}
           aria-label={t('adminCanales.whatsappImageZoom')}
         >
@@ -386,8 +546,8 @@ function WaMessageContent({ msg, t }: { msg: ChatMsg; t: TFunction }) {
             decoding="async"
             draggable={false}
             className={cn(
-              'block h-auto w-full object-contain',
-              isSticker ? 'max-h-48' : 'max-h-[min(420px,55vh)]',
+              'block h-auto max-w-[min(85vw,330px)] object-contain',
+              isSticker ? 'max-h-48' : 'max-h-[min(360px,50vh)]',
             )}
           />
         </button>
@@ -420,13 +580,13 @@ function WaMessageContent({ msg, t }: { msg: ChatMsg; t: TFunction }) {
             hasMedia && (isImage || isSticker || isVideo) && 'mt-1 px-0.5',
           )}
         >
-          {msg.text}
+          <HighlightedMessageText text={msg.text} query={searchQuery} />
         </p>
       ) : null}
       <WaMediaLightbox
-        src={src}
-        open={lightboxOpen && hasMedia && (isImage || isSticker)}
-        onClose={() => setLightboxOpen(false)}
+        src={lightboxSrc ?? src}
+        open={lightboxOpen && Boolean(lightboxSrc ?? src)}
+        onClose={closeLightbox}
         closeLabel={t('adminCanales.whatsappImageClose')}
       />
     </>
@@ -563,6 +723,36 @@ function threadToAssistantMessages(thread: ChatMsg[]): AssistantChatMessage[] {
   }));
 }
 
+function buildInboxThreadAiContextMarkdown(
+  conv: InboxConversation | undefined,
+  messages: ChatMsg[],
+  channel: AdminChannel,
+): string {
+  const lines: string[] = ['# Contexto IA — conversación inbox', ''];
+  if (conv) {
+    lines.push(`- **Contacto:** ${conv.name}`);
+    if (conv.contactPhone) lines.push(`- **Teléfono:** ${conv.contactPhone}`);
+    if (conv.isGroup) lines.push('- **Tipo:** Grupo de WhatsApp');
+    if (conv.externalId) lines.push(`- **ID externo:** ${conv.externalId}`);
+  }
+  lines.push(`- **Canal:** ${channel}`);
+  lines.push('');
+  lines.push('## Mensajes recientes');
+  const recent = messages.slice(-50);
+  if (recent.length === 0) {
+    lines.push('_Sin mensajes en este hilo._');
+  } else {
+    for (const m of recent) {
+      const who = m.from === 'us' ? 'Nosotros' : 'Contacto';
+      const body =
+        m.text.trim() ||
+        (m.hasMedia || m.mediaType ? `[${m.mediaType ?? 'archivo'}]` : '—');
+      lines.push(`- **${who}** (${m.time}): ${body.replace(/\n/g, ' ')}`);
+    }
+  }
+  return lines.join('\n');
+}
+
 type ChannelChrome = {
   titleKey: string;
   seoKey: string;
@@ -630,8 +820,34 @@ function useIsDesktopMd(): boolean {
   return ok;
 }
 
-/** Fondo tipo papel tapiz WA Web (tiled dots) */
-function WaThreadBackdrop() {
+/** Fondo del hilo: patrón WA clásico o gradiente oscuro estilo messenger. */
+function WaThreadBackdrop({ messenger }: { messenger?: boolean }) {
+  if (messenger) {
+    return (
+      <>
+        <div
+          className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#0a0c0e] via-[#0d1114] to-[#0a0c0e]"
+          aria-hidden
+        />
+        <div
+          className="pointer-events-none absolute inset-0 opacity-40"
+          style={{
+            backgroundImage:
+              'radial-gradient(ellipse 80% 50% at 50% -20%, rgba(20,184,166,0.18), transparent), radial-gradient(ellipse 60% 40% at 100% 100%, rgba(20,184,166,0.08), transparent)',
+          }}
+          aria-hidden
+        />
+        <div
+          className="pointer-events-none absolute inset-0 opacity-[0.03]"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='32' height='32' viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='1' cy='1' r='1' fill='%23fff'/%3E%3C/svg%3E")`,
+            backgroundSize: '32px 32px',
+          }}
+          aria-hidden
+        />
+      </>
+    );
+  }
   return (
     <div
       className="pointer-events-none absolute inset-0 opacity-[0.11] dark:opacity-[0.14]"
@@ -649,52 +865,94 @@ function WaMessageBubble({
   children,
   time,
   variant = 'text',
+  deliveryStatus,
+  showDeliveryTicks = false,
+  deliveryStatusLabel,
+  messenger = false,
 }: {
   from: 'them' | 'us';
   children: ReactNode;
   time: string;
   variant?: 'text' | 'media';
+  deliveryStatus?: InboxDeliveryStatus | null;
+  showDeliveryTicks?: boolean;
+  deliveryStatusLabel?: string;
+  messenger?: boolean;
 }) {
   const us = from === 'us';
   const isMedia = variant === 'media';
+  const tickTitle = deliveryStatusLabel ?? '';
   return (
-    <div className={cn('relative max-w-[min(100%,920px)]', us ? 'ml-4 md:ml-10' : '')}>
-      {!us ? (
+    <div
+      className={cn(
+        'relative',
+        isMedia ? 'w-fit max-w-[min(85vw,360px)]' : 'max-w-[min(100%,min(72ch,85%))]',
+        messenger && (us ? 'ml-0' : 'mr-0'),
+        !messenger && us ? 'ml-4 md:ml-10' : '',
+      )}
+    >
+      {!messenger && !isMedia && !us ? (
         <div
           className="absolute bottom-[9px] left-[-6px] z-0 h-0 w-0 border-y-[6px] border-y-transparent border-r-[7px] border-r-white dark:border-r-[#202c33]"
           aria-hidden
         />
-      ) : (
+      ) : null}
+      {!messenger && !isMedia && us ? (
         <div
           className="absolute bottom-[9px] right-[-6px] z-0 h-0 w-0 border-y-[6px] border-y-transparent border-l-[7px] border-l-[#d9fdd3] dark:border-l-[#005c4b]"
           aria-hidden
         />
-      )}
+      ) : null}
       <div
         className={cn(
-          'relative z-[1] rounded-lg text-[14.2px] leading-snug shadow-[0_1px_0.5px_rgba(0,0,0,0.13)] ring-1 ring-black/[0.04] dark:ring-white/[0.06]',
-          isMedia ? 'overflow-hidden p-[3px]' : 'px-2.5 py-1.5',
-          us
-            ? 'rounded-br-sm bg-[#d9fdd3] text-zinc-900 dark:bg-[#005c4b] dark:text-emerald-50'
-            : 'rounded-bl-sm bg-white text-zinc-900 dark:bg-[#202c33] dark:text-zinc-100',
+          'relative z-[1] text-[14.5px] leading-relaxed',
+          isMedia
+            ? 'overflow-visible bg-transparent p-0 shadow-none ring-0'
+            : cn(
+                'overflow-hidden px-3.5 py-2.5',
+                messenger
+                  ? 'shadow-lg backdrop-blur-md ring-1'
+                  : 'rounded-lg px-2.5 py-1.5 shadow-[0_1px_0.5px_rgba(0,0,0,0.13)] ring-1 ring-black/[0.04] dark:ring-white/[0.06]',
+              ),
+          !isMedia &&
+            (messenger
+              ? us
+                ? 'rounded-xl rounded-tr-sm bg-gradient-to-br from-teal-600 to-teal-700 text-white ring-teal-500/20 shadow-teal-900/20'
+                : 'rounded-xl rounded-tl-sm bg-zinc-800/90 text-zinc-100 ring-white/[0.06] shadow-black/30'
+              : us
+                ? 'rounded-br-sm bg-[#d9fdd3] text-zinc-900 dark:bg-[#005c4b] dark:text-emerald-50'
+                : 'rounded-bl-sm bg-white text-zinc-900 dark:bg-[#202c33] dark:text-zinc-100'),
         )}
       >
         {children}
         {isMedia ? (
           <span
-            className="pointer-events-none absolute bottom-2 right-2 z-[2] rounded-md bg-black/55 px-1.5 py-0.5 text-[11px] leading-none font-medium tabular-nums text-white shadow-sm"
+            className="pointer-events-none absolute bottom-1.5 right-1.5 z-[2] flex items-center gap-0.5 rounded-md bg-black/50 px-1.5 py-0.5 text-[11px] leading-none font-medium tabular-nums text-white backdrop-blur-sm"
             aria-hidden
           >
-            {time}
+            <span>{time}</span>
+            {showDeliveryTicks && us ? (
+              <WaDeliveryTicks status={deliveryStatus} title={tickTitle} />
+            ) : null}
           </span>
         ) : (
           <p
             className={cn(
-              'mt-0.5 flex items-center justify-end gap-1 text-[11px] tabular-nums text-zinc-500 dark:text-zinc-400',
-              us && 'text-emerald-900/75 dark:text-emerald-100/75',
+              'mt-1 flex items-center justify-end gap-1 text-[11px] tabular-nums',
+              messenger
+                ? us
+                  ? 'text-teal-100/80'
+                  : 'text-zinc-500'
+                : cn(
+                    'text-zinc-500 dark:text-zinc-400',
+                    us && 'text-emerald-900/75 dark:text-emerald-100/75',
+                  ),
             )}
           >
             <span>{time}</span>
+            {showDeliveryTicks && us ? (
+              <WaDeliveryTicks status={deliveryStatus} title={tickTitle} />
+            ) : null}
           </p>
         )}
       </div>
@@ -716,7 +974,50 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
   const { t } = useTranslation();
   const { path } = useLocale();
   const isMd = useIsDesktopMd();
-  const bottomRef = useRef<HTMLDivElement>(null);
+  const threadScrollRef = useRef<HTMLDivElement>(null);
+  const stickToBottomRef = useRef(true);
+  const threadTailIdRef = useRef<string | null>(null);
+  const forceThreadScrollRef = useRef(false);
+  const composeInputRef = useRef<HTMLInputElement>(null);
+  const threadSearchInputRef = useRef<HTMLInputElement>(null);
+  const threadMessageRefs = useRef<Map<string, HTMLDivElement>>(new Map());
+  const [threadSearchOpen, setThreadSearchOpen] = useState(false);
+  const [threadSearchQuery, setThreadSearchQuery] = useState('');
+  const [threadSearchMatchIndex, setThreadSearchMatchIndex] = useState(0);
+  const [aiContextOpen, setAiContextOpen] = useState(false);
+  const [aiContextCopied, setAiContextCopied] = useState(false);
+
+  const scrollThreadToBottom = useCallback((behavior: ScrollBehavior = 'auto') => {
+    const el = threadScrollRef.current;
+    if (!el) return;
+    const top = el.scrollHeight;
+    if (behavior === 'auto') {
+      el.scrollTop = top;
+      return;
+    }
+    el.scrollTo({ top, behavior });
+  }, []);
+
+  /** Tras pintar mensajes o cargar media, el alto del hilo cambia; reintenta ir al final. */
+  const scrollThreadToBottomAfterLayout = useCallback(
+    (behavior: ScrollBehavior = 'auto') => {
+      scrollThreadToBottom(behavior);
+      requestAnimationFrame(() => {
+        scrollThreadToBottom('auto');
+        requestAnimationFrame(() => scrollThreadToBottom('auto'));
+      });
+      window.setTimeout(() => scrollThreadToBottom('auto'), 80);
+      window.setTimeout(() => scrollThreadToBottom('auto'), 240);
+    },
+    [scrollThreadToBottom],
+  );
+
+  const handleThreadScroll = useCallback(() => {
+    const el = threadScrollRef.current;
+    if (!el) return;
+    const gap = el.scrollHeight - el.scrollTop - el.clientHeight;
+    stickToBottomRef.current = gap < 100;
+  }, []);
 
   const mockConversations = useMemo(() => buildInboxConversations(channel, t), [channel, t]);
   const [dynamicRows, setDynamicRows] = useState<InboxConversation[]>([]);
@@ -725,7 +1026,6 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
   const [whatsappListError, setWhatsappListError] = useState<string | null>(null);
   const [messagesById, setMessagesById] = useState<Record<string, ChatMsg[]>>({});
   const [whatsappGate, setWhatsappGate] = useState<WhatsappGate>('loading');
-  const [whatsappInstanceName, setWhatsappInstanceName] = useState('');
 
   const conversations = useMemo(
     () => (isWhatsappApi ? whatsappRows : [...dynamicRows, ...mockConversations]),
@@ -750,6 +1050,7 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
   const [draft, setDraft] = useState('');
   const [sending, setSending] = useState(false);
 
+  const whatsappBootSyncDoneRef = useRef(false);
   const prevChannelRef = useRef<AdminChannel | null>(null);
   useEffect(() => {
     if (prevChannelRef.current === null) {
@@ -763,15 +1064,17 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
     setMessagesById({});
     setWhatsappLoadState('idle');
     setWhatsappListError(null);
+    whatsappBootSyncDoneRef.current = false;
     setWhatsappGate('loading');
     setSelectedId(isWhatsappApi ? '' : (buildInboxConversations(channel, t)[0]?.id ?? ''));
     setMobileShowThread(false);
+    releaseAllInboxContactAvatarUrls();
+    releaseInboxAccountAvatarUrl();
   }, [channel, t]);
 
   const refreshWhatsappLink = useCallback(async (): Promise<boolean> => {
     const res = await fetchWhatsappLinkStatus();
     if (res.ok) {
-      setWhatsappInstanceName(res.data.instanceName);
       if (res.data.linked) {
         setWhatsappGate('linked');
         return true;
@@ -788,6 +1091,18 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
     }
     return false;
   }, []);
+
+  useEffect(() => {
+    if (!isWhatsappApi) return;
+    if (whatsappGate === 'linked') {
+      void loadInboxAccountAvatarUrl();
+    }
+    for (const row of whatsappRows) {
+      if (isRealInboxConversationId(row.id)) {
+        void loadInboxContactAvatarUrl(row.id);
+      }
+    }
+  }, [isWhatsappApi, whatsappGate, whatsappRows]);
 
   const reloadWhatsappConversations = useCallback(async () => {
     const res = await fetchInboxConversations('whatsapp');
@@ -806,7 +1121,9 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
     }
     setWhatsappListError(null);
     setWhatsappLoadState('ok');
-    const rows = res.data.map((c) => mapConversationDto(c, t));
+    const rows = res.data
+      .map((c) => mapConversationDto(c, t))
+      .filter((c): c is InboxConversation => c != null);
     setWhatsappRows(rows);
     setSelectedId((prev) => {
       if (prev && rows.some((r) => r.id === prev)) return prev;
@@ -821,6 +1138,10 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
       setWhatsappGate('loading');
       const linked = await refreshWhatsappLink();
       if (cancelled || !linked) return;
+      if (!whatsappBootSyncDoneRef.current) {
+        whatsappBootSyncDoneRef.current = true;
+        await syncWhatsappChats();
+      }
       setWhatsappLoadState('loading');
       await reloadWhatsappConversations();
     };
@@ -829,36 +1150,25 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
       void refreshWhatsappLink().then((linked) => {
         if (linked) void reloadWhatsappConversations();
       });
-    }, 15_000);
+    }, 20_000);
     return () => {
       cancelled = true;
       window.clearInterval(interval);
     };
   }, [isWhatsappApi, refreshWhatsappLink, reloadWhatsappConversations]);
 
-  useEffect(() => {
-    if (!isWhatsappApi || whatsappGate !== 'linked') return;
-    let cancelled = false;
-    const run = async () => {
-      setWhatsappLoadState((s) => (s === 'ok' ? 'ok' : 'loading'));
-      await reloadWhatsappConversations();
-      if (cancelled) return;
-    };
-    void run();
-    const interval = window.setInterval(() => {
-      void reloadWhatsappConversations();
-    }, 10_000);
-    return () => {
-      cancelled = true;
-      window.clearInterval(interval);
-    };
-  }, [isWhatsappApi, whatsappGate, reloadWhatsappConversations]);
-
   const reloadThreadMessages = useCallback(async (conversationId: string) => {
     const res = await fetchInboxMessages(conversationId);
     if (!res.ok) return;
     setMessagesById((prev) => ({ ...prev, [conversationId]: res.data.map(mapMessageDto) }));
   }, []);
+
+  useEffect(() => {
+    if (!isWhatsappApi || !selectedId || !isRealInboxConversationId(selectedId)) return;
+    return () => {
+      releaseAllInboxMessageMediaUrls();
+    };
+  }, [isWhatsappApi, selectedId]);
 
   useEffect(() => {
     if (!isWhatsappApi || !selectedId || !isRealInboxConversationId(selectedId)) return;
@@ -872,12 +1182,16 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
       );
     };
     void run();
-    const interval = window.setInterval(() => void reloadThreadMessages(selectedId), 5_000);
+    const poll = () => {
+      void reloadThreadMessages(selectedId);
+      void reloadWhatsappConversations();
+    };
+    const interval = window.setInterval(poll, 3_000);
     return () => {
       cancelled = true;
       window.clearInterval(interval);
     };
-  }, [isWhatsappApi, selectedId, reloadThreadMessages]);
+  }, [isWhatsappApi, selectedId, reloadThreadMessages, reloadWhatsappConversations]);
 
   useEffect(() => {
     if (!isBotTest) return;
@@ -896,10 +1210,101 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
   }, [isBotTest, isWhatsappApi, selected?.id, selected?.messages, selectedId, botThread, messagesById]);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
-  }, [threadMessages, sending, selectedId]);
+    forceThreadScrollRef.current = true;
+    stickToBottomRef.current = true;
+    threadTailIdRef.current = null;
+    const el = threadScrollRef.current;
+    if (el) el.scrollTop = 0;
+    setThreadSearchOpen(false);
+    setThreadSearchQuery('');
+    setThreadSearchMatchIndex(0);
+    setAiContextOpen(false);
+    setAiContextCopied(false);
+    threadMessageRefs.current.clear();
+  }, [selectedId]);
+
+  const inboxAiContextMarkdown = useMemo(
+    () => buildInboxThreadAiContextMarkdown(selected, threadMessages, channel),
+    [selected, threadMessages, channel],
+  );
+
+  const copyInboxAiContext = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(inboxAiContextMarkdown);
+      setAiContextCopied(true);
+      window.setTimeout(() => setAiContextCopied(false), 2000);
+    } catch {
+      setAiContextCopied(false);
+    }
+  }, [inboxAiContextMarkdown]);
+
+  const threadSearchMatches = useMemo(() => {
+    if (!threadSearchOpen || !normalizeThreadSearchQuery(threadSearchQuery)) return [];
+    return threadMessages
+      .filter((m) => messageMatchesThreadSearch(m, threadSearchQuery))
+      .map((m) => m.id);
+  }, [threadMessages, threadSearchOpen, threadSearchQuery]);
+
+  const closeThreadSearch = useCallback(() => {
+    setThreadSearchOpen(false);
+    setThreadSearchQuery('');
+    setThreadSearchMatchIndex(0);
+  }, []);
+
+  const goToThreadSearchMatch = useCallback(
+    (delta: number) => {
+      if (threadSearchMatches.length === 0) return;
+      setThreadSearchMatchIndex((prev) => {
+        const next = (prev + delta + threadSearchMatches.length) % threadSearchMatches.length;
+        return next;
+      });
+    },
+    [threadSearchMatches.length],
+  );
+
+  useEffect(() => {
+    if (threadSearchMatchIndex >= threadSearchMatches.length) {
+      setThreadSearchMatchIndex(0);
+    }
+  }, [threadSearchMatchIndex, threadSearchMatches.length]);
+
+  useEffect(() => {
+    if (!threadSearchOpen || threadSearchMatches.length === 0) return;
+    const id = threadSearchMatches[threadSearchMatchIndex];
+    const el = id ? threadMessageRefs.current.get(id) : undefined;
+    el?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  }, [threadSearchOpen, threadSearchMatchIndex, threadSearchMatches]);
+
+  useEffect(() => {
+    if (threadSearchOpen) {
+      window.setTimeout(() => threadSearchInputRef.current?.focus(), 0);
+    }
+  }, [threadSearchOpen]);
+
+  useEffect(() => {
+    const tailId =
+      threadMessages.length > 0 ? (threadMessages[threadMessages.length - 1]?.id ?? null) : null;
+    const tailChanged = tailId !== threadTailIdRef.current;
+    threadTailIdRef.current = tailId;
+
+    const force = forceThreadScrollRef.current;
+    if (force && threadMessages.length === 0) return;
+
+    if (force) forceThreadScrollRef.current = false;
+
+    if (!force && !stickToBottomRef.current) return;
+    if (!force && !tailChanged) return;
+
+    scrollThreadToBottomAfterLayout('auto');
+  }, [threadMessages, selectedId, scrollThreadToBottomAfterLayout]);
 
   const imageInputRef = useRef<HTMLInputElement>(null);
+
+  const focusComposeInput = useCallback(() => {
+    requestAnimationFrame(() => {
+      composeInputRef.current?.focus();
+    });
+  }, []);
 
   const sendWhatsappImage = useCallback(
     async (file: File) => {
@@ -927,7 +1332,10 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
         mediaType: 'image',
         hasMedia: true,
         localMediaUrl: localPreview,
+        deliveryStatus: 'pending',
       };
+      forceThreadScrollRef.current = true;
+      stickToBottomRef.current = true;
       setMessagesById((prev) => ({
         ...prev,
         [selectedId]: [...(prev[selectedId] ?? []), optimistic],
@@ -941,6 +1349,7 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
           caption: caption || undefined,
         });
         if (!res.ok) {
+          URL.revokeObjectURL(localPreview);
           setMessagesById((prev) => ({
             ...prev,
             [selectedId]: (prev[selectedId] ?? []).filter((m) => m.id !== optimisticId),
@@ -952,10 +1361,18 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
               : res.message?.trim() || t('adminCanales.whatsappSendError'),
           );
         } else {
+          setMessagesById((prev) => ({
+            ...prev,
+            [selectedId]: (prev[selectedId] ?? []).map((m) =>
+              m.id === optimisticId ? { ...m, deliveryStatus: 'sent' } : m,
+            ),
+          }));
           await reloadThreadMessages(selectedId);
           await reloadWhatsappConversations();
+          URL.revokeObjectURL(localPreview);
         }
       } catch {
+        URL.revokeObjectURL(localPreview);
         setMessagesById((prev) => ({
           ...prev,
           [selectedId]: (prev[selectedId] ?? []).filter((m) => m.id !== optimisticId),
@@ -963,16 +1380,16 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
         if (caption) setDraft(caption);
         window.alert(t('adminCanales.whatsappSendError'));
       } finally {
-        URL.revokeObjectURL(localPreview);
         setSending(false);
+        focusComposeInput();
       }
     },
-    [draft, sending, selectedId, reloadThreadMessages, reloadWhatsappConversations, t],
+    [draft, sending, selectedId, reloadThreadMessages, reloadWhatsappConversations, t, focusComposeInput],
   );
 
   const sendWhatsapp = useCallback(async () => {
     const text = draft.trim();
-    if (!text || sending || !selectedId) return;
+    if (!text || sending || !selectedId || !isRealInboxConversationId(selectedId)) return;
     setDraft('');
     setSending(true);
     const optimisticId = `opt-${crypto.randomUUID()}`;
@@ -981,7 +1398,10 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
       from: 'us',
       text,
       time: formatChatTime(new Date()),
+      deliveryStatus: 'pending',
     };
+    forceThreadScrollRef.current = true;
+    stickToBottomRef.current = true;
     setMessagesById((prev) => ({
       ...prev,
       [selectedId]: [...(prev[selectedId] ?? []), optimistic],
@@ -993,12 +1413,27 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
         [selectedId]: (prev[selectedId] ?? []).filter((m) => m.id !== optimisticId),
       }));
       setDraft(text);
+      window.alert(
+        res.reason === 'no-auth'
+          ? t('adminCanales.inboxAuthRequired')
+          : res.message?.trim() || t('adminCanales.whatsappSendError'),
+      );
     } else {
+      const ack = res.data.deliveryStatus ?? 'sent';
+      setMessagesById((prev) => ({
+        ...prev,
+        [selectedId]: (prev[selectedId] ?? []).map((m) =>
+          m.id === optimisticId
+            ? { ...m, id: res.data.id, deliveryStatus: ack }
+            : m,
+        ),
+      }));
       await reloadThreadMessages(selectedId);
       await reloadWhatsappConversations();
     }
     setSending(false);
-  }, [draft, sending, selectedId, reloadThreadMessages, reloadWhatsappConversations]);
+    focusComposeInput();
+  }, [draft, sending, selectedId, reloadThreadMessages, reloadWhatsappConversations, focusComposeInput]);
 
   const sendBot = useCallback(async () => {
     const text = draft.trim();
@@ -1028,6 +1463,7 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
       replyText = t('adminCanales.botErrorGeneric');
     } finally {
       setSending(false);
+      focusComposeInput();
     }
     const reply: ChatMsg = {
       id: `b-${crypto.randomUUID()}`,
@@ -1036,7 +1472,7 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
       time: formatChatTime(new Date()),
     };
     setBotThread((prev) => [...prev, reply]);
-  }, [draft, sending, isBotTest, botThread, channel, t]);
+  }, [draft, sending, isBotTest, botThread, channel, t, focusComposeInput]);
 
   const handleSend = useCallback(() => {
     if (isBotTest) void sendBot();
@@ -1044,6 +1480,10 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
   }, [isBotTest, isWhatsappApi, sendBot, sendWhatsapp]);
 
   const openThread = (id: string) => {
+    forceThreadScrollRef.current = true;
+    stickToBottomRef.current = true;
+    const el = threadScrollRef.current;
+    if (el) el.scrollTop = 0;
     setSelectedId(id);
     if (!isMd) setMobileShowThread(true);
   };
@@ -1132,23 +1572,28 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
         )}
       >
         <div className="flex shrink-0 items-center gap-1 border-b border-black/10 px-2 py-2 dark:border-white/10 dark:bg-[#202c33]">
-          <div
-            className="flex size-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-teal-600 to-emerald-700 text-xs font-bold text-white shadow-sm"
-            aria-hidden
-          >
-            VA
-          </div>
+          {isWhatsappApi ? (
+            <InboxAccountAvatar
+              enabled={whatsappGate === 'linked'}
+              alt={t('adminCanales.inboxChatsTitle')}
+            />
+          ) : (
+            <div
+              className="flex size-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-teal-600 to-emerald-700 text-xs font-bold text-white shadow-sm"
+              aria-hidden
+            >
+              VA
+            </div>
+          )}
           <div className="min-w-0 flex-1 px-1">
             <p className="truncate text-[13px] font-semibold text-zinc-900 dark:text-zinc-100">
               {t('adminCanales.inboxChatsTitle')}
             </p>
-            <p className="truncate text-[11px] text-zinc-500 dark:text-zinc-400">
-              {isWhatsappApi
-                ? t('adminCanales.inboxYourAccountWhatsapp', {
-                    instance: whatsappInstanceName.trim() || '…',
-                  })
-                : t('adminCanales.inboxYourAccount')}
-            </p>
+            {!isWhatsappApi ? (
+              <p className="truncate text-[11px] text-zinc-500 dark:text-zinc-400">
+                {t('adminCanales.inboxYourAccount')}
+              </p>
+            ) : null}
           </div>
           {!isWhatsappApi ? (
             <Button
@@ -1232,21 +1677,40 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
                 aria-selected={active}
                 onClick={() => openThread(c.id)}
                 className={cn(
-                  'flex w-full gap-3 border-b border-black/[0.06] px-3 py-2.5 text-left transition-colors dark:border-white/[0.06]',
-                  active ? 'bg-[#f0f2f5] dark:bg-[#2a3942]' : 'hover:bg-black/[0.03] dark:hover:bg-white/[0.04]',
+                  'flex w-full gap-3 border-b px-3 py-2.5 text-left transition-colors',
+                  isWhatsappApi
+                    ? active
+                      ? 'border-teal-500/20 bg-teal-500/10 dark:border-teal-500/20'
+                      : 'border-white/[0.04] hover:bg-white/[0.04]'
+                    : cn(
+                        'border-black/[0.06] dark:border-white/[0.06]',
+                        active
+                          ? 'bg-[#f0f2f5] dark:bg-[#2a3942]'
+                          : 'hover:bg-black/[0.03] dark:hover:bg-white/[0.04]',
+                      ),
                 )}
               >
-                <div
-                  className={cn(
-                    'flex size-12 shrink-0 items-center justify-center rounded-full text-sm font-semibold text-white shadow-sm',
-                    channel === 'whatsapp' && 'bg-[#128c7e]',
-                    channel === 'facebook' && 'bg-[#1877F2]',
-                    channel === 'instagram' && 'bg-gradient-to-br from-[#833AB4] to-[#F77737]',
-                    channel === 'bot-test' && 'bg-[#14d9ce] text-zinc-900',
-                  )}
-                >
-                  {c.initials}
-                </div>
+                {isWhatsappApi && isRealInboxConversationId(c.id) ? (
+                  <InboxContactAvatar
+                    conversationId={c.id}
+                    name={c.name}
+                    initials={c.initials}
+                    channel="whatsapp"
+                    size="lg"
+                  />
+                ) : (
+                  <div
+                    className={cn(
+                      'flex size-12 shrink-0 items-center justify-center rounded-full text-sm font-semibold text-white shadow-sm',
+                      channel === 'whatsapp' && 'bg-[#128c7e]',
+                      channel === 'facebook' && 'bg-[#1877F2]',
+                      channel === 'instagram' && 'bg-gradient-to-br from-[#833AB4] to-[#F77737]',
+                      channel === 'bot-test' && 'bg-[#14d9ce] text-zinc-900',
+                    )}
+                  >
+                    {c.initials}
+                  </div>
+                )}
                 <div className="min-w-0 flex-1">
                   <div className="flex items-baseline justify-between gap-2">
                     <span className="truncate text-[15px] font-medium text-zinc-900 dark:text-zinc-50">{c.name}</span>
@@ -1264,7 +1728,12 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
                   <div className="flex items-center gap-2">
                     <p className="min-w-0 flex-1 truncate text-[13px] text-zinc-500 dark:text-zinc-400">{rowPreview}</p>
                     {unread ? (
-                      <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-[#25d366] text-[11px] font-semibold text-white">
+                      <span
+                        className={cn(
+                          'flex size-5 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold text-white',
+                          isWhatsappApi ? 'bg-teal-500' : 'bg-[#25d366]',
+                        )}
+                      >
                         {c.unreadCount! > 9 ? '9+' : c.unreadCount}
                       </span>
                     ) : null}
@@ -1276,59 +1745,277 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
         </div>
       </div>
 
-      {/* Hilo de mensajes: overflow-hidden + columna interna con flex-1 para que solo el listado haga scroll y el input quede fijo abajo */}
+      {/* Hilo de mensajes */}
       <div
         className={cn(
-          'relative flex h-full min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-[#efeae2] dark:bg-[#0b141a]',
+          'relative flex h-full min-h-0 min-w-0 flex-1 flex-col overflow-hidden',
+          isWhatsappApi ? 'bg-[#0a0c0e]' : 'bg-[#efeae2] dark:bg-[#0b141a]',
           !showThreadPane && 'max-md:hidden',
         )}
       >
-        <WaThreadBackdrop />
+        <WaThreadBackdrop messenger={isWhatsappApi} />
 
-        <div className={cn('relative z-[1] flex h-[52px] shrink-0 items-center gap-1 px-1 shadow-md', chrome.headerBar)}>
+        <div
+          className={cn(
+            'relative z-[1] flex h-[60px] shrink-0 items-center gap-1 border-b px-2 backdrop-blur-xl',
+            isWhatsappApi
+              ? 'border-white/[0.06] bg-zinc-900/80 shadow-[0_4px_24px_rgba(0,0,0,0.35)]'
+              : cn('shadow-md', chrome.headerBar),
+          )}
+        >
           {!isMd ? (
             <Button
               type="button"
               variant="ghost"
               size="icon"
-              className="shrink-0 text-white hover:bg-white/10 md:hidden"
+              className={cn(
+                'shrink-0 md:hidden',
+                isWhatsappApi
+                  ? 'text-zinc-300 hover:bg-white/10 hover:text-white'
+                  : 'text-white hover:bg-white/10',
+              )}
               onClick={backToList}
               aria-label={t('adminCanales.inboxBack')}
             >
               <ChevronLeft className="size-6" />
             </Button>
           ) : null}
-          <div className="flex min-w-0 flex-1 items-center gap-2 px-1">
-            <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-black/10 ring-1 ring-white/20">
-              <ChannelHeaderIcon channel={channel} />
-            </div>
+          <div className="flex min-w-0 flex-1 items-center gap-3 px-1">
+            {isWhatsappApi && selected && isRealInboxConversationId(selected.id) ? (
+              <InboxContactAvatar
+                conversationId={selected.id}
+                name={selected.name}
+                initials={selected.initials}
+                channel="whatsapp"
+                size="md"
+                className="ring-2 ring-teal-500/30"
+              />
+            ) : (
+              <div
+                className={cn(
+                  'flex size-10 shrink-0 items-center justify-center rounded-full ring-1',
+                  isWhatsappApi
+                    ? 'bg-zinc-800 ring-white/10'
+                    : 'bg-black/10 ring-white/20',
+                )}
+              >
+                <ChannelHeaderIcon channel={channel} />
+              </div>
+            )}
             <div className="min-w-0">
-              <p className="truncate text-[16px] font-medium leading-tight tracking-tight">{selected?.name}</p>
-              <p className="truncate text-[12px] text-white/90">{t('adminCanales.inboxOnline')}</p>
+              <p
+                className={cn(
+                  'truncate text-[16px] font-semibold leading-tight tracking-tight',
+                  isWhatsappApi ? 'text-zinc-50' : 'text-white',
+                )}
+              >
+                {selected?.name}
+              </p>
+              <p
+                className={cn(
+                  'truncate text-[12px]',
+                  isWhatsappApi && selected?.contactPhone && !selected.isGroup
+                    ? 'text-zinc-500'
+                    : isWhatsappApi
+                      ? 'text-teal-400/90'
+                      : 'text-white/90',
+                )}
+              >
+                {isWhatsappApi && selected?.contactPhone && !selected.isGroup
+                  ? selected.contactPhone
+                  : t('adminCanales.inboxOnline')}
+              </p>
             </div>
           </div>
+          {isWhatsappApi ? (
+            <div className="flex shrink-0 items-center gap-0.5 pr-1">
+              <Button
+                type="button"
+                variant="ghost"
+                className={cn(
+                  'h-9 gap-1 rounded-full px-2.5 text-zinc-400 hover:bg-white/10 hover:text-teal-300',
+                  aiContextOpen && 'bg-white/10 text-teal-300',
+                )}
+                title={t('adminCanales.inboxAiContext')}
+                aria-label={t('adminCanales.inboxAiContext')}
+                onClick={() => setAiContextOpen(true)}
+              >
+                <Sparkles className="size-4 shrink-0" strokeWidth={1.5} aria-hidden />
+                <span className="max-w-[5.5rem] truncate text-[11px] font-medium leading-none sm:max-w-none">
+                  {t('adminCanales.inboxAiContext')}
+                </span>
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className={cn(
+                  'size-10 rounded-full text-zinc-400 hover:bg-white/10 hover:text-teal-300',
+                  threadSearchOpen && 'bg-white/10 text-teal-300',
+                )}
+                title={t('adminCanales.inboxSearchChat')}
+                aria-label={t('adminCanales.inboxSearchChat')}
+                aria-pressed={threadSearchOpen}
+                onClick={() => {
+                  if (threadSearchOpen) {
+                    closeThreadSearch();
+                    return;
+                  }
+                  setThreadSearchOpen(true);
+                }}
+              >
+                <Search className="size-5" strokeWidth={1.5} />
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="size-10 rounded-full text-zinc-400 hover:bg-white/10 hover:text-teal-300"
+                title={t('adminCanales.inboxToolbarMenu')}
+                aria-label={t('adminCanales.inboxToolbarMenu')}
+              >
+                <MoreVertical className="size-5" strokeWidth={1.5} />
+              </Button>
+            </div>
+          ) : null}
         </div>
 
+        {isWhatsappApi && threadSearchOpen ? (
+          <div className="relative z-[2] flex shrink-0 items-center gap-1 border-b border-white/[0.06] bg-zinc-900/95 px-2 py-2">
+            <div className="relative min-w-0 flex-1">
+              <Search
+                className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-zinc-500"
+                aria-hidden
+              />
+              <Input
+                ref={threadSearchInputRef}
+                value={threadSearchQuery}
+                onChange={(e) => {
+                  setThreadSearchQuery(e.target.value);
+                  setThreadSearchMatchIndex(0);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Escape') {
+                    e.preventDefault();
+                    closeThreadSearch();
+                    return;
+                  }
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    goToThreadSearchMatch(e.shiftKey ? -1 : 1);
+                  }
+                }}
+                className="h-9 border-0 bg-zinc-800 pl-9 pr-2 text-sm text-zinc-100 shadow-none placeholder:text-zinc-500 focus-visible:ring-teal-500/40"
+                placeholder={t('adminCanales.inboxSearchChatPlaceholder')}
+                aria-label={t('adminCanales.inboxSearchChatPlaceholder')}
+              />
+            </div>
+            {normalizeThreadSearchQuery(threadSearchQuery) ? (
+              <span className="shrink-0 px-1 text-[11px] tabular-nums text-zinc-500">
+                {threadSearchMatches.length === 0
+                  ? t('adminCanales.inboxSearchChatNoResults')
+                  : `${threadSearchMatchIndex + 1}/${threadSearchMatches.length}`}
+              </span>
+            ) : null}
+            {threadSearchMatches.length > 1 ? (
+              <>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="size-9 shrink-0 rounded-full text-zinc-400 hover:bg-white/10 hover:text-teal-300"
+                  title={t('adminCanales.inboxSearchChatPrev')}
+                  aria-label={t('adminCanales.inboxSearchChatPrev')}
+                  onClick={() => goToThreadSearchMatch(-1)}
+                >
+                  <ChevronUp className="size-5" strokeWidth={1.5} />
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="size-9 shrink-0 rounded-full text-zinc-400 hover:bg-white/10 hover:text-teal-300"
+                  title={t('adminCanales.inboxSearchChatNext')}
+                  aria-label={t('adminCanales.inboxSearchChatNext')}
+                  onClick={() => goToThreadSearchMatch(1)}
+                >
+                  <ChevronDown className="size-5" strokeWidth={1.5} />
+                </Button>
+              </>
+            ) : null}
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="size-9 shrink-0 rounded-full text-zinc-400 hover:bg-white/10 hover:text-zinc-200"
+              title={t('adminCanales.inboxSearchChatClose')}
+              aria-label={t('adminCanales.inboxSearchChatClose')}
+              onClick={closeThreadSearch}
+            >
+              <X className="size-5" strokeWidth={1.5} />
+            </Button>
+          </div>
+        ) : null}
+
         <div className="relative z-[1] flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
-          <div className="min-h-0 min-w-0 flex-1 basis-0 overflow-y-auto overflow-x-hidden overscroll-contain px-2 py-3 md:px-4">
+          <div
+            ref={threadScrollRef}
+            onScroll={handleThreadScroll}
+            className={cn(
+              'min-h-0 min-w-0 flex-1 basis-0 overflow-y-auto overflow-x-hidden overscroll-contain',
+              isWhatsappApi ? 'px-4 py-5 md:px-8' : 'px-2 py-3 md:px-4',
+            )}
+          >
             {threadMessages.length === 0 && isMock ? (
-              <p className="py-8 text-center text-sm text-zinc-500">{t('adminCanales.inboxTapChat')}</p>
+              <p
+                className={cn(
+                  'py-8 text-center text-sm',
+                  isWhatsappApi ? 'text-zinc-500' : 'text-zinc-500',
+                )}
+              >
+                {t('adminCanales.inboxTapChat')}
+              </p>
             ) : threadMessages.length === 0 && isWhatsappApi && selectedId ? (
-              <p className="py-8 text-center text-sm text-zinc-500">{t('adminCanales.whatsappLoadingChats')}</p>
+              <p className="py-8 text-center text-sm text-zinc-500">
+                {t('adminCanales.whatsappLoadingChats')}
+              </p>
             ) : (
-              <div className="flex flex-col gap-1">
-                <div className="mx-auto mb-2 rounded-md bg-white/80 px-3 py-0.5 text-[11px] font-medium text-zinc-600 shadow-sm dark:bg-[#182229]/90 dark:text-zinc-400">
+              <div className={cn('flex flex-col', isWhatsappApi ? 'gap-3' : 'gap-1')}>
+                <div
+                  className={cn(
+                    'mx-auto mb-1 px-4 py-1 text-[11px] font-semibold tracking-wider uppercase',
+                    isWhatsappApi
+                      ? 'rounded-lg bg-zinc-800/70 text-zinc-500 ring-1 ring-white/[0.06] backdrop-blur-sm'
+                      : 'rounded-md bg-white/80 font-medium text-zinc-600 shadow-sm dark:bg-[#182229]/90 dark:text-zinc-400',
+                  )}
+                >
                   {t('adminCanales.mockToday')}
                 </div>
-                {threadMessages.map((m) => (
+                {threadMessages.map((m) => {
+                  const searchActive =
+                    threadSearchOpen && normalizeThreadSearchQuery(threadSearchQuery).length > 0;
+                  const isMatch = searchActive && messageMatchesThreadSearch(m, threadSearchQuery);
+                  const isActiveMatch =
+                    isMatch &&
+                    threadSearchMatches[threadSearchMatchIndex] === m.id;
+                  const dimNonMatch = searchActive && !isMatch;
+
+                  return (
                   <div
                     key={m.id}
+                    ref={(el) => {
+                      if (el) threadMessageRefs.current.set(m.id, el);
+                      else threadMessageRefs.current.delete(m.id);
+                    }}
                     className={cn(
-                      'flex items-end gap-2 px-1',
+                      'flex px-1 transition-opacity',
+                      isWhatsappApi ? 'items-end gap-0' : 'items-end gap-2',
                       m.from === 'us' ? 'justify-end' : 'justify-start',
+                      dimNonMatch && 'opacity-35',
+                      isActiveMatch && 'rounded-lg ring-1 ring-teal-400/50',
                     )}
                   >
-                    {m.from === 'them' ? (
+                    {!isWhatsappApi && m.from === 'them' ? (
                       <div
                         className={cn(
                           'mb-1 flex size-8 shrink-0 items-center justify-center rounded-full shadow-sm ring-1 ring-black/5 dark:ring-white/10',
@@ -1342,7 +2029,9 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
                         {channel === 'bot-test' ? (
                           <Bot className="size-4" strokeWidth={2} aria-hidden />
                         ) : (
-                          <span className="text-[10px] font-bold">{selected?.initials?.slice(0, 2) ?? '·'}</span>
+                          <span className="text-[10px] font-bold">
+                            {selected?.initials?.slice(0, 2) ?? '·'}
+                          </span>
                         )}
                       </div>
                     ) : null}
@@ -1350,15 +2039,34 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
                       from={m.from}
                       time={m.time}
                       variant={isWhatsappApi ? getBubbleVariantForList(m) : 'text'}
+                      messenger={isWhatsappApi}
+                      showDeliveryTicks={isWhatsappApi && m.from === 'us'}
+                      deliveryStatus={m.from === 'us' ? m.deliveryStatus : undefined}
+                      deliveryStatusLabel={
+                        isWhatsappApi && m.from === 'us'
+                          ? deliveryStatusAriaLabel(m.deliveryStatus, t)
+                          : undefined
+                      }
                     >
                       {isWhatsappApi ? (
-                        <WaMessageContent key={m.id} msg={m} t={t} />
+                        <WaMessageContent
+                          msg={m}
+                          t={t}
+                          messenger
+                          searchQuery={searchActive ? threadSearchQuery : ''}
+                        />
                       ) : (
-                        <p className="whitespace-pre-wrap break-words">{m.text}</p>
+                        <p className="whitespace-pre-wrap break-words">
+                          <HighlightedMessageText
+                            text={m.text}
+                            query={searchActive ? threadSearchQuery : ''}
+                          />
+                        </p>
                       )}
                     </WaMessageBubble>
                   </div>
-                ))}
+                  );
+                })}
                 {sending && isBotTest ? (
                   <div className="flex items-end justify-start gap-2 px-1">
                     <div
@@ -1373,15 +2081,22 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
                     </div>
                   </div>
                 ) : null}
-                <div ref={bottomRef} />
+                <div className="h-px shrink-0" aria-hidden />
               </div>
             )}
           </div>
 
-          <div className="relative z-[1] shrink-0 border-t border-black/10 bg-[#f0f2f5] px-2 pb-[max(0.5rem,env(safe-area-inset-bottom,0px))] pt-1.5 dark:border-white/10 dark:bg-[#1f2c33]">
+          <div
+            className={cn(
+              'relative z-[1] shrink-0 border-t px-3 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))] pt-2',
+              isWhatsappApi
+                ? 'border-white/[0.06] bg-zinc-900/90 backdrop-blur-xl'
+                : 'border-black/10 bg-[#f0f2f5] dark:border-white/10 dark:bg-[#1f2c33]',
+            )}
+          >
             {isInteractive ? (
               <form
-                className="flex items-center gap-1.5"
+                className="flex items-center gap-2"
                 onSubmit={(e) => {
                   e.preventDefault();
                   handleSend();
@@ -1391,7 +2106,12 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
                   type="button"
                   variant="ghost"
                   size="icon"
-                  className="size-10 shrink-0 rounded-full text-zinc-500 hover:bg-zinc-200/90 dark:text-zinc-400 dark:hover:bg-zinc-600/60"
+                  className={cn(
+                    'size-10 shrink-0 rounded-full',
+                    isWhatsappApi
+                      ? 'text-zinc-400 hover:bg-white/10 hover:text-teal-300'
+                      : 'text-zinc-500 hover:bg-zinc-200/90 dark:text-zinc-400 dark:hover:bg-zinc-600/60',
+                  )}
                   title={t('adminCanales.inboxPlus')}
                 >
                   <Plus className="size-6" strokeWidth={1.25} />
@@ -1409,26 +2129,33 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
                     if (file && isWhatsappApi) void sendWhatsappImage(file);
                   }}
                 />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="size-10 shrink-0 rounded-full text-zinc-500 hover:bg-zinc-200/90 dark:text-zinc-400 dark:hover:bg-zinc-600/60"
-                  title={t('adminCanales.inboxAttach')}
-                  disabled={sending || !selectedId || !isRealInboxConversationId(selectedId)}
-                  onClick={() => imageInputRef.current?.click()}
-                >
-                  <Paperclip className="size-[22px]" strokeWidth={1.5} />
-                </Button>
+                {!isWhatsappApi ? (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="size-10 shrink-0 rounded-full text-zinc-500 hover:bg-zinc-200/90 dark:text-zinc-400 dark:hover:bg-zinc-600/60"
+                    title={t('adminCanales.inboxAttach')}
+                    disabled={sending || !selectedId || !isRealInboxConversationId(selectedId)}
+                    onClick={() => imageInputRef.current?.click()}
+                  >
+                    <Paperclip className="size-[22px]" strokeWidth={1.5} />
+                  </Button>
+                ) : null}
                 <Input
+                  ref={composeInputRef}
                   value={draft}
                   onChange={(e) => setDraft(e.target.value)}
                   placeholder={inputPlaceholder}
-                  className="min-h-11 flex-1 rounded-lg border-0 bg-white px-3 py-2.5 text-[15px] shadow-sm ring-1 ring-black/[0.06] dark:bg-[#2a3942] dark:text-zinc-100 dark:ring-white/10"
+                  className={cn(
+                    'min-h-11 flex-1 border-0 px-4 py-2.5 text-[15px] shadow-none',
+                    isWhatsappApi
+                      ? 'rounded-lg bg-zinc-800/90 text-zinc-100 ring-1 ring-white/[0.08] placeholder:text-zinc-500 focus-visible:ring-teal-500/40'
+                      : 'rounded-lg bg-white shadow-sm ring-1 ring-black/[0.06] dark:bg-[#2a3942] dark:text-zinc-100 dark:ring-white/10',
+                  )}
                   aria-label={inputAria}
                   disabled={
-                    sending ||
-                    (isWhatsappApi && (!selectedId || !isRealInboxConversationId(selectedId)))
+                    isWhatsappApi && (!selectedId || !isRealInboxConversationId(selectedId))
                   }
                   maxLength={2000}
                   autoComplete="off"
@@ -1437,28 +2164,52 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
                   type="button"
                   variant="ghost"
                   size="icon"
-                  className="size-10 shrink-0 rounded-full text-zinc-500 hover:bg-zinc-200/90 dark:text-zinc-400 dark:hover:bg-zinc-600/60"
+                  className={cn(
+                    'size-10 shrink-0 rounded-full',
+                    isWhatsappApi
+                      ? 'text-zinc-400 hover:bg-white/10 hover:text-teal-300'
+                      : 'text-zinc-500 hover:bg-zinc-200/90 dark:text-zinc-400 dark:hover:bg-zinc-600/60',
+                  )}
                   title={t('adminCanales.inboxEmoji')}
                 >
                   <Smile className="size-[22px]" strokeWidth={1.5} />
                 </Button>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="size-10 shrink-0 rounded-full text-zinc-500 hover:bg-zinc-200/90 dark:text-zinc-400 dark:hover:bg-zinc-600/60"
-                  title={t('adminCanales.inboxMicDemo')}
-                >
-                  <Mic className="size-[22px]" strokeWidth={1.5} />
-                </Button>
+                {isWhatsappApi ? (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="size-10 shrink-0 rounded-full text-zinc-400 hover:bg-white/10 hover:text-teal-300"
+                    title={t('adminCanales.inboxAttach')}
+                    disabled={sending || !selectedId || !isRealInboxConversationId(selectedId)}
+                    onClick={() => imageInputRef.current?.click()}
+                  >
+                    <Paperclip className="size-5" strokeWidth={1.5} />
+                  </Button>
+                ) : (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="size-10 shrink-0 rounded-full text-zinc-500 hover:bg-zinc-200/90 dark:text-zinc-400 dark:hover:bg-zinc-600/60"
+                    title={t('adminCanales.inboxMicDemo')}
+                  >
+                    <Mic className="size-[22px]" strokeWidth={1.5} />
+                  </Button>
+                )}
                 <Button
                   type="submit"
                   size="icon"
-                  className="size-11 shrink-0 rounded-full bg-[#00a884] text-white shadow-md hover:bg-[#008f72] dark:bg-[#00a884]"
+                  className={cn(
+                    'size-11 shrink-0 rounded-full text-white shadow-lg transition-transform hover:scale-[1.03] active:scale-95',
+                    isWhatsappApi
+                      ? 'bg-gradient-to-br from-teal-500 to-teal-600 shadow-teal-900/40 hover:from-teal-400 hover:to-teal-500'
+                      : 'bg-[#00a884] hover:bg-[#008f72] dark:bg-[#00a884]',
+                  )}
                   disabled={sending || !draft.trim() || (isWhatsappApi && !selectedId)}
                   aria-label={sendAria}
                 >
-                  <Send className="size-[22px]" strokeWidth={1.5} />
+                  <Send className="size-5" strokeWidth={2} />
                 </Button>
               </form>
             ) : (
@@ -1495,6 +2246,41 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
           </div>
         </div>
       </div>
+
+      {isWhatsappApi ? (
+        <Sheet open={aiContextOpen} onOpenChange={setAiContextOpen}>
+          <SheetContent
+            side="right"
+            className="flex w-full flex-col gap-0 border-zinc-700/80 bg-zinc-900 p-0 text-zinc-100 sm:max-w-md"
+          >
+            <SheetHeader className="border-b border-white/[0.06] px-4 pt-4 pb-3">
+              <SheetTitle className="flex items-center gap-2 text-base text-zinc-50">
+                <Sparkles className="size-5 shrink-0 text-teal-400" strokeWidth={1.5} aria-hidden />
+                {t('adminCanales.inboxAiContextTitle')}
+              </SheetTitle>
+              <SheetDescription className="text-left text-xs text-zinc-400">
+                {t('adminCanales.inboxAiContextHint')}
+              </SheetDescription>
+            </SheetHeader>
+            <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-hidden px-4 py-3">
+              <Button
+                type="button"
+                variant="outline"
+                className="shrink-0 gap-2 border-zinc-600 bg-zinc-800/80 text-zinc-100 hover:bg-zinc-700 hover:text-white"
+                onClick={() => void copyInboxAiContext()}
+              >
+                <ClipboardCopy className="size-4" strokeWidth={1.5} aria-hidden />
+                {aiContextCopied
+                  ? t('adminCanales.inboxAiContextCopied')
+                  : t('adminCanales.inboxAiContextCopy')}
+              </Button>
+              <pre className="min-h-0 flex-1 overflow-y-auto rounded-lg bg-zinc-950/90 p-3 text-xs leading-relaxed whitespace-pre-wrap text-zinc-300 ring-1 ring-white/[0.06]">
+                {inboxAiContextMarkdown}
+              </pre>
+            </div>
+          </SheetContent>
+        </Sheet>
+      ) : null}
     </div>
   );
 }

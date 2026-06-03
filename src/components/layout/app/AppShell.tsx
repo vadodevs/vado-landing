@@ -87,7 +87,8 @@ type AppSidebarChrome = {
 function buildAppSidebarChrome(isDark: boolean): AppSidebarChrome {
   const glassInner = isDark
     ? cn(
-        '[&_[data-slot=sidebar-inner]]:!relative [&_[data-slot=sidebar-inner]]:!overflow-hidden [&_[data-slot=sidebar-inner]]:!rounded-3xl [&_[data-slot=sidebar-inner]]:!bg-transparent',
+        '[&_[data-slot=sidebar-inner]]:!relative [&_[data-slot=sidebar-inner]]:!overflow-hidden [&_[data-slot=sidebar-inner]]:!rounded-xl [&_[data-slot=sidebar-inner]]:!bg-transparent',
+        'group-data-[collapsible=icon]:[&_[data-slot=sidebar-inner]]:!rounded-lg',
         '[&_[data-slot=sidebar-inner]]:!border [&_[data-slot=sidebar-inner]]:!border-white/[0.18]',
         '[&_[data-slot=sidebar-inner]]:!bg-gradient-to-br [&_[data-slot=sidebar-inner]]:!from-zinc-950/58 [&_[data-slot=sidebar-inner]]:!via-zinc-900/42 [&_[data-slot=sidebar-inner]]:!to-zinc-900/24',
         '[&_[data-slot=sidebar-inner]]:!backdrop-blur-[48px] [&_[data-slot=sidebar-inner]]:!backdrop-saturate-[1.85] [&_[data-slot=sidebar-inner]]:!backdrop-brightness-[1.08]',
@@ -96,7 +97,8 @@ function buildAppSidebarChrome(isDark: boolean): AppSidebarChrome {
         '[&_[data-slot=sidebar-inner]]:!ring-1 [&_[data-slot=sidebar-inner]]:!ring-inset [&_[data-slot=sidebar-inner]]:!ring-white/[0.07]',
       )
     : cn(
-        '[&_[data-slot=sidebar-inner]]:!relative [&_[data-slot=sidebar-inner]]:!overflow-hidden [&_[data-slot=sidebar-inner]]:!rounded-3xl [&_[data-slot=sidebar-inner]]:!bg-transparent',
+        '[&_[data-slot=sidebar-inner]]:!relative [&_[data-slot=sidebar-inner]]:!overflow-hidden [&_[data-slot=sidebar-inner]]:!rounded-xl [&_[data-slot=sidebar-inner]]:!bg-transparent',
+        'group-data-[collapsible=icon]:[&_[data-slot=sidebar-inner]]:!rounded-lg',
         '[&_[data-slot=sidebar-inner]]:!border [&_[data-slot=sidebar-inner]]:!border-white/[0.42]',
         '[&_[data-slot=sidebar-inner]]:!bg-gradient-to-br [&_[data-slot=sidebar-inner]]:!from-white/14 [&_[data-slot=sidebar-inner]]:!via-zinc-200/32 [&_[data-slot=sidebar-inner]]:!to-zinc-500/38',
         '[&_[data-slot=sidebar-inner]]:!backdrop-blur-[40px] [&_[data-slot=sidebar-inner]]:!backdrop-saturate-[1.35]',
@@ -107,7 +109,7 @@ function buildAppSidebarChrome(isDark: boolean): AppSidebarChrome {
 
   const mobileSheet = isDark
     ? cn(
-        '!relative !overflow-hidden !rounded-3xl !border !border-white/[0.18] !bg-transparent !text-zinc-100 shadow-none',
+        '!relative !overflow-hidden !rounded-xl !border !border-white/[0.18] !bg-transparent !text-zinc-100 shadow-none',
         '!bg-gradient-to-br !from-zinc-950/58 !via-zinc-900/42 !to-zinc-900/24',
         '!backdrop-blur-[48px] !backdrop-saturate-[1.85] !backdrop-brightness-[1.08]',
         '!shadow-[0_26px_64px_-18px_rgba(0,0,0,0.52),inset_0_1px_0_rgba(255,255,255,0.24)]',
@@ -116,7 +118,7 @@ function buildAppSidebarChrome(isDark: boolean): AppSidebarChrome {
         'pb-[max(0.75rem,env(safe-area-inset-bottom,0px))]',
       )
     : cn(
-        '!relative !overflow-hidden !rounded-3xl !border !border-white/[0.42] !bg-transparent !text-zinc-900 shadow-none',
+        '!relative !overflow-hidden !rounded-xl !border !border-white/[0.42] !bg-transparent !text-zinc-900 shadow-none',
         '!bg-gradient-to-br !from-white/14 !via-zinc-200/32 !to-zinc-500/38',
         '!backdrop-blur-[40px] !backdrop-saturate-[1.35]',
         '!shadow-[0_14px_44px_-10px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.65)]',
@@ -134,13 +136,13 @@ function buildAppSidebarChrome(isDark: boolean): AppSidebarChrome {
     : 'bg-zinc-900/[0.1] text-zinc-900 shadow-[inset_0_0_0_1px_rgba(24,24,27,0.12)]';
 
   const rowGhost = cn(
-    'flex w-full items-center gap-2 rounded-lg px-2 py-2.5 text-left text-sm transition-[background-color,box-shadow,color] duration-200',
+    'flex w-full items-center gap-2 rounded-md px-2 py-2.5 text-left text-sm transition-[background-color,box-shadow,color] duration-200',
     isDark ? 'text-white/85' : 'text-zinc-800',
     navHover,
   );
 
   const subRowBase = cn(
-    'flex min-h-10 items-center rounded-lg px-2.5 py-2 text-xs leading-snug transition-[background-color,box-shadow,color] duration-200',
+    'flex min-h-10 items-center rounded-md px-2.5 py-2 text-xs leading-snug transition-[background-color,box-shadow,color] duration-200',
     navHover,
   );
 
@@ -149,7 +151,7 @@ function buildAppSidebarChrome(isDark: boolean): AppSidebarChrome {
   const subNavText = isDark ? 'text-white/85' : 'text-zinc-800';
 
   const footerBtn = cn(
-    'flex w-full items-center justify-center gap-2 rounded-lg border px-3 py-2.5 text-sm font-medium transition-[background-color,box-shadow,transform] duration-200 active:scale-[0.99] group-data-[collapsible=icon]:px-2',
+    'flex w-full items-center justify-center gap-2 rounded-md border px-3 py-2.5 text-sm font-medium transition-[background-color,box-shadow,transform] duration-200 active:scale-[0.99] group-data-[collapsible=icon]:px-2',
     isDark
       ? 'border-white/12 bg-white/[0.06] text-white hover:bg-white/[0.1] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.14)]'
       : 'border-zinc-500/18 bg-white/25 text-zinc-900 hover:bg-white/35 hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.55)]',
@@ -428,11 +430,11 @@ export function AppShell({
   const sb = useMemo(() => buildAppSidebarChrome(isAppDark), [isAppDark]);
 
   const sidebarNavSectionShell = cn(
-    'mb-3 space-y-1 rounded-2xl p-2 last:mb-0',
+    'mb-3 space-y-1 rounded-lg p-2 last:mb-0',
     isAppDark
       ? 'bg-white/[0.06] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] ring-1 ring-inset ring-white/[0.08]'
       : 'bg-black/[0.035] shadow-[inset_0_1px_0_rgba(255,255,255,0.42)] ring-1 ring-inset ring-black/[0.07]',
-    'group-data-[collapsible=icon]:mb-2 group-data-[collapsible=icon]:rounded-xl group-data-[collapsible=icon]:bg-transparent group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:shadow-none group-data-[collapsible=icon]:ring-0',
+    'group-data-[collapsible=icon]:mb-2 group-data-[collapsible=icon]:rounded-md group-data-[collapsible=icon]:bg-transparent group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:shadow-none group-data-[collapsible=icon]:ring-0',
   );
 
   const sidebarNavSectionTitle = cn(

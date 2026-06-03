@@ -10,7 +10,17 @@ export type InboxConversationDto = {
   lastMessagePreview: string | null;
   lastMessageAt: string;
   unreadCount: number;
+  contactPhone?: string | null;
+  hasProfilePicture?: boolean;
 };
+
+export type InboxDeliveryStatus =
+  | 'pending'
+  | 'sent'
+  | 'delivered'
+  | 'read'
+  | 'played'
+  | 'error';
 
 export type InboxMessageDto = {
   id: string;
@@ -20,6 +30,7 @@ export type InboxMessageDto = {
   mediaType?: string | null;
   mediaMime?: string | null;
   hasMedia?: boolean;
+  deliveryStatus?: InboxDeliveryStatus | null;
 };
 
 export type InboxConnectionStatusDto = {
@@ -121,7 +132,15 @@ export function fetchInboxMessages(
 export function sendInboxMessage(
   conversationId: string,
   text: string,
-): Promise<AdminInboxResult<{ id: string; direction: string; body: string; sentAt: string }>> {
+): Promise<
+  AdminInboxResult<{
+    id: string
+    direction: string
+    body: string
+    sentAt: string
+    deliveryStatus?: InboxDeliveryStatus | null
+  }>
+> {
   return adminInboxRequest(`/admin/inbox/conversations/${encodeURIComponent(conversationId)}/messages`, {
     method: 'POST',
     body: JSON.stringify({ text }),
@@ -138,6 +157,7 @@ export function sendInboxImage(
     body: string;
     sentAt: string;
     hasMedia: boolean;
+    deliveryStatus?: InboxDeliveryStatus | null;
   }>
 > {
   return adminInboxRequest(
@@ -177,10 +197,96 @@ export function disconnectWhatsapp(): Promise<AdminInboxResult<{ disconnected: b
 }
 
 export function configureWhatsappWebhook(): Promise<
-  AdminInboxResult<{ configured: boolean; url: string }>
+  AdminInboxResult<{ configured: boolean; url: string; chatsImported?: number }>
 > {
-  return adminInboxRequest<{ configured: boolean; url: string }>(
+  return adminInboxRequest<{ configured: boolean; url: string; chatsImported?: number }>(
     '/admin/inbox/whatsapp/configure-webhook',
     { method: 'POST' },
   );
+}
+
+export function syncWhatsappChats(): Promise<
+  AdminInboxResult<{
+    imported: number
+    chatsFromApi: number
+    contactsFromApi: number
+    messagesImported: number
+    total: number
+    skipped?: boolean
+  }>
+> {
+  return adminInboxRequest<{
+    imported: number
+    chatsFromApi: number
+    contactsFromApi: number
+    messagesImported: number
+    total: number
+    skipped?: boolean
+  }>('/admin/inbox/whatsapp/sync-chats', { method: 'POST' });
+}
+
+export function relinkWhatsappForHistory(): Promise<
+  AdminInboxResult<{
+    disconnected: boolean
+    state: string
+    qrcodeBase64: string | null
+    pairingCode: string | null
+    message: string | null
+  }>
+> {
+  return adminInboxRequest<{
+    disconnected: boolean
+    state: string
+    qrcodeBase64: string | null
+    pairingCode: string | null
+    message: string | null
+  }>('/admin/inbox/whatsapp/relink-for-history', { method: 'POST' });
+}
+
+export function importWhatsappHistoryAfterLink(): Promise<
+  AdminInboxResult<{
+    connected: boolean
+    chatsFromApi: number
+    messagesImported: number
+    olderPagesRequested: number
+    total: number
+    evolutionChatCount: number
+    waitedMs: number
+  }>
+> {
+  return adminInboxRequest<{
+    connected: boolean
+    chatsFromApi: number
+    messagesImported: number
+    olderPagesRequested: number
+    total: number
+    evolutionChatCount: number
+    waitedMs: number
+  }>('/admin/inbox/whatsapp/import-history-after-link', { method: 'POST' });
+}
+
+export function resyncWhatsappHistory(): Promise<
+  AdminInboxResult<{
+    restarted: boolean
+    connected: boolean
+    chatsFromApi: number
+    messagesImported: number
+    olderPagesRequested: number
+    total: number
+    historyPullSupported: boolean
+    requiresRelink?: boolean
+    evolutionChatCount?: number
+  }>
+> {
+  return adminInboxRequest<{
+    restarted: boolean
+    connected: boolean
+    chatsFromApi: number
+    messagesImported: number
+    olderPagesRequested: number
+    total: number
+    historyPullSupported: boolean
+    requiresRelink?: boolean
+    evolutionChatCount?: number
+  }>('/admin/inbox/whatsapp/resync-history', { method: 'POST' });
 }
