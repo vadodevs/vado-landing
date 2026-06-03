@@ -1,7 +1,8 @@
 import { getAdminAccessToken } from '@/lib/adminAuth';
 
-let blobUrl: string | null = null;
-let inflight: Promise<string | null> | null = null;
+const blobUrlByKey = new Map<string, string>();
+const inflightByKey = new Map<string, Promise<string | null>>();
+let activeCacheKey = '';
 
 function getApiBaseUrl(): string {
   const primary = String(import.meta.env.VITE_API_BASE_URL ?? '').trim();
@@ -9,38 +10,77 @@ function getApiBaseUrl(): string {
   return (primary || fallback).replace(/\/$/, '');
 }
 
-export function releaseInboxAccountAvatarUrl(): void {
-  if (blobUrl) {
-    URL.revokeObjectURL(blobUrl);
-    blobUrl = null;
+function revokeKey(key: string): void {
+  const url = blobUrlByKey.get(key);
+  if (url) {
+    URL.revokeObjectURL(url);
+    blobUrlByKey.delete(key);
   }
-  inflight = null;
+  inflightByKey.delete(key);
 }
 
-export async function loadInboxAccountAvatarUrl(): Promise<string | null> {
-  if (blobUrl) return blobUrl;
-  if (inflight) return inflight;
+/** Identificador de la cuenta vinculada (ownerJid). Al cambiar, invalida blobs anteriores. */
+export function setInboxAccountAvatarCacheKey(cacheKey: string): void {
+  const next = cacheKey.trim();
+  if (next === activeCacheKey) return;
+  if (activeCacheKey) revokeKey(activeCacheKey);
+  activeCacheKey = next;
+}
 
-  inflight = (async () => {
+export function clearInboxAccountAvatarBlob(cacheKey: string): void {
+  revokeKey(cacheKey.trim());
+}
+
+export function releaseInboxAccountAvatarUrl(): void {
+  for (const key of [...blobUrlByKey.keys()]) {
+    revokeKey(key);
+  }
+  activeCacheKey = '';
+}
+
+export function notifyInboxAccountAvatarChanged(cacheKey = ''): void {
+  setInboxAccountAvatarCacheKey(cacheKey);
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(
+      new CustomEvent('inbox:whatsapp-account-changed', { detail: { cacheKey } }),
+    );
+  }
+}
+
+export async function loadInboxAccountAvatarUrl(cacheKey?: string): Promise<string | null> {
+  const key = (cacheKey ?? activeCacheKey).trim();
+  if (!key) return null;
+
+  const cached = blobUrlByKey.get(key);
+  if (cached) return cached;
+
+  const pending = inflightByKey.get(key);
+  if (pending) return pending;
+
+  const promise = (async () => {
     const base = getApiBaseUrl();
     const token = getAdminAccessToken();
     if (!base || !token) return null;
 
     try {
-      const res = await fetch(`${base}/admin/inbox/whatsapp/account-avatar`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await fetch(
+        `${base}/admin/inbox/whatsapp/account-avatar?account=${encodeURIComponent(key)}`,
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
       if (!res.ok) return null;
       const blob = await res.blob();
       if (!blob.size) return null;
-      blobUrl = URL.createObjectURL(blob);
-      return blobUrl;
+      const url = URL.createObjectURL(blob);
+      blobUrlByKey.set(key, url);
+      if (!activeCacheKey) activeCacheKey = key;
+      return url;
     } catch {
       return null;
     } finally {
-      inflight = null;
+      inflightByKey.delete(key);
     }
   })();
 
-  return inflight;
+  inflightByKey.set(key, promise);
+  return promise;
 }

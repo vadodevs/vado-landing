@@ -16,6 +16,7 @@ import {
   type WhatsappConnectDto,
   type WhatsappLinkStatusDto,
 } from '@/lib/adminInboxApi';
+import { notifyInboxAccountAvatarChanged } from '@/lib/inboxAccountAvatar';
 
 function formatPairingCode(code: string): string {
   const raw = code.replace(/\D/g, '');
@@ -59,8 +60,13 @@ export function AdminWhatsappLinkCard() {
     const res = await fetchWhatsappLinkStatus();
     if (res.ok) {
       setLinkStatus(res.data);
+      const ownerKey = res.data.linked
+        ? (res.data.ownerJid?.trim() || res.data.instanceName?.trim() || 'linked')
+        : '';
+      notifyInboxAccountAvatarChanged(ownerKey);
       return res.data;
     }
+    notifyInboxAccountAvatarChanged('');
     if (res.reason === 'no-auth') {
       setError(t('adminCanales.inboxAuthRequired'));
     } else if (res.reason === 'no-config') {
@@ -213,6 +219,7 @@ export function AdminWhatsappLinkCard() {
       setError(t('adminSettings.whatsappDisconnectError'));
       return;
     }
+    notifyInboxAccountAvatarChanged('');
     setConnectPayload(null);
     setLinking(false);
     setHistoryImportMessage(null);
@@ -233,7 +240,7 @@ export function AdminWhatsappLinkCard() {
   return (
     <div
       id="whatsapp"
-      className="scroll-mt-24 rounded-xl border border-border bg-card p-5 shadow-sm md:p-6"
+      className="scroll-mt-24 rounded-xl border border-border bg-card p-5 pb-7 shadow-sm md:p-6 md:pb-8"
     >
       <h3 className="text-lg font-semibold text-foreground">{t('adminSettings.whatsappTitle')}</h3>
 
@@ -267,26 +274,30 @@ export function AdminWhatsappLinkCard() {
           {t('adminSettings.whatsappConnecting')}
         </div>
       ) : linked && !showQrPanel ? (
-        <div className="mt-6 space-y-4">
-          <p className="text-sm text-foreground">{t('adminSettings.whatsappLinkedSuccess')}</p>
-          <p className="text-xs text-muted-foreground">{t('adminSettings.whatsappHistoryHint')}</p>
+        <div className="mt-6 space-y-5">
+          <div className="space-y-2">
+            <p className="text-sm text-foreground">{t('adminSettings.whatsappLinkedSuccess')}</p>
+            <p className="text-xs leading-relaxed text-muted-foreground">
+              {t('adminSettings.whatsappHistoryHint')}
+            </p>
+          </div>
+          <Button
+            type="button"
+            variant="default"
+            className="h-10 w-full sm:w-auto"
+            disabled={importingHistory || syncingWebhook || disconnecting}
+            onClick={() => void handleRelinkForHistory()}
+          >
+            {importingHistory ? (
+              <>
+                <Loader2 className="mr-2 size-4 animate-spin" aria-hidden />
+                {t('adminSettings.whatsappResyncHistory')}
+              </>
+            ) : (
+              t('adminSettings.whatsappResyncHistory')
+            )}
+          </Button>
           <div className="flex flex-wrap gap-2">
-            <Button
-              type="button"
-              variant="default"
-              size="sm"
-              disabled={importingHistory || syncingWebhook || disconnecting}
-              onClick={() => void handleRelinkForHistory()}
-            >
-              {importingHistory ? (
-                <>
-                  <Loader2 className="mr-2 size-4 animate-spin" aria-hidden />
-                  {t('adminSettings.whatsappResyncHistory')}
-                </>
-              ) : (
-                t('adminSettings.whatsappResyncHistory')
-              )}
-            </Button>
             <Button
               type="button"
               variant="secondary"
@@ -370,28 +381,24 @@ export function AdminWhatsappLinkCard() {
         </div>
       )}
 
-      {managerUrl ? (
-        <p className="mt-6 text-xs text-muted-foreground">
+      <div className="mt-8 flex flex-col gap-2 border-t border-border/80 pt-5">
+        <Link
+          href={path('/app/admin/canales/whatsapp')}
+          className="text-sm font-medium text-[#128c7e] underline-offset-4 hover:underline dark:text-teal-400"
+        >
+          {t('adminSettings.whatsappOpenInbox')}
+        </Link>
+        {managerUrl ? (
           <a
             href={managerUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="underline underline-offset-2 hover:text-foreground"
+            className="text-xs text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
           >
             {t('adminSettings.whatsappManagerLink')}
           </a>
-          {' · '}
-          <Link href={path('/app/admin/canales/whatsapp')} className="underline underline-offset-2 hover:text-foreground">
-            {t('adminSettings.whatsappOpenInbox')}
-          </Link>
-        </p>
-      ) : (
-        <p className="mt-6 text-xs text-muted-foreground">
-          <Link href={path('/app/admin/canales/whatsapp')} className="underline underline-offset-2 hover:text-foreground">
-            {t('adminSettings.whatsappOpenInbox')}
-          </Link>
-        </p>
-      )}
+        ) : null}
+      </div>
     </div>
   );
 }

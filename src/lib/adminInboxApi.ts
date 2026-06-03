@@ -43,6 +43,8 @@ export type WhatsappLinkStatusDto = {
   state: 'open' | 'close' | 'connecting' | 'unknown';
   instanceName: string;
   linked: boolean;
+  /** JID del número vinculado; cambia al desvincular y escanear otro QR */
+  ownerJid?: string | null;
   webhookConfigured?: boolean;
   webhookUrl?: string | null;
   webhookCallbackUrl?: string;

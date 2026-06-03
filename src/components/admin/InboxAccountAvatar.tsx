@@ -2,49 +2,64 @@ import { useCallback, useEffect, useState } from 'react';
 import { CircleUser } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
+  clearInboxAccountAvatarBlob,
   loadInboxAccountAvatarUrl,
-  releaseInboxAccountAvatarUrl,
+  setInboxAccountAvatarCacheKey,
 } from '@/lib/inboxAccountAvatar';
 
 type InboxAccountAvatarProps = {
   alt?: string;
   enabled?: boolean;
+  /** ownerJid u otro id estable de la cuenta vinculada; al cambiar se recarga la foto */
+  cacheKey?: string;
   className?: string;
 };
 
 export function InboxAccountAvatar({
   alt = '',
   enabled = true,
+  cacheKey = '',
   className,
 }: InboxAccountAvatarProps) {
   const [src, setSrc] = useState<string | null>(null);
 
-  const loadAvatar = useCallback(async (force = false) => {
-    if (!enabled) {
-      setSrc(null);
-      return;
-    }
-    if (force) {
-      releaseInboxAccountAvatarUrl();
-      setSrc(null);
-    }
-    const url = await loadInboxAccountAvatarUrl();
-    setSrc(url);
-  }, [enabled]);
+  const loadAvatar = useCallback(
+    async (force = false) => {
+      const key = cacheKey.trim();
+      if (!enabled || !key) {
+        setSrc(null);
+        return;
+      }
+      if (force) clearInboxAccountAvatarBlob(key);
+      setInboxAccountAvatarCacheKey(key);
+      const url = await loadInboxAccountAvatarUrl(key);
+      setSrc(url);
+    },
+    [cacheKey, enabled],
+  );
 
   useEffect(() => {
-    if (!enabled) {
+    if (!enabled || !cacheKey.trim()) {
       setSrc(null);
       return;
     }
     let cancelled = false;
-    void loadInboxAccountAvatarUrl().then((url) => {
-      if (!cancelled) setSrc(url);
-    });
+    void loadAvatar();
     return () => {
       cancelled = true;
     };
-  }, [enabled]);
+  }, [enabled, cacheKey, loadAvatar]);
+
+  useEffect(() => {
+    const onAccountChanged = () => {
+      setSrc(null);
+      if (enabled && cacheKey.trim()) {
+        void loadAvatar(true);
+      }
+    };
+    window.addEventListener('inbox:whatsapp-account-changed', onAccountChanged);
+    return () => window.removeEventListener('inbox:whatsapp-account-changed', onAccountChanged);
+  }, [enabled, cacheKey, loadAvatar]);
 
   if (src) {
     return (
