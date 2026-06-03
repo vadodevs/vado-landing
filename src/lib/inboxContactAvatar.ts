@@ -2,6 +2,9 @@ import { getAdminAccessToken } from '@/lib/adminAuth';
 
 const blobUrlCache = new Map<string, string>();
 const inflight = new Map<string, Promise<string | null>>();
+/** Evita golpear Evolution en bucle cuando no hay foto (404). */
+const missUntil = new Map<string, number>();
+const MISS_TTL_MS = 15 * 60_000;
 
 function getApiBaseUrl(): string {
   const primary = String(import.meta.env.VITE_API_BASE_URL ?? '').trim();
@@ -16,6 +19,7 @@ export function releaseInboxContactAvatarUrl(conversationId: string): void {
     blobUrlCache.delete(conversationId);
   }
   inflight.delete(conversationId);
+  missUntil.delete(conversationId);
 }
 
 export function releaseAllInboxContactAvatarUrls(): void {
@@ -30,6 +34,9 @@ export async function loadInboxContactAvatarUrl(conversationId: string): Promise
   const cached = blobUrlCache.get(conversationId);
   if (cached) return cached;
 
+  const missAt = missUntil.get(conversationId);
+  if (missAt && Date.now() < missAt) return null;
+
   const pending = inflight.get(conversationId);
   if (pending) return pending;
 
@@ -43,13 +50,21 @@ export async function loadInboxContactAvatarUrl(conversationId: string): Promise
         `${base}/admin/inbox/conversations/${encodeURIComponent(conversationId)}/avatar`,
         { headers: { Authorization: `Bearer ${token}` } },
       );
-      if (!res.ok) return null;
+      if (!res.ok) {
+        missUntil.set(conversationId, Date.now() + MISS_TTL_MS);
+        return null;
+      }
       const blob = await res.blob();
-      if (!blob.size) return null;
+      if (!blob.size) {
+        missUntil.set(conversationId, Date.now() + MISS_TTL_MS);
+        return null;
+      }
       const url = URL.createObjectURL(blob);
       blobUrlCache.set(conversationId, url);
+      missUntil.delete(conversationId);
       return url;
     } catch {
+      missUntil.set(conversationId, Date.now() + MISS_TTL_MS);
       return null;
     } finally {
       inflight.delete(conversationId);

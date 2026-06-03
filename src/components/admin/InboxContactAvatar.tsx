@@ -1,9 +1,6 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
-import {
-  loadInboxContactAvatarUrl,
-  releaseInboxContactAvatarUrl,
-} from '@/lib/inboxContactAvatar';
+import { loadInboxContactAvatarUrl } from '@/lib/inboxContactAvatar';
 
 type InboxContactAvatarProps = {
   conversationId: string;
@@ -37,15 +34,6 @@ export function InboxContactAvatar({
 }: InboxContactAvatarProps) {
   const [src, setSrc] = useState<string | null>(null);
 
-  const loadAvatar = useCallback(async (force = false) => {
-    if (force) {
-      releaseInboxContactAvatarUrl(conversationId);
-      setSrc(null);
-    }
-    const url = await loadInboxContactAvatarUrl(conversationId);
-    setSrc(url);
-  }, [conversationId]);
-
   useEffect(() => {
     let cancelled = false;
     void loadInboxContactAvatarUrl(conversationId).then((url) => {
@@ -65,7 +53,7 @@ export function InboxContactAvatar({
         src={src}
         alt={name}
         onError={() => {
-          void loadAvatar(true);
+          /* No reintentar en bucle: loadInboxContactAvatarUrl ya cachea 404 15 min */
         }}
         className={cn(
           'shrink-0 rounded-full object-cover shadow-sm ring-1 ring-black/5 dark:ring-white/10',

@@ -24,6 +24,10 @@ import {
 import { VadoLogo } from '@/assets/vado-logo';
 import { PageMeta } from '@/components/PageMeta';
 import { useLocale } from '@/hooks/useLocale';
+import {
+  readAdminChannelsNavOpen,
+  writeAdminChannelsNavOpen,
+} from '@/lib/adminSidebarNavState';
 import { logoutAdmin } from '@/lib/adminAuth';
 import { logoutCompany } from '@/lib/companyAuth';
 import { logoutDeveloper } from '@/lib/devAuth';
@@ -316,7 +320,7 @@ export function AppShell({
   } = useAppNavBadges();
   const [offersOpen, setOffersOpen] = useState(false);
   const [recruitersOpen, setRecruitersOpen] = useState(false);
-  const [channelsOpen, setChannelsOpen] = useState(false);
+  const [channelsOpen, setChannelsOpen] = useState(() => readAdminChannelsNavOpen());
   const [trabajoOpen, setTrabajoOpen] = useState(false);
   const [appThemeMode, setAppThemeMode] = useState<AppThemeMode>(() => getStoredAppTheme());
   const [sideChatExpanded, setSideChatExpanded] = useState(true);
@@ -396,8 +400,20 @@ export function AppShell({
   }, [recruitersActive]);
 
   useEffect(() => {
-    if (channelsActive) queueMicrotask(() => setChannelsOpen(true));
+    if (!channelsActive) return;
+    queueMicrotask(() => {
+      setChannelsOpen(true);
+      writeAdminChannelsNavOpen(true);
+    });
   }, [channelsActive]);
+
+  const toggleChannelsNav = () => {
+    setChannelsOpen((v) => {
+      const next = !v;
+      writeAdminChannelsNavOpen(next);
+      return next;
+    });
+  };
 
   useEffect(() => {
     if (trabajoGroupActive) queueMicrotask(() => setTrabajoOpen(true));
@@ -643,7 +659,7 @@ export function AppShell({
                       <button
                         type="button"
                         aria-expanded={channelsOpen}
-                        onClick={() => setChannelsOpen((v) => !v)}
+                        onClick={toggleChannelsNav}
                         className={cn(
                           sb.rowGhost,
                           'min-h-10 w-full group-data-[collapsible=icon]:justify-center',

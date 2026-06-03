@@ -12,6 +12,25 @@ export type InboxConversationDto = {
   unreadCount: number;
   contactPhone?: string | null;
   hasProfilePicture?: boolean;
+  isGroup?: boolean;
+  groupMemberCount?: number | null;
+};
+
+export type InboxGroupInfoMemberDto = {
+  jid: string;
+  displayName: string;
+  phone: string | null;
+  isAdmin: boolean;
+  conversationId: string | null;
+};
+
+export type InboxGroupInfoDto = {
+  conversationId: string;
+  groupJid: string;
+  subject: string;
+  description: string | null;
+  memberCount: number;
+  members: InboxGroupInfoMemberDto[];
 };
 
 export type InboxDeliveryStatus =
@@ -31,6 +50,8 @@ export type InboxMessageDto = {
   mediaMime?: string | null;
   hasMedia?: boolean;
   deliveryStatus?: InboxDeliveryStatus | null;
+  /** Grupos: remitente del mensaje entrante */
+  senderName?: string | null;
 };
 
 export type InboxConnectionStatusDto = {
@@ -118,8 +139,10 @@ async function adminInboxRequest<T>(
 
 export function fetchInboxConversations(
   channel: InboxChannel = 'whatsapp',
+  opts?: { sync?: boolean },
 ): Promise<AdminInboxResult<InboxConversationDto[]>> {
   const q = new URLSearchParams({ channel });
+  if (opts?.sync) q.set('sync', 'true');
   return adminInboxRequest<InboxConversationDto[]>(`/admin/inbox/conversations?${q}`);
 }
 
@@ -128,6 +151,27 @@ export function fetchInboxMessages(
 ): Promise<AdminInboxResult<InboxMessageDto[]>> {
   return adminInboxRequest<InboxMessageDto[]>(
     `/admin/inbox/conversations/${encodeURIComponent(conversationId)}/messages`,
+  );
+}
+
+export function fetchInboxGroupInfo(
+  conversationId: string,
+): Promise<AdminInboxResult<InboxGroupInfoDto>> {
+  return adminInboxRequest<InboxGroupInfoDto>(
+    `/admin/inbox/conversations/${encodeURIComponent(conversationId)}/group-info`,
+  );
+}
+
+export function openInboxParticipantChat(
+  groupConversationId: string,
+  participantJid: string,
+): Promise<AdminInboxResult<{ conversationId: string }>> {
+  return adminInboxRequest<{ conversationId: string }>(
+    `/admin/inbox/conversations/${encodeURIComponent(groupConversationId)}/open-participant`,
+    {
+      method: 'POST',
+      body: JSON.stringify({ participantJid }),
+    },
   );
 }
 
@@ -167,6 +211,39 @@ export function sendInboxImage(
     {
       method: 'POST',
       body: JSON.stringify(payload),
+    },
+  );
+}
+
+export type InboxSavedStickerDto = {
+  messageId: string;
+  sentAt: string;
+  mimeType: string | null;
+  hasMedia: boolean;
+};
+
+export function fetchSavedInboxStickers(): Promise<AdminInboxResult<InboxSavedStickerDto[]>> {
+  return adminInboxRequest<InboxSavedStickerDto[]>('/admin/inbox/whatsapp/saved-stickers');
+}
+
+export function sendInboxSticker(
+  conversationId: string,
+  sourceMessageId: string,
+): Promise<
+  AdminInboxResult<{
+    id: string;
+    direction: string;
+    body: string;
+    sentAt: string;
+    hasMedia: boolean;
+    deliveryStatus?: InboxDeliveryStatus | null;
+  }>
+> {
+  return adminInboxRequest(
+    `/admin/inbox/conversations/${encodeURIComponent(conversationId)}/messages/sticker`,
+    {
+      method: 'POST',
+      body: JSON.stringify({ sourceMessageId }),
     },
   );
 }

@@ -17,16 +17,28 @@ export function isTechnicalInboxLabel(value: string | null | undefined): boolean
   return false;
 }
 
-function formatPhoneFromExternalId(externalId: string): string | null {
-  const digits = externalId.replace(/^g:/, '').replace(/^lid:/, '').replace(/\D/g, '');
-  if (digits.length < 10 || digits.length > 15) return null;
-  if (digits.length === 12 && digits.startsWith('52')) {
-    return `+52 ${digits.slice(2, 3)} ${digits.slice(3, 6)} ${digits.slice(6)}`;
+function isDigitsOnlyLabel(value: string): boolean {
+  const digits = value.replace(/\D/g, '');
+  return digits.length >= 8 && digits.length === value.replace(/[\s+()-]/g, '').length;
+}
+
+/** Mismo criterio que WhatsApp iOS para números MX/US en la lista. */
+export function formatInboxPhoneDisplay(digits: string): string | null {
+  const d = digits.replace(/\D/g, '');
+  if (d.length < 10 || d.length > 15) return null;
+  if (d.length === 12 && d.startsWith('52')) {
+    return `+52 ${d.slice(2, 3)} ${d.slice(3, 6)} ${d.slice(6)}`;
   }
-  if (digits.length === 11 && digits.startsWith('1')) {
-    return `+1 ${digits.slice(1, 4)} ${digits.slice(4, 7)} ${digits.slice(7)}`;
+  if (d.length === 11 && d.startsWith('1')) {
+    return `+1 ${d.slice(1, 4)} ${d.slice(4, 7)} ${d.slice(7)}`;
   }
-  return `+${digits}`;
+  return `+${d}`;
+}
+
+function phoneTitleFromExternalId(externalId: string): string | null {
+  const id = externalId.trim();
+  if (!/^\d{10,15}$/.test(id)) return null;
+  return formatInboxPhoneDisplay(id);
 }
 
 export function formatInboxContactName(
@@ -35,9 +47,12 @@ export function formatInboxContactName(
   t: TFunction,
 ): string {
   const raw = contactName?.trim() ?? '';
-  if (raw && !isTechnicalInboxLabel(raw)) return raw;
+  if (raw && !isTechnicalInboxLabel(raw) && !isDigitsOnlyLabel(raw)) {
+    const lower = raw.toLowerCase();
+    if (lower !== 'contacto' && lower !== 'grupo') return raw;
+  }
 
-  const phone = formatPhoneFromExternalId(externalId);
+  const phone = phoneTitleFromExternalId(externalId);
   if (phone) return phone;
 
   if (externalId.startsWith('g:')) {

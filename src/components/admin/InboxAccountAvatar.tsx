@@ -24,16 +24,14 @@ export function InboxAccountAvatar({
   const [src, setSrc] = useState<string | null>(null);
 
   const loadAvatar = useCallback(
-    async (force = false) => {
+    async (force = false): Promise<string | null> => {
       const key = cacheKey.trim();
       if (!enabled || !key) {
-        setSrc(null);
-        return;
+        return null;
       }
       if (force) clearInboxAccountAvatarBlob(key);
       setInboxAccountAvatarCacheKey(key);
-      const url = await loadInboxAccountAvatarUrl(key);
-      setSrc(url);
+      return loadInboxAccountAvatarUrl(key);
     },
     [cacheKey, enabled],
   );
@@ -44,7 +42,10 @@ export function InboxAccountAvatar({
       return;
     }
     let cancelled = false;
-    void loadAvatar();
+    void (async () => {
+      const url = await loadAvatar();
+      if (!cancelled) setSrc(url);
+    })();
     return () => {
       cancelled = true;
     };
@@ -54,7 +55,7 @@ export function InboxAccountAvatar({
     const onAccountChanged = () => {
       setSrc(null);
       if (enabled && cacheKey.trim()) {
-        void loadAvatar(true);
+        void loadAvatar(true).then((url) => setSrc(url));
       }
     };
     window.addEventListener('inbox:whatsapp-account-changed', onAccountChanged);
@@ -67,7 +68,7 @@ export function InboxAccountAvatar({
         src={src}
         alt={alt}
         onError={() => {
-          void loadAvatar(true);
+          void loadAvatar(true).then((url) => setSrc(url));
         }}
         className={cn(
           'size-10 shrink-0 rounded-full object-cover shadow-sm ring-1 ring-black/5 dark:ring-white/10',
