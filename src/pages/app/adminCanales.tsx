@@ -117,7 +117,18 @@ function isRealInboxConversationId(id: string): boolean {
   return INBOX_CONVERSATION_UUID_RE.test(id);
 }
 
-const MEDIA_PREVIEW_LABELS = /^\[(Imagen|Video|Audio|Documento|Sticker)\]$/;
+const MEDIA_PREVIEW_LABELS = /^\[(imagen|video|audio|documento|sticker)\]$/i;
+
+function isAudioMediaType(mediaType: string | null | undefined): boolean {
+  if (!mediaType) return false;
+  const kind = mediaType.toLowerCase();
+  return kind === 'audio' || kind === 'ptt' || kind === 'voice' || kind === 'ptv';
+}
+
+function isAudioMessage(msg: ChatMsg): boolean {
+  if (isAudioMediaType(msg.mediaType)) return true;
+  return /^\[audio\]$/i.test(msg.text.trim());
+}
 
 const BOT_TEST_THREAD_SESSION_KEY = 'vado.adminCanales.botTestThread.v1';
 
@@ -352,6 +363,7 @@ function deliveryStatusAriaLabel(status: InboxDeliveryStatus | null | undefined,
 }
 
 function messageExpectsMedia(msg: ChatMsg): boolean {
+  if (isAudioMessage(msg)) return true;
   return Boolean(msg.mediaType) && (msg.hasMedia ?? false);
 }
 
@@ -408,6 +420,7 @@ type WhatsappMessageLayout = {
   isImage: boolean;
   isSticker: boolean;
   isVideo: boolean;
+  isAudio: boolean;
   isMediaMessage: boolean;
   showText: boolean;
   bubbleVariant: 'text' | 'media';
@@ -417,6 +430,7 @@ function getWhatsappMessageLayout(msg: ChatMsg, mediaSrc: string | null): Whatsa
   const isImage = msg.mediaType === 'image';
   const isSticker = msg.mediaType === 'sticker';
   const isVideo = msg.mediaType === 'video';
+  const isAudio = isAudioMessage(msg);
   const hasMedia = Boolean(mediaSrc);
   const showText =
     msg.text.trim().length > 0 && !MEDIA_PREVIEW_LABELS.test(msg.text.trim());
@@ -426,6 +440,7 @@ function getWhatsappMessageLayout(msg: ChatMsg, mediaSrc: string | null): Whatsa
     isImage,
     isSticker,
     isVideo,
+    isAudio,
     isMediaMessage: Boolean(msg.mediaType),
     showText,
     bubbleVariant: imageOnly ? 'media' : 'text',
@@ -550,7 +565,7 @@ function WaMessageContent({
   const { mediaSrc, mediaState, expectsMedia } = useWhatsappMessageMedia(msg);
 
   const layout = getWhatsappMessageLayout(msg, mediaSrc);
-  const { hasMedia, isImage, isSticker, isVideo, showText } = layout;
+  const { hasMedia, isImage, isSticker, isVideo, isAudio, showText } = layout;
   const src = mediaSrc ?? '';
   const showLoading =
     expectsMedia && !hasMedia && (mediaState === 'loading' || mediaState === 'idle');
@@ -605,7 +620,48 @@ function WaMessageContent({
           />
         </div>
       ) : null}
-      {showLoading ? (
+      {isAudio && (hasMedia || showLoading || showError) ? (
+        <div
+          className={cn(
+            'flex min-w-[min(100%,260px)] max-w-[min(85vw,320px)] items-center gap-2.5',
+            messenger ? 'py-0.5' : 'py-1',
+            showText && 'mb-1',
+          )}
+        >
+          <span
+            className={cn(
+              'flex size-9 shrink-0 items-center justify-center rounded-full',
+              messenger
+                ? 'bg-white/10 text-teal-200'
+                : 'bg-teal-600/15 text-teal-700 dark:bg-teal-500/20 dark:text-teal-300',
+            )}
+            aria-hidden
+          >
+            <Mic className="size-4" strokeWidth={2} />
+          </span>
+          {hasMedia ? (
+            <audio
+              src={src}
+              controls
+              preload="metadata"
+              className={cn(
+                'h-9 min-w-0 flex-1',
+                messenger && '[color-scheme:dark]',
+              )}
+              aria-label={t('adminCanales.whatsappAudioLabel')}
+            />
+          ) : showLoading ? (
+            <p className="text-xs text-zinc-500 dark:text-zinc-400">
+              {t('adminCanales.whatsappAudioLoading')}
+            </p>
+          ) : (
+            <p className="text-xs italic text-zinc-500 dark:text-zinc-400">
+              {t('adminCanales.whatsappAudioUnavailable')}
+            </p>
+          )}
+        </div>
+      ) : null}
+      {showLoading && !isAudio ? (
         <p
           className={cn(
             'text-center text-sm text-zinc-500 dark:text-zinc-400',
@@ -615,7 +671,7 @@ function WaMessageContent({
           {t('adminCanales.whatsappMediaLoading')}
         </p>
       ) : null}
-      {showError ? (
+      {showError && !isAudio ? (
         <p className="text-sm italic text-zinc-500 dark:text-zinc-400">
           {t('adminCanales.whatsappMediaUnavailable')}
         </p>
@@ -625,7 +681,7 @@ function WaMessageContent({
           className={cn(
             'whitespace-pre-wrap [overflow-wrap:break-word]',
             messenger && 'text-left',
-            hasMedia && (isImage || isSticker || isVideo) && 'mt-1 px-0.5',
+            hasMedia && (isImage || isSticker || isVideo || isAudio) && 'mt-1 px-0.5',
           )}
         >
           <HighlightedMessageText text={msg.text} query={searchQuery} />

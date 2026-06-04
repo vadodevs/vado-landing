@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { AppShell } from '@/components/layout/app/AppShell';
 import { AppThemeSettingsCard } from '@/components/app/AppThemeSettingsCard';
 import { AdminAutopilotSettingsCard } from '@/components/admin/AdminAutopilotSettingsCard';
+import { AdminBotSettingsCard } from '@/components/admin/AdminBotSettingsCard';
 import { AdminWhatsappLinkCard } from '@/components/admin/AdminWhatsappLinkCard';
 import { getStoredAppTheme, type AppThemeMode } from '@/lib/appTheme';
 
@@ -23,6 +24,7 @@ export default function AppAdminSettings() {
           </h2>
           <AppThemeSettingsCard mode={themeMode} onChange={setThemeMode} />
         </section>
+        <AdminBotSettingsCard />
         <AdminAutopilotSettingsCard />
         <AdminWhatsappLinkCard />
       </div>

@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Bot, Clock, Sparkles } from 'lucide-react';
+import { Bot, Clock, MessageCircle, Sparkles } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
 import {
   AUTOPILOT_TIMEZONE_OPTIONS,
@@ -31,6 +31,16 @@ function toggleDay(days: AutopilotWeekdayId[], day: AutopilotWeekdayId): Autopil
   return days.includes(day) ? days.filter((d) => d !== day) : [...days, day];
 }
 
+function statusLabel(
+  config: InboxAutopilotConfig,
+  activeNow: boolean,
+  t: (key: string) => string,
+): string {
+  if (!config.enabled) return t('adminSettings.autopilotStatusOff');
+  if (activeNow) return t('adminSettings.autopilotStatusActive');
+  return t('adminSettings.autopilotStatusScheduled');
+}
+
 export function AdminAutopilotSettingsCard() {
   const { t } = useTranslation();
   const [config, setConfig] = useState<InboxAutopilotConfig>(() => loadInboxAutopilotConfig());
@@ -44,6 +54,7 @@ export function AdminAutopilotSettingsCard() {
   }, [config]);
 
   const activeNow = useMemo(() => isInboxAutopilotActiveNow(config), [config]);
+  const status = statusLabel(config, activeNow, t);
 
   const patch = (partial: Partial<InboxAutopilotConfig>) => {
     setConfig((prev) => ({ ...prev, ...partial }));
@@ -58,7 +69,7 @@ export function AdminAutopilotSettingsCard() {
       id="autopilot"
       className="scroll-mt-24 rounded-xl border border-border bg-card p-5 pb-7 shadow-sm md:p-6 md:pb-8"
     >
-      <div className="flex flex-wrap items-start justify-between gap-3">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex min-w-0 items-start gap-3">
           <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-teal-500/15 text-teal-600 dark:bg-teal-500/20 dark:text-teal-300">
             <Bot className="size-5" strokeWidth={1.75} aria-hidden />
@@ -76,41 +87,42 @@ export function AdminAutopilotSettingsCard() {
             <p className="mt-1 text-sm text-muted-foreground">{t('adminSettings.autopilotSubtitle')}</p>
           </div>
         </div>
-        <span
+
+        <div
           className={cn(
-            'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium',
+            'flex shrink-0 items-center gap-3 rounded-2xl border px-3 py-2.5 sm:min-w-[11rem]',
             config.enabled
-              ? activeNow
-                ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300'
-                : 'bg-amber-100 text-amber-900 dark:bg-amber-950/50 dark:text-amber-200'
-              : 'bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300',
+              ? 'border-teal-500/30 bg-teal-500/5 dark:border-teal-500/25 dark:bg-teal-500/10'
+              : 'border-border bg-muted/40',
           )}
         >
-          {!config.enabled
-            ? t('adminSettings.autopilotStatusOff')
-            : activeNow
-              ? t('adminSettings.autopilotStatusActive')
-              : t('adminSettings.autopilotStatusScheduled')}
-        </span>
-      </div>
-
-      <div className="mt-6 space-y-6">
-        <div className="flex items-start gap-3 rounded-lg border border-border/80 bg-muted/30 px-3 py-3">
-          <Checkbox
-            id="autopilot-enabled"
-            checked={config.enabled}
-            onCheckedChange={(v) => patch({ enabled: v === true })}
-          />
           <div className="min-w-0 flex-1">
-            <Label htmlFor="autopilot-enabled" className="cursor-pointer text-sm font-medium">
+            <p className="text-sm font-semibold text-foreground">
               {t('adminSettings.autopilotEnabledLabel')}
-            </Label>
-            <p className="mt-0.5 text-xs text-muted-foreground">
-              {t('adminSettings.autopilotEnabledHint')}
+            </p>
+            <p
+              className={cn(
+                'mt-0.5 text-xs font-medium',
+                !config.enabled && 'text-muted-foreground',
+                config.enabled && activeNow && 'text-emerald-600 dark:text-emerald-400',
+                config.enabled && !activeNow && 'text-amber-700 dark:text-amber-300',
+              )}
+            >
+              {status}
             </p>
           </div>
+          <Switch
+            id="autopilot-enabled"
+            checked={config.enabled}
+            onCheckedChange={(v) => patch({ enabled: v })}
+            aria-label={t('adminSettings.autopilotEnabledLabel')}
+          />
         </div>
+      </div>
 
+      <p className="mt-3 text-xs text-muted-foreground">{t('adminSettings.autopilotEnabledHint')}</p>
+
+      <div className="mt-6 space-y-6">
         <fieldset
           disabled={!config.enabled}
           className="space-y-5 disabled:pointer-events-none disabled:opacity-55"
@@ -119,18 +131,23 @@ export function AdminAutopilotSettingsCard() {
             <p className="mb-2 text-sm font-medium text-foreground">
               {t('adminSettings.autopilotChannelsLabel')}
             </p>
-            <div className="flex items-center gap-2">
-              <Checkbox
-                id="autopilot-whatsapp"
-                checked={config.channels.whatsapp}
-                onCheckedChange={(v) =>
-                  patch({ channels: { ...config.channels, whatsapp: v === true } })
-                }
-              />
-              <Label htmlFor="autopilot-whatsapp" className="cursor-pointer text-sm">
-                {t('adminSettings.autopilotChannelWhatsapp')}
-              </Label>
-            </div>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={config.channels.whatsapp}
+              onClick={() =>
+                patch({ channels: { ...config.channels, whatsapp: !config.channels.whatsapp } })
+              }
+              className={cn(
+                'inline-flex items-center gap-2 rounded-full border px-3.5 py-2 text-sm font-medium transition-colors',
+                config.channels.whatsapp
+                  ? 'border-teal-600/40 bg-teal-600 text-white shadow-sm dark:border-teal-500/50'
+                  : 'border-border bg-background text-muted-foreground hover:bg-muted/60',
+              )}
+            >
+              <MessageCircle className="size-4 shrink-0" aria-hidden />
+              {t('adminSettings.autopilotChannelWhatsapp')}
+            </button>
           </div>
 
           <div>
@@ -238,10 +255,7 @@ export function AdminAutopilotSettingsCard() {
                 value={config.maxRepliesPerHour}
                 onChange={(e) =>
                   patch({
-                    maxRepliesPerHour: Math.min(
-                      200,
-                      Math.max(1, Number(e.target.value) || 1),
-                    ),
+                    maxRepliesPerHour: Math.min(200, Math.max(1, Number(e.target.value) || 1)),
                   })
                 }
                 className="h-10"
