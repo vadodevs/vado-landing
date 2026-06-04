@@ -87,6 +87,10 @@ import {
   releaseAllInboxContactAvatarUrls,
 } from '@/lib/inboxContactAvatar';
 import {
+  applyInboxReadState,
+  markInboxConversationReadLocal,
+} from '@/lib/inboxReadState';
+import {
   clearWhatsappInboxSession,
   loadWhatsappInboxSession,
   saveWhatsappInboxSession,
@@ -1142,9 +1146,11 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
 
   const mockConversations = useMemo(() => buildInboxConversations(channel, t), [channel, t]);
   const [dynamicRows, setDynamicRows] = useState<InboxConversation[]>([]);
-  const [whatsappRows, setWhatsappRows] = useState<InboxConversation[]>(
-    () => (sessionCache?.conversations as InboxConversation[]) ?? [],
-  );
+  const [whatsappRows, setWhatsappRows] = useState<InboxConversation[]>(() => {
+    const cached = (sessionCache?.conversations as InboxConversation[]) ?? [];
+    const owner = sessionCache?.ownerJid?.trim() ?? '';
+    return owner ? applyInboxReadState(owner, cached) : cached;
+  });
   const [whatsappLoadState, setWhatsappLoadState] = useState<
     'idle' | 'loading' | 'error' | 'ok'
   >(() => (sessionCache ? 'ok' : 'idle'));
@@ -1275,12 +1281,19 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
       .map((c) => mapConversationDto(c, t))
       .filter((c): c is InboxConversation => c != null)
       .sort((a, b) => (b.lastMessageAtMs ?? 0) - (a.lastMessageAtMs ?? 0));
-    setWhatsappRows(rows);
+    const owner = whatsappOwnerJid.trim();
+    let merged = owner ? applyInboxReadState(owner, rows) : rows;
+    if (selectedId) {
+      merged = merged.map((r) =>
+        r.id === selectedId ? { ...r, unreadCount: 0 } : r,
+      );
+    }
+    setWhatsappRows(merged);
     setSelectedId((prev) => {
       if (prev && rows.some((r) => r.id === prev)) return prev;
       return rows[0]?.id ?? '';
     });
-  }, [t]);
+  }, [t, whatsappOwnerJid, selectedId]);
 
   useEffect(() => {
     if (!isWhatsappApi) return;
@@ -1322,12 +1335,28 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
   }, [isWhatsappApi, refreshWhatsappLink, reloadWhatsappConversations]);
 
   useEffect(() => {
+    if (!isWhatsappApi || !whatsappOwnerJid.trim()) return;
+    setWhatsappRows((prev) => {
+      if (!prev.length) return prev;
+      const next = applyInboxReadState(whatsappOwnerJid, prev);
+      const changed = next.some(
+        (r, i) => (r.unreadCount ?? 0) !== (prev[i]?.unreadCount ?? 0),
+      );
+      return changed ? next : prev;
+    });
+  }, [isWhatsappApi, whatsappOwnerJid]);
+
+  useEffect(() => {
     if (!isWhatsappApi || whatsappGate !== 'linked' || whatsappRows.length === 0) return;
+    const owner = whatsappOwnerJid.trim();
+    const conversationsToSave = owner
+      ? applyInboxReadState(owner, whatsappRows)
+      : whatsappRows;
     const timer = window.setTimeout(() => {
       saveWhatsappInboxSession({
         ownerJid: whatsappOwnerJid,
         selectedId,
-        conversations: whatsappRows,
+        conversations: conversationsToSave,
         messagesById,
         bootSyncDone: whatsappBootSyncDoneRef.current,
       });
@@ -1362,9 +1391,15 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
       await reloadThreadMessages(selectedId);
       if (cancelled) return;
       await markInboxConversationRead(selectedId);
-      setWhatsappRows((prev) =>
-        prev.map((r) => (r.id === selectedId ? { ...r, unreadCount: 0 } : r)),
-      );
+      setWhatsappRows((prev) => {
+        const row = prev.find((r) => r.id === selectedId);
+        const lastMs = row?.lastMessageAtMs ?? 0;
+        const owner = whatsappOwnerJid.trim();
+        if (owner && lastMs > 0) {
+          markInboxConversationReadLocal(owner, selectedId, lastMs);
+        }
+        return prev.map((r) => (r.id === selectedId ? { ...r, unreadCount: 0 } : r));
+      });
     };
     void run();
     const poll = () => {
@@ -1379,7 +1414,13 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
       window.clearInterval(interval);
       window.clearInterval(listInterval);
     };
-  }, [isWhatsappApi, selectedId, reloadThreadMessages, reloadWhatsappConversations]);
+  }, [
+    isWhatsappApi,
+    selectedId,
+    reloadThreadMessages,
+    reloadWhatsappConversations,
+    whatsappOwnerJid,
+  ]);
 
   useEffect(() => {
     if (!isBotTest) return;
@@ -1729,6 +1770,17 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
     stickToBottomRef.current = true;
     const el = threadScrollRef.current;
     if (el) el.scrollTop = 0;
+    if (isWhatsappApi && isRealInboxConversationId(id)) {
+      const conv = conversations.find((c) => c.id === id);
+      const lastMs = conv?.lastMessageAtMs ?? 0;
+      const owner = whatsappOwnerJid.trim();
+      if (owner && lastMs > 0) {
+        markInboxConversationReadLocal(owner, id, lastMs);
+      }
+      setWhatsappRows((prev) =>
+        prev.map((r) => (r.id === id ? { ...r, unreadCount: 0 } : r)),
+      );
+    }
     setSelectedId(id);
     if (!isMd) setMobileShowThread(true);
   };

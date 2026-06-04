@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { MessageSquareText, Sparkles } from 'lucide-react';
+import { CalendarClock, MessageSquareText, Sparkles } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -7,11 +7,15 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
 import {
+  BOT_APPOINTMENT_TOPIC_IDS,
   BOT_CONVERSATION_TONES,
   BOT_LANGUAGE_MODES,
   BOT_OFF_TOPIC_STRICTNESS,
   BOT_RESPONSE_LENGTHS,
   DEFAULT_INBOX_BOT_CONFIG,
+  enabledBotAppointmentTopicIds,
+  toggleBotAppointmentTopic,
+  type BotAppointmentTopicId,
   type BotConversationTone,
   type BotLanguageMode,
   type BotOffTopicStrictness,
@@ -60,6 +64,24 @@ const PREVIEW_I18N: Record<BotConversationTone, string> = {
   professional: 'adminSettings.botPreviewProfessional',
 };
 
+const APPOINTMENT_TOPIC_I18N: Record<BotAppointmentTopicId, string> = {
+  confirmAppointments: 'adminSettings.botApptConfirm',
+  scheduleAppointments: 'adminSettings.botApptSchedule',
+  rescheduleAppointments: 'adminSettings.botApptReschedule',
+  cancelAppointments: 'adminSettings.botApptCancel',
+  appointmentReminders: 'adminSettings.botApptReminders',
+  checkAvailability: 'adminSettings.botApptAvailability',
+};
+
+const APPOINTMENT_SAMPLE_I18N: Record<BotAppointmentTopicId, string> = {
+  confirmAppointments: 'adminSettings.botApptSampleConfirm',
+  scheduleAppointments: 'adminSettings.botApptSampleSchedule',
+  rescheduleAppointments: 'adminSettings.botApptSampleReschedule',
+  cancelAppointments: 'adminSettings.botApptSampleCancel',
+  appointmentReminders: 'adminSettings.botApptSampleReminders',
+  checkAvailability: 'adminSettings.botApptSampleAvailability',
+};
+
 function optionButtonClass(selected: boolean): string {
   return cn(
     'rounded-lg border px-3 py-2 text-xs font-semibold transition-colors',
@@ -102,6 +124,26 @@ export function AdminBotSettingsCard() {
     t('adminSettings.botGreetingDefault', {
       name: config.displayName || DEFAULT_INBOX_BOT_CONFIG.displayName,
     });
+
+  const enabledAppointmentIds = useMemo(
+    () => enabledBotAppointmentTopicIds(config.appointmentTopics),
+    [config.appointmentTopics],
+  );
+
+  const appointmentTopicsSummary = useMemo(() => {
+    if (enabledAppointmentIds.length === 0) {
+      return t('adminSettings.botAppointmentsNone');
+    }
+    return t('adminSettings.botAppointmentsSummary', {
+      topics: enabledAppointmentIds.map((id) => t(APPOINTMENT_TOPIC_I18N[id])).join(', '),
+    });
+  }, [enabledAppointmentIds, t]);
+
+  const appointmentSampleReply = useMemo(() => {
+    const first = enabledAppointmentIds[0];
+    if (!first) return t('adminSettings.botAppointmentsSampleNone');
+    return t(APPOINTMENT_SAMPLE_I18N[first]);
+  }, [enabledAppointmentIds, t]);
 
   return (
     <div
@@ -297,6 +339,46 @@ export function AdminBotSettingsCard() {
             </label>
           </div>
 
+          <div className="rounded-xl border border-border/90 bg-muted/15 p-4">
+            <div className="mb-3 flex items-start gap-2">
+              <CalendarClock
+                className="mt-0.5 size-4 shrink-0 text-violet-600 dark:text-violet-300"
+                aria-hidden
+              />
+              <div>
+                <p className="text-sm font-medium text-foreground">
+                  {t('adminSettings.botAppointmentsTitle')}
+                </p>
+                <p className="mt-0.5 text-xs text-muted-foreground">
+                  {t('adminSettings.botAppointmentsSubtitle')}
+                </p>
+              </div>
+            </div>
+            <div className="grid gap-2 sm:grid-cols-2">
+              {BOT_APPOINTMENT_TOPIC_IDS.map((topicId) => (
+                <label
+                  key={topicId}
+                  className="flex cursor-pointer items-center justify-between gap-3 rounded-lg border border-border bg-background px-3 py-2.5"
+                >
+                  <span className="text-sm text-foreground">{t(APPOINTMENT_TOPIC_I18N[topicId])}</span>
+                  <Switch
+                    checked={config.appointmentTopics[topicId]}
+                    onCheckedChange={() =>
+                      patch({
+                        appointmentTopics: toggleBotAppointmentTopic(
+                          config.appointmentTopics,
+                          topicId,
+                        ),
+                      })
+                    }
+                    aria-label={t(APPOINTMENT_TOPIC_I18N[topicId])}
+                  />
+                </label>
+              ))}
+            </div>
+            <p className="mt-3 text-xs text-muted-foreground">{appointmentTopicsSummary}</p>
+          </div>
+
           <div className="space-y-1.5">
             <Label htmlFor="bot-greeting">{t('adminSettings.botGreetingLabel')}</Label>
             <textarea
@@ -317,6 +399,10 @@ export function AdminBotSettingsCard() {
             </p>
             <p className="mt-2 text-sm text-foreground">{greetingPreview}</p>
             <p className="mt-2 text-sm text-muted-foreground">{previewText}</p>
+            <p className="mt-3 border-t border-violet-500/15 pt-3 text-xs font-medium text-violet-800 dark:text-violet-200">
+              {t('adminSettings.botAppointmentsPreviewLabel')}
+            </p>
+            <p className="mt-1 text-sm text-muted-foreground">{appointmentSampleReply}</p>
           </div>
         </fieldset>
 
