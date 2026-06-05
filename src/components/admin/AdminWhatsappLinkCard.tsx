@@ -60,9 +60,7 @@ export function AdminWhatsappLinkCard() {
     const res = await fetchWhatsappLinkStatus();
     if (res.ok) {
       setLinkStatus(res.data);
-      const ownerKey = res.data.linked
-        ? (res.data.ownerJid?.trim() || res.data.instanceName?.trim() || 'linked')
-        : '';
+      const ownerKey = res.data.linked ? (res.data.ownerJid?.trim() || '') : '';
       notifyInboxAccountAvatarChanged(ownerKey);
       return res.data;
     }
@@ -108,8 +106,13 @@ export function AdminWhatsappLinkCard() {
       if (!cancelled) setLoadingStatus(false);
     };
     void run();
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') void refreshStatus();
+    };
+    document.addEventListener('visibilitychange', onVisible);
     return () => {
       cancelled = true;
+      document.removeEventListener('visibilitychange', onVisible);
     };
   }, [refreshStatus]);
 
@@ -227,7 +230,7 @@ export function AdminWhatsappLinkCard() {
   };
 
   const state = linkStatus?.state ?? 'unknown';
-  const linked = linkStatus?.linked === true;
+  const linked = linkStatus?.linked === true && state === 'open';
   const statusLabel = linked
     ? t('adminSettings.whatsappLinked')
     : state === 'connecting'
@@ -236,6 +239,12 @@ export function AdminWhatsappLinkCard() {
 
   const showQrPanel =
     linking || connectPayload?.qrcodeBase64 || connectPayload?.pairingCode || importingHistory;
+
+  useEffect(() => {
+    if (linked || linking) return;
+    const interval = window.setInterval(() => void refreshStatus(), 8_000);
+    return () => window.clearInterval(interval);
+  }, [linked, linking, refreshStatus]);
 
   return (
     <div
@@ -251,7 +260,7 @@ export function AdminWhatsappLinkCard() {
             statusBadgeClass(state),
           )}
         >
-          {loadingStatus ? t('adminSettings.whatsappConnecting') : statusLabel}
+          {loadingStatus ? t('adminSettings.whatsappChecking') : statusLabel}
         </span>
         {linkStatus?.instanceName ? (
           <span className="text-xs text-muted-foreground">{linkStatus.instanceName}</span>
@@ -271,12 +280,15 @@ export function AdminWhatsappLinkCard() {
       {loadingStatus ? (
         <div className="mt-6 flex items-center gap-2 text-sm text-muted-foreground">
           <Loader2 className="size-4 animate-spin" aria-hidden />
-          {t('adminSettings.whatsappConnecting')}
+          {t('adminSettings.whatsappChecking')}
         </div>
       ) : linked && !showQrPanel ? (
         <div className="mt-6 space-y-5">
           <div className="space-y-2">
             <p className="text-sm text-foreground">{t('adminSettings.whatsappLinkedSuccess')}</p>
+            {linkStatus?.ownerPhone ? (
+              <p className="text-sm font-medium text-foreground">{linkStatus.ownerPhone}</p>
+            ) : null}
             <p className="text-xs leading-relaxed text-muted-foreground">
               {t('adminSettings.whatsappHistoryHint')}
             </p>

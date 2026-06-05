@@ -34,8 +34,8 @@ export default function AppAdminSettings() {
           </h2>
           <AppThemeSettingsCard mode={themeMode} onChange={setThemeMode} />
         </section>
-        <AdminBotSettingsCard />
         <AdminAutopilotSettingsCard />
+        <AdminBotSettingsCard />
         <AdminWhatsappLinkCard />
       </div>
     </AppShell>

@@ -1,3 +1,9 @@
+import {
+  DEFAULT_INBOX_APPOINTMENT_TOPICS,
+  parseInboxAppointmentTopics,
+  type InboxAppointmentTopics,
+} from '@/lib/inboxAppointmentTopics';
+
 export type AutopilotWeekdayId = 'mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sat' | 'sun';
 
 export type InboxAutopilotConfig = {
@@ -9,6 +15,8 @@ export type InboxAutopilotConfig = {
   endTime: string;
   replyDelaySeconds: number;
   maxRepliesPerHour: number;
+  /** Acciones de citas que el autopilot puede atender en el inbox. */
+  appointmentTopics: InboxAppointmentTopics;
 };
 
 const STORAGE_KEY = 'vado.admin.inboxAutopilot.v1';
@@ -42,7 +50,23 @@ export const DEFAULT_INBOX_AUTOPILOT_CONFIG: InboxAutopilotConfig = {
   endTime: '18:00',
   replyDelaySeconds: 8,
   maxRepliesPerHour: 30,
+  appointmentTopics: { ...DEFAULT_INBOX_APPOINTMENT_TOPICS },
 };
+
+const BOT_STORAGE_KEY = 'vado.admin.inboxBot.v1';
+
+function migrateAppointmentTopicsFromBotConfig(): InboxAppointmentTopics | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = localStorage.getItem(BOT_STORAGE_KEY);
+    if (!raw) return null;
+    const o = JSON.parse(raw) as { appointmentTopics?: unknown };
+    if (o.appointmentTopics) return parseInboxAppointmentTopics(o.appointmentTopics);
+  } catch {
+    /* ignore */
+  }
+  return null;
+}
 
 function isWeekdayId(x: unknown): x is AutopilotWeekdayId {
   return typeof x === 'string' && (AUTOPILOT_WEEKDAYS as readonly string[]).includes(x);
@@ -81,6 +105,9 @@ function parseConfig(raw: unknown): InboxAutopilotConfig {
       typeof o.maxRepliesPerHour === 'number' && o.maxRepliesPerHour > 0
         ? Math.min(200, Math.round(o.maxRepliesPerHour))
         : DEFAULT_INBOX_AUTOPILOT_CONFIG.maxRepliesPerHour,
+    appointmentTopics: o.appointmentTopics
+      ? parseInboxAppointmentTopics(o.appointmentTopics)
+      : (migrateAppointmentTopicsFromBotConfig() ?? { ...DEFAULT_INBOX_APPOINTMENT_TOPICS }),
   };
 }
 

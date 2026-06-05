@@ -6,16 +6,6 @@ export type BotLanguageMode = 'auto' | 'es' | 'en';
 
 export type BotOffTopicStrictness = 'relaxed' | 'balanced' | 'strict';
 
-export type BotAppointmentTopicId =
-  | 'confirmAppointments'
-  | 'scheduleAppointments'
-  | 'rescheduleAppointments'
-  | 'cancelAppointments'
-  | 'appointmentReminders'
-  | 'checkAvailability';
-
-export type BotAppointmentTopics = Record<BotAppointmentTopicId, boolean>;
-
 export type InboxBotConfig = {
   enabled: boolean;
   displayName: string;
@@ -27,18 +17,7 @@ export type InboxBotConfig = {
   askCompanyBeforeDetails: boolean;
   offTopicStrictness: BotOffTopicStrictness;
   customGreeting: string;
-  /** Temas de citas que el mock puede atender (solo configuración local). */
-  appointmentTopics: BotAppointmentTopics;
 };
-
-export const BOT_APPOINTMENT_TOPIC_IDS: BotAppointmentTopicId[] = [
-  'confirmAppointments',
-  'scheduleAppointments',
-  'rescheduleAppointments',
-  'cancelAppointments',
-  'appointmentReminders',
-  'checkAvailability',
-];
 
 const STORAGE_KEY = 'vado.admin.inboxBot.v1';
 
@@ -59,15 +38,6 @@ export const BOT_OFF_TOPIC_STRICTNESS: BotOffTopicStrictness[] = [
   'strict',
 ];
 
-export const DEFAULT_BOT_APPOINTMENT_TOPICS: BotAppointmentTopics = {
-  confirmAppointments: true,
-  scheduleAppointments: true,
-  rescheduleAppointments: true,
-  cancelAppointments: true,
-  appointmentReminders: true,
-  checkAvailability: true,
-};
-
 export const DEFAULT_INBOX_BOT_CONFIG: InboxBotConfig = {
   enabled: true,
   displayName: 'Asistente Vado',
@@ -79,29 +49,7 @@ export const DEFAULT_INBOX_BOT_CONFIG: InboxBotConfig = {
   askCompanyBeforeDetails: true,
   offTopicStrictness: 'balanced',
   customGreeting: '',
-  appointmentTopics: { ...DEFAULT_BOT_APPOINTMENT_TOPICS },
 };
-
-function parseAppointmentTopics(raw: unknown): BotAppointmentTopics {
-  const base = { ...DEFAULT_BOT_APPOINTMENT_TOPICS };
-  if (!raw || typeof raw !== 'object') return base;
-  const o = raw as Record<string, unknown>;
-  for (const id of BOT_APPOINTMENT_TOPIC_IDS) {
-    if (typeof o[id] === 'boolean') base[id] = o[id];
-  }
-  return base;
-}
-
-export function enabledBotAppointmentTopicIds(topics: BotAppointmentTopics): BotAppointmentTopicId[] {
-  return BOT_APPOINTMENT_TOPIC_IDS.filter((id) => topics[id]);
-}
-
-export function toggleBotAppointmentTopic(
-  topics: BotAppointmentTopics,
-  id: BotAppointmentTopicId,
-): BotAppointmentTopics {
-  return { ...topics, [id]: !topics[id] };
-}
 
 function isTone(x: unknown): x is BotConversationTone {
   return typeof x === 'string' && (BOT_CONVERSATION_TONES as readonly string[]).includes(x);
@@ -144,7 +92,6 @@ function parseConfig(raw: unknown): InboxBotConfig {
       : DEFAULT_INBOX_BOT_CONFIG.offTopicStrictness,
     customGreeting:
       typeof o.customGreeting === 'string' ? o.customGreeting.trim().slice(0, 500) : '',
-    appointmentTopics: parseAppointmentTopics(o.appointmentTopics),
   };
 }
 

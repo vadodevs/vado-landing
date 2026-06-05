@@ -1,7 +1,10 @@
 import { WHATSAPP_INBOX_STALE_CACHE_MS } from '@/lib/inboxWhatsappSessionCache';
 
-/** Throttle de sync con Evolution para no martillar el API. */
-export const WHATSAPP_EVOLUTION_SYNC_MIN_MS = 25_000;
+/** Intervalo mínimo entre sync completos con Evolution (importación pesada). */
+export const WHATSAPP_EVOLUTION_SYNC_MIN_MS = 60_000;
+
+/** Poll de sincronización desde el teléfono (lista + mensajes recientes). */
+export const WHATSAPP_PHONE_POLL_MS = 5_000;
 
 export function shouldRunWhatsappEvolutionSync(
   lastSyncAtMs: number,

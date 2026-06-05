@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Bot, Clock, MessageCircle, Sparkles } from 'lucide-react';
+import { Bot, CalendarClock, Clock, MessageCircle, Sparkles } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -7,6 +7,11 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
 import { scheduleInboxAiSettingsSync } from '@/lib/inboxAiSettingsSync';
+import {
+  enabledInboxAppointmentTopicIds,
+  INBOX_APPOINTMENT_PRIMARY_TOGGLES,
+  type InboxAppointmentPrimaryToggleId,
+} from '@/lib/inboxAppointmentTopics';
 import { loadInboxBotConfig } from '@/lib/inboxBotConfig';
 import {
   AUTOPILOT_TIMEZONE_OPTIONS,
@@ -18,6 +23,12 @@ import {
   loadInboxAutopilotConfig,
   saveInboxAutopilotConfig,
 } from '@/lib/inboxAutopilotConfig';
+
+const APPOINTMENT_TOGGLE_I18N: Record<InboxAppointmentPrimaryToggleId, string> = {
+  confirmAppointments: 'adminSettings.autopilotApptQuery',
+  cancelAppointments: 'adminSettings.autopilotApptCancel',
+  rescheduleAppointments: 'adminSettings.autopilotApptPostpone',
+};
 
 const WEEKDAY_I18N: Record<AutopilotWeekdayId, string> = {
   mon: 'adminSettings.autopilotDayMon',
@@ -66,6 +77,20 @@ export function AdminAutopilotSettingsCard() {
   const resetDefaults = () => {
     setConfig({ ...DEFAULT_INBOX_AUTOPILOT_CONFIG });
   };
+
+  const enabledAppointmentIds = useMemo(
+    () => enabledInboxAppointmentTopicIds(config.appointmentTopics),
+    [config.appointmentTopics],
+  );
+
+  const appointmentTopicsSummary = useMemo(() => {
+    if (enabledAppointmentIds.length === 0) {
+      return t('adminSettings.autopilotAppointmentsNone');
+    }
+    return t('adminSettings.autopilotAppointmentsSummary', {
+      topics: enabledAppointmentIds.map((id) => t(APPOINTMENT_TOGGLE_I18N[id])).join(', '),
+    });
+  }, [enabledAppointmentIds, t]);
 
   return (
     <div
@@ -130,6 +155,58 @@ export function AdminAutopilotSettingsCard() {
           disabled={!config.enabled}
           className="space-y-5 disabled:pointer-events-none disabled:opacity-55"
         >
+          <div className="w-fit max-w-full rounded-xl border border-border/90 bg-muted/15 p-3">
+            <div className="mb-2.5 flex items-start gap-2">
+              <CalendarClock
+                className="mt-0.5 size-4 shrink-0 text-teal-600 dark:text-teal-300"
+                aria-hidden
+              />
+              <div className="min-w-0 max-w-[11rem]">
+                <p className="text-sm font-medium text-foreground">
+                  {t('adminSettings.autopilotAppointmentsTitle')}
+                </p>
+                <p className="mt-0.5 text-xs leading-snug text-muted-foreground">
+                  {t('adminSettings.autopilotAppointmentsSubtitle')}
+                </p>
+              </div>
+            </div>
+            <div className="flex flex-col gap-1.5">
+              {INBOX_APPOINTMENT_PRIMARY_TOGGLES.map((topicId) => {
+                const on = config.appointmentTopics[topicId];
+                return (
+                  <label
+                    key={topicId}
+                    className={cn(
+                      'flex w-[11rem] cursor-pointer items-center justify-between gap-2 rounded-2xl border px-2.5 py-2',
+                      on
+                        ? 'border-teal-500/30 bg-teal-500/5 dark:border-teal-500/25 dark:bg-teal-500/10'
+                        : 'border-border bg-muted/40',
+                    )}
+                  >
+                    <span className="text-xs font-semibold text-foreground">
+                      {t(APPOINTMENT_TOGGLE_I18N[topicId])}
+                    </span>
+                    <Switch
+                      checked={on}
+                      onCheckedChange={(v) =>
+                        patch({
+                          appointmentTopics: {
+                            ...config.appointmentTopics,
+                            [topicId]: v,
+                          },
+                        })
+                      }
+                      aria-label={t(APPOINTMENT_TOGGLE_I18N[topicId])}
+                    />
+                  </label>
+                );
+              })}
+            </div>
+            <p className="mt-2 max-w-[11rem] text-xs leading-snug text-muted-foreground">
+              {appointmentTopicsSummary}
+            </p>
+          </div>
+
           <div>
             <p className="mb-2 text-sm font-medium text-foreground">
               {t('adminSettings.autopilotChannelsLabel')}

@@ -66,6 +66,8 @@ export type WhatsappLinkStatusDto = {
   linked: boolean;
   /** JID del número vinculado; cambia al desvincular y escanear otro QR */
   ownerJid?: string | null;
+  /** Teléfono formateado del número vinculado (solo si ownerJid es válido) */
+  ownerPhone?: string | null;
   webhookConfigured?: boolean;
   webhookUrl?: string | null;
   webhookCallbackUrl?: string;
@@ -139,18 +141,25 @@ async function adminInboxRequest<T>(
 
 export function fetchInboxConversations(
   channel: InboxChannel = 'whatsapp',
-  opts?: { sync?: boolean },
+  opts?: { sync?: boolean; activeConversationId?: string },
 ): Promise<AdminInboxResult<InboxConversationDto[]>> {
   const q = new URLSearchParams({ channel });
   if (opts?.sync) q.set('sync', 'true');
+  if (opts?.activeConversationId?.trim()) {
+    q.set('activeId', opts.activeConversationId.trim());
+  }
   return adminInboxRequest<InboxConversationDto[]>(`/admin/inbox/conversations?${q}`);
 }
 
 export function fetchInboxMessages(
   conversationId: string,
+  opts?: { sync?: boolean },
 ): Promise<AdminInboxResult<InboxMessageDto[]>> {
+  const q = new URLSearchParams();
+  if (opts?.sync) q.set('sync', 'true');
+  const suffix = q.size ? `?${q}` : '';
   return adminInboxRequest<InboxMessageDto[]>(
-    `/admin/inbox/conversations/${encodeURIComponent(conversationId)}/messages`,
+    `/admin/inbox/conversations/${encodeURIComponent(conversationId)}/messages${suffix}`,
   );
 }
 

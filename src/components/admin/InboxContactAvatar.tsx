@@ -53,7 +53,7 @@ export function InboxContactAvatar({
         src={src}
         alt={name}
         onError={() => {
-          /* No reintentar en bucle: loadInboxContactAvatarUrl ya cachea 404 15 min */
+          setSrc(null);
         }}
         className={cn(
           'shrink-0 rounded-full object-cover shadow-sm ring-1 ring-black/5 dark:ring-white/10',

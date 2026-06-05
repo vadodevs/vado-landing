@@ -4,7 +4,7 @@ const blobUrlCache = new Map<string, string>();
 const inflight = new Map<string, Promise<string | null>>();
 /** Evita golpear Evolution en bucle cuando no hay foto (404). */
 const missUntil = new Map<string, number>();
-const MISS_TTL_MS = 15 * 60_000;
+const MISS_TTL_MS = 3 * 60_000;
 
 function getApiBaseUrl(): string {
   const primary = String(import.meta.env.VITE_API_BASE_URL ?? '').trim();
