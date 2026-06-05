@@ -22,6 +22,7 @@ export type CachedWhatsappConversation = {
   name: string;
   initials: string;
   timeLabel: string;
+  lastMessageAtMs?: number;
   lastPreview?: string;
   unreadCount?: number;
   externalId?: string;
@@ -37,7 +38,12 @@ export type WhatsappInboxSessionSnapshot = {
   conversations: CachedWhatsappConversation[];
   messagesById: Record<string, CachedWhatsappChatMsg[]>;
   bootSyncDone: boolean;
+  /** Última sync con Evolution (ms); para no saltarla al rehidratar caché. */
+  lastEvolutionSyncAt?: number;
 };
+
+/** Si la caché tiene más de esta edad, forzar sync con Evolution al montar. */
+export const WHATSAPP_INBOX_STALE_CACHE_MS = 45_000;
 
 function trimMessagesById(
   messagesById: Record<string, CachedWhatsappChatMsg[]>,
@@ -88,6 +94,7 @@ export function saveWhatsappInboxSession(snapshot: Omit<WhatsappInboxSessionSnap
       conversations: snapshot.conversations.slice(0, MAX_CACHED_CONVERSATIONS),
       messagesById: trimMessagesById(snapshot.messagesById, snapshot.selectedId),
       bootSyncDone: snapshot.bootSyncDone,
+      lastEvolutionSyncAt: snapshot.lastEvolutionSyncAt,
     };
     sessionStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
   } catch {

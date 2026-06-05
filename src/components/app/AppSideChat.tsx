@@ -84,18 +84,14 @@ function SideChatPanel({ theme }: { theme: AppThemeMode }) {
   const send = useCallback(async () => {
     const text = draft.trim();
     if (!text || sending) return;
+
+    const userMsg: AppSideChatMessage = { id: `u-${crypto.randomUUID()}`, role: 'user', text };
+    const apiMessages: AssistantChatMessage[] = [...messages, userMsg]
+      .filter((m) => !m.localOnly)
+      .map((m) => ({ role: m.role, content: m.text }));
+
     setDraft('');
-
-    let apiMessages: AssistantChatMessage[] = [];
-    setMessages((prev) => {
-      const userMsg: AppSideChatMessage = { id: `u-${crypto.randomUUID()}`, role: 'user', text };
-      const thread = [...prev, userMsg];
-      apiMessages = thread
-        .filter((m) => !m.localOnly)
-        .map((m) => ({ role: m.role, content: m.text }));
-      return thread;
-    });
-
+    setMessages((prev) => [...prev, userMsg]);
     setSending(true);
     const result = await postAssistantChat(apiMessages);
     setSending(false);
@@ -110,7 +106,7 @@ function SideChatPanel({ theme }: { theme: AppThemeMode }) {
           ? 'No hay sesión del panel. Vuelve a iniciar sesión.'
           : result.message?.trim() || `No se pudo contactar al asistente (${result.status ?? 'error'}).`;
     setMessages((prev) => [...prev, { id: `a-${crypto.randomUUID()}`, role: 'assistant', text: errText }]);
-  }, [draft, sending, setDraft, setMessages, setSending]);
+  }, [draft, messages, sending, setDraft, setMessages, setSending]);
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();

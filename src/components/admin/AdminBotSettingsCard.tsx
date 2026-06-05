@@ -6,6 +6,8 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
+import { scheduleInboxAiSettingsSync } from '@/lib/inboxAiSettingsSync';
+import { loadInboxAutopilotConfig } from '@/lib/inboxAutopilotConfig';
 import {
   BOT_APPOINTMENT_TOPIC_IDS,
   BOT_CONVERSATION_TONES,
@@ -98,6 +100,7 @@ export function AdminBotSettingsCard() {
 
   useEffect(() => {
     saveInboxBotConfig(config);
+    scheduleInboxAiSettingsSync({ bot: config, autopilot: loadInboxAutopilotConfig() });
     setSavedFlash(true);
     const timer = window.setTimeout(() => setSavedFlash(false), 2000);
     return () => window.clearTimeout(timer);

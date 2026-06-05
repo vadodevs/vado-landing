@@ -319,7 +319,7 @@
     "botTestWelcome": "Hi, I'm Vado's assistant for this channel. Tell me what you need (remote team, custom software, AI…) and I'll ask for your name, email, and company so our team can follow up.",
     "botErrorNoConfig": "Set the backend URL (VITE_API_BASE_URL) to use the bot.",
     "botErrorNoAuth": "Sign in as an admin in the panel to use the lead bot.",
-    "botErrorGeneric": "Could not get a reply from the bot. Check your connection and that adminvado has ANTHROPIC_API_KEY configured.",
+    "botErrorGeneric": "Could not get a reply from the bot. Check your connection and that adminvado has Ollama running (LLM_PROVIDER=ollama) or ANTHROPIC_API_KEY.",
     "botTestChatLabel": "Bot test conversation",
     "botInputPlaceholder": "Type a message…",
     "botInputAria": "Message to the test bot",
@@ -514,7 +514,7 @@
     "botPreviewFriendly": "Awesome, I'd love to help you 😊 Could you send your email and company name?",
     "botPreviewProfessional": "Understood. So our team can follow up, could you share your email and company?",
     "botSaved": "Bot settings saved in this browser.",
-    "botMockNote": "Mock stored in localStorage. The bot API will apply these values later.",
+    "botMockNote": "Syncs to adminvado on save. Sets tone, appointments, and rules the AI uses when replying.",
     "botReset": "Reset to defaults",
     "autopilotTitle": "Inbox autopilot",
     "autopilotMockBadge": "Mock",
@@ -543,7 +543,7 @@
     "autopilotMaxRepliesLabel": "Max replies per hour",
     "autopilotMaxRepliesHint": "Safety cap to avoid loops or spam.",
     "autopilotSaved": "Settings saved in this browser.",
-    "autopilotMockNote": "Demo settings stored locally. Inbox integration will come later.",
+    "autopilotMockNote": "Syncs to the server on save. With autopilot and bot enabled, AI replies to inbound WhatsApp messages.",
     "autopilotReset": "Reset to defaults"
   },
   "appSideChat": {

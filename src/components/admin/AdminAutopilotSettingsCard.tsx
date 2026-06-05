@@ -6,6 +6,8 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
+import { scheduleInboxAiSettingsSync } from '@/lib/inboxAiSettingsSync';
+import { loadInboxBotConfig } from '@/lib/inboxBotConfig';
 import {
   AUTOPILOT_TIMEZONE_OPTIONS,
   AUTOPILOT_WEEKDAYS,
@@ -48,6 +50,7 @@ export function AdminAutopilotSettingsCard() {
 
   useEffect(() => {
     saveInboxAutopilotConfig(config);
+    scheduleInboxAiSettingsSync({ autopilot: config, bot: loadInboxBotConfig() });
     setSavedFlash(true);
     const timer = window.setTimeout(() => setSavedFlash(false), 2000);
     return () => window.clearTimeout(timer);

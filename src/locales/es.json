@@ -319,7 +319,7 @@
     "botTestWelcome": "Hola, soy el asistente de Vado para este canal. Cuéntame qué necesitas (equipo remoto, software a medida, IA…) y te pido nombre, correo y empresa para que el equipo te contacte.",
     "botErrorNoConfig": "Falta configurar la URL del backend (VITE_API_BASE_URL) para usar el bot.",
     "botErrorNoAuth": "Inicia sesión como administrador en el panel para usar el bot de leads.",
-    "botErrorGeneric": "No se pudo obtener respuesta del bot. Revisa conexión y que adminvado tenga ANTHROPIC_API_KEY.",
+    "botErrorGeneric": "No se pudo obtener respuesta del bot. Revisa conexión y que adminvado tenga Ollama en marcha (LLM_PROVIDER=ollama) o ANTHROPIC_API_KEY.",
     "botTestChatLabel": "Conversación Bot test",
     "botInputPlaceholder": "Escribe un mensaje…",
     "botInputAria": "Mensaje para el bot de prueba",
@@ -514,7 +514,7 @@
     "botPreviewFriendly": "¡Genial! Me encantaría ayudarte 😊 ¿Me pasas tu correo y cómo se llama tu empresa?",
     "botPreviewProfessional": "Entendido. Para que el equipo le dé seguimiento, ¿podría compartir su correo y empresa?",
     "botSaved": "Configuración del bot guardada en este navegador.",
-    "botMockNote": "Mock guardado en localStorage. La API del bot aplicará estos valores más adelante.",
+    "botMockNote": "Se sincroniza con adminvado al guardar. Define tono, citas y reglas que usa la IA al responder.",
     "botReset": "Restaurar valores por defecto",
     "autopilotTitle": "Autopilot del inbox",
     "autopilotMockBadge": "Mock",
@@ -543,7 +543,7 @@
     "autopilotMaxRepliesLabel": "Máximo de respuestas por hora",
     "autopilotMaxRepliesHint": "Límite de seguridad para evitar bucles o spam.",
     "autopilotSaved": "Configuración guardada en este navegador.",
-    "autopilotMockNote": "Configuración de demostración guardada localmente. La integración con el inbox llegará después.",
+    "autopilotMockNote": "Se sincroniza con el servidor al guardar. Con autopilot y bot activos, la IA responde mensajes entrantes de WhatsApp.",
     "autopilotReset": "Restaurar valores por defecto"
   },
   "appSideChat": {
