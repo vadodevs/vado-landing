@@ -1,9 +1,11 @@
+import { getApiBaseUrl, isApiBaseConfigured } from '@/lib/apiBaseUrl';
+
 const STORAGE_KEY = 'vado-admin-session';
 
 export const ADMIN_AUTH_CHANGE_EVENT = 'vado-admin-auth-change';
 
 export function isAdminAuthConfigured(): boolean {
-  return String(import.meta.env.VITE_API_BASE_URL ?? '').trim().length > 0;
+  return isApiBaseConfigured();
 }
 
 type AdminSession = {
@@ -12,10 +14,6 @@ type AdminSession = {
   email: string;
   at: number;
 };
-
-function getApiBaseUrl(): string {
-  return String(import.meta.env.VITE_API_BASE_URL ?? '').trim().replace(/\/$/, '');
-}
 
 function loadSession(): AdminSession | null {
   try {

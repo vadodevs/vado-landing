@@ -1,4 +1,5 @@
 import { normalizeRecruiterPermissions } from '@/lib/recruiterPanel';
+import { getApiBaseUrl } from '@/lib/apiBaseUrl';
 
 export const RECRUITER_AUTH_CHANGE_EVENT = 'vado-recruiter-auth-change';
 const RECRUITER_SESSION_KEY = 'vado-recruiter-session';
@@ -20,11 +21,6 @@ export type RecruiterProfilePayload = {
   phone: string | null;
   permissions: Record<string, boolean>;
 };
-
-function getApiBaseUrl(): string {
-  const base = String(import.meta.env.VITE_API_BASE_URL ?? '').trim();
-  return base.replace(/\/$/, '');
-}
 
 function loadSession(): RecruiterSession | null {
   try {

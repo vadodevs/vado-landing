@@ -1,3 +1,5 @@
+import { getApiBaseUrl } from '@/lib/apiBaseUrl';
+
 export const DEV_AUTH_CHANGE_EVENT = 'vado-dev-auth-change';
 const DEV_SESSION_KEY = 'vado-dev-session';
 
@@ -10,11 +12,6 @@ type DevSession = {
   phone?: string | null;
   at: number;
 };
-
-function getApiBaseUrl(): string {
-  const base = String(import.meta.env.VITE_API_BASE_URL ?? '').trim();
-  return base.replace(/\/$/, '');
-}
 
 function loadSession(): DevSession | null {
   try {

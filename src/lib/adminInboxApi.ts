@@ -1,4 +1,5 @@
 import { getAdminAccessToken } from '@/lib/adminAuth';
+import { getApiBaseUrl } from '@/lib/apiBaseUrl';
 
 export type InboxChannel = 'whatsapp' | 'facebook' | 'instagram';
 
@@ -84,12 +85,6 @@ export type AdminInboxResult<T> =
   | { ok: true; data: T }
   | { ok: false; reason: 'no-config' | 'no-auth' | 'http'; message?: string };
 
-function getApiBaseUrl(): string {
-  const primary = String(import.meta.env.VITE_API_BASE_URL ?? '').trim();
-  const fallback = String(import.meta.env.VITE_ADMIN_API_BASE_URL ?? '').trim();
-  return (primary || fallback).replace(/\/$/, '');
-}
-
 function isAuthDenied(status: number, message: string): boolean {
   if (status === 401 || status === 403) return true;
   const m = message.toLowerCase();
@@ -112,10 +107,13 @@ async function adminInboxRequest<T>(
 
   try {
     const res = await fetch(`${base}${path}`, {
+      cache: 'no-store',
       ...init,
       headers: {
         ...(init?.headers ?? {}),
         Authorization: `Bearer ${token}`,
+        'Cache-Control': 'no-cache',
+        Pragma: 'no-cache',
         ...(init?.body ? { 'Content-Type': 'application/json' } : {}),
       },
     });

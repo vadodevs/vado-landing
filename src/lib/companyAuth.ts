@@ -1,3 +1,5 @@
+import { getApiBaseUrl } from '@/lib/apiBaseUrl';
+
 export const COMPANY_AUTH_CHANGE_EVENT = 'vado-company-auth-change';
 const COMPANY_SESSION_KEY = 'vado-company-session';
 
@@ -7,11 +9,6 @@ type CompanySession = {
   email: string;
   at: number;
 };
-
-function getApiBaseUrl(): string {
-  const base = String(import.meta.env.VITE_API_BASE_URL ?? '').trim();
-  return base.replace(/\/$/, '');
-}
 
 function loadSession(): CompanySession | null {
   try {

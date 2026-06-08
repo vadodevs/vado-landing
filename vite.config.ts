@@ -67,6 +67,14 @@ export default defineConfig({
       '.ngrok.io',
       'localhost',
     ],
+    // Mismo origen en dev: evita CORS y que localhost:8000 falle al abrir por IP de red (WSL).
+    proxy: {
+      '/api': {
+        target: process.env.VITE_API_PROXY_TARGET ?? 'http://127.0.0.1:8000',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ''),
+      },
+    },
   },
   plugins: [
     react(),

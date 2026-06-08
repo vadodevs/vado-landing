@@ -36,6 +36,10 @@ import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import { AppShell } from '@/components/layout/app/AppShell';
 import { WhatsAppGlyph } from '@/components/admin/AdminChannelIcons';
+import {
+  WhatsappInboxLinkGate,
+  type WhatsappGate,
+} from '@/components/admin/WhatsappInboxLinkGate';
 import { InboxAccountAvatar } from '@/components/admin/InboxAccountAvatar';
 import { InboxComposePicker } from '@/components/admin/InboxComposePicker';
 import { InboxContactAvatar } from '@/components/admin/InboxContactAvatar';
@@ -97,13 +101,17 @@ import {
 } from '@/lib/inboxReadState';
 import {
   clearWhatsappInboxSession,
-  loadWhatsappInboxSession,
   saveWhatsappInboxSession,
 } from '@/lib/inboxWhatsappSessionCache';
 import {
+  notifyWhatsappLinkChanged,
+  purgeWhatsappInboxLocalState,
+  WHATSAPP_LINK_CHANGE_EVENT,
+  type WhatsappLinkChangeDetail,
+} from '@/lib/inboxWhatsappLink';
+import {
   shouldRunWhatsappEvolutionSync,
   WHATSAPP_PHONE_POLL_MS,
-  whatsappInboxCacheIsStale,
 } from '@/lib/inboxWhatsappSync';
 
 const INBOX_TIME_ZONE = 'America/Mexico_City';
@@ -200,59 +208,6 @@ export type InboxConversation = {
 };
 
 type InboxDataSource = 'mock' | 'bot-test' | 'whatsapp-api';
-
-type WhatsappGate = 'loading' | 'linked' | 'connecting' | 'not-linked' | 'no-auth' | 'error';
-
-function WhatsappInboxEmpty({ gate }: { gate: WhatsappGate }) {
-  const { t } = useTranslation();
-  const { path } = useLocale();
-
-  return (
-    <div className="flex h-full min-h-0 flex-1 flex-col items-center justify-center bg-[#f0f2f5] px-6 py-12 text-center dark:bg-[#111b21]">
-      <div className="flex size-16 items-center justify-center rounded-full bg-[#128c7e] text-white shadow-md">
-        <WhatsAppGlyph className="size-8" />
-      </div>
-      {gate === 'loading' || gate === 'connecting' ? (
-        <>
-          <h2 className="mt-6 text-lg font-semibold text-zinc-900 dark:text-zinc-50">
-            {gate === 'connecting'
-              ? t('adminCanales.whatsappConnectingTitle')
-              : t('adminCanales.whatsappCheckingTitle')}
-          </h2>
-          <p className="mt-2 max-w-md text-sm text-zinc-600 dark:text-zinc-400">
-            {gate === 'connecting'
-              ? t('adminCanales.whatsappConnectingBody')
-              : t('adminCanales.whatsappLoadingChats')}
-          </p>
-        </>
-      ) : gate === 'no-auth' ? (
-        <>
-          <h2 className="mt-6 text-lg font-semibold text-zinc-900 dark:text-zinc-50">
-            {t('adminCanales.inboxAuthRequired')}
-          </h2>
-          <p className="mt-2 max-w-md text-sm text-zinc-600 dark:text-zinc-400">
-            {t('adminCanales.inboxAuthRequiredBody')}
-          </p>
-          <Button asChild className="mt-6 bg-[#128c7e] hover:bg-[#0f7669]">
-            <Link href={path('/login?next=admin')}>{t('adminCanales.inboxAuthLogin')}</Link>
-          </Button>
-        </>
-      ) : (
-        <>
-          <h2 className="mt-6 text-lg font-semibold text-zinc-900 dark:text-zinc-50">
-            {t('adminCanales.whatsappNotLinkedTitle')}
-          </h2>
-          <p className="mt-2 max-w-md text-sm text-zinc-600 dark:text-zinc-400">
-            {t('adminCanales.whatsappNotLinkedBody')}
-          </p>
-          <Button asChild className="mt-6 bg-[#128c7e] hover:bg-[#0f7669]">
-            <Link href={path('/app/admin/settings#whatsapp')}>{t('adminCanales.whatsappGoToSettings')}</Link>
-          </Button>
-        </>
-      )}
-    </div>
-  );
-}
 
 function initialsForContact(name: string, externalId: string): string {
   const trimmed = name.trim();
@@ -1123,11 +1078,7 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
   const isMock = dataSource === 'mock';
   const isBotTest = dataSource === 'bot-test';
   const isWhatsappApi = dataSource === 'whatsapp-api';
-  const sessionCache = useMemo(
-    () => (isWhatsappApi ? loadWhatsappInboxSession() : null),
-    [isWhatsappApi],
-  );
-  const hadSessionCacheRef = useRef(Boolean(sessionCache));
+  const hadSessionCacheRef = useRef(false);
   const isInteractive = !isMock;
   const { t } = useTranslation();
   const { path } = useLocale();
@@ -1181,33 +1132,23 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
 
   const mockConversations = useMemo(() => buildInboxConversations(channel, t), [channel, t]);
   const [dynamicRows, setDynamicRows] = useState<InboxConversation[]>([]);
-  const [whatsappRows, setWhatsappRows] = useState<InboxConversation[]>(() => {
-    const cached = (sessionCache?.conversations as InboxConversation[]) ?? [];
-    const owner = sessionCache?.ownerJid?.trim() ?? '';
-    return owner ? applyInboxReadState(owner, cached) : cached;
-  });
+  const [whatsappRows, setWhatsappRows] = useState<InboxConversation[]>([]);
   const [whatsappLoadState, setWhatsappLoadState] = useState<
     'idle' | 'loading' | 'error' | 'ok'
-  >(() => (sessionCache ? 'ok' : 'idle'));
+  >('idle');
   const [whatsappListError, setWhatsappListError] = useState<string | null>(null);
-  const [messagesById, setMessagesById] = useState<Record<string, ChatMsg[]>>(() => {
-    if (!sessionCache?.messagesById) return {};
-    return sessionCache.messagesById as Record<string, ChatMsg[]>;
-  });
+  const [messagesById, setMessagesById] = useState<Record<string, ChatMsg[]>>({});
   const [whatsappGate, setWhatsappGate] = useState<WhatsappGate>('loading');
-  const [whatsappOwnerJid, setWhatsappOwnerJid] = useState(sessionCache?.ownerJid ?? '');
+  const [whatsappOwnerJid, setWhatsappOwnerJid] = useState('');
 
   const conversations = useMemo(
     () => (isWhatsappApi ? whatsappRows : [...dynamicRows, ...mockConversations]),
     [dynamicRows, isWhatsappApi, mockConversations, whatsappRows],
   );
 
-  const [selectedId, setSelectedId] = useState(() => {
-    if (isWhatsappApi) {
-      return sessionCache?.selectedId ?? '';
-    }
-    return mockConversations[0]?.id ?? '';
-  });
+  const [selectedId, setSelectedId] = useState(() =>
+    isWhatsappApi ? '' : (mockConversations[0]?.id ?? ''),
+  );
   const [mobileShowThread, setMobileShowThread] = useState(false);
 
   const [botThread, setBotThread] = useState<ChatMsg[]>(() => {
@@ -1223,12 +1164,22 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
   const [draft, setDraft] = useState('');
   const [sending, setSending] = useState(false);
 
-  const whatsappBootSyncDoneRef = useRef(sessionCache?.bootSyncDone ?? false);
-  const lastEvolutionSyncAtRef = useRef(
-    sessionCache?.lastEvolutionSyncAt ?? sessionCache?.savedAt ?? 0,
-  );
+  const whatsappBootSyncDoneRef = useRef(false);
+  const lastEvolutionSyncAtRef = useRef(0);
   const autoReplyInFlightRef = useRef<Set<string>>(new Set());
   const lastAutoRepliedInboundRef = useRef<Record<string, string>>({});
+  const selectedIdRef = useRef(selectedId);
+  selectedIdRef.current = selectedId;
+  const whatsappGateRef = useRef(whatsappGate);
+  whatsappGateRef.current = whatsappGate;
+  const whatsappOwnerJidRef = useRef(whatsappOwnerJid);
+  whatsappOwnerJidRef.current = whatsappOwnerJid;
+  const prevLinkedRef = useRef<boolean | null>(null);
+  const inboxBootDoneRef = useRef(false);
+  const inboxPollInFlightRef = useRef(false);
+  /** Incrementa al desvincular; invalida respuestas de inbox en vuelo. */
+  const inboxLinkEpochRef = useRef(0);
+  const inboxAiSettingsSyncedRef = useRef(false);
   const prevChannelRef = useRef<AdminChannel | null>(null);
   useEffect(() => {
     if (prevChannelRef.current === null) {
@@ -1253,7 +1204,7 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
     if (prevChannelRef.current === 'whatsapp' && channel !== 'whatsapp') {
       clearWhatsappInboxSession();
     }
-  }, [channel, t]);
+  }, [channel, t, isWhatsappApi]);
 
   const displayedConversations = useMemo(() => {
     const sorted = [...conversations].sort(
@@ -1267,37 +1218,74 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
     });
   }, [conversations, listSearchQuery]);
 
+  const purgeWhatsappInboxUiState = useCallback((ownerJid = '') => {
+    inboxLinkEpochRef.current += 1;
+    purgeWhatsappInboxLocalState(ownerJid);
+    setWhatsappRows([]);
+    setMessagesById({});
+    setSelectedId('');
+    setWhatsappLoadState('idle');
+    setWhatsappListError(null);
+    setWhatsappOwnerJid('');
+    whatsappBootSyncDoneRef.current = false;
+    lastEvolutionSyncAtRef.current = 0;
+    hadSessionCacheRef.current = false;
+  }, []);
+
+  const applyWhatsappLinkGateFromStatus = useCallback(
+    (linked: boolean, state: string, ownerJid?: string | null): WhatsappGate => {
+      if (linked) {
+        return 'linked';
+      }
+      if (state === 'connecting') {
+        setWhatsappRows([]);
+        setMessagesById({});
+        setSelectedId('');
+        setWhatsappOwnerJid('');
+        setWhatsappLoadState('idle');
+        setWhatsappListError(null);
+        return 'connecting';
+      }
+      purgeWhatsappInboxUiState(ownerJid?.trim() ?? '');
+      return 'not-linked';
+    },
+    [purgeWhatsappInboxUiState],
+  );
+
   const refreshWhatsappLink = useCallback(async (): Promise<WhatsappGate> => {
     const res = await fetchWhatsappLinkStatus();
     if (res.ok) {
-      const nextOwner = res.data.linked ? (res.data.ownerJid?.trim() || '') : '';
-      setWhatsappOwnerJid((prev) => {
-        if (prev !== nextOwner) {
-          notifyInboxAccountAvatarChanged(nextOwner);
-          if (prev && nextOwner && prev !== nextOwner) {
-            clearWhatsappInboxSession();
-            setWhatsappRows([]);
-            setMessagesById({});
-            setSelectedId('');
-          }
-        }
-        return nextOwner;
-      });
       if (res.data.linked) {
+        const nextOwner = res.data.ownerJid?.trim() || '';
+        setWhatsappOwnerJid((prev) => {
+          if (prev !== nextOwner) {
+            notifyInboxAccountAvatarChanged(nextOwner);
+            if (prev && nextOwner && prev !== nextOwner) {
+              purgeWhatsappInboxUiState(prev);
+            }
+          }
+          return nextOwner;
+        });
         setWhatsappGate('linked');
+        if (prevLinkedRef.current !== true) {
+          prevLinkedRef.current = true;
+          notifyWhatsappLinkChanged({ linked: true, ownerJid: nextOwner });
+        }
         return 'linked';
       }
-      if (res.data.state === 'connecting') {
-        setWhatsappGate('connecting');
-        return 'connecting';
+      const nextGate = applyWhatsappLinkGateFromStatus(
+        false,
+        res.data.state,
+        res.data.ownerJid,
+      );
+      setWhatsappGate(nextGate);
+      if (prevLinkedRef.current !== false) {
+        prevLinkedRef.current = false;
+        notifyWhatsappLinkChanged({ linked: false });
       }
-      setWhatsappGate('not-linked');
-      return 'not-linked';
+      return nextGate;
     }
-    setWhatsappOwnerJid((prev) => {
-      if (prev) notifyInboxAccountAvatarChanged('');
-      return '';
-    });
+    purgeWhatsappInboxUiState(whatsappOwnerJidRef.current);
     if (res.reason === 'no-auth') {
       setWhatsappGate('no-auth');
       return 'no-auth';
@@ -1307,17 +1295,35 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
       return 'error';
     }
     setWhatsappGate('not-linked');
+    if (prevLinkedRef.current !== false) {
+      prevLinkedRef.current = false;
+      notifyWhatsappLinkChanged({ linked: false });
+    }
     return 'not-linked';
-  }, []);
+  }, [purgeWhatsappInboxUiState, applyWhatsappLinkGateFromStatus]);
+
+  const refreshWhatsappLinkRef = useRef(refreshWhatsappLink);
+  refreshWhatsappLinkRef.current = refreshWhatsappLink;
 
   const reloadWhatsappConversations = useCallback(async (opts?: {
     sync?: boolean;
     activeConversationId?: string;
   }) => {
+    if (whatsappGateRef.current !== 'linked') {
+      return false;
+    }
+
+    const requestEpoch = inboxLinkEpochRef.current;
     const res = await fetchInboxConversations('whatsapp', {
       sync: opts?.sync,
       activeConversationId: opts?.activeConversationId ?? selectedId,
     });
+    if (
+      requestEpoch !== inboxLinkEpochRef.current ||
+      whatsappGateRef.current !== 'linked'
+    ) {
+      return false;
+    }
     if (!res.ok) {
       if (res.reason === 'no-auth') {
         setWhatsappGate('no-auth');
@@ -1352,26 +1358,23 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
     return true;
   }, [t, whatsappOwnerJid, selectedId]);
 
+  const reloadWhatsappConversationsRef = useRef(reloadWhatsappConversations);
+  reloadWhatsappConversationsRef.current = reloadWhatsappConversations;
+
   const syncWhatsappInboxData = useCallback(
     async (opts?: {
       fullImport?: boolean;
       showListLoading?: boolean;
       activeConversationId?: string;
     }) => {
-      const cacheStale =
-        hadSessionCacheRef.current && whatsappInboxCacheIsStale(sessionCache?.savedAt);
-      const runFullImport = shouldRunWhatsappEvolutionSync(lastEvolutionSyncAtRef.current, {
-        force:
-          Boolean(opts?.fullImport) ||
-          Boolean(cacheStale) ||
-          !whatsappBootSyncDoneRef.current,
-      });
-
       if (opts?.showListLoading) {
         setWhatsappLoadState('loading');
       }
 
-      if (runFullImport) {
+      if (
+        opts?.fullImport &&
+        shouldRunWhatsappEvolutionSync(lastEvolutionSyncAtRef.current, { force: true })
+      ) {
         await syncWhatsappChats();
         lastEvolutionSyncAtRef.current = Date.now();
         whatsappBootSyncDoneRef.current = true;
@@ -1379,14 +1382,22 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
 
       return reloadWhatsappConversations({
         sync: true,
-        activeConversationId: opts?.activeConversationId,
+        activeConversationId: opts?.activeConversationId ?? selectedIdRef.current,
       });
     },
-    [reloadWhatsappConversations, sessionCache],
+    [reloadWhatsappConversations],
   );
 
+  const syncWhatsappInboxDataRef = useRef(syncWhatsappInboxData);
+  syncWhatsappInboxDataRef.current = syncWhatsappInboxData;
+
   useEffect(() => {
-    if (!isWhatsappApi || whatsappGate !== 'linked') return;
+    if (!isWhatsappApi || whatsappGate !== 'linked') {
+      inboxAiSettingsSyncedRef.current = false;
+      return;
+    }
+    if (inboxAiSettingsSyncedRef.current) return;
+    inboxAiSettingsSyncedRef.current = true;
     flushInboxAiSettingsSync({
       autopilot: loadInboxAutopilotConfig(),
       bot: loadInboxBotConfig(),
@@ -1395,49 +1406,47 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
 
   useEffect(() => {
     if (!isWhatsappApi) return;
-    let cancelled = false;
-    const run = async () => {
-      const fromCache = hadSessionCacheRef.current;
-      setWhatsappGate('loading');
-      const gate = await refreshWhatsappLink();
-      if (cancelled) return;
-      if (gate !== 'linked') {
-        if (gate !== 'connecting') {
-          hadSessionCacheRef.current = false;
-          clearWhatsappInboxSession();
-        }
+
+    const onLinkChange = (event: Event) => {
+      const detail = (event as CustomEvent<WhatsappLinkChangeDetail>).detail;
+      if (!detail) return;
+      if (!detail.linked) {
+        inboxBootDoneRef.current = false;
+        purgeWhatsappInboxUiState(detail.ownerJid ?? whatsappOwnerJidRef.current);
+        setWhatsappGate('not-linked');
         return;
       }
-      await syncWhatsappInboxData({
-        fullImport: !fromCache || whatsappInboxCacheIsStale(sessionCache?.savedAt),
-        showListLoading: !fromCache,
-      });
-      hadSessionCacheRef.current = false;
-    };
-    void run();
-
-    const interval = window.setInterval(() => {
-      void refreshWhatsappLink().then((gate) => {
-        if (cancelled || gate !== 'linked') return;
-        void syncWhatsappInboxData({ activeConversationId: selectedId });
-      });
-    }, WHATSAPP_PHONE_POLL_MS);
-
-    const onVisible = () => {
-      if (document.visibilityState !== 'visible' || cancelled) return;
-      void refreshWhatsappLink().then((gate) => {
-        if (gate !== 'linked' || cancelled) return;
-        void syncWhatsappInboxData({ fullImport: true, activeConversationId: selectedId });
+      void refreshWhatsappLinkRef.current().then((gate) => {
+        if (gate === 'linked' && !inboxBootDoneRef.current) {
+          inboxBootDoneRef.current = true;
+          void syncWhatsappInboxDataRef.current({ fullImport: true, showListLoading: true });
+        }
       });
     };
-    document.addEventListener('visibilitychange', onVisible);
+    window.addEventListener(WHATSAPP_LINK_CHANGE_EVENT, onLinkChange);
+
+    let cancelled = false;
+    void (async () => {
+      purgeWhatsappInboxUiState();
+      setWhatsappGate('loading');
+      const gate = await refreshWhatsappLinkRef.current();
+      if (cancelled || gate !== 'linked') return;
+      if (!inboxBootDoneRef.current) {
+        inboxBootDoneRef.current = true;
+        setWhatsappLoadState('loading');
+        await syncWhatsappChats();
+        lastEvolutionSyncAtRef.current = Date.now();
+        whatsappBootSyncDoneRef.current = true;
+      }
+      await reloadWhatsappConversationsRef.current({ sync: true });
+    })();
 
     return () => {
       cancelled = true;
-      window.clearInterval(interval);
-      document.removeEventListener('visibilitychange', onVisible);
+      inboxBootDoneRef.current = false;
+      window.removeEventListener(WHATSAPP_LINK_CHANGE_EVENT, onLinkChange);
     };
-  }, [isWhatsappApi, refreshWhatsappLink, syncWhatsappInboxData, sessionCache, selectedId]);
+  }, [isWhatsappApi, purgeWhatsappInboxUiState]);
 
   useEffect(() => {
     if (!isWhatsappApi || !whatsappOwnerJid.trim()) return;
@@ -1482,19 +1491,26 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
       conversationId: string,
       opts?: { refreshListOnNew?: boolean; sync?: boolean },
     ): Promise<ChatMsg[] | null> => {
+      if (whatsappGateRef.current !== 'linked') return null;
+
+      const requestEpoch = inboxLinkEpochRef.current;
       const res = await fetchInboxMessages(conversationId, {
         sync: opts?.sync !== false,
       });
+      if (
+        requestEpoch !== inboxLinkEpochRef.current ||
+        whatsappGateRef.current !== 'linked'
+      ) {
+        return null;
+      }
       if (!res.ok) return null;
       const next = res.data.map(mapMessageDto);
       let hasNewMessages = false;
       setMessagesById((prev) => {
         const prevRows = prev[conversationId] ?? [];
-        const prevTail = prevRows[prevRows.length - 1]?.id;
-        const nextTail = next[next.length - 1]?.id;
-        hasNewMessages =
-          next.length > prevRows.length ||
-          (nextTail != null && nextTail !== prevTail);
+        const prevSig = prevRows.map((m) => m.id).join('|');
+        const nextSig = next.map((m) => m.id).join('|');
+        hasNewMessages = prevSig !== nextSig;
         return { ...prev, [conversationId]: next };
       });
       if (opts?.refreshListOnNew && hasNewMessages) {
@@ -1528,6 +1544,47 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
     },
     [isWhatsappApi, reloadThreadMessages, reloadWhatsappConversations],
   );
+
+  const runInboxPollTick = useCallback(async () => {
+    if (inboxPollInFlightRef.current || whatsappGateRef.current !== 'linked') return;
+    inboxPollInFlightRef.current = true;
+    try {
+      const activeId = selectedIdRef.current;
+      await reloadWhatsappConversations({ sync: true, activeConversationId: activeId });
+      if (activeId && isRealInboxConversationId(activeId)) {
+        const rows = await reloadThreadMessages(activeId, { sync: true });
+        if (rows?.length) void tryInboxAiAutoReply(activeId, rows);
+      }
+    } finally {
+      inboxPollInFlightRef.current = false;
+    }
+  }, [reloadWhatsappConversations, reloadThreadMessages, tryInboxAiAutoReply]);
+
+  useEffect(() => {
+    if (!isWhatsappApi || whatsappGate !== 'linked') return;
+
+    const pollInterval = window.setInterval(() => {
+      void runInboxPollTick();
+    }, WHATSAPP_PHONE_POLL_MS);
+
+    const linkInterval = window.setInterval(() => {
+      void refreshWhatsappLinkRef.current();
+    }, 15_000);
+
+    const onVisible = () => {
+      if (document.visibilityState !== 'visible') return;
+      void refreshWhatsappLinkRef.current().then((gate) => {
+        if (gate === 'linked') void runInboxPollTick();
+      });
+    };
+    document.addEventListener('visibilitychange', onVisible);
+
+    return () => {
+      window.clearInterval(pollInterval);
+      window.clearInterval(linkInterval);
+      document.removeEventListener('visibilitychange', onVisible);
+    };
+  }, [isWhatsappApi, whatsappGate, runInboxPollTick]);
 
   useEffect(() => {
     if (!isWhatsappApi || whatsappGate !== 'linked') return;
@@ -1580,21 +1637,13 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
       });
     };
     void run();
-    const poll = () => {
-      void reloadThreadMessages(selectedId, { refreshListOnNew: true, sync: true }).then((rows) => {
-        if (rows?.length) void tryInboxAiAutoReply(selectedId, rows);
-      });
-    };
-    const interval = window.setInterval(poll, WHATSAPP_PHONE_POLL_MS);
     return () => {
       cancelled = true;
-      window.clearInterval(interval);
     };
   }, [
     isWhatsappApi,
     selectedId,
     reloadThreadMessages,
-    tryInboxAiAutoReply,
     whatsappOwnerJid,
   ]);
 
@@ -1895,7 +1944,7 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
     }
     setSending(false);
     focusComposeInput();
-  }, [draft, sending, selectedId, reloadThreadMessages, reloadWhatsappConversations, focusComposeInput]);
+  }, [draft, sending, selectedId, reloadThreadMessages, reloadWhatsappConversations, focusComposeInput, t]);
 
   const sendBot = useCallback(async () => {
     const text = draft.trim();
@@ -2026,7 +2075,9 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
   const showThreadPane = isMd || mobileShowThread;
 
   if (isWhatsappApi && whatsappGate !== 'linked') {
-    return <WhatsappInboxEmpty gate={whatsappGate} />;
+    return (
+      <WhatsappInboxLinkGate gate={whatsappGate} onRefreshLink={refreshWhatsappLink} />
+    );
   }
 
   return (

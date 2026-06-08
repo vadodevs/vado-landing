@@ -17,6 +17,7 @@ import {
   type WhatsappLinkStatusDto,
 } from '@/lib/adminInboxApi';
 import { notifyInboxAccountAvatarChanged } from '@/lib/inboxAccountAvatar';
+import { notifyWhatsappLinkChanged, purgeWhatsappInboxLocalState } from '@/lib/inboxWhatsappLink';
 
 function formatPairingCode(code: string): string {
   const raw = code.replace(/\D/g, '');
@@ -222,7 +223,8 @@ export function AdminWhatsappLinkCard() {
       setError(t('adminSettings.whatsappDisconnectError'));
       return;
     }
-    notifyInboxAccountAvatarChanged('');
+    purgeWhatsappInboxLocalState(linkStatus?.ownerJid ?? '');
+    notifyWhatsappLinkChanged({ linked: false });
     setConnectPayload(null);
     setLinking(false);
     setHistoryImportMessage(null);
