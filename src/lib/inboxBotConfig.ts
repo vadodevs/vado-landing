@@ -21,6 +21,8 @@ export type InboxBotConfig = {
 
 const STORAGE_KEY = 'vado.admin.inboxBot.v1';
 
+export const INBOX_BOT_CONFIG_CHANGE_EVENT = 'vado-inbox-bot-config-change';
+
 export const BOT_CONVERSATION_TONES: BotConversationTone[] = [
   'natural',
   'formal',
@@ -110,6 +112,7 @@ export function saveInboxBotConfig(config: InboxBotConfig): void {
   if (typeof window === 'undefined') return;
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+    window.dispatchEvent(new CustomEvent(INBOX_BOT_CONFIG_CHANGE_EVENT));
   } catch {
     /* quota / private mode */
   }

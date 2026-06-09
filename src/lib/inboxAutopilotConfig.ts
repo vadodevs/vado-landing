@@ -21,6 +21,8 @@ export type InboxAutopilotConfig = {
 
 const STORAGE_KEY = 'vado.admin.inboxAutopilot.v1';
 
+export const INBOX_AUTOPILOT_CONFIG_CHANGE_EVENT = 'vado-inbox-autopilot-config-change';
+
 export const AUTOPILOT_WEEKDAYS: AutopilotWeekdayId[] = [
   'mon',
   'tue',
@@ -126,6 +128,7 @@ export function saveInboxAutopilotConfig(config: InboxAutopilotConfig): void {
   if (typeof window === 'undefined') return;
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+    window.dispatchEvent(new CustomEvent(INBOX_AUTOPILOT_CONFIG_CHANGE_EVENT));
   } catch {
     /* quota / private mode */
   }

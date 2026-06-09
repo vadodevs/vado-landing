@@ -41,6 +41,7 @@ import {
   type WhatsappGate,
 } from '@/components/admin/WhatsappInboxLinkGate';
 import { InboxAccountAvatar } from '@/components/admin/InboxAccountAvatar';
+import { InboxAutopilotStatusLine } from '@/components/admin/InboxAutopilotIndicator';
 import { InboxComposePicker } from '@/components/admin/InboxComposePicker';
 import { InboxContactAvatar } from '@/components/admin/InboxContactAvatar';
 import { InboxGroupInfoSheet } from '@/components/admin/InboxGroupInfoSheet';
@@ -2160,7 +2161,7 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
           !showListPane && 'max-md:hidden',
         )}
       >
-        <div className="flex shrink-0 items-center gap-1 border-b border-black/10 px-2 py-2 dark:border-white/10 dark:bg-[#202c33]">
+        <div className="flex shrink-0 items-center gap-3 border-b border-black/10 px-3 py-2.5 dark:border-white/10 dark:bg-[#202c33]">
           {isWhatsappApi ? (
             <InboxAccountAvatar
               enabled={whatsappGate === 'linked'}
@@ -2175,15 +2176,17 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
               VA
             </div>
           )}
-          <div className="min-w-0 flex-1 px-1">
-            <p className="truncate text-[13px] font-semibold text-zinc-900 dark:text-zinc-100">
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-[15px] font-semibold leading-tight text-zinc-900 dark:text-zinc-100">
               {t('adminCanales.inboxChatsTitle')}
             </p>
-            {!isWhatsappApi ? (
-              <p className="truncate text-[11px] text-zinc-500 dark:text-zinc-400">
+            {isWhatsappApi ? (
+              <InboxAutopilotStatusLine />
+            ) : (
+              <p className="mt-0.5 truncate text-[11px] text-zinc-500 dark:text-zinc-400">
                 {t('adminCanales.inboxYourAccount')}
               </p>
-            ) : null}
+            )}
           </div>
           {!isWhatsappApi ? (
             <Button

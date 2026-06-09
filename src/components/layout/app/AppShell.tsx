@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import {
   Bookmark,
   BriefcaseBusiness,
+  CalendarDays,
   ChevronDown,
   CircleUser,
   ClipboardList,
@@ -348,6 +349,8 @@ export function AppShell({
   const hrefAdminActiveJobs = path('/app/admin/ofertas/activas');
   const hrefAdminProjects = path('/app/admin/proyectos');
   const hrefAdminCompanies = path('/app/admin/company');
+  const hrefAdminLeadsMyEvolve = path('/app/admin/leads/my-evolve');
+  const hrefAdminLeadsCalendar = path('/app/admin/leads/calendar');
   const hrefAdminCanalesFacebook = path('/app/admin/canales/facebook');
   const hrefAdminCanalesWhatsApp = path('/app/admin/canales/whatsapp');
   const hrefAdminCanalesInstagram = path('/app/admin/canales/instagram');
@@ -534,13 +537,14 @@ export function AppShell({
                     <h2 id="nav-admin-general" className={sidebarNavSectionTitle}>
                       {t('sidebarDemo.navSectionGeneral')}
                     </h2>
-                    {navItem(hrefDevelopers, t('sidebarDemo.navDevelopers'), <Code2 />, adminDevelopersUnread)}
+                    {navItem(hrefAdminProjects, t('sidebarDemo.navProjects'), <FolderKanban />, adminProjectsUnread)}
                   </section>
 
                   <section className={sidebarNavSectionShell} aria-labelledby="nav-admin-talent">
                     <h2 id="nav-admin-talent" className={sidebarNavSectionTitle}>
                       {t('sidebarDemo.navSectionTalent')}
                     </h2>
+                    {navItem(hrefDevelopers, t('sidebarDemo.navDevelopers'), <Code2 />, adminDevelopersUnread)}
                     <CollapsedIconTooltip label={t('sidebarDemo.navRecruiters')}>
                       <button
                         type="button"
@@ -646,9 +650,28 @@ export function AppShell({
                         </Link>
                       </div>
                     </SidebarAnimatedCollapse>
+                  </section>
 
-                    {navItem(hrefAdminProjects, t('sidebarDemo.navProjects'), <FolderKanban />, adminProjectsUnread)}
-                    {navItem(hrefAdminCompanies, t('sidebarDemo.navCompanies'), <User />, adminCompaniesUnread)}
+                  <section className={sidebarNavSectionShell} aria-labelledby="nav-admin-sales">
+                    <h2 id="nav-admin-sales" className={sidebarNavSectionTitle}>
+                      {t('sidebarDemo.navSectionSales')}
+                    </h2>
+                    {navItem(
+                      hrefAdminCompanies,
+                      t('sidebarDemo.navCompanies'),
+                      <ClipboardList />,
+                      adminCompaniesUnread,
+                    )}
+                    {navItem(
+                      hrefAdminLeadsCalendar,
+                      t('sidebarDemo.navLeadsCalendar'),
+                      <CalendarDays />,
+                    )}
+                    {navItem(
+                      hrefAdminLeadsMyEvolve,
+                      t('sidebarDemo.navLeadsMyEvolve'),
+                      <Sparkles />,
+                    )}
                   </section>
 
                   <section className={sidebarNavSectionShell} aria-labelledby="nav-admin-channels">

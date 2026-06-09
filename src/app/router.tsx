@@ -36,6 +36,8 @@ import AppRecruiterSettings from '@/pages/app/recruiterSettings'
 import AppAdminDesarrolladores from '@/pages/app/adminDesarrolladores'
 import AppAdminProyectos from '@/pages/app/adminProyectos'
 import AppAdminCompany from '@/pages/app/adminCompany'
+import AppAdminLeadsMyEvolve from '@/pages/app/adminLeadsMyEvolve'
+import AppAdminLeadsMyEvolveCalendar from '@/pages/app/adminLeadsMyEvolveCalendar'
 import AppAdminCanales from '@/pages/app/adminCanales'
 import AppAdminReclutadores from '@/pages/app/adminReclutadores'
 import AppAdminOfertas from '@/pages/app/adminOfertas'
@@ -67,6 +69,20 @@ function AdminCompanyRoute() {
   return (
     <RequireAdmin>
       <AppAdminCompany />
+    </RequireAdmin>
+  );
+}
+function AdminLeadsMyEvolveRoute() {
+  return (
+    <RequireAdmin>
+      <AppAdminLeadsMyEvolve />
+    </RequireAdmin>
+  );
+}
+function AdminLeadsCalendarRoute() {
+  return (
+    <RequireAdmin>
+      <AppAdminLeadsMyEvolveCalendar />
     </RequireAdmin>
   );
 }
@@ -273,6 +289,8 @@ function AdminSettingsRoute() {
 const AppAdminDesarrolladoresPage = withLocale(AdminDesarrolladoresRoute)
 const AppAdminProyectosPage = withLocale(AdminProyectosRoute)
 const AppAdminCompanyPage = withLocale(AdminCompanyRoute)
+const AppAdminLeadsMyEvolvePage = withLocale(AdminLeadsMyEvolveRoute)
+const AppAdminLeadsCalendarPage = withLocale(AdminLeadsCalendarRoute)
 const AppAdminReclutadoresPage = withLocale(AdminReclutadoresRoute)
 const AppAdminOfertasPage = withLocale(AdminOfertasRoute)
 const AppAdminOfertasCandidatosPage = withLocale(AdminOfertasCandidatosRoute)
@@ -399,6 +417,8 @@ export function Router() {
       <Route path="/:lang/app/admin/ofertas" component={RedirectAdminJobsToActive} />
       <Route path="/:lang/app/admin/proyectos" component={AppAdminProyectosPage} />
       <Route path="/:lang/app/admin/company" component={AppAdminCompanyPage} />
+      <Route path="/:lang/app/admin/leads/my-evolve" component={AppAdminLeadsMyEvolvePage} />
+      <Route path="/:lang/app/admin/leads/calendar" component={AppAdminLeadsCalendarPage} />
       <Route path="/:lang/app/admin/canales/:canal" component={AppAdminCanalesPage} />
       <Route path="/:lang/app/admin/settings" component={AppAdminSettingsPage} />
       <Route path="/:lang/app/admin" component={RedirectAdminToDesarrolladores} />
