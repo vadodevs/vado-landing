@@ -1,4 +1,4 @@
-import { getAdminAccessToken } from '@/lib/adminAuth';
+import { adminAuthorizedFetch, getAdminAccessToken } from '@/lib/adminAuth';
 import { htmlToPreviewPlain } from '@/lib/jobOverviewHtml';
 
 /** Coincide con columnas varchar(255) típicas en adminvado. */
@@ -112,17 +112,18 @@ function rowsFromResponse(data: unknown): unknown[] {
 
 export async function fetchJobOffers(apiBase: string): Promise<JobOfferRecord[]> {
   const base = apiBase.replace(/\/$/, '');
-  const token = getAdminAccessToken();
-  const options = token
+  const options = getAdminAccessToken()
     ? [
-        { url: `${base}${ADMIN_JOBS_PATH}`, headers: { Authorization: `Bearer ${token}` } },
-        { url: `${base}${PUBLIC_JOBS_PATH}`, headers: undefined },
+        { url: `${base}${ADMIN_JOBS_PATH}`, authorized: true as const },
+        { url: `${base}${PUBLIC_JOBS_PATH}`, authorized: false as const },
       ]
-    : [{ url: `${base}${PUBLIC_JOBS_PATH}`, headers: undefined }];
+    : [{ url: `${base}${PUBLIC_JOBS_PATH}`, authorized: false as const }];
   for (const opt of options) {
     try {
-      const res = await fetch(opt.url, { headers: opt.headers });
-      if (!res.ok) continue;
+      const res = opt.authorized
+        ? await adminAuthorizedFetch(opt.url)
+        : await fetch(opt.url);
+      if (!res?.ok) continue;
       const data = (await res.json()) as unknown;
       const rows = rowsFromResponse(data);
       const out: JobOfferRecord[] = [];
@@ -140,13 +141,12 @@ export async function fetchJobOffers(apiBase: string): Promise<JobOfferRecord[]>
 }
 
 export async function createJobOffer(apiBase: string, input: CreateJobOfferInput): Promise<boolean> {
-  const token = getAdminAccessToken();
-  if (!token) return false;
+  if (!getAdminAccessToken()) return false;
   const base = apiBase.replace(/\/$/, '');
   try {
-    const res = await fetch(`${base}${ADMIN_JOBS_PATH}`, {
+    const res = await adminAuthorizedFetch(`${base}${ADMIN_JOBS_PATH}`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         title: clamp255(input.titulo),
         summary: apiSummaryFromOverviewHtml(input.overview),
@@ -157,7 +157,7 @@ export async function createJobOffer(apiBase: string, input: CreateJobOfferInput
         ...(input.expiresAt ? { expiresAt: input.expiresAt } : {}),
       }),
     });
-    return res.ok;
+    return res?.ok === true;
   } catch {
     return false;
   }
@@ -168,13 +168,12 @@ export async function updateJobOffer(
   id: string,
   input: UpdateJobOfferInput,
 ): Promise<boolean> {
-  const token = getAdminAccessToken();
-  if (!token) return false;
+  if (!getAdminAccessToken()) return false;
   const base = apiBase.replace(/\/$/, '');
   try {
-    const res = await fetch(`${base}${ADMIN_JOBS_PATH}/${encodeURIComponent(id)}`, {
+    const res = await adminAuthorizedFetch(`${base}${ADMIN_JOBS_PATH}/${encodeURIComponent(id)}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         title: clamp255(input.titulo),
         summary: apiSummaryFromOverviewHtml(input.overview),
@@ -184,7 +183,7 @@ export async function updateJobOffer(
         ...(input.expiresAt !== undefined ? { expiresAt: input.expiresAt } : {}),
       }),
     });
-    return res.ok;
+    return res?.ok === true;
   } catch {
     return false;
   }
@@ -195,48 +194,41 @@ export async function setJobOfferStatus(
   id: string,
   status: JobStatus,
 ): Promise<boolean> {
-  const token = getAdminAccessToken();
-  if (!token) return false;
+  if (!getAdminAccessToken()) return false;
   const base = apiBase.replace(/\/$/, '');
   try {
-    const res = await fetch(`${base}${ADMIN_JOBS_PATH}/${encodeURIComponent(id)}`, {
+    const res = await adminAuthorizedFetch(`${base}${ADMIN_JOBS_PATH}/${encodeURIComponent(id)}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ status: status === 'activa' ? 'Posted' : 'On Hold' }),
     });
-    return res.ok;
+    return res?.ok === true;
   } catch {
     return false;
   }
 }
 
 export async function deleteJobOffer(apiBase: string, id: string): Promise<boolean> {
-  const token = getAdminAccessToken();
-  if (!token) return false;
+  if (!getAdminAccessToken()) return false;
   const base = apiBase.replace(/\/$/, '');
   try {
-    const res = await fetch(`${base}${ADMIN_JOBS_PATH}/${encodeURIComponent(id)}`, {
+    const res = await adminAuthorizedFetch(`${base}${ADMIN_JOBS_PATH}/${encodeURIComponent(id)}`, {
       method: 'DELETE',
-      headers: { Authorization: `Bearer ${token}` },
     });
-    return res.ok;
+    return res?.ok === true;
   } catch {
     return false;
   }
 }
 
 export async function fetchJobApplicants(apiBase: string, jobId: string): Promise<JobApplicant[]> {
-  const token = getAdminAccessToken();
-  if (!token) return [];
+  if (!getAdminAccessToken()) return [];
   const base = apiBase.replace(/\/$/, '');
   try {
-    const res = await fetch(
+    const res = await adminAuthorizedFetch(
       `${base}/talent/applications?jobId=${encodeURIComponent(jobId)}&page=1&pageSize=100`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      },
     );
-    if (!res.ok) return [];
+    if (!res?.ok) return [];
     const data = (await res.json()) as { data?: unknown[] };
     const rows = Array.isArray(data?.data) ? data.data : [];
     const out: JobApplicant[] = [];
@@ -286,19 +278,15 @@ export async function updateJobApplicantStatus(
     | 'Withdrawn'
     | 'Mismatched',
 ): Promise<boolean> {
-  const token = getAdminAccessToken();
-  if (!token) return false;
+  if (!getAdminAccessToken()) return false;
   const base = apiBase.replace(/\/$/, '');
   try {
-    const res = await fetch(`${base}/talent/applications/${encodeURIComponent(applicationId)}`, {
+    const res = await adminAuthorizedFetch(`${base}/talent/applications/${encodeURIComponent(applicationId)}`, {
       method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ jobId, userId, status }),
     });
-    return res.ok;
+    return res?.ok === true;
   } catch {
     return false;
   }

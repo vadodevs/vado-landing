@@ -7,7 +7,10 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
 import { scheduleInboxAiSettingsSync } from '@/lib/inboxAiSettingsSync';
-import { loadInboxAutopilotConfig } from '@/lib/inboxAutopilotConfig';
+import {
+  loadInboxAutopilotConfig,
+  saveInboxAutopilotConfig,
+} from '@/lib/inboxAutopilotConfig';
 import {
   BOT_CONVERSATION_TONES,
   BOT_LANGUAGE_MODES,
@@ -78,7 +81,15 @@ export function AdminBotSettingsCard() {
 
   useEffect(() => {
     saveInboxBotConfig(config);
-    scheduleInboxAiSettingsSync({ bot: config, autopilot: loadInboxAutopilotConfig() });
+    let autopilot = loadInboxAutopilotConfig();
+    if (config.enabled && !autopilot.channels.whatsapp) {
+      autopilot = {
+        ...autopilot,
+        channels: { ...autopilot.channels, whatsapp: true },
+      };
+      saveInboxAutopilotConfig(autopilot);
+    }
+    scheduleInboxAiSettingsSync({ bot: config, autopilot });
     setSavedFlash(true);
     const timer = window.setTimeout(() => setSavedFlash(false), 2000);
     return () => window.clearTimeout(timer);

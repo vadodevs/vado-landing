@@ -50,6 +50,65 @@ export function getAdminAccessToken(): string | null {
   return loadSession()?.accessToken ?? null;
 }
 
+let refreshInFlight: Promise<string | null> | null = null;
+
+async function refreshAdminAccessToken(base: string, session: AdminSession): Promise<string | null> {
+  try {
+    const res = await fetch(`${base}/auth/refresh-tokens`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refreshToken: session.refreshToken }),
+    });
+    if (!res.ok) return null;
+    const data = (await res.json()) as { accessToken?: string; refreshToken?: string };
+    if (typeof data.accessToken !== 'string' || !data.accessToken) return null;
+    const next: AdminSession = {
+      ...session,
+      accessToken: data.accessToken,
+      refreshToken:
+        typeof data.refreshToken === 'string' && data.refreshToken
+          ? data.refreshToken
+          : session.refreshToken,
+      at: Date.now(),
+    };
+    saveSession(next);
+    return next.accessToken;
+  } catch {
+    return null;
+  }
+}
+
+/** Fetch con JWT admin; renueva el access token automáticamente si expiró (401). */
+export async function adminAuthorizedFetch(
+  input: string,
+  init: RequestInit = {},
+): Promise<Response | null> {
+  const base = getApiBaseUrl();
+  const session = loadSession();
+  if (!base || !session?.accessToken) return null;
+
+  const requestWithToken = (accessToken: string) =>
+    fetch(input, {
+      ...init,
+      headers: {
+        ...(init.headers ?? {}),
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+  const first = await requestWithToken(session.accessToken);
+  if (first.status !== 401) return first;
+
+  if (!refreshInFlight) {
+    refreshInFlight = refreshAdminAccessToken(base, session).finally(() => {
+      refreshInFlight = null;
+    });
+  }
+  const refreshed = await refreshInFlight;
+  if (!refreshed) return first;
+  return requestWithToken(refreshed);
+}
+
 export async function loginAdmin(
   email: string,
   password: string,
@@ -102,13 +161,10 @@ export function logoutAdmin(): void {
 
 export async function verifyAdminSession(): Promise<boolean> {
   const base = getApiBaseUrl();
-  const token = getAdminAccessToken();
-  if (!base || !token) return false;
+  if (!base || !getAdminAccessToken()) return false;
   try {
-    const res = await fetch(`${base}/auth/me`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    if (!res.ok) return false;
+    const res = await adminAuthorizedFetch(`${base}/auth/me`);
+    if (!res?.ok) return false;
     const me = (await res.json()) as { roles?: unknown };
     const roles = Array.isArray(me.roles) ? me.roles.map((r) => String(r)) : [];
     return roles.includes('Admin');

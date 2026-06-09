@@ -38,6 +38,21 @@ export function WhatsappInboxLinkGate({ gate, onRefreshLink }: Props) {
   const [error, setError] = useState<string | null>(null);
   const linkingRef = useRef(linking);
   linkingRef.current = linking;
+  const linkedNotifiedRef = useRef(false);
+
+  const notifyLinkedOnce = useCallback(() => {
+    if (linkedNotifiedRef.current) return;
+    linkedNotifiedRef.current = true;
+    setLinking(false);
+    setConnectPayload(null);
+    setError(null);
+    void fetchWhatsappLinkStatus().then((res) => {
+      if (!res.ok) return;
+      const ownerJid = res.data.ownerJid?.trim() || '';
+      notifyInboxAccountAvatarChanged(ownerJid);
+      notifyWhatsappLinkChanged({ linked: true, ownerJid, importHistory: true });
+    });
+  }, []);
 
   const goToAdminLogin = () => {
     logoutAdmin();
@@ -62,43 +77,23 @@ export function WhatsappInboxLinkGate({ gate, onRefreshLink }: Props) {
   }, [onRefreshLink, t]);
 
   useEffect(() => {
+    if (gate === 'linked') return;
+    linkedNotifiedRef.current = false;
+  }, [gate]);
+
+  useEffect(() => {
     if (gate === 'linked' || gate === 'no-auth') return;
+    const pollMs = gate === 'connecting' || linking || !!connectPayload ? 3000 : 8000;
     const poll = () => {
       void onRefreshLink().then((nextGate) => {
         if (nextGate !== 'linked') return;
-        setLinking(false);
-        setConnectPayload(null);
-        setError(null);
-        void fetchWhatsappLinkStatus().then((res) => {
-          if (!res.ok) return;
-          const ownerJid = res.data.ownerJid?.trim() || '';
-          notifyInboxAccountAvatarChanged(ownerJid);
-          notifyWhatsappLinkChanged({ linked: true, ownerJid });
-        });
+        notifyLinkedOnce();
       });
     };
     poll();
-    const interval = window.setInterval(poll, gate === 'connecting' || linkingRef.current ? 3000 : 8000);
+    const interval = window.setInterval(poll, pollMs);
     return () => window.clearInterval(interval);
-  }, [gate, onRefreshLink]);
-
-  useEffect(() => {
-    if (!linking && !connectPayload) return;
-    const interval = window.setInterval(() => {
-      void onRefreshLink().then((nextGate) => {
-        if (nextGate !== 'linked') return;
-        setLinking(false);
-        setConnectPayload(null);
-        void fetchWhatsappLinkStatus().then((res) => {
-          if (!res.ok) return;
-          const ownerJid = res.data.ownerJid?.trim() || '';
-          notifyInboxAccountAvatarChanged(ownerJid);
-          notifyWhatsappLinkChanged({ linked: true, ownerJid });
-        });
-      });
-    }, 3000);
-    return () => window.clearInterval(interval);
-  }, [linking, connectPayload, onRefreshLink]);
+  }, [gate, linking, connectPayload, onRefreshLink, notifyLinkedOnce]);
 
   const showQrPanel = linking || !!connectPayload?.qrcodeBase64 || !!connectPayload?.pairingCode;
 

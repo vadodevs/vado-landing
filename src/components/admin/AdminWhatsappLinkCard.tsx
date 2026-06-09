@@ -9,7 +9,7 @@ import {
   configureWhatsappWebhook,
   importWhatsappHistoryAfterLink,
   relinkWhatsappForHistory,
-  syncWhatsappChats,
+  resyncWhatsappHistory,
   disconnectWhatsapp,
   fetchWhatsappConnect,
   fetchWhatsappLinkStatus,
@@ -17,7 +17,11 @@ import {
   type WhatsappLinkStatusDto,
 } from '@/lib/adminInboxApi';
 import { notifyInboxAccountAvatarChanged } from '@/lib/inboxAccountAvatar';
-import { notifyWhatsappLinkChanged, purgeWhatsappInboxLocalState } from '@/lib/inboxWhatsappLink';
+import {
+  notifyWhatsappLinkChanged,
+  purgeWhatsappInboxLocalState,
+  shouldKickoffWhatsappHistoryImport,
+} from '@/lib/inboxWhatsappLink';
 
 function formatPairingCode(code: string): string {
   const raw = code.replace(/\D/g, '');
@@ -49,7 +53,6 @@ export function AdminWhatsappLinkCard() {
   const [linking, setLinking] = useState(false);
   const [disconnecting, setDisconnecting] = useState(false);
   const [syncingWebhook, setSyncingWebhook] = useState(false);
-  const [importingHistory, setImportingHistory] = useState(false);
   const [historyImportMessage, setHistoryImportMessage] = useState<string | null>(null);
   const syncInFlightRef = useRef(false);
   const pendingHistoryImportRef = useRef(false);
@@ -76,28 +79,22 @@ export function AdminWhatsappLinkCard() {
     return null;
   }, [t]);
 
-  const runHistoryImport = useCallback(async () => {
-    setImportingHistory(true);
-    setHistoryImportMessage(t('adminSettings.whatsappHistoryImporting'));
-    setError(null);
-    try {
-      const res = await importWhatsappHistoryAfterLink();
-      if (!res.ok) {
-        setError(t('adminSettings.whatsappConnectError'));
-        return;
-      }
-      setHistoryImportMessage(
-        t('adminSettings.whatsappHistoryImportDone', {
-          chats: res.data.evolutionChatCount,
-          total: res.data.total,
-          messages: res.data.messagesImported,
-        }),
-      );
-    } finally {
-      setImportingHistory(false);
+  const kickoffHistoryImport = useCallback(
+    (ownerJid: string) => {
       pendingHistoryImportRef.current = false;
-    }
-  }, [t]);
+      setConnectPayload(null);
+      setHistoryImportMessage(t('adminSettings.whatsappHistoryImportingBackground'));
+      notifyWhatsappLinkChanged({ linked: true, ownerJid, importHistory: true });
+      if (!shouldKickoffWhatsappHistoryImport(ownerJid)) return;
+      void importWhatsappHistoryAfterLink().then((res) => {
+        if (!res.ok) {
+          setError(t('adminSettings.whatsappConnectError'));
+          setHistoryImportMessage(null);
+        }
+      });
+    },
+    [t],
+  );
 
   useEffect(() => {
     let cancelled = false;
@@ -124,19 +121,19 @@ export function AdminWhatsappLinkCard() {
         if (status?.linked) {
           setLinking(false);
           if (pendingHistoryImportRef.current) {
-            void runHistoryImport();
-          }
-          if (!pendingHistoryImportRef.current) {
+            const ownerJid = status.ownerJid?.trim() || '';
+            kickoffHistoryImport(ownerJid);
+          } else {
             setConnectPayload(null);
           }
         }
       });
     }, 3000);
     return () => window.clearInterval(interval);
-  }, [linking, connectPayload, refreshStatus, runHistoryImport]);
+  }, [linking, connectPayload, refreshStatus, kickoffHistoryImport]);
 
   const handleLink = async () => {
-    pendingHistoryImportRef.current = false;
+    pendingHistoryImportRef.current = true;
     setLinking(true);
     setError(null);
     setHistoryImportMessage(null);
@@ -201,11 +198,15 @@ export function AdminWhatsappLinkCard() {
         setError(t('adminSettings.whatsappConnectError'));
         return;
       }
-      const chatsRes = await syncWhatsappChats();
-      if (!chatsRes.ok) {
+      setHistoryImportMessage(t('adminSettings.whatsappHistoryImportingBackground'));
+      const resyncRes = await resyncWhatsappHistory();
+      if (!resyncRes.ok) {
         setError(t('adminSettings.whatsappConnectError'));
+        setHistoryImportMessage(null);
         return;
       }
+      const ownerJid = linkStatus?.ownerJid?.trim() || '';
+      notifyWhatsappLinkChanged({ linked: true, ownerJid, reloadInbox: true });
       await refreshStatus();
     } finally {
       syncInFlightRef.current = false;
@@ -239,8 +240,7 @@ export function AdminWhatsappLinkCard() {
       ? t('adminSettings.whatsappConnecting')
       : t('adminSettings.whatsappDisconnected');
 
-  const showQrPanel =
-    linking || connectPayload?.qrcodeBase64 || connectPayload?.pairingCode || importingHistory;
+  const showQrPanel = linking || !!connectPayload?.qrcodeBase64 || !!connectPayload?.pairingCode;
 
   useEffect(() => {
     if (linked || linking) return;
@@ -299,24 +299,17 @@ export function AdminWhatsappLinkCard() {
             type="button"
             variant="default"
             className="h-10 w-full sm:w-auto"
-            disabled={importingHistory || syncingWebhook || disconnecting}
+            disabled={syncingWebhook || disconnecting}
             onClick={() => void handleRelinkForHistory()}
           >
-            {importingHistory ? (
-              <>
-                <Loader2 className="mr-2 size-4 animate-spin" aria-hidden />
-                {t('adminSettings.whatsappResyncHistory')}
-              </>
-            ) : (
-              t('adminSettings.whatsappResyncHistory')
-            )}
+            {t('adminSettings.whatsappResyncHistory')}
           </Button>
           <div className="flex flex-wrap gap-2">
             <Button
               type="button"
               variant="secondary"
               size="sm"
-              disabled={syncingWebhook || importingHistory}
+              disabled={syncingWebhook}
               onClick={() => void handleSyncWebhook()}
             >
               {syncingWebhook ? (
@@ -332,7 +325,7 @@ export function AdminWhatsappLinkCard() {
               type="button"
               variant="outline"
               size="sm"
-              disabled={disconnecting || importingHistory}
+              disabled={disconnecting}
               onClick={() => void handleDisconnect()}
             >
               {disconnecting ? (
@@ -348,17 +341,7 @@ export function AdminWhatsappLinkCard() {
         </div>
       ) : showQrPanel ? (
         <div className="mt-6 space-y-4">
-          <p className="text-sm text-muted-foreground">
-            {importingHistory
-              ? t('adminSettings.whatsappHistoryImporting')
-              : t('adminSettings.whatsappRelinkScanHint')}
-          </p>
-          {importingHistory ? (
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Loader2 className="size-4 animate-spin" aria-hidden />
-              {t('adminSettings.whatsappHistoryImporting')}
-            </div>
-          ) : null}
+          <p className="text-sm text-muted-foreground">{t('adminSettings.whatsappRelinkScanHint')}</p>
           {connectPayload?.qrcodeBase64 ? (
             <div className="flex flex-col items-start gap-3">
               <img
@@ -376,7 +359,7 @@ export function AdminWhatsappLinkCard() {
               </p>
             </div>
           ) : null}
-          {linking && !importingHistory && !connectPayload?.qrcodeBase64 && !connectPayload?.pairingCode ? (
+          {linking && !connectPayload?.qrcodeBase64 && !connectPayload?.pairingCode ? (
             <p className="text-sm text-muted-foreground">{t('adminSettings.whatsappWaitingScan')}</p>
           ) : null}
         </div>

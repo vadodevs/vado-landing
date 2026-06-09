@@ -1,4 +1,4 @@
-import { getAdminAccessToken } from '@/lib/adminAuth';
+import { adminAuthorizedFetch, getAdminAccessToken } from '@/lib/adminAuth';
 
 const blobUrlByKey = new Map<string, string>();
 const inflightByKey = new Map<string, Promise<string | null>>();
@@ -63,11 +63,10 @@ export async function loadInboxAccountAvatarUrl(cacheKey?: string): Promise<stri
     if (!base || !token) return null;
 
     try {
-      const res = await fetch(
+      const res = await adminAuthorizedFetch(
         `${base}/admin/inbox/whatsapp/account-avatar?account=${encodeURIComponent(key)}`,
-        { headers: { Authorization: `Bearer ${token}` } },
       );
-      if (!res.ok) return null;
+      if (!res?.ok) return null;
       const blob = await res.blob();
       if (!blob.size) return null;
       const url = URL.createObjectURL(blob);

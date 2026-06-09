@@ -1,4 +1,4 @@
-import { getAdminAccessToken } from '@/lib/adminAuth';
+import { adminAuthorizedFetch, getAdminAccessToken } from '@/lib/adminAuth';
 
 function stripBase64Payload(value: string): string {
   const trimmed = value.trim();
@@ -45,13 +45,12 @@ function base64ToBlob(base64: string, mimeType: string): Blob | null {
   }
 }
 
-async function fetchMediaAsBlob(messageId: string, base: string, token: string): Promise<Blob | null> {
-  const headers = { Authorization: `Bearer ${token}` };
+async function fetchMediaAsBlob(messageId: string, base: string): Promise<Blob | null> {
   const binaryUrl = `${base}/admin/inbox/messages/${encodeURIComponent(messageId)}/media`;
 
   try {
-    const res = await fetch(binaryUrl, { headers });
-    if (res.ok) {
+    const res = await adminAuthorizedFetch(binaryUrl);
+    if (res?.ok) {
       const blob = await res.blob();
       if (blob.size > 0) return blob;
     }
@@ -60,11 +59,10 @@ async function fetchMediaAsBlob(messageId: string, base: string, token: string):
   }
 
   try {
-    const res = await fetch(
+    const res = await adminAuthorizedFetch(
       `${base}/admin/inbox/messages/${encodeURIComponent(messageId)}/media-data`,
-      { headers },
     );
-    if (!res.ok) return null;
+    if (!res?.ok) return null;
 
     const data = (await res.json()) as { base64?: string; mimeType?: string };
     const raw = typeof data.base64 === 'string' ? data.base64.trim() : '';
@@ -88,7 +86,7 @@ export async function loadInboxMessageMediaUrl(messageId: string): Promise<strin
     if (!base || !token) return null;
 
     try {
-      const blob = await fetchMediaAsBlob(messageId, base, token);
+      const blob = await fetchMediaAsBlob(messageId, base);
       if (!blob?.size) return null;
 
       const url = URL.createObjectURL(blob);

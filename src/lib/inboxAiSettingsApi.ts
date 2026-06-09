@@ -1,4 +1,4 @@
-import { getAdminAccessToken } from '@/lib/adminAuth';
+import { adminAuthorizedFetch, getAdminAccessToken } from '@/lib/adminAuth';
 import type { InboxAutopilotConfig } from '@/lib/inboxAutopilotConfig';
 import type { InboxBotConfig } from '@/lib/inboxBotConfig';
 
@@ -25,14 +25,14 @@ async function inboxAiRequest<T>(path: string, init?: RequestInit): Promise<Inbo
   if (!token) return { ok: false, reason: 'no-auth' };
 
   try {
-    const res = await fetch(`${base}${path}`, {
+    const res = await adminAuthorizedFetch(`${base}${path}`, {
       ...init,
       headers: {
         ...(init?.headers ?? {}),
-        Authorization: `Bearer ${token}`,
         ...(init?.body ? { 'Content-Type': 'application/json' } : {}),
       },
     });
+    if (!res) return { ok: false, reason: 'no-auth' };
     const data = (await res.json().catch(() => ({}))) as T & { message?: string };
     if (res.ok) return { ok: true, data: data as T };
     const message =

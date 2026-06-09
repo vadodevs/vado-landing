@@ -1,4 +1,4 @@
-import { getAdminAccessToken } from '@/lib/adminAuth';
+import { adminAuthorizedFetch, getAdminAccessToken } from '@/lib/adminAuth';
 
 const blobUrlCache = new Map<string, string>();
 const inflight = new Map<string, Promise<string | null>>();
@@ -46,11 +46,10 @@ export async function loadInboxContactAvatarUrl(conversationId: string): Promise
     if (!base || !token) return null;
 
     try {
-      const res = await fetch(
+      const res = await adminAuthorizedFetch(
         `${base}/admin/inbox/conversations/${encodeURIComponent(conversationId)}/avatar`,
-        { headers: { Authorization: `Bearer ${token}` } },
       );
-      if (!res.ok) {
+      if (!res?.ok) {
         missUntil.set(conversationId, Date.now() + MISS_TTL_MS);
         return null;
       }

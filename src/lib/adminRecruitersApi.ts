@@ -1,4 +1,4 @@
-import { getAdminAccessToken } from '@/lib/adminAuth';
+import { adminAuthorizedFetch, getAdminAccessToken } from '@/lib/adminAuth';
 
 /** Alineado con la sidebar admin (excluye Reclutadores y Ajustes). */
 export const RECRUITER_PERMISSION_KEYS = [
@@ -78,8 +78,7 @@ export async function fetchRecruiters(
   page: number;
   pageSize: number;
 } | null> {
-  const token = getAdminAccessToken();
-  if (!token) return null;
+  if (!getAdminAccessToken()) return null;
   const base = getBase(apiBase);
   const url = new URL(`${base}/admin/recruiters`);
   url.searchParams.set('page', String(page));
@@ -88,10 +87,8 @@ export async function fetchRecruiters(
   if (t) {
     url.searchParams.set('name_like', t);
   }
-  const res = await fetch(url.toString(), {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  if (!res.ok) return null;
+  const res = await adminAuthorizedFetch(url.toString());
+  if (!res?.ok) return null;
   const body = (await res.json()) as {
     data?: RecruiterApiRecord[];
     count?: number;
@@ -110,13 +107,10 @@ export async function fetchRecruiterById(
   apiBase: string,
   id: string,
 ): Promise<RecruiterApiRecord | null> {
-  const token = getAdminAccessToken();
-  if (!token) return null;
+  if (!getAdminAccessToken()) return null;
   const base = getBase(apiBase);
-  const res = await fetch(`${base}/admin/recruiters/${encodeURIComponent(id)}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  if (!res.ok) return null;
+  const res = await adminAuthorizedFetch(`${base}/admin/recruiters/${encodeURIComponent(id)}`);
+  if (!res?.ok) return null;
   return (await res.json()) as RecruiterApiRecord;
 }
 
@@ -124,12 +118,11 @@ export async function createRecruiter(
   apiBase: string,
   input: CreateRecruiterInput,
 ): Promise<{ ok: true; record: RecruiterApiRecord } | { ok: false; message: string }> {
-  const token = getAdminAccessToken();
-  if (!token) return { ok: false, message: 'Sin sesión de admin.' };
+  if (!getAdminAccessToken()) return { ok: false, message: 'Sin sesión de admin.' };
   const base = getBase(apiBase);
-  const res = await fetch(`${base}/admin/recruiters`, {
+  const res = await adminAuthorizedFetch(`${base}/admin/recruiters`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       firstName: input.firstName.trim(),
       lastName: input.lastName.trim(),
@@ -138,8 +131,8 @@ export async function createRecruiter(
       permissions: input.permissions,
     }),
   });
-  if (!res.ok) {
-    return { ok: false, message: await parseErrorMessage(res) };
+  if (!res?.ok) {
+    return { ok: false, message: res ? await parseErrorMessage(res) : 'Sin sesión de admin.' };
   }
   const record = (await res.json()) as RecruiterApiRecord;
   return { ok: true, record };
@@ -150,12 +143,11 @@ export async function updateRecruiter(
   id: string,
   input: UpdateRecruiterInput,
 ): Promise<{ ok: true; record: RecruiterApiRecord } | { ok: false; message: string }> {
-  const token = getAdminAccessToken();
-  if (!token) return { ok: false, message: 'Sin sesión de admin.' };
+  if (!getAdminAccessToken()) return { ok: false, message: 'Sin sesión de admin.' };
   const base = getBase(apiBase);
-  const res = await fetch(`${base}/admin/recruiters/${encodeURIComponent(id)}`, {
+  const res = await adminAuthorizedFetch(`${base}/admin/recruiters/${encodeURIComponent(id)}`, {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       firstName: input.firstName.trim(),
       lastName: input.lastName.trim(),
@@ -164,8 +156,8 @@ export async function updateRecruiter(
       permissions: input.permissions,
     }),
   });
-  if (!res.ok) {
-    return { ok: false, message: await parseErrorMessage(res) };
+  if (!res?.ok) {
+    return { ok: false, message: res ? await parseErrorMessage(res) : 'Sin sesión de admin.' };
   }
   const record = (await res.json()) as RecruiterApiRecord;
   return { ok: true, record };
@@ -175,15 +167,13 @@ export async function deleteRecruiter(
   apiBase: string,
   id: string,
 ): Promise<{ ok: boolean; message?: string }> {
-  const token = getAdminAccessToken();
-  if (!token) return { ok: false, message: 'Sin sesión de admin.' };
+  if (!getAdminAccessToken()) return { ok: false, message: 'Sin sesión de admin.' };
   const base = getBase(apiBase);
-  const res = await fetch(`${base}/admin/recruiters/${encodeURIComponent(id)}`, {
+  const res = await adminAuthorizedFetch(`${base}/admin/recruiters/${encodeURIComponent(id)}`, {
     method: 'DELETE',
-    headers: { Authorization: `Bearer ${token}` },
   });
-  if (!res.ok) {
-    return { ok: false, message: await parseErrorMessage(res) };
+  if (!res?.ok) {
+    return { ok: false, message: res ? await parseErrorMessage(res) : 'Sin sesión de admin.' };
   }
   return { ok: true };
 }
@@ -197,13 +187,10 @@ export type RecruiterAccessStatusRow = {
 export async function fetchRecruiterAccessStatus(
   apiBase: string,
 ): Promise<RecruiterAccessStatusRow[] | null> {
-  const token = getAdminAccessToken();
-  if (!token) return null;
+  if (!getAdminAccessToken()) return null;
   const base = getBase(apiBase);
-  const res = await fetch(`${base}/admin/recruiters/access-status`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  if (!res.ok) return null;
+  const res = await adminAuthorizedFetch(`${base}/admin/recruiters/access-status`);
+  if (!res?.ok) return null;
   const body = (await res.json()) as unknown;
   if (!Array.isArray(body)) return [];
   return body as RecruiterAccessStatusRow[];
@@ -224,15 +211,13 @@ export async function recruiterPortalAccessAction(
   id: string,
   action: 'enable-access' | 'reset-password' | 'disable-access',
 ): Promise<RecruiterPortalAccessResult> {
-  const token = getAdminAccessToken();
-  if (!token) return { ok: false, message: 'Sin sesión de admin.' };
+  if (!getAdminAccessToken()) return { ok: false, message: 'Sin sesión de admin.' };
   const base = getBase(apiBase);
-  const res = await fetch(`${base}/admin/recruiters/${encodeURIComponent(id)}/${action}`, {
+  const res = await adminAuthorizedFetch(`${base}/admin/recruiters/${encodeURIComponent(id)}/${action}`, {
     method: 'POST',
-    headers: { Authorization: `Bearer ${token}` },
   });
-  if (!res.ok) {
-    return { ok: false, message: await parseErrorMessage(res) };
+  if (!res?.ok) {
+    return { ok: false, message: res ? await parseErrorMessage(res) : 'Sin sesión de admin.' };
   }
   const payload = (await res.json()) as {
     recruiterId?: string;

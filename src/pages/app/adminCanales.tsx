@@ -68,6 +68,8 @@ import {
 import {
   fetchInboxConversations,
   fetchInboxMessages,
+  fetchWhatsappHistoryImportStatus,
+  importWhatsappHistoryAfterLink,
   syncWhatsappChats,
   type InboxDeliveryStatus,
   fetchWhatsappLinkStatus,
@@ -106,6 +108,7 @@ import {
 import {
   notifyWhatsappLinkChanged,
   purgeWhatsappInboxLocalState,
+  shouldKickoffWhatsappHistoryImport,
   WHATSAPP_LINK_CHANGE_EVENT,
   type WhatsappLinkChangeDetail,
 } from '@/lib/inboxWhatsappLink';
@@ -1136,6 +1139,7 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
   const [whatsappLoadState, setWhatsappLoadState] = useState<
     'idle' | 'loading' | 'error' | 'ok'
   >('idle');
+  const [whatsappHistoryImporting, setWhatsappHistoryImporting] = useState(false);
   const [whatsappListError, setWhatsappListError] = useState<string | null>(null);
   const [messagesById, setMessagesById] = useState<Record<string, ChatMsg[]>>({});
   const [whatsappGate, setWhatsappGate] = useState<WhatsappGate>('loading');
@@ -1361,17 +1365,43 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
   const reloadWhatsappConversationsRef = useRef(reloadWhatsappConversations);
   reloadWhatsappConversationsRef.current = reloadWhatsappConversations;
 
+  const kickoffWhatsappHistoryImport = useCallback(async (ownerJid: string) => {
+    if (!shouldKickoffWhatsappHistoryImport(ownerJid)) {
+      setWhatsappHistoryImporting(true);
+      return true;
+    }
+    const res = await importWhatsappHistoryAfterLink();
+    lastEvolutionSyncAtRef.current = Date.now();
+    whatsappBootSyncDoneRef.current = true;
+    if (!res.ok) {
+      setWhatsappListError(
+        res.reason === 'no-config'
+          ? t('adminCanales.botErrorNoConfig')
+          : res.message?.trim() || t('adminCanales.whatsappLoadError'),
+      );
+      return false;
+    }
+    setWhatsappHistoryImporting(true);
+    return true;
+  }, [t]);
+
   const syncWhatsappInboxData = useCallback(
     async (opts?: {
       fullImport?: boolean;
       showListLoading?: boolean;
       activeConversationId?: string;
+      importHistory?: boolean;
     }) => {
-      if (opts?.showListLoading) {
+      if (opts?.showListLoading && !opts?.importHistory) {
         setWhatsappLoadState('loading');
       }
 
-      if (
+      if (opts?.importHistory) {
+        await syncWhatsappChats();
+        lastEvolutionSyncAtRef.current = Date.now();
+        whatsappBootSyncDoneRef.current = true;
+        await kickoffWhatsappHistoryImport(whatsappOwnerJidRef.current);
+      } else if (
         opts?.fullImport &&
         shouldRunWhatsappEvolutionSync(lastEvolutionSyncAtRef.current, { force: true })
       ) {
@@ -1385,7 +1415,7 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
         activeConversationId: opts?.activeConversationId ?? selectedIdRef.current,
       });
     },
-    [reloadWhatsappConversations],
+    [kickoffWhatsappHistoryImport, reloadWhatsappConversations],
   );
 
   const syncWhatsappInboxDataRef = useRef(syncWhatsappInboxData);
@@ -1416,11 +1446,21 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
         setWhatsappGate('not-linked');
         return;
       }
+      if (detail.reloadInbox) {
+        setWhatsappLoadState('loading');
+        void reloadWhatsappConversationsRef.current({ sync: true }).then(() => {
+          setWhatsappLoadState('ok');
+        });
+        return;
+      }
       void refreshWhatsappLinkRef.current().then((gate) => {
-        if (gate === 'linked' && !inboxBootDoneRef.current) {
-          inboxBootDoneRef.current = true;
-          void syncWhatsappInboxDataRef.current({ fullImport: true, showListLoading: true });
-        }
+        if (gate !== 'linked' || inboxBootDoneRef.current) return;
+        inboxBootDoneRef.current = true;
+        void syncWhatsappInboxDataRef.current({
+          importHistory: detail.importHistory === true,
+          fullImport: !detail.importHistory,
+          showListLoading: detail.importHistory !== true,
+        });
       });
     };
     window.addEventListener(WHATSAPP_LINK_CHANGE_EVENT, onLinkChange);
@@ -1447,6 +1487,31 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
       window.removeEventListener(WHATSAPP_LINK_CHANGE_EVENT, onLinkChange);
     };
   }, [isWhatsappApi, purgeWhatsappInboxUiState]);
+
+  useEffect(() => {
+    if (!isWhatsappApi || whatsappGate !== 'linked') return;
+    void fetchWhatsappHistoryImportStatus().then((res) => {
+      if (res.ok && res.data.running) setWhatsappHistoryImporting(true);
+    });
+  }, [isWhatsappApi, whatsappGate]);
+
+  useEffect(() => {
+    if (!isWhatsappApi || !whatsappHistoryImporting) return;
+    const poll = () => {
+      void fetchWhatsappHistoryImportStatus().then((res) => {
+        if (!res.ok) return;
+        if (res.data.running) {
+          void reloadWhatsappConversationsRef.current({ sync: true });
+          return;
+        }
+        setWhatsappHistoryImporting(false);
+        void reloadWhatsappConversationsRef.current({ sync: true });
+      });
+    };
+    poll();
+    const interval = window.setInterval(poll, 12_000);
+    return () => window.clearInterval(interval);
+  }, [isWhatsappApi, whatsappHistoryImporting]);
 
   useEffect(() => {
     if (!isWhatsappApi || !whatsappOwnerJid.trim()) return;
@@ -2165,8 +2230,15 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
           role="listbox"
           aria-label={t('sidebarDemo.navChannels')}
         >
+          {isWhatsappApi && whatsappHistoryImporting ? (
+            <div className="border-b border-[#128c7e]/20 bg-[#128c7e]/10 px-4 py-2 text-center text-xs text-[#075e54] dark:text-[#25d366]">
+              {t('adminCanales.whatsappImportingHistoryBackground')}
+            </div>
+          ) : null}
           {isWhatsappApi && whatsappLoadState === 'loading' && conversations.length === 0 ? (
-            <p className="px-4 py-8 text-center text-sm text-zinc-500">{t('adminCanales.whatsappLoadingChats')}</p>
+            <p className="px-4 py-8 text-center text-sm text-zinc-500">
+              {t('adminCanales.whatsappLoadingChats')}
+            </p>
           ) : null}
           {isWhatsappApi && whatsappLoadState === 'error' ? (
             <p className="px-4 py-8 text-center text-sm text-red-600 dark:text-red-400">

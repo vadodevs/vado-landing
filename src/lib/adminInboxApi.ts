@@ -1,4 +1,4 @@
-import { getAdminAccessToken } from '@/lib/adminAuth';
+import { adminAuthorizedFetch, getAdminAccessToken } from '@/lib/adminAuth';
 import { getApiBaseUrl } from '@/lib/apiBaseUrl';
 
 export type InboxChannel = 'whatsapp' | 'facebook' | 'instagram';
@@ -106,17 +106,17 @@ async function adminInboxRequest<T>(
   if (!token) return { ok: false, reason: 'no-auth' };
 
   try {
-    const res = await fetch(`${base}${path}`, {
+    const res = await adminAuthorizedFetch(`${base}${path}`, {
       cache: 'no-store',
       ...init,
       headers: {
         ...(init?.headers ?? {}),
-        Authorization: `Bearer ${token}`,
         'Cache-Control': 'no-cache',
         Pragma: 'no-cache',
         ...(init?.body ? { 'Content-Type': 'application/json' } : {}),
       },
     });
+    if (!res) return { ok: false, reason: 'no-auth' };
     const data = (await res.json().catch(() => ({}))) as T & { message?: string };
     if (res.ok) {
       return { ok: true, data: data as T };
@@ -329,50 +329,57 @@ export function relinkWhatsappForHistory(): Promise<
   }>('/admin/inbox/whatsapp/relink-for-history', { method: 'POST' });
 }
 
+export type WhatsappHistoryImportStatus = {
+  running: boolean
+  phase: 'idle' | 'waiting' | 'syncing' | 'done' | 'error'
+  evolutionChatCount: number
+  inboxTotal: number
+  messagesImported: number
+  startedAt: number
+  finishedAt: number
+  error: string | null
+};
+
 export function importWhatsappHistoryAfterLink(): Promise<
   AdminInboxResult<{
-    connected: boolean
-    chatsFromApi: number
-    messagesImported: number
-    olderPagesRequested: number
-    total: number
-    evolutionChatCount: number
-    waitedMs: number
+    started: boolean
+    alreadyRunning: boolean
+    background: true
+    status: WhatsappHistoryImportStatus
   }>
 > {
   return adminInboxRequest<{
-    connected: boolean
-    chatsFromApi: number
-    messagesImported: number
-    olderPagesRequested: number
-    total: number
-    evolutionChatCount: number
-    waitedMs: number
+    started: boolean
+    alreadyRunning: boolean
+    background: true
+    status: WhatsappHistoryImportStatus
   }>('/admin/inbox/whatsapp/import-history-after-link', { method: 'POST' });
+}
+
+export function fetchWhatsappHistoryImportStatus(): Promise<
+  AdminInboxResult<WhatsappHistoryImportStatus>
+> {
+  return adminInboxRequest<WhatsappHistoryImportStatus>(
+    '/admin/inbox/whatsapp/history-import-status',
+  );
 }
 
 export function resyncWhatsappHistory(): Promise<
   AdminInboxResult<{
-    restarted: boolean
-    connected: boolean
-    chatsFromApi: number
-    messagesImported: number
-    olderPagesRequested: number
-    total: number
+    started: boolean
+    alreadyRunning: boolean
+    background: true
+    status: WhatsappHistoryImportStatus
     historyPullSupported: boolean
     requiresRelink?: boolean
-    evolutionChatCount?: number
   }>
 > {
   return adminInboxRequest<{
-    restarted: boolean
-    connected: boolean
-    chatsFromApi: number
-    messagesImported: number
-    olderPagesRequested: number
-    total: number
+    started: boolean
+    alreadyRunning: boolean
+    background: true
+    status: WhatsappHistoryImportStatus
     historyPullSupported: boolean
     requiresRelink?: boolean
-    evolutionChatCount?: number
   }>('/admin/inbox/whatsapp/resync-history', { method: 'POST' });
 }
