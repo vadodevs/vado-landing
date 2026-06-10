@@ -98,6 +98,7 @@ import { flushInboxAiSettingsSync } from '@/lib/inboxAiSettingsSync';
 import { triggerInboxAutoReply } from '@/lib/inboxAiSettingsApi';
 import { loadInboxAutopilotConfig } from '@/lib/inboxAutopilotConfig';
 import { loadInboxBotConfig } from '@/lib/inboxBotConfig';
+import { loadInboxLlmConfig } from '@/lib/inboxLlmConfig';
 import {
   applyInboxReadState,
   markInboxConversationReadLocal,
@@ -1432,6 +1433,7 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
     flushInboxAiSettingsSync({
       autopilot: loadInboxAutopilotConfig(),
       bot: loadInboxBotConfig(),
+      llm: loadInboxLlmConfig(),
     });
   }, [isWhatsappApi, whatsappGate]);
 

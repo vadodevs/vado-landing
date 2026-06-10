@@ -7,6 +7,17 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
 import { scheduleInboxAiSettingsSync } from '@/lib/inboxAiSettingsSync';
+import { fetchInboxAiSettings, fetchInboxLlmOptions } from '@/lib/inboxAiSettingsApi';
+import { AdminSelect } from '@/components/app/AdminSelect';
+import {
+  DEFAULT_INBOX_LLM_CONFIG,
+  loadInboxLlmConfig,
+  parseInboxLlmConfig,
+  saveInboxLlmConfig,
+  type InboxLlmConfig,
+  type InboxLlmProviderId,
+  type InboxLlmProviderOption,
+} from '@/lib/inboxLlmConfig';
 import {
   loadInboxAutopilotConfig,
   saveInboxAutopilotConfig,
@@ -77,10 +88,36 @@ function optionButtonClass(selected: boolean): string {
 export function AdminBotSettingsCard() {
   const { t } = useTranslation();
   const [config, setConfig] = useState<InboxBotConfig>(() => loadInboxBotConfig());
+  const [llmConfig, setLlmConfig] = useState<InboxLlmConfig>(() => loadInboxLlmConfig());
+  const [llmProviders, setLlmProviders] = useState<InboxLlmProviderOption[]>([]);
+  const [llmOptionsError, setLlmOptionsError] = useState<string | null>(null);
   const [savedFlash, setSavedFlash] = useState(false);
 
   useEffect(() => {
+    void (async () => {
+      const [settingsRes, optionsRes] = await Promise.all([
+        fetchInboxAiSettings(),
+        fetchInboxLlmOptions(),
+      ]);
+      if (settingsRes.ok && settingsRes.data.llm) {
+        const parsed = parseInboxLlmConfig(settingsRes.data.llm);
+        setLlmConfig(parsed);
+        saveInboxLlmConfig(parsed);
+      }
+      if (optionsRes.ok) {
+        setLlmProviders(optionsRes.data.providers);
+        setLlmOptionsError(null);
+        const active = parseInboxLlmConfig(optionsRes.data.active);
+        setLlmConfig((prev) => (prev.model ? prev : active));
+      } else if (optionsRes.reason === 'http') {
+        setLlmOptionsError(optionsRes.message ?? t('adminSettings.botLlmOptionsError'));
+      }
+    })();
+  }, [t]);
+
+  useEffect(() => {
     saveInboxBotConfig(config);
+    saveInboxLlmConfig(llmConfig);
     let autopilot = loadInboxAutopilotConfig();
     if (config.enabled && !autopilot.channels.whatsapp) {
       autopilot = {
@@ -89,11 +126,11 @@ export function AdminBotSettingsCard() {
       };
       saveInboxAutopilotConfig(autopilot);
     }
-    scheduleInboxAiSettingsSync({ bot: config, autopilot });
+    scheduleInboxAiSettingsSync({ bot: config, autopilot, llm: llmConfig });
     setSavedFlash(true);
     const timer = window.setTimeout(() => setSavedFlash(false), 2000);
     return () => window.clearTimeout(timer);
-  }, [config]);
+  }, [config, llmConfig]);
 
   const patch = (partial: Partial<InboxBotConfig>) => {
     setConfig((prev) => ({ ...prev, ...partial }));
@@ -101,7 +138,36 @@ export function AdminBotSettingsCard() {
 
   const resetDefaults = () => {
     setConfig({ ...DEFAULT_INBOX_BOT_CONFIG });
+    setLlmConfig({ ...DEFAULT_INBOX_LLM_CONFIG });
   };
+
+  const activeLlmProvider =
+    llmProviders.find((p) => p.id === llmConfig.provider) ??
+    llmProviders.find((p) => p.available) ??
+    null;
+
+  const llmModelOptions = useMemo(
+    () =>
+      (activeLlmProvider?.models ?? []).map((m) => ({
+        value: m.id,
+        label: m.label,
+      })),
+    [activeLlmProvider],
+  );
+
+  const patchLlm = (partial: Partial<InboxLlmConfig>) => {
+    setLlmConfig((prev) => {
+      const next = { ...prev, ...partial };
+      if (partial.provider && partial.provider !== prev.provider) {
+        const providerMeta = llmProviders.find((p) => p.id === partial.provider);
+        const firstModel = providerMeta?.models[0]?.id;
+        if (firstModel) next.model = firstModel;
+      }
+      return next;
+    });
+  };
+
+  const llmProviderIds: InboxLlmProviderId[] = ['anthropic', 'ollama'];
 
   const previewText = useMemo(
     () =>
@@ -184,6 +250,71 @@ export function AdminBotSettingsCard() {
               className="h-10 max-w-md"
             />
             <p className="text-xs text-muted-foreground">{t('adminSettings.botDisplayNameHint')}</p>
+          </div>
+
+          <div className="rounded-xl border border-border/80 bg-muted/15 p-4">
+            <p className="text-sm font-medium text-foreground">{t('adminSettings.botLlmTitle')}</p>
+            <p className="mt-1 text-xs text-muted-foreground">{t('adminSettings.botLlmHint')}</p>
+
+            <div className="mt-3 flex flex-wrap gap-2">
+              {llmProviderIds.map((providerId) => {
+                const meta = llmProviders.find((p) => p.id === providerId);
+                const on = llmConfig.provider === providerId;
+                const disabled = meta != null && !meta.available;
+                return (
+                  <button
+                    key={providerId}
+                    type="button"
+                    disabled={disabled}
+                    onClick={() => patchLlm({ provider: providerId })}
+                    className={cn(
+                      optionButtonClass(on),
+                      disabled && 'cursor-not-allowed opacity-45',
+                    )}
+                    aria-pressed={on}
+                    title={meta?.unavailableReason ?? undefined}
+                  >
+                    {providerId === 'anthropic'
+                      ? t('adminSettings.botLlmProviderAnthropic')
+                      : t('adminSettings.botLlmProviderOllama')}
+                  </button>
+                );
+              })}
+            </div>
+
+            {activeLlmProvider && !activeLlmProvider.available && activeLlmProvider.unavailableReason ? (
+              <p className="mt-2 text-xs text-amber-700 dark:text-amber-400">
+                {activeLlmProvider.unavailableReason}
+              </p>
+            ) : null}
+
+            {llmModelOptions.length > 0 ? (
+              <div className="mt-3 max-w-md space-y-1.5">
+                <Label htmlFor="bot-llm-model">{t('adminSettings.botLlmModelLabel')}</Label>
+                <AdminSelect
+                  id="bot-llm-model"
+                  value={llmConfig.model}
+                  onValueChange={(model) => patchLlm({ model })}
+                  options={llmModelOptions}
+                  aria-label={t('adminSettings.botLlmModelLabel')}
+                  triggerClassName="h-10 w-full max-w-md"
+                />
+              </div>
+            ) : null}
+
+            {llmOptionsError ? (
+              <p className="mt-2 text-xs text-red-700 dark:text-red-400">{llmOptionsError}</p>
+            ) : null}
+
+            <p className="mt-2 text-xs text-muted-foreground">
+              {t('adminSettings.botLlmActive', {
+                provider:
+                  llmConfig.provider === 'ollama'
+                    ? t('adminSettings.botLlmProviderOllama')
+                    : t('adminSettings.botLlmProviderAnthropic'),
+                model: llmConfig.model,
+              })}
+            </p>
           </div>
 
           <div>

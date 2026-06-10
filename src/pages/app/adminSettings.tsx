@@ -9,6 +9,7 @@ import { getStoredAppTheme, type AppThemeMode } from '@/lib/appTheme';
 import { flushInboxAiSettingsSync } from '@/lib/inboxAiSettingsSync';
 import { loadInboxAutopilotConfig } from '@/lib/inboxAutopilotConfig';
 import { loadInboxBotConfig } from '@/lib/inboxBotConfig';
+import { loadInboxLlmConfig } from '@/lib/inboxLlmConfig';
 
 export default function AppAdminSettings() {
   const { t } = useTranslation();
@@ -18,6 +19,7 @@ export default function AppAdminSettings() {
     flushInboxAiSettingsSync({
       autopilot: loadInboxAutopilotConfig(),
       bot: loadInboxBotConfig(),
+      llm: loadInboxLlmConfig(),
     });
   }, []);
 

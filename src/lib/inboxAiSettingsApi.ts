@@ -1,10 +1,13 @@
 import { adminAuthorizedFetch, getAdminAccessToken } from '@/lib/adminAuth';
+import type { InboxLlmOptionsResponse } from '@/lib/inboxLlmConfig';
 import type { InboxAutopilotConfig } from '@/lib/inboxAutopilotConfig';
 import type { InboxBotConfig } from '@/lib/inboxBotConfig';
+import type { InboxLlmConfig } from '@/lib/inboxLlmConfig';
 
 export type InboxAiSettingsPayload = {
   autopilot: InboxAutopilotConfig;
   bot: InboxBotConfig;
+  llm?: InboxLlmConfig;
   updatedAt?: string;
 };
 
@@ -53,11 +56,16 @@ export function fetchInboxAiSettings(): Promise<InboxAiSettingsResult<InboxAiSet
 export function saveInboxAiSettings(payload: {
   autopilot?: InboxAutopilotConfig;
   bot?: InboxBotConfig;
+  llm?: InboxLlmConfig;
 }): Promise<InboxAiSettingsResult<InboxAiSettingsPayload>> {
   return inboxAiRequest<InboxAiSettingsPayload>('/admin/inbox/ai-settings', {
     method: 'POST',
     body: JSON.stringify(payload),
   });
+}
+
+export function fetchInboxLlmOptions(): Promise<InboxAiSettingsResult<InboxLlmOptionsResponse>> {
+  return inboxAiRequest<InboxLlmOptionsResponse>('/admin/inbox/ai-settings/llm-options');
 }
 
 export function triggerInboxAutoReply(

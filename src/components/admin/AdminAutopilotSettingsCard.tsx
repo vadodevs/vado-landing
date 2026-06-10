@@ -13,6 +13,7 @@ import {
   type InboxAppointmentPrimaryToggleId,
 } from '@/lib/inboxAppointmentTopics';
 import { loadInboxBotConfig } from '@/lib/inboxBotConfig';
+import { loadInboxLlmConfig } from '@/lib/inboxLlmConfig';
 import {
   AUTOPILOT_TIMEZONE_OPTIONS,
   AUTOPILOT_WEEKDAYS,
@@ -61,7 +62,11 @@ export function AdminAutopilotSettingsCard() {
 
   useEffect(() => {
     saveInboxAutopilotConfig(config);
-    scheduleInboxAiSettingsSync({ autopilot: config, bot: loadInboxBotConfig() });
+    scheduleInboxAiSettingsSync({
+      autopilot: config,
+      bot: loadInboxBotConfig(),
+      llm: loadInboxLlmConfig(),
+    });
     setSavedFlash(true);
     const timer = window.setTimeout(() => setSavedFlash(false), 2000);
     return () => window.clearTimeout(timer);
