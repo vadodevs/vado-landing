@@ -200,15 +200,6 @@ function MobileMenuContent({ onLinkClick }: { onLinkClick?: () => void }) {
       </div>
 
       <div className="border-border mt-auto flex flex-col gap-2 border-t p-4">
-        <Link href={path('/login')} onClick={onLinkClick} className="block">
-          <Button
-            variant="outline"
-            className="h-12 w-full rounded-xl text-base font-semibold"
-            size="lg"
-          >
-            {t('nav.login')}
-          </Button>
-        </Link>
         <Link href={path('/contact')} onClick={onLinkClick} className="block">
           <Button className="h-12 w-full rounded-xl text-base font-semibold" size="lg">
             {t('nav.contactUs')}
@@ -235,9 +226,7 @@ export function Navbar() {
   const companiaBase = path('/company');
   const isCompaniaActive = loc.startsWith(companiaBase);
   const contactoPath = path('/contact');
-  const loginPath = path('/login');
   const isContactoActive = loc === contactoPath;
-  const isLoginActive = loc === loginPath;
 
   return (
     <header className="bg-background sticky top-0 z-40 w-full border-b p-3">
@@ -378,15 +367,7 @@ export function Navbar() {
             </NavigationMenuList>
           </NavigationMenu>
           <LangSwitcher className="ml-1 shrink-0" />
-          <div className="ml-2 flex shrink-0 items-center gap-2">
-            <Button
-              asChild
-              size="default"
-              variant={isLoginActive ? 'default' : 'outline'}
-              className={cn(isLoginActive && 'shadow-sm')}
-            >
-              <Link href={loginPath}>{t('nav.login')}</Link>
-            </Button>
+          <div className="ml-2 flex shrink-0 items-center">
             <Button
               asChild
               size="default"
