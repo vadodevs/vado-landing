@@ -35,6 +35,14 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://vadodevs.com/es/services/it-staff-agumentation</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://vadodevs.com/es/services/it-staff-agumentation"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://vadodevs.com/en/services/it-staff-agumentation"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://vadodevs.com/es/services/it-staff-agumentation"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://vadodevs.com/es/our-work</loc>
     <xhtml:link rel="alternate" hreflang="es" href="https://vadodevs.com/es/our-work"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://vadodevs.com/en/our-work"/>

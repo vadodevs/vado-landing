@@ -1,7 +1,8 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
-@custom-variant dark (&:is(.dark *));
+/* Activa `dark:` para nuestro scope interno (.app-dark) sin afectar la landing. */
+@custom-variant dark (&:is(.dark *, .app-dark *));
 
 @theme inline {
   --font-sans: 'Poppins', ui-sans-serif, system-ui, sans-serif;
@@ -80,40 +81,6 @@
   --sidebar-ring: oklch(0.708 0 0);
 }
 
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: #3390ff;
-  --primary-foreground: #ffffff;
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
-}
-
 @keyframes marquee {
   from {
     transform: translateX(0);
@@ -132,9 +99,276 @@
   fill: currentColor;
 }
 
+/* Tiptap: editor de ofertas (admin) */
+.tiptap-prose .ProseMirror p {
+  margin: 0.35em 0;
+  min-height: 1.25em;
+}
+.tiptap-prose .ProseMirror ul {
+  margin: 0.35em 0;
+  padding-left: 1.25rem;
+  list-style: disc;
+}
+.tiptap-prose .ProseMirror li p {
+  margin: 0.15em 0;
+}
+.tiptap-prose .ProseMirror p.is-editor-empty:first-child::before {
+  color: #a1a1aa;
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+.tiptap-prose .ProseMirror .is-editor-empty p:first-of-type::before,
+.tiptap-prose .ProseMirror:empty::before,
+.tiptap-prose p.is-editor-empty::before {
+  color: #a1a1aa;
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+/* Placeholder Tiptap v2: primer párrafo vacío */
+.tiptap-prose p.is-editor-empty::before {
+  content: attr(data-placeholder);
+}
+/* Contenido HTML (Tiptap) en viste previa / dev / admin: asegurar bloques y salto de línea */
+.job-overview-display {
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  white-space: normal;
+}
+.job-overview-display p,
+.job-overview-display li,
+.job-overview-display ul,
+.job-overview-display ol {
+  display: block;
+}
+.job-overview-display ul,
+.job-overview-display ol {
+  list-style-position: outside;
+  padding-left: 1.25rem;
+}
+.job-overview-display ul {
+  list-style-type: disc;
+}
+.job-overview-display ol {
+  list-style-type: decimal;
+}
+.job-overview-display li p {
+  display: block;
+  margin: 0.2em 0;
+}
+.job-overview-display li {
+  display: list-item;
+  margin: 0.25em 0;
+}
+.job-overview-display strong {
+  font-weight: 700;
+}
+.job-overview-display u {
+  text-decoration: underline;
+}
+
+/* Tema oscuro SOLO para el área AppShell (admin/dev/company). */
+.app-dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --border: oklch(0.33 0 0);
+  --input: oklch(0.33 0 0);
+  --ring: oklch(0.556 0 0);
+}
+.app-dark .bg-white {
+  background-color: rgb(24 24 27) !important;
+}
+.app-dark .bg-zinc-50,
+.app-dark .bg-zinc-50\/50,
+.app-dark .bg-zinc-50\/80,
+.app-dark .bg-zinc-50\/95,
+.app-dark .bg-zinc-100,
+.app-dark .bg-zinc-100\/80,
+.app-dark .bg-zinc-200,
+.app-dark .bg-zinc-200\/98 {
+  background-color: rgb(39 39 42) !important;
+}
+.app-dark .bg-slate-50,
+.app-dark .bg-slate-100,
+.app-dark .bg-slate-100\/80,
+.app-dark .bg-gray-50,
+.app-dark .bg-gray-100,
+.app-dark .bg-gray-100\/80,
+.app-dark .bg-neutral-50,
+.app-dark .bg-neutral-100,
+.app-dark .bg-neutral-100\/80,
+.app-dark .bg-stone-50,
+.app-dark .bg-stone-100,
+.app-dark .bg-stone-100\/80 {
+  background-color: rgb(39 39 42) !important;
+}
+.app-dark .border-zinc-100,
+.app-dark .border-zinc-200,
+.app-dark .border-zinc-200\/80,
+.app-dark .border-zinc-200\/90,
+.app-dark .border-zinc-300,
+.app-dark .border-zinc-300\/70,
+.app-dark .border-zinc-300\/80,
+.app-dark .border-zinc-300\/90,
+.app-dark .border-slate-200,
+.app-dark .border-slate-300,
+.app-dark .border-slate-300\/80,
+.app-dark .border-gray-200,
+.app-dark .border-gray-300,
+.app-dark .border-neutral-200,
+.app-dark .border-neutral-300,
+.app-dark .border-stone-200,
+.app-dark .border-stone-300 {
+  border-color: rgb(63 63 70) !important;
+}
+.app-dark .text-zinc-900,
+.app-dark .text-\[\#0f172a\],
+.app-dark .text-\[\#262835\],
+.app-dark .text-zinc-950,
+.app-dark .text-zinc-800,
+.app-dark .text-zinc-700,
+.app-dark .text-zinc-600,
+.app-dark .text-slate-900,
+.app-dark .text-slate-800,
+.app-dark .text-slate-700,
+.app-dark .text-slate-600,
+.app-dark .text-gray-900,
+.app-dark .text-gray-800,
+.app-dark .text-gray-700,
+.app-dark .text-gray-600,
+.app-dark .text-neutral-900,
+.app-dark .text-neutral-800,
+.app-dark .text-neutral-700,
+.app-dark .text-neutral-600,
+.app-dark .text-stone-900,
+.app-dark .text-stone-800,
+.app-dark .text-stone-700,
+.app-dark .text-stone-600 {
+  color: rgb(228 228 231) !important;
+}
+.app-dark .text-zinc-500,
+.app-dark .text-zinc-400,
+.app-dark .text-slate-500,
+.app-dark .text-slate-400,
+.app-dark .text-gray-500,
+.app-dark .text-gray-400,
+.app-dark .text-neutral-500,
+.app-dark .text-neutral-400,
+.app-dark .text-stone-500,
+.app-dark .text-stone-400 {
+  color: rgb(161 161 170) !important;
+}
+
+/* Dev dashboard: mejorar contraste en lista de nuevas aperturas (modo oscuro). */
+.app-dark .dev-job-list-item {
+  background-color: rgb(24 24 27) !important;
+  border-color: rgb(63 63 70) !important;
+}
+.app-dark .dev-job-list-item:hover {
+  border-color: rgb(82 82 91) !important;
+}
+.app-dark .dev-job-list-item-selected {
+  background-color: rgb(8 47 73) !important;
+  border-color: rgb(14 116 144) !important;
+  box-shadow: inset 0 0 0 1px rgba(56, 189, 248, 0.28) !important;
+}
+.app-dark .dev-job-list-view-badge {
+  background-color: rgb(39 39 42) !important;
+  border-color: rgb(82 82 91) !important;
+  color: rgb(228 228 231) !important;
+}
+
+/*
+ * Native selects (app panel): evitar fondo forzado cuando el markup usa `bg-transparent`
+ * dentro de un label — antes `.app-dark select` ganaba a `.bg-transparent` y el rectángulo
+ * más oscuro que la barra de filtros producía halos / AA raro en el texto.
+ */
+.app-dark select {
+  color: rgb(228 228 231);
+  border-color: rgb(63 63 70);
+  text-shadow: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.app-dark select:not([class*='bg-']) {
+  background-color: rgb(24 24 27);
+}
+
+.app-dark select option,
+.app-dark select optgroup {
+  background-color: rgb(24 24 27);
+  color: rgb(228 228 231);
+}
+
+.app-dark label:has(> select) {
+  text-shadow: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Inputs/textarea shadcn: shadow-xs en oscuro deja un halo tenue en el borde del texto */
+.app-dark input[data-slot='input'],
+.app-dark textarea[data-slot='textarea'] {
+  box-shadow: none !important;
+}
+
+/* Scrollbars — panel admin (.app-dark): finos, zinc oscuro, sin track blanco */
+.app-dark,
+.app-dark * {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(63 63 70 / 0.85) transparent;
+}
+
+.app-dark::-webkit-scrollbar,
+.app-dark *::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.app-dark::-webkit-scrollbar-track,
+.app-dark *::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.app-dark::-webkit-scrollbar-thumb,
+.app-dark *::-webkit-scrollbar-thumb {
+  background-color: rgb(63 63 70 / 0.9);
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.app-dark::-webkit-scrollbar-thumb:hover,
+.app-dark *::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(82 82 91 / 0.95);
+}
+
+.app-dark::-webkit-scrollbar-corner,
+.app-dark *::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
+  }
+  html {
+    font-family: var(--font-sans);
   }
   body {
     @apply bg-background text-foreground overflow-x-hidden font-sans;

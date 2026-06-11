@@ -28,5 +28,3 @@ export const ARTICULO_PAGES: Record<string, ComponentType> = {
   'benefits-of-nearshore-engineering': DesbloqueandoPotencialIngenieriaNearshore,
   'land-your-dream-software-job': ConsigueTrabajoSuenosEntrevistaDesarrollo,
 };
-
-export const ARTICULO_SLUGS = Object.keys(ARTICULO_PAGES);

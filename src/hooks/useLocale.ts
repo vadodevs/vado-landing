@@ -1,5 +1,5 @@
+import { useCallback, useLayoutEffect } from 'react'
 import { useLocation } from 'wouter'
-import { useLayoutEffect } from 'react'
 import i18n, { defaultLocale, isLocale, type Locale } from '@/app/i18n'
 
 /**
@@ -19,10 +19,10 @@ export function useLocale(): { locale: Locale; path: (p: string) => string } {
     }
   }, [locale])
 
-  const path = (p: string) => {
+  const path = useCallback((p: string) => {
     const normalized = p.startsWith('/') ? p : p ? `/${p}` : ''
     return `/${locale}${normalized}`
-  }
+  }, [locale])
 
   return { locale, path }
 }

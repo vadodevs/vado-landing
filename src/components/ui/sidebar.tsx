@@ -27,6 +27,20 @@ import {
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
+
+function getSidebarOpenFromCookie(): boolean | null {
+  if (typeof document === "undefined") return null
+  const prefix = `${SIDEBAR_COOKIE_NAME}=`
+  const cookies = document.cookie.split(";").map((c) => c.trim())
+  for (const row of cookies) {
+    if (row.startsWith(prefix)) {
+      const v = row.slice(prefix.length)
+      if (v === "true") return true
+      if (v === "false") return false
+    }
+  }
+  return null
+}
 const SIDEBAR_WIDTH = "16rem"
 const SIDEBAR_WIDTH_MOBILE = "18rem"
 const SIDEBAR_WIDTH_ICON = "3rem"
@@ -71,7 +85,12 @@ function SidebarProvider({
 
   // This is the internal state of the sidebar.
   // We use openProp and setOpenProp for control from outside the component.
-  const [_open, _setOpen] = React.useState(defaultOpen)
+  // Lee la cookie al montar: cada página usa su propio `<AppShell>` y al navegar el provider
+  // se vuelve a montar; sin esto, `defaultOpen` reiniciaría el sidebar a expandido.
+  const [_open, _setOpen] = React.useState(() => {
+    const stored = getSidebarOpenFromCookie()
+    return stored !== null ? stored : defaultOpen
+  })
   const open = openProp ?? _open
   const setOpen = React.useCallback(
     (value: boolean | ((value: boolean) => boolean)) => {
@@ -156,12 +175,15 @@ function Sidebar({
   variant = "sidebar",
   collapsible = "offcanvas",
   className,
+  sheetClassName,
   children,
   ...props
 }: React.ComponentProps<"div"> & {
   side?: "left" | "right"
   variant?: "sidebar" | "floating" | "inset"
   collapsible?: "offcanvas" | "icon" | "none"
+  /** Solo móvil: clases en `SheetContent` (el drawer se monta en portal fuera del árbol del layout). */
+  sheetClassName?: string
 }) {
   const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
 
@@ -187,7 +209,11 @@ function Sidebar({
           data-sidebar="sidebar"
           data-slot="sidebar"
           data-mobile="true"
-          className="bg-sidebar text-sidebar-foreground w-(--sidebar-width) p-0 [&>button]:hidden"
+          className={cn(
+            /* AppShell pinta cristal encima; bg-sidebar en app-dark seguía siendo casi blanco → texto blanco ilegible */
+            "bg-transparent text-sidebar-foreground w-(--sidebar-width) p-0 [&>button]:hidden",
+            sheetClassName
+          )}
           style={
             {
               "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
@@ -235,8 +261,8 @@ function Sidebar({
             : "right-0 group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]",
           // Adjust the padding for floating and inset variants.
           variant === "floating" || variant === "inset"
-            ? "p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(4))+2px)]"
-            : "group-data-[collapsible=icon]:w-(--sidebar-width-icon) group-data-[side=left]:border-r group-data-[side=right]:border-l",
+            ? "p-2 group-data-[collapsible=icon]:p-1 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(4))+2px)]"
+            : "group-data-[collapsible=icon]:p-1 group-data-[collapsible=icon]:w-(--sidebar-width-icon) group-data-[side=left]:border-r group-data-[side=right]:border-l",
           className
         )}
         {...props}
@@ -244,7 +270,7 @@ function Sidebar({
         <div
           data-sidebar="sidebar"
           data-slot="sidebar-inner"
-          className="bg-sidebar group-data-[variant=floating]:border-sidebar-border flex h-full w-full flex-col group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:shadow-sm"
+          className="bg-transparent group-data-[variant=floating]:border-sidebar-border flex h-full min-h-0 w-full flex-col overflow-hidden group-data-[variant=floating]:rounded-xl group-data-[variant=floating]:border group-data-[variant=floating]:shadow-sm"
         >
           {children}
         </div>
@@ -309,8 +335,9 @@ function SidebarInset({ className, ...props }: React.ComponentProps<"main">) {
     <main
       data-slot="sidebar-inset"
       className={cn(
-        "bg-background relative flex w-full flex-1 flex-col",
+        "bg-background relative flex w-full min-w-0 flex-1 flex-col",
         "md:peer-data-[variant=inset]:m-2 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:shadow-sm md:peer-data-[variant=inset]:peer-data-[state=collapsed]:ml-2",
+        "md:peer-data-[variant=floating]:ml-0 md:peer-data-[variant=floating]:rounded-xl",
         className
       )}
       {...props}
@@ -606,10 +633,8 @@ function SidebarMenuSkeleton({
 }: React.ComponentProps<"div"> & {
   showIcon?: boolean
 }) {
-  // Random width between 50 to 90%.
-  const width = React.useMemo(() => {
-    return `${Math.floor(Math.random() * 40) + 50}%`
-  }, [])
+  /** Fixed width keeps skeleton layout stable and satisfies render purity rules. */
+  const width = "70%"
 
   return (
     <div
@@ -698,6 +723,8 @@ function SidebarMenuSubButton({
   )
 }
 
+/* useSidebar is part of the public sidebar API (shadcn pattern). */
+/* eslint-disable react-refresh/only-export-components */
 export {
   Sidebar,
   SidebarContent,
