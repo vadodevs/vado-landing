@@ -321,6 +321,8 @@
     "myEvolveBody": "Espacio en preparación para el flujo My Evolve. Aquí irá la experiencia dedicada de leads.",
     "evolveLoading": "Cargando contactos de Evolve Grind…",
     "evolveRefresh": "Actualizar",
+    "evolveLastSync": "Última sincronización: {{time}}",
+    "evolveSyncInProgress": "Sincronizando en segundo plano…",
     "evolveCount": "{{count}} contacto(s) en Evolve Grind.",
     "evolveFilters": "Filtros",
     "evolveQualAll": "Calificación: todos",

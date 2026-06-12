@@ -14,6 +14,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { EvolveLeadCard } from '@/components/admin/EvolveLeadCard';
 import { EvolveLeadDetailDialog } from '@/components/admin/EvolveLeadDetailDialog';
+import { EvolveLeadsSyncStatus } from '@/components/admin/EvolveLeadsSyncStatus';
 import { AdminSelect, type AdminSelectOption } from '@/components/app/AdminSelect';
 import { AdminTablePagination } from '@/components/app/AdminTablePagination';
 import { AppShell } from '@/components/layout/app/AppShell';
@@ -23,6 +24,7 @@ import {
   fetchEvolveLeads,
   type EvolveLeadRow,
 } from '@/lib/adminEvolveLeadsApi';
+import { useEvolveLeadsAutoSync } from '@/lib/evolveLeadsAutoSync';
 import { ADMIN_PAGE_SIZE, slicePage } from '@/lib/adminPagination';
 import { ADMIN_FILTER_BADGE_CLASS, ADMIN_FILTER_CONTROL_CLASS } from '@/lib/adminFilterUi';
 import {
@@ -63,6 +65,8 @@ export default function AppAdminLeadsMyEvolve() {
   const [copiedEmail, setCopiedEmail] = useState<string | null>(null);
   const [selected, setSelected] = useState<EvolveLeadRow | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
+  const [lastSyncedAt, setLastSyncedAt] = useState<Date | null>(null);
+  const [backgroundSyncing, setBackgroundSyncing] = useState(false);
 
   const pageSize = viewMode === 'cards' ? CARD_PAGE_SIZE : ADMIN_PAGE_SIZE;
 
@@ -92,14 +96,22 @@ export default function AppAdminLeadsMyEvolve() {
     [t],
   );
 
-  const loadLeads = useCallback(async () => {
-    setLoadState('loading');
-    setErrorMessage(null);
+  const loadLeads = useCallback(async (opts?: { background?: boolean }) => {
+    const background = opts?.background === true;
+    if (!background) {
+      setLoadState('loading');
+      setErrorMessage(null);
+    } else {
+      setBackgroundSyncing(true);
+    }
     const res = await fetchEvolveLeads({ includeMeetings: true });
+    if (background) setBackgroundSyncing(false);
     if (!res.ok) {
-      setLoadState('error');
-      setRows([]);
-      setTotal(0);
+      if (!background) {
+        setLoadState('error');
+        setRows([]);
+        setTotal(0);
+      }
       if (res.reason === 'no-config') {
         setErrorMessage(t('adminLeads.evolveErrorNoConfig'));
       } else if (res.reason === 'no-auth') {
@@ -112,11 +124,16 @@ export default function AppAdminLeadsMyEvolve() {
     setRows(res.data.contacts);
     setTotal(res.data.total);
     setLoadState('done');
+    setErrorMessage(null);
+    setLastSyncedAt(new Date());
   }, [t]);
 
   useEffect(() => {
     void loadLeads();
   }, [loadLeads]);
+
+  const backgroundSync = useCallback(() => loadLeads({ background: true }), [loadLeads]);
+  useEvolveLeadsAutoSync(backgroundSync);
 
   useEffect(() => {
     setPage(1);
@@ -242,21 +259,28 @@ export default function AppAdminLeadsMyEvolve() {
                     {t('adminLeads.evolveViewTable')}
                   </Button>
                 </div>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="h-8"
-                  disabled={loadState === 'loading'}
-                  onClick={() => void loadLeads()}
-                >
-                  {loadState === 'loading' ? (
-                    <Loader2 className="mr-1.5 size-3.5 animate-spin" aria-hidden />
-                  ) : (
-                    <RefreshCw className="mr-1.5 size-3.5" aria-hidden />
-                  )}
-                  {t('adminLeads.evolveRefresh')}
-                </Button>
+                <div className="flex shrink-0 flex-col items-end gap-0.5">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="h-8"
+                    disabled={loadState === 'loading' || backgroundSyncing}
+                    onClick={() => void loadLeads()}
+                  >
+                    {loadState === 'loading' ? (
+                      <Loader2 className="mr-1.5 size-3.5 animate-spin" aria-hidden />
+                    ) : (
+                      <RefreshCw className="mr-1.5 size-3.5" aria-hidden />
+                    )}
+                    {t('adminLeads.evolveRefresh')}
+                  </Button>
+                  <EvolveLeadsSyncStatus
+                    lastSyncedAt={lastSyncedAt}
+                    backgroundSyncing={backgroundSyncing}
+                    className="text-right"
+                  />
+                </div>
               </div>
             </div>
 
