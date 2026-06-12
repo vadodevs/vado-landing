@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { CalendarDays, Loader2, RefreshCw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { EvolveLeadDetailDialog } from '@/components/admin/EvolveLeadDetailDialog';
+import { EvolveLeadsSyncStatus } from '@/components/admin/EvolveLeadsSyncStatus';
 import { EvolveMeetingsCalendar } from '@/components/admin/EvolveMeetingsCalendar';
 import { AppShell } from '@/components/layout/app/AppShell';
 import { Button } from '@/components/ui/button';
@@ -11,6 +12,7 @@ import {
   type EvolveLeadRow,
   type EvolveMeetingEvent,
 } from '@/lib/adminEvolveLeadsApi';
+import { useEvolveLeadsAutoSync } from '@/lib/evolveLeadsAutoSync';
 import { calificacionBadgeClass } from '@/lib/evolveLeadUi';
 import {
   computeMeetingStats,
@@ -30,6 +32,8 @@ export default function AppAdminLeadsMyEvolveCalendar() {
   const [calendarMeetings, setCalendarMeetings] = useState<EvolveMeetingEvent[]>([]);
   const [dashboardMeetings, setDashboardMeetings] = useState<EvolveMeetingEvent[]>([]);
   const [dashboardLoadState, setDashboardLoadState] = useState<LoadState>('idle');
+  const [lastSyncedAt, setLastSyncedAt] = useState<Date | null>(null);
+  const [backgroundSyncing, setBackgroundSyncing] = useState(false);
   const [calendarMonth, setCalendarMonth] = useState(() => {
     const now = new Date();
     return { year: now.getFullYear(), month: now.getMonth() };
@@ -39,67 +43,101 @@ export default function AppAdminLeadsMyEvolveCalendar() {
   const [selected, setSelected] = useState<EvolveLeadRow | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
 
-  const loadLeads = useCallback(async () => {
-    setLeadsLoadState('loading');
-    const res = await fetchEvolveLeads({ includeMeetings: false });
-    if (!res.ok) {
-      setLeadsLoadState('error');
-      setRows([]);
+  const applyFetchError = useCallback(
+    (res: { reason: string; message?: string }, fallbackKey: string) => {
       if (res.reason === 'no-config') {
         setErrorMessage(t('adminLeads.evolveErrorNoConfig'));
       } else if (res.reason === 'no-auth') {
         setErrorMessage(t('adminLeads.evolveErrorNoAuth'));
       } else {
-        setErrorMessage(res.message?.trim() || t('adminLeads.evolveErrorGeneric'));
+        setErrorMessage(res.message?.trim() || t(fallbackKey));
       }
-      return;
-    }
-    setRows(res.data.contacts);
-    setLeadsLoadState('done');
-    setErrorMessage(null);
-  }, [t]);
+    },
+    [t],
+  );
 
-  const loadCalendarMeetings = useCallback(async () => {
-    setMeetingsLoadState('loading');
-    const { startMs, endMs } = monthRangeMs(calendarMonth.year, calendarMonth.month);
-    const res = await fetchEvolveMeetings({ startMs, endMs });
-    if (!res.ok) {
-      setCalendarMeetings([]);
-      setMeetingsLoadState('error');
-      if (res.reason === 'no-config') {
-        setErrorMessage(t('adminLeads.evolveErrorNoConfig'));
-      } else if (res.reason === 'no-auth') {
-        setErrorMessage(t('adminLeads.evolveErrorNoAuth'));
-      } else {
-        setErrorMessage(res.message?.trim() || t('adminLeads.evolveCalendarLoadError'));
+  const loadLeads = useCallback(
+    async (background: boolean) => {
+      if (!background) setLeadsLoadState('loading');
+      const res = await fetchEvolveLeads({ includeMeetings: false });
+      if (res.ok) {
+        setRows(res.data.contacts);
+        setLeadsLoadState('done');
+        return true;
       }
-      return;
-    }
-    setCalendarMeetings(res.data.meetings);
-    setMeetingsLoadState('done');
-  }, [calendarMonth.year, calendarMonth.month, t]);
+      if (!background) {
+        setRows([]);
+        setLeadsLoadState('error');
+        applyFetchError(res, 'adminLeads.evolveErrorGeneric');
+      }
+      return false;
+    },
+    [applyFetchError],
+  );
 
-  const loadDashboardMeetings = useCallback(async () => {
-    setDashboardLoadState('loading');
+  const loadCalendarMeetings = useCallback(
+    async (background: boolean) => {
+      if (!background) setMeetingsLoadState('loading');
+      const { startMs, endMs } = monthRangeMs(calendarMonth.year, calendarMonth.month);
+      const res = await fetchEvolveMeetings({ startMs, endMs });
+      if (res.ok) {
+        setCalendarMeetings(res.data.meetings);
+        setMeetingsLoadState('done');
+        return true;
+      }
+      if (!background) {
+        setCalendarMeetings([]);
+        setMeetingsLoadState('error');
+        applyFetchError(res, 'adminLeads.evolveCalendarLoadError');
+      }
+      return false;
+    },
+    [applyFetchError, calendarMonth.month, calendarMonth.year],
+  );
+
+  const loadDashboardMeetings = useCallback(async (background: boolean) => {
+    if (!background) setDashboardLoadState('loading');
     const { startMs, endMs } = dashboardFetchRange();
     const res = await fetchEvolveMeetings({ startMs, endMs });
-    if (!res.ok) {
+    if (res.ok) {
+      setDashboardMeetings(res.data.meetings);
+      setDashboardLoadState('done');
+      return true;
+    }
+    if (!background) {
       setDashboardMeetings([]);
       setDashboardLoadState('error');
-      return;
     }
-    setDashboardMeetings(res.data.meetings);
-    setDashboardLoadState('done');
+    return false;
   }, []);
 
-  useEffect(() => {
-    void loadLeads();
-    void loadDashboardMeetings();
-  }, [loadLeads, loadDashboardMeetings]);
+  const syncAll = useCallback(
+    async (opts?: { background?: boolean }) => {
+      const background = opts?.background === true;
+      if (!background) setErrorMessage(null);
+      else setBackgroundSyncing(true);
+
+      const [leadsOk, calendarOk, dashboardOk] = await Promise.all([
+        loadLeads(background),
+        loadCalendarMeetings(background),
+        loadDashboardMeetings(background),
+      ]);
+
+      if (background) setBackgroundSyncing(false);
+      if (leadsOk && calendarOk && dashboardOk) {
+        setErrorMessage(null);
+        setLastSyncedAt(new Date());
+      }
+    },
+    [loadCalendarMeetings, loadDashboardMeetings, loadLeads],
+  );
 
   useEffect(() => {
-    void loadCalendarMeetings();
-  }, [loadCalendarMeetings]);
+    void syncAll();
+  }, [syncAll]);
+
+  const backgroundSync = useCallback(() => syncAll({ background: true }), [syncAll]);
+  useEvolveLeadsAutoSync(backgroundSync);
 
   const openDetail = (lead: EvolveLeadRow) => {
     setSelected(lead);
@@ -183,25 +221,28 @@ export default function AppAdminLeadsMyEvolveCalendar() {
                   </p>
                 </div>
               </div>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="h-8"
-                disabled={loading}
-                onClick={() => {
-                  void loadLeads();
-                  void loadCalendarMeetings();
-                  void loadDashboardMeetings();
-                }}
-              >
-                {loading ? (
-                  <Loader2 className="mr-1.5 size-3.5 animate-spin" aria-hidden />
-                ) : (
-                  <RefreshCw className="mr-1.5 size-3.5" aria-hidden />
-                )}
-                {t('adminLeads.evolveRefresh')}
-              </Button>
+              <div className="flex shrink-0 flex-col items-end gap-0.5">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="h-8"
+                  disabled={loading || backgroundSyncing}
+                  onClick={() => void syncAll()}
+                >
+                  {loading ? (
+                    <Loader2 className="mr-1.5 size-3.5 animate-spin" aria-hidden />
+                  ) : (
+                    <RefreshCw className="mr-1.5 size-3.5" aria-hidden />
+                  )}
+                  {t('adminLeads.evolveRefresh')}
+                </Button>
+                <EvolveLeadsSyncStatus
+                  lastSyncedAt={lastSyncedAt}
+                  backgroundSyncing={backgroundSyncing}
+                  className="text-right"
+                />
+              </div>
             </div>
 
             {loading && calendarMeetings.length === 0 ? (

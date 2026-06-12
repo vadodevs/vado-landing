@@ -321,6 +321,8 @@
     "myEvolveBody": "Workspace in progress for the My Evolve leads flow.",
     "evolveLoading": "Loading Evolve Grind contacts…",
     "evolveRefresh": "Refresh",
+    "evolveLastSync": "Last sync: {{time}}",
+    "evolveSyncInProgress": "Syncing in background…",
     "evolveCount": "{{count}} contact(s) in Evolve Grind.",
     "evolveFilters": "Filters",
     "evolveQualAll": "Rating: all",
