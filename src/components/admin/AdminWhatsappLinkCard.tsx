@@ -11,6 +11,7 @@ import {
   relinkWhatsappForHistory,
   resyncWhatsappHistory,
   disconnectWhatsapp,
+  adminInboxErrorMessage,
   fetchWhatsappConnect,
   fetchWhatsappLinkStatus,
   type WhatsappConnectDto,
@@ -74,7 +75,7 @@ export function AdminWhatsappLinkCard() {
     } else if (res.reason === 'no-config') {
       setError(t('adminCanales.botErrorNoConfig'));
     } else {
-      setError(t('adminSettings.whatsappStatusError'));
+      setError(adminInboxErrorMessage(res, t, 'adminSettings.whatsappStatusError'));
     }
     return null;
   }, [t]);
@@ -88,7 +89,7 @@ export function AdminWhatsappLinkCard() {
       if (!shouldKickoffWhatsappHistoryImport(ownerJid)) return;
       void importWhatsappHistoryAfterLink().then((res) => {
         if (!res.ok) {
-          setError(t('adminSettings.whatsappConnectError'));
+          setError(adminInboxErrorMessage(res, t, 'adminSettings.whatsappConnectError'));
           setHistoryImportMessage(null);
         }
       });
@@ -140,11 +141,7 @@ export function AdminWhatsappLinkCard() {
     const res = await fetchWhatsappConnect();
     if (!res.ok) {
       setLinking(false);
-      if (res.reason === 'no-auth') {
-        setError(t('adminCanales.inboxAuthRequired'));
-      } else {
-        setError(t('adminSettings.whatsappConnectError'));
-      }
+      setError(adminInboxErrorMessage(res, t, 'adminSettings.whatsappConnectError'));
       return;
     }
     setConnectPayload(res.data);
@@ -165,7 +162,7 @@ export function AdminWhatsappLinkCard() {
     try {
       const res = await relinkWhatsappForHistory();
       if (!res.ok) {
-        setError(t('adminSettings.whatsappConnectError'));
+        setError(adminInboxErrorMessage(res, t, 'adminSettings.whatsappConnectError'));
         pendingHistoryImportRef.current = false;
         setLinking(false);
         return;
@@ -195,13 +192,13 @@ export function AdminWhatsappLinkCard() {
     try {
       const webhookRes = await configureWhatsappWebhook();
       if (!webhookRes.ok) {
-        setError(t('adminSettings.whatsappConnectError'));
+        setError(adminInboxErrorMessage(webhookRes, t, 'adminSettings.whatsappConnectError'));
         return;
       }
       setHistoryImportMessage(t('adminSettings.whatsappHistoryImportingBackground'));
       const resyncRes = await resyncWhatsappHistory();
       if (!resyncRes.ok) {
-        setError(t('adminSettings.whatsappConnectError'));
+        setError(adminInboxErrorMessage(resyncRes, t, 'adminSettings.whatsappConnectError'));
         setHistoryImportMessage(null);
         return;
       }
@@ -221,7 +218,7 @@ export function AdminWhatsappLinkCard() {
     const res = await disconnectWhatsapp();
     setDisconnecting(false);
     if (!res.ok) {
-      setError(t('adminSettings.whatsappDisconnectError'));
+      setError(adminInboxErrorMessage(res, t, 'adminSettings.whatsappDisconnectError'));
       return;
     }
     purgeWhatsappInboxLocalState(linkStatus?.ownerJid ?? '');

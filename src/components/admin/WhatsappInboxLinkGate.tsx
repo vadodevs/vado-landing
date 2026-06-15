@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { useLocale } from '@/hooks/useLocale';
 import { logoutAdmin } from '@/lib/adminAuth';
 import {
+  adminInboxErrorMessage,
   fetchWhatsappConnect,
   fetchWhatsappLinkStatus,
   type WhatsappConnectDto,
@@ -65,11 +66,7 @@ export function WhatsappInboxLinkGate({ gate, onRefreshLink }: Props) {
     const res = await fetchWhatsappConnect();
     if (!res.ok) {
       setLinking(false);
-      if (res.reason === 'no-auth') {
-        setError(t('adminCanales.inboxAuthRequired'));
-      } else {
-        setError(t('adminSettings.whatsappConnectError'));
-      }
+      setError(adminInboxErrorMessage(res, t, 'adminSettings.whatsappConnectError'));
       return;
     }
     setConnectPayload(res.data);

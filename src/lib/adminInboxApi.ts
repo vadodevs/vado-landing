@@ -85,6 +85,19 @@ export type AdminInboxResult<T> =
   | { ok: true; data: T }
   | { ok: false; reason: 'no-config' | 'no-auth' | 'http'; message?: string };
 
+/** User-facing error from an admin inbox API call (shows backend message when available). */
+export function adminInboxErrorMessage(
+  res: Extract<AdminInboxResult<unknown>, { ok: false }>,
+  t: (key: string) => string,
+  fallbackKey: string,
+): string {
+  if (res.reason === 'no-auth') return t('adminCanales.inboxAuthRequired');
+  if (res.reason === 'no-config') return t('adminCanales.botErrorNoConfig');
+  const msg = res.message?.trim();
+  if (msg) return msg;
+  return t(fallbackKey);
+}
+
 function isAuthDenied(status: number, message: string): boolean {
   if (status === 401 || status === 403) return true;
   const m = message.toLowerCase();
