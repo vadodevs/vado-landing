@@ -369,6 +369,14 @@ export default function AppAdminCompanyPage() {
     password: string;
   }>({ open: false, title: '', email: '', password: '' });
   const [copiedGeneratedPassword, setCopiedGeneratedPassword] = useState(false);
+  const [manualLeadForm, setManualLeadForm] = useState<{
+    nombre: string;
+    correo: string;
+    empresa: string;
+    telefono: string;
+    servicio: string;
+    mensaje: string;
+  } | null>(null);
 
   useEffect(() => {
     const onLeadStatusExternal = () => setLeadStatusOverrides(loadCompanyLeadStatusOverrides());
@@ -648,6 +656,29 @@ export default function AppAdminCompanyPage() {
     });
   };
 
+  const addManualLead = () => {
+    if (!manualLeadForm) return;
+    const { nombre, correo, empresa, telefono, servicio, mensaje } = manualLeadForm;
+    if (!nombre.trim() || !correo.trim()) return;
+
+    const newLead: CompanyContact = {
+      id: `manual-${Date.now()}`,
+      nombre: nombre.trim(),
+      correo: correo.trim(),
+      empresa: empresa.trim(),
+      telefono: telefono.trim(),
+      servicio: servicio.trim(),
+      mensaje: mensaje.trim(),
+      sector: '',
+      ciudad: '',
+      fechaSolicitud: formatDateOnly(new Date()),
+      createdAtMs: Date.now(),
+    };
+
+    setContacts((prev) => [newLead, ...prev]);
+    setManualLeadForm(null);
+  };
+
   const runCompanyAccessAction = (
     contact: CompanyContact,
     action: 'enable-access' | 'reset-password' | 'disable-access',
@@ -829,6 +860,24 @@ export default function AppAdminCompanyPage() {
                     aria-hidden
                   />
                   <span className="text-[11px] font-semibold">Favoritos</span>
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="shrink-0"
+                  title="Agregar lead manualmente"
+                  onClick={() => setManualLeadForm({
+                    nombre: '',
+                    correo: '',
+                    empresa: '',
+                    telefono: '',
+                    servicio: '',
+                    mensaje: '',
+                  })}
+                >
+                  <UserPlus className="size-3.5" />
+                  <span className="text-[11px] font-semibold">Agregar Lead</span>
                 </Button>
                 <Button variant="ghost" size="sm" type="button" className="shrink-0" onClick={clearFilters}>
                   Limpiar filtros
@@ -1535,6 +1584,124 @@ export default function AppAdminCompanyPage() {
               {copiedGeneratedPassword ? 'Contraseña copiada' : 'Copiar contraseña'}
             </Button>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={manualLeadForm !== null}
+        onOpenChange={(next) => {
+          if (!next) setManualLeadForm(null);
+        }}
+      >
+        <DialogContent useAppDark className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Agregar Lead Manualmente</DialogTitle>
+            <DialogDescription>
+              Ingresa los datos del nuevo lead de contacto.
+            </DialogDescription>
+          </DialogHeader>
+
+          {manualLeadForm && (
+            <div className="space-y-3">
+              <div>
+                <Label htmlFor="manual-nombre" className="text-xs font-semibold">
+                  Nombre <span className="text-red-500">*</span>
+                </Label>
+                <input
+                  id="manual-nombre"
+                  value={manualLeadForm.nombre}
+                  onChange={(e) => setManualLeadForm({ ...manualLeadForm, nombre: e.target.value })}
+                  placeholder="Ej: Juan Pérez"
+                  className="mt-1 w-full rounded border border-zinc-200 bg-white px-2.5 py-1.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-[#17304b]/20 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:focus-visible:ring-zinc-500/30"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="manual-correo" className="text-xs font-semibold">
+                  Correo <span className="text-red-500">*</span>
+                </Label>
+                <input
+                  id="manual-correo"
+                  type="email"
+                  value={manualLeadForm.correo}
+                  onChange={(e) => setManualLeadForm({ ...manualLeadForm, correo: e.target.value })}
+                  placeholder="ej@empresa.com"
+                  className="mt-1 w-full rounded border border-zinc-200 bg-white px-2.5 py-1.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-[#17304b]/20 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:focus-visible:ring-zinc-500/30"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="manual-empresa" className="text-xs font-semibold">
+                  Empresa
+                </Label>
+                <input
+                  id="manual-empresa"
+                  value={manualLeadForm.empresa}
+                  onChange={(e) => setManualLeadForm({ ...manualLeadForm, empresa: e.target.value })}
+                  placeholder="Ej: Acme Corp"
+                  className="mt-1 w-full rounded border border-zinc-200 bg-white px-2.5 py-1.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-[#17304b]/20 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:focus-visible:ring-zinc-500/30"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="manual-telefono" className="text-xs font-semibold">
+                  Teléfono
+                </Label>
+                <input
+                  id="manual-telefono"
+                  value={manualLeadForm.telefono}
+                  onChange={(e) => setManualLeadForm({ ...manualLeadForm, telefono: e.target.value })}
+                  placeholder="555 123 4567"
+                  className="mt-1 w-full rounded border border-zinc-200 bg-white px-2.5 py-1.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-[#17304b]/20 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:focus-visible:ring-zinc-500/30"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="manual-servicio" className="text-xs font-semibold">
+                  Servicio / Asunto
+                </Label>
+                <input
+                  id="manual-servicio"
+                  value={manualLeadForm.servicio}
+                  onChange={(e) => setManualLeadForm({ ...manualLeadForm, servicio: e.target.value })}
+                  placeholder="Ej: Custom Software Development"
+                  className="mt-1 w-full rounded border border-zinc-200 bg-white px-2.5 py-1.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-[#17304b]/20 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:focus-visible:ring-zinc-500/30"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="manual-mensaje" className="text-xs font-semibold">
+                  Mensaje / Notas
+                </Label>
+                <textarea
+                  id="manual-mensaje"
+                  value={manualLeadForm.mensaje}
+                  onChange={(e) => setManualLeadForm({ ...manualLeadForm, mensaje: e.target.value })}
+                  placeholder="Detalles adicionales..."
+                  rows={4}
+                  className="mt-1 w-full rounded border border-zinc-200 bg-white px-2.5 py-1.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-[#17304b]/20 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:focus-visible:ring-zinc-500/30 resize-none"
+                />
+              </div>
+            </div>
+          )}
+
+          <DialogFooter className="flex-col gap-2 sm:flex-row sm:justify-between">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setManualLeadForm(null)}
+            >
+              Cancelar
+            </Button>
+            <Button
+              type="button"
+              className={ADMIN_PRIMARY_BTN_CLASS}
+              onClick={addManualLead}
+              disabled={!manualLeadForm?.nombre.trim() || !manualLeadForm?.correo.trim()}
+            >
+              Agregar Lead
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
       </div>
