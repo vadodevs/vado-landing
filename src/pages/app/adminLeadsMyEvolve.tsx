@@ -3,7 +3,6 @@ import {
   Copy,
   ExternalLink,
   Eye,
-  Filter,
   LayoutGrid,
   List,
   Loader2,
@@ -26,7 +25,7 @@ import {
 } from '@/lib/adminEvolveLeadsApi';
 import { useEvolveLeadsAutoSync } from '@/lib/evolveLeadsAutoSync';
 import { ADMIN_PAGE_SIZE, slicePage } from '@/lib/adminPagination';
-import { ADMIN_FILTER_BADGE_CLASS, ADMIN_FILTER_CONTROL_CLASS } from '@/lib/adminFilterUi';
+import { ADMIN_FILTER_PILL_CLASS, ADMIN_FILTER_VIEW_TOGGLE_CLASS } from '@/lib/adminFilterUi';
 import {
   ADMIN_ROW_ACTION_ICON_BUTTON_CLASS,
   ADMIN_TABLE_ACTIONS_TH_CLASS,
@@ -206,6 +205,13 @@ export default function AppAdminLeadsMyEvolve() {
     }
   };
 
+  const clearFilters = () => {
+    setSearchTerm('');
+    setQualFilter('todos');
+    setDateSort('newest');
+    setMeetingFilter('todos');
+  };
+
   return (
     <AppShell
       pathWithoutLang="/app/admin/leads/my-evolve"
@@ -225,62 +231,29 @@ export default function AppAdminLeadsMyEvolve() {
                   <h2 className="text-base font-semibold text-foreground">
                     {t('adminLeads.myEvolveTitle')}
                   </h2>
-                  <p className="text-xs leading-snug text-muted-foreground">
-                    {t('adminLeads.myEvolveSubtitle')}
-                  </p>
                 </div>
               </div>
-              <div className="flex shrink-0 flex-wrap items-center gap-1.5">
-                <div
-                  className="inline-flex rounded-lg border border-border/70 bg-muted/30 p-0.5"
-                  role="group"
-                  aria-label={t('adminLeads.evolveViewMode')}
+              <div className="flex shrink-0 flex-col items-end gap-0.5">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="h-8"
+                  disabled={loadState === 'loading' || backgroundSyncing}
+                  onClick={() => void loadLeads()}
                 >
-                  <Button
-                    type="button"
-                    variant={viewMode === 'cards' ? 'secondary' : 'ghost'}
-                    size="sm"
-                    className="h-8 gap-1.5 px-2.5"
-                    onClick={() => setViewMode('cards')}
-                    aria-pressed={viewMode === 'cards'}
-                  >
-                    <LayoutGrid className="size-3.5" aria-hidden />
-                    {t('adminLeads.evolveViewCards')}
-                  </Button>
-                  <Button
-                    type="button"
-                    variant={viewMode === 'table' ? 'secondary' : 'ghost'}
-                    size="sm"
-                    className="h-8 gap-1.5 px-2.5"
-                    onClick={() => setViewMode('table')}
-                    aria-pressed={viewMode === 'table'}
-                  >
-                    <List className="size-3.5" aria-hidden />
-                    {t('adminLeads.evolveViewTable')}
-                  </Button>
-                </div>
-                <div className="flex shrink-0 flex-col items-end gap-0.5">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    className="h-8"
-                    disabled={loadState === 'loading' || backgroundSyncing}
-                    onClick={() => void loadLeads()}
-                  >
-                    {loadState === 'loading' ? (
-                      <Loader2 className="mr-1.5 size-3.5 animate-spin" aria-hidden />
-                    ) : (
-                      <RefreshCw className="mr-1.5 size-3.5" aria-hidden />
-                    )}
-                    {t('adminLeads.evolveRefresh')}
-                  </Button>
-                  <EvolveLeadsSyncStatus
-                    lastSyncedAt={lastSyncedAt}
-                    backgroundSyncing={backgroundSyncing}
-                    className="text-right"
-                  />
-                </div>
+                  {loadState === 'loading' ? (
+                    <Loader2 className="mr-1.5 size-3.5 animate-spin" aria-hidden />
+                  ) : (
+                    <RefreshCw className="mr-1.5 size-3.5" aria-hidden />
+                  )}
+                  {t('adminLeads.evolveRefresh')}
+                </Button>
+                <EvolveLeadsSyncStatus
+                  lastSyncedAt={lastSyncedAt}
+                  backgroundSyncing={backgroundSyncing}
+                  className="text-right"
+                />
               </div>
             </div>
 
@@ -296,54 +269,96 @@ export default function AppAdminLeadsMyEvolve() {
               </p>
             ) : null}
 
-            <div className="rounded-lg border border-border/70 bg-card shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] dark:border-border/50 dark:bg-muted/25 dark:shadow-none">
-              <div className="flex flex-col gap-2 p-2 sm:p-3">
-                <div className="min-w-0 overflow-x-auto overscroll-x-contain pb-0.5 [scrollbar-width:thin]">
-                  <div className="flex w-max flex-nowrap items-center gap-1.5 pr-0.5">
-                    <span className={ADMIN_FILTER_BADGE_CLASS}>
-                      <Filter className="size-3" aria-hidden />
-                      {t('adminLeads.evolveFilters')}
-                    </span>
+            <div
+              id="evolve-leads-filters-panel"
+              className="rounded-xl border border-border/70 bg-card p-3 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.04)] dark:border-border/50 dark:bg-muted/25 dark:shadow-none sm:p-3.5"
+            >
+              <div className="flex min-w-0 flex-wrap items-center gap-2">
+                <div className="min-w-0 flex-1 overflow-x-auto overscroll-x-contain [scrollbar-width:thin]">
+                  <div className="flex w-max flex-nowrap items-center gap-2 pr-1">
                     <AdminSelect
                       value={qualFilter}
                       onValueChange={(v) => setQualFilter(v as QualFilter)}
                       options={qualityOptions}
                       aria-label={t('adminLeads.evolveColCalificacion')}
-                      triggerClassName="h-8 shrink-0"
-                    />
-                    <AdminSelect
-                      value={dateSort}
-                      onValueChange={(v) => setDateSort(v as DateSort)}
-                      options={dateSortOptions}
-                      aria-label={t('adminLeads.evolveSortLabel')}
-                      triggerClassName="h-8 shrink-0"
+                      triggerClassName={ADMIN_FILTER_PILL_CLASS}
                     />
                     <AdminSelect
                       value={meetingFilter}
                       onValueChange={(v) => setMeetingFilter(v as MeetingFilter)}
                       options={meetingFilterOptions}
                       aria-label={t('adminLeads.evolveMeetingFilterLabel')}
-                      triggerClassName="h-8 shrink-0"
+                      triggerClassName={ADMIN_FILTER_PILL_CLASS}
+                    />
+                    <AdminSelect
+                      value={dateSort}
+                      onValueChange={(v) => setDateSort(v as DateSort)}
+                      options={dateSortOptions}
+                      aria-label={t('adminLeads.evolveSortLabel')}
+                      triggerClassName={ADMIN_FILTER_PILL_CLASS}
                     />
                   </div>
                 </div>
-                <div className="relative min-w-0">
-                  <Search
-                    className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground"
-                    aria-hidden
-                  />
-                  <input
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    placeholder={t('adminLeads.evolveSearchPlaceholder')}
-                    aria-label={t('adminLeads.evolveSearchPlaceholder')}
-                    className={cn(
-                      'h-8 w-full pr-2 pl-8',
-                      ADMIN_FILTER_CONTROL_CLASS,
-                      'placeholder:text-muted-foreground',
-                    )}
-                  />
+
+                <div className="ml-auto flex shrink-0 items-center gap-2">
+                  <div
+                    className={ADMIN_FILTER_VIEW_TOGGLE_CLASS}
+                    role="group"
+                    aria-label={t('adminLeads.evolveViewMode')}
+                  >
+                    <Button
+                      type="button"
+                      variant={viewMode === 'table' ? 'secondary' : 'ghost'}
+                      size="sm"
+                      className="h-8 w-8 shrink-0 rounded-lg p-0"
+                      title={t('adminLeads.evolveViewTable')}
+                      onClick={() => setViewMode('table')}
+                      aria-pressed={viewMode === 'table'}
+                    >
+                      <List className="size-4" />
+                    </Button>
+                    <Button
+                      type="button"
+                      variant={viewMode === 'cards' ? 'secondary' : 'ghost'}
+                      size="sm"
+                      className="h-8 w-8 shrink-0 rounded-lg p-0"
+                      title={t('adminLeads.evolveViewCards')}
+                      onClick={() => setViewMode('cards')}
+                      aria-pressed={viewMode === 'cards'}
+                    >
+                      <LayoutGrid className="size-4" />
+                    </Button>
+                  </div>
+
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    type="button"
+                    className="h-9 shrink-0 text-xs text-muted-foreground hover:text-foreground"
+                    onClick={clearFilters}
+                  >
+                    {t('adminLeads.evolveClearFilters')}
+                  </Button>
                 </div>
+              </div>
+
+              <div className="relative mt-3 min-w-0">
+                <Search
+                  className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
+                  aria-hidden
+                />
+                <input
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder={t('adminLeads.evolveSearchPlaceholder')}
+                  aria-label={t('adminLeads.evolveSearchPlaceholder')}
+                  className={cn(
+                    'h-10 w-full rounded-xl border border-border/70 bg-muted/30 pr-3 pl-10 text-sm',
+                    'text-foreground outline-none placeholder:text-muted-foreground',
+                    'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+                    'dark:bg-muted/20',
+                  )}
+                />
               </div>
             </div>
           </div>

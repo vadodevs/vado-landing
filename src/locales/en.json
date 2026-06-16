@@ -336,6 +336,7 @@
     "evolveMeetingFilterWith": "With scheduled meeting",
     "evolveMeetingFilterWithout": "Without meeting",
     "evolveSearchPlaceholder": "Name, company, email, phone…",
+    "evolveClearFilters": "Clear filters",
     "evolveEmpty": "No contacts match your filters.",
     "evolveErrorNoConfig": "GHL_PRIVATE_INTEGRATION_TOKEN or GHL_LOCATION_ID is missing on adminvado.",
     "evolveErrorNoAuth": "Sign in as an admin to view Leads Evolve.",

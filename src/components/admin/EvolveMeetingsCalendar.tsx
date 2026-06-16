@@ -163,15 +163,31 @@ export function EvolveMeetingsCalendar({
                       {cell.date.getDate()}
                     </span>
                     <div className="flex min-h-0 flex-1 flex-col gap-0.5 overflow-hidden">
-                      {dayMeetings.slice(0, 2).map((m) => (
-                        <span
-                          key={`${m.id}-${m.startTimeMs}`}
-                          className="truncate rounded bg-violet-100 px-1 py-0.5 text-[9px] font-medium text-violet-900 dark:bg-violet-950/60 dark:text-violet-200"
-                          title={`${formatMeetingTime(m.startTimeMs, locale)} · ${m.contactName}`}
-                        >
-                          {formatMeetingTime(m.startTimeMs, locale)} {m.contactName.split(' ')[0]}
-                        </span>
-                      ))}
+                      {dayMeetings.slice(0, 2).map((m) => {
+                        const isCompany = m.source === 'company';
+                        const nameLabel = m.contactName.trim().split(/\s+/)[0] || m.contactName;
+                        const chipLabel = isCompany
+                          ? `${m.reminderCode ?? 'R?'} ${nameLabel}`
+                          : `${formatMeetingTime(m.startTimeMs, locale)} ${nameLabel}`;
+                        return (
+                          <span
+                            key={`${m.id}-${m.startTimeMs}`}
+                            className={cn(
+                              'truncate rounded px-1 py-0.5 text-[9px] font-medium',
+                              isCompany
+                                ? 'bg-sky-100 text-sky-900 dark:bg-sky-950/60 dark:text-sky-200'
+                                : 'bg-violet-100 text-violet-900 dark:bg-violet-950/60 dark:text-violet-200',
+                            )}
+                            title={
+                              isCompany
+                                ? `${m.reminderCode ?? 'R?'} · ${formatMeetingTime(m.startTimeMs, locale)} · ${m.contactName}`
+                                : `${formatMeetingTime(m.startTimeMs, locale)} · ${m.contactName}`
+                            }
+                          >
+                            {chipLabel}
+                          </span>
+                        );
+                      })}
                       {dayMeetings.length > 2 ? (
                         <span className="text-[9px] text-muted-foreground">
                           +{dayMeetings.length - 2}
@@ -209,16 +225,32 @@ export function EvolveMeetingsCalendar({
               </p>
             ) : (
               <ul className="space-y-2">
-                {selectedMeetings.map((meeting) => (
+                {selectedMeetings.map((meeting) => {
+                  const isCompany = meeting.source === 'company';
+                  return (
                   <li
                     key={`${meeting.id}-${meeting.startTimeMs}`}
                     className="rounded-lg border border-border/60 bg-card p-2.5"
                   >
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0">
-                        <p className="text-xs font-semibold text-foreground">{meeting.contactName}</p>
+                        <div className="flex flex-wrap items-center gap-1.5">
+                          {isCompany && meeting.reminderCode ? (
+                            <span className="rounded bg-sky-100 px-1.5 py-0.5 text-[10px] font-bold text-sky-900 dark:bg-sky-950/60 dark:text-sky-200">
+                              {meeting.reminderCode}
+                            </span>
+                          ) : null}
+                          <p className="text-xs font-semibold text-foreground">{meeting.contactName}</p>
+                        </div>
                         <p className="text-[11px] text-muted-foreground">{meeting.title}</p>
-                        <p className="mt-1 text-xs font-medium text-violet-700 dark:text-violet-300">
+                        <p
+                          className={cn(
+                            'mt-1 text-xs font-medium',
+                            isCompany
+                              ? 'text-sky-700 dark:text-sky-300'
+                              : 'text-violet-700 dark:text-violet-300',
+                          )}
+                        >
                           {formatMeetingTime(meeting.startTimeMs, locale)}
                         </p>
                       </div>
@@ -226,8 +258,16 @@ export function EvolveMeetingsCalendar({
                         type="button"
                         variant="ghost"
                         size="icon-xs"
-                        title={t('adminLeads.evolveViewDetail')}
-                        aria-label={t('adminLeads.evolveViewDetailFor', { name: meeting.contactName })}
+                        title={
+                          isCompany
+                            ? 'Ver en Company leads'
+                            : t('adminLeads.evolveViewDetail')
+                        }
+                        aria-label={
+                          isCompany
+                            ? `Ver lead ${meeting.contactName} en Company`
+                            : t('adminLeads.evolveViewDetailFor', { name: meeting.contactName })
+                        }
                         onClick={() => onViewMeeting(meeting)}
                       >
                         <Eye className="size-3.5" aria-hidden />
@@ -245,7 +285,8 @@ export function EvolveMeetingsCalendar({
                       </a>
                     ) : null}
                   </li>
-                ))}
+                  );
+                })}
               </ul>
             )}
           </div>

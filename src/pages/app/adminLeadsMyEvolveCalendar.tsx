@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { CalendarDays, Loader2, RefreshCw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useLocation } from 'wouter';
 import { EvolveLeadDetailDialog } from '@/components/admin/EvolveLeadDetailDialog';
 import { EvolveLeadsSyncStatus } from '@/components/admin/EvolveLeadsSyncStatus';
 import { EvolveMeetingsCalendar } from '@/components/admin/EvolveMeetingsCalendar';
@@ -20,16 +21,27 @@ import {
   dayKeyFromDate,
   monthRangeMs,
 } from '@/lib/evolveMeetingsCalendarUtils';
+import {
+  COMPANY_LEAD_UPDATES_CHANGE_EVENT,
+  loadCompanyLeadReminderCalendarEvents,
+} from '@/lib/companyLeadUpdates';
+import { requestOpenCompanyLead } from '@/lib/companyLeadDeepLink';
+import { fetchCompanyContactDirectory } from '@/lib/companyAdminContact';
 
 type LoadState = 'idle' | 'loading' | 'done' | 'error';
 
 export default function AppAdminLeadsMyEvolveCalendar() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const [, setLocation] = useLocation();
   const [meetingsLoadState, setMeetingsLoadState] = useState<LoadState>('idle');
   const [leadsLoadState, setLeadsLoadState] = useState<LoadState>('idle');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [rows, setRows] = useState<EvolveLeadRow[]>([]);
   const [calendarMeetings, setCalendarMeetings] = useState<EvolveMeetingEvent[]>([]);
+  const [companyReminders, setCompanyReminders] = useState<EvolveMeetingEvent[]>([]);
+  const [companyContactDirectory, setCompanyContactDirectory] = useState<
+    Record<string, { name: string; email: string }>
+  >({});
   const [dashboardMeetings, setDashboardMeetings] = useState<EvolveMeetingEvent[]>([]);
   const [dashboardLoadState, setDashboardLoadState] = useState<LoadState>('idle');
   const [lastSyncedAt, setLastSyncedAt] = useState<Date | null>(null);
@@ -75,6 +87,21 @@ export default function AppAdminLeadsMyEvolveCalendar() {
     [applyFetchError],
   );
 
+  useEffect(() => {
+    void fetchCompanyContactDirectory().then(setCompanyContactDirectory);
+  }, []);
+
+  const loadCompanyReminders = useCallback(() => {
+    const { startMs, endMs } = monthRangeMs(calendarMonth.year, calendarMonth.month);
+    setCompanyReminders(
+      loadCompanyLeadReminderCalendarEvents({
+        startMs,
+        endMs,
+        contactDirectory: companyContactDirectory,
+      }),
+    );
+  }, [calendarMonth.month, calendarMonth.year, companyContactDirectory]);
+
   const loadCalendarMeetings = useCallback(
     async (background: boolean) => {
       if (!background) setMeetingsLoadState('loading');
@@ -111,6 +138,16 @@ export default function AppAdminLeadsMyEvolveCalendar() {
     return false;
   }, []);
 
+  useEffect(() => {
+    loadCompanyReminders();
+  }, [loadCompanyReminders]);
+
+  useEffect(() => {
+    const onUpdatesChange = () => loadCompanyReminders();
+    window.addEventListener(COMPANY_LEAD_UPDATES_CHANGE_EVENT, onUpdatesChange);
+    return () => window.removeEventListener(COMPANY_LEAD_UPDATES_CHANGE_EVENT, onUpdatesChange);
+  }, [loadCompanyReminders]);
+
   const syncAll = useCallback(
     async (opts?: { background?: boolean }) => {
       const background = opts?.background === true;
@@ -145,6 +182,11 @@ export default function AppAdminLeadsMyEvolveCalendar() {
   };
 
   const openMeetingDetail = (meeting: EvolveMeetingEvent) => {
+    if (meeting.source === 'company') {
+      requestOpenCompanyLead(meeting.contactId, 'notas');
+      setLocation(`/${i18n.language}/app/admin/company`);
+      return;
+    }
     const lead = rows.find((row) => row.id === meeting.contactId);
     if (lead) {
       openDetail({
@@ -191,6 +233,12 @@ export default function AppAdminLeadsMyEvolveCalendar() {
     () => computeMeetingStats(dashboardMeetings),
     [dashboardMeetings],
   );
+
+  const allCalendarMeetings = useMemo(() => {
+    const merged = [...calendarMeetings, ...companyReminders];
+    merged.sort((a, b) => a.startTimeMs - b.startTimeMs);
+    return merged;
+  }, [calendarMeetings, companyReminders]);
 
   const loading =
     meetingsLoadState === 'loading' ||
@@ -257,7 +305,7 @@ export default function AppAdminLeadsMyEvolveCalendar() {
             <EvolveMeetingsCalendar
               year={calendarMonth.year}
               month={calendarMonth.month}
-              meetings={calendarMeetings}
+              meetings={allCalendarMeetings}
               loading={meetingsLoadState === 'loading'}
               selectedDayKey={selectedDayKey}
               dashboardStats={dashboardStats}

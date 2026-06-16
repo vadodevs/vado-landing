@@ -60,3 +60,27 @@ export function mapApiCompanySubmission(row: ApiCompanySubmissionRow): CompanyCo
     createdAtMs,
   };
 }
+
+export type CompanyContactDirectoryEntry = { name: string; email: string };
+
+/** Mapa id → nombre/correo para resolver recordatorios en el calendario. */
+export async function fetchCompanyContactDirectory(): Promise<
+  Record<string, CompanyContactDirectoryEntry>
+> {
+  const base = import.meta.env.VITE_API_BASE_URL;
+  if (typeof base !== 'string' || !base.trim()) return {};
+  try {
+    const res = await fetch(`${base.replace(/\/$/, '')}/contact/company-submissions`);
+    if (!res.ok) return {};
+    const data = (await res.json()) as unknown;
+    if (!Array.isArray(data)) return {};
+    const out: Record<string, CompanyContactDirectoryEntry> = {};
+    for (const row of data) {
+      const contact = mapApiCompanySubmission(row as ApiCompanySubmissionRow);
+      out[contact.id] = { name: contact.nombre, email: contact.correo };
+    }
+    return out;
+  } catch {
+    return {};
+  }
+}

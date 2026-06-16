@@ -21,3 +21,11 @@ export const ADMIN_FAVORITE_ROW_HEART_ICON_CLASS = (active: boolean) =>
   active
     ? 'size-3.5 fill-rose-600 text-rose-600 dark:fill-rose-400 dark:text-rose-400'
     : 'size-3.5';
+
+/** Pills de filtros rápidos (Company, Evolve, etc.). */
+export const ADMIN_FILTER_PILL_CLASS =
+  'h-9 shrink-0 !rounded-xl !border-border/70 !bg-muted/30 px-3 text-[12px] font-medium !shadow-none hover:!bg-muted/50 dark:!bg-muted/20';
+
+/** Toggle lista / grid en barra de filtros. */
+export const ADMIN_FILTER_VIEW_TOGGLE_CLASS =
+  'flex items-center gap-0.5 rounded-xl border border-border/70 bg-muted/30 p-0.5 dark:bg-muted/20';

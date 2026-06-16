@@ -32,6 +32,9 @@ export type EvolveMeetingEvent = {
   endTime: string | null;
   meetingLink: string | null;
   status: string;
+  /** Seguimiento agendado desde admin company (R1, R2…). */
+  source?: 'evolve' | 'company';
+  reminderCode?: string;
 };
 
 export type EvolveLeadsListResponse = {
