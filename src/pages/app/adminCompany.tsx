@@ -796,43 +796,45 @@ export default function AppAdminCompanyPage() {
                   <Filter className="size-3" aria-hidden />
                   Filtros rápidos
                 </span>
-                <AdminSelect
-                  value={timeFilter}
-                  onValueChange={(v) => setTimeFilter(v as TimeFilter)}
-                  options={PERIODO_FILTER_OPTIONS}
-                  aria-label="Periodo"
-                  triggerClassName="h-8 shrink-0"
-                />
-                <AdminSelect
-                  value={asuntoFilter}
-                  onValueChange={setAsuntoFilter}
-                  options={asuntoSelectOptions}
-                  aria-label="Filtrar por asunto"
-                  triggerClassName="h-8 min-w-[11rem] max-w-[17rem] shrink-0 sm:min-w-[12rem] sm:max-w-[280px]"
-                />
-                <AdminSelect
-                  value={leadQualityFilter}
-                  onValueChange={(v) =>
-                    setLeadQualityFilter(v as 'todos' | 'calificados' | 'no_calificados')
-                  }
-                  options={LEAD_QUALITY_OPTIONS}
-                  aria-label="Tipo de lead"
-                  triggerClassName="h-8 shrink-0"
-                />
-                <AdminSelect
-                  value={estadoFilter}
-                  onValueChange={(v) => setEstadoFilter(v === '' ? '' : (v as CompanyLeadStatus))}
-                  options={ESTADO_FILTER_OPTIONS}
-                  aria-label="Filtrar por estado del lead"
-                  triggerClassName="h-8 min-w-[10.5rem] max-w-[18rem] shrink-0"
-                />
-                <AdminSelect
-                  value={fechaOrden}
-                  onValueChange={(v) => setFechaOrden(v as 'newest' | 'oldest')}
-                  options={FECHA_ORDEN_OPTIONS}
-                  aria-label="Orden por fecha"
-                  triggerClassName="h-8 shrink-0"
-                />
+                <div className="flex items-center gap-1 rounded-lg border border-border bg-muted/50 p-1">
+                  <AdminSelect
+                    value={timeFilter}
+                    onValueChange={(v) => setTimeFilter(v as TimeFilter)}
+                    options={PERIODO_FILTER_OPTIONS}
+                    aria-label="Periodo"
+                    triggerClassName="h-8 shrink-0 border-0 bg-transparent hover:bg-muted"
+                  />
+                  <AdminSelect
+                    value={asuntoFilter}
+                    onValueChange={setAsuntoFilter}
+                    options={asuntoSelectOptions}
+                    aria-label="Filtrar por asunto"
+                    triggerClassName="h-8 min-w-[11rem] max-w-[17rem] shrink-0 sm:min-w-[12rem] sm:max-w-[280px] border-0 bg-transparent hover:bg-muted"
+                  />
+                  <AdminSelect
+                    value={leadQualityFilter}
+                    onValueChange={(v) =>
+                      setLeadQualityFilter(v as 'todos' | 'calificados' | 'no_calificados')
+                    }
+                    options={LEAD_QUALITY_OPTIONS}
+                    aria-label="Tipo de lead"
+                    triggerClassName="h-8 shrink-0 border-0 bg-transparent hover:bg-muted"
+                  />
+                  <AdminSelect
+                    value={estadoFilter}
+                    onValueChange={(v) => setEstadoFilter(v === '' ? '' : (v as CompanyLeadStatus))}
+                    options={ESTADO_FILTER_OPTIONS}
+                    aria-label="Filtrar por estado del lead"
+                    triggerClassName="h-8 min-w-[10.5rem] max-w-[18rem] shrink-0 border-0 bg-transparent hover:bg-muted"
+                  />
+                  <AdminSelect
+                    value={fechaOrden}
+                    onValueChange={(v) => setFechaOrden(v as 'newest' | 'oldest')}
+                    options={FECHA_ORDEN_OPTIONS}
+                    aria-label="Orden por fecha"
+                    triggerClassName="h-8 shrink-0 border-0 bg-transparent hover:bg-muted"
+                  />
+                </div>
               </div>
             </div>
             <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
