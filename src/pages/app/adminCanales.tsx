@@ -46,6 +46,7 @@ import { InboxComposePicker } from '@/components/admin/InboxComposePicker';
 import { InboxContactAvatar } from '@/components/admin/InboxContactAvatar';
 import { InboxGroupInfoSheet } from '@/components/admin/InboxGroupInfoSheet';
 import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
 import {
   Sheet,
   SheetContent,
@@ -75,10 +76,12 @@ import {
   type InboxDeliveryStatus,
   fetchWhatsappLinkStatus,
   markInboxConversationRead,
+  patchInboxConversationAutoReply,
   sendInboxImage,
   sendInboxMessage,
   sendInboxSticker,
   type InboxConversationDto,
+  type InboxConversationAutoReplyMode,
   type InboxMessageDto,
 } from '@/lib/adminInboxApi';
 import {
@@ -90,9 +93,6 @@ import {
   notifyInboxAccountAvatarChanged,
   releaseInboxAccountAvatarUrl,
 } from '@/lib/inboxAccountAvatar';
-import {
-  releaseAllInboxContactAvatarUrls,
-} from '@/lib/inboxContactAvatar';
 import { flushInboxAiSettingsSync } from '@/lib/inboxAiSettingsSync';
 import { loadInboxAutopilotConfig } from '@/lib/inboxAutopilotConfig';
 import { loadInboxBotConfig } from '@/lib/inboxBotConfig';
@@ -205,6 +205,8 @@ export type InboxConversation = {
   hasProfilePicture?: boolean;
   isGroup?: boolean;
   groupMemberCount?: number | null;
+  autoReplyMode?: InboxConversationAutoReplyMode;
+  autoReplyActive?: boolean;
 };
 
 type InboxDataSource = 'mock' | 'bot-test' | 'whatsapp-api';
@@ -266,6 +268,8 @@ function mapConversationDto(c: InboxConversationDto, t: TFunction): InboxConvers
     isGroup,
     groupMemberCount:
       typeof c.groupMemberCount === 'number' ? c.groupMemberCount : null,
+    autoReplyMode: c.autoReplyMode ?? (isGroup ? 'off' : 'inherit'),
+    autoReplyActive: c.autoReplyActive ?? false,
   };
 }
 
@@ -1095,6 +1099,7 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
   const [threadSearchMatchIndex, setThreadSearchMatchIndex] = useState(0);
   const [aiContextOpen, setAiContextOpen] = useState(false);
   const [groupInfoOpen, setGroupInfoOpen] = useState(false);
+  const [autoReplyBusy, setAutoReplyBusy] = useState(false);
   const [aiContextCopied, setAiContextCopied] = useState(false);
   const [listSearchQuery, setListSearchQuery] = useState('');
 
@@ -1195,7 +1200,6 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
     setWhatsappGate('loading');
     setSelectedId(isWhatsappApi ? '' : (buildInboxConversations(channel, t)[0]?.id ?? ''));
     setMobileShowThread(false);
-    releaseAllInboxContactAvatarUrls();
     releaseInboxAccountAvatarUrl();
     setWhatsappOwnerJid('');
     setListSearchQuery('');
@@ -1675,6 +1679,32 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
       setAiContextCopied(false);
     }
   }, [inboxAiContextMarkdown]);
+
+  const handleChatAutoReplyToggle = useCallback(
+    async (enabled: boolean) => {
+      if (!isWhatsappApi || !selected?.id || !isRealInboxConversationId(selected.id)) return;
+      setAutoReplyBusy(true);
+      try {
+        const res = await patchInboxConversationAutoReply(
+          selected.id,
+          enabled ? 'on' : 'off',
+        );
+        if (!res.ok) return;
+        const nextMode = res.data.autoReplyMode ?? (enabled ? 'on' : 'off');
+        const nextActive = res.data.autoReplyActive ?? enabled;
+        setWhatsappRows((prev) =>
+          prev.map((row) =>
+            row.id === selected.id
+              ? { ...row, autoReplyMode: nextMode, autoReplyActive: nextActive }
+              : row,
+          ),
+        );
+      } finally {
+        setAutoReplyBusy(false);
+      }
+    },
+    [isWhatsappApi, selected?.id],
+  );
 
   const threadSearchMatches = useMemo(() => {
     if (!threadSearchOpen || !normalizeThreadSearchQuery(threadSearchQuery)) return [];
@@ -2362,6 +2392,23 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
           </div>
           {isWhatsappApi ? (
             <div className="flex shrink-0 items-center gap-0.5 pr-0.5">
+              {selected && isRealInboxConversationId(selected.id) ? (
+                <div
+                  className="mr-1 flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-2 py-1"
+                  title={t('adminCanales.inboxChatAutopilotHint')}
+                >
+                  <Bot className="size-4 shrink-0 text-zinc-400" strokeWidth={1.5} aria-hidden />
+                  <span className="hidden text-[11px] font-medium text-zinc-300 sm:inline">
+                    {t('adminCanales.inboxChatAutopilot')}
+                  </span>
+                  <Switch
+                    checked={selected.autoReplyActive ?? false}
+                    disabled={autoReplyBusy}
+                    onCheckedChange={(checked) => void handleChatAutoReplyToggle(checked)}
+                    aria-label={t('adminCanales.inboxChatAutopilot')}
+                  />
+                </div>
+              ) : null}
               {selected?.isGroup && isRealInboxConversationId(selected.id) ? (
                 <Button
                   type="button"
