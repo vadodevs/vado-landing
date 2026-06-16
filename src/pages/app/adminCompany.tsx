@@ -7,6 +7,8 @@ import {
   Heart,
   Key,
   KeyRound,
+  LayoutGrid,
+  List,
   Loader2,
   Mail,
   MoreVertical,
@@ -21,6 +23,7 @@ import { useLocation } from 'wouter';
 import { useAdminAssignedProjects } from '@/contexts/AdminAssignedProjectsContext';
 import { AdminSelect, type AdminSelectOption } from '@/components/app/AdminSelect';
 import { AdminTablePagination } from '@/components/app/AdminTablePagination';
+import { CompanyLeadCard } from '@/components/admin/CompanyLeadCard';
 import { ADMIN_PAGE_SIZE, slicePage } from '@/lib/adminPagination';
 import { AppShell } from '@/components/layout/app/AppShell';
 import { Badge } from '@/components/ui/badge';
@@ -94,12 +97,16 @@ type TimeFilter = 'todos' | 'hoy' | 'semana' | 'mes';
 
 type FlowStep = 'detalle' | 'prospectos' | 'confirmacion' | 'exito';
 
+type ViewMode = 'table' | 'cards';
+
 const PERIODO_FILTER_OPTIONS: AdminSelectOption[] = [
   { value: 'todos', label: 'Periodo: todos' },
   { value: 'hoy', label: 'Periodo: hoy' },
   { value: 'semana', label: 'Periodo: esta semana' },
   { value: 'mes', label: 'Periodo: este mes' },
 ];
+
+const CARD_PAGE_SIZE = 12;
 
 const LEAD_QUALITY_OPTIONS: AdminSelectOption[] = [
   { value: 'todos', label: 'Leads: todos' },
@@ -341,6 +348,7 @@ export default function AppAdminCompanyPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [fechaOrden, setFechaOrden] = useState<'newest' | 'oldest'>('newest');
   const [asuntoFilter, setAsuntoFilter] = useState('');
+  const [viewMode, setViewMode] = useState<ViewMode>('table');
   /** Vacío = todos los estados; si hay valor, solo filas con ese estado (mismo patrón que el select de Leads). */
   const [estadoFilter, setEstadoFilter] = useState<'' | CompanyLeadStatus>('');
   const [leadFavoriteIds, setLeadFavoriteIds] = useState<Set<string>>(() => loadLeadFavoriteIds());
@@ -535,8 +543,11 @@ export default function AppAdminCompanyPage() {
   ]);
 
   const paginatedContacts = useMemo(
-    () => slicePage(filteredContacts, companyPage, ADMIN_PAGE_SIZE),
-    [filteredContacts, companyPage],
+    () => {
+      const pageSize = viewMode === 'cards' ? CARD_PAGE_SIZE : ADMIN_PAGE_SIZE;
+      return slicePage(filteredContacts, companyPage, pageSize);
+    },
+    [filteredContacts, companyPage, viewMode],
   );
 
   useEffect(() => {
@@ -879,6 +890,30 @@ export default function AppAdminCompanyPage() {
                   <UserPlus className="size-3.5" />
                   <span className="text-[11px] font-semibold">Agregar Lead</span>
                 </Button>
+                <div className="flex items-center gap-1 rounded-lg border border-border bg-muted/50 p-1">
+                  <Button
+                    type="button"
+                    variant={viewMode === 'table' ? 'secondary' : 'ghost'}
+                    size="sm"
+                    className="shrink-0 h-7"
+                    title="Vista de tabla"
+                    onClick={() => setViewMode('table')}
+                    aria-pressed={viewMode === 'table'}
+                  >
+                    <List className="size-3.5" />
+                  </Button>
+                  <Button
+                    type="button"
+                    variant={viewMode === 'cards' ? 'secondary' : 'ghost'}
+                    size="sm"
+                    className="shrink-0 h-7"
+                    title="Vista de cards"
+                    onClick={() => setViewMode('cards')}
+                    aria-pressed={viewMode === 'cards'}
+                  >
+                    <LayoutGrid className="size-3.5" />
+                  </Button>
+                </div>
                 <Button variant="ghost" size="sm" type="button" className="shrink-0" onClick={clearFilters}>
                   Limpiar filtros
                 </Button>
@@ -888,10 +923,11 @@ export default function AppAdminCompanyPage() {
         </div>
         </div>
 
-        {/* Panel de tabla: ocupa el alto restante; solo este bloque central hace scroll */}
+        {/* Panel de vista (tabla o cards): ocupa el alto restante; solo este bloque central hace scroll */}
         <div className="isolate flex h-0 min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-lg border border-border/70 bg-card shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] dark:border-border/50 dark:bg-muted/20 dark:shadow-none">
           <div className="relative min-h-0 min-w-0 flex-1 overflow-hidden">
             <div className="absolute inset-0 overflow-auto overscroll-contain rounded-t-lg">
+            {viewMode === 'table' ? (
             <table className="w-full min-w-0 table-fixed border-collapse text-left text-[12px]">
               <colgroup>
                 <col className="w-[12%]" />
@@ -1156,12 +1192,41 @@ export default function AppAdminCompanyPage() {
               ) : null}
             </tbody>
           </table>
+            ) : (
+            <div className="grid grid-cols-1 gap-3 p-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {paginatedContacts.map((contact) => {
+                const leadEstado = getCompanyLeadStatus(leadStatusOverrides, contact.id);
+                const isFavorite = leadFavoriteIds.has(contact.id);
+                return (
+                  <CompanyLeadCard
+                    key={contact.id}
+                    lead={contact}
+                    initials={leadInitials(contact.nombre)}
+                    isFavorite={isFavorite}
+                    onView={openDetail}
+                    onToggleFavorite={toggleLeadFavorite}
+                    onCopyEmail={copyLeadTableEmail}
+                    onAssign={openAssignLead}
+                    copiedEmail={copiedLeadEmail}
+                    leadEstado={leadEstado}
+                  />
+                );
+              })}
+              {paginatedContacts.length === 0 && contactsLoad === 'done' ? (
+                <div className="col-span-full text-center text-muted-foreground py-8">
+                  {contacts.length === 0
+                    ? 'No hay contactos para mostrar.'
+                    : 'No hay contactos con los filtros u orden seleccionados.'}
+                </div>
+              ) : null}
+            </div>
+            )}
             </div>
           </div>
           <AdminTablePagination
             page={companyPage}
             totalItems={filteredContacts.length}
-            pageSize={ADMIN_PAGE_SIZE}
+            pageSize={viewMode === 'cards' ? CARD_PAGE_SIZE : ADMIN_PAGE_SIZE}
             onPageChange={setCompanyPage}
             nounPlural="leads"
             className="shrink-0 gap-1 border-border/60 bg-muted/20 px-3 py-2 text-xs sm:flex-row sm:items-center sm:justify-between sm:px-4 dark:bg-muted/10"
