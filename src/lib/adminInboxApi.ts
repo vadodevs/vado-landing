@@ -3,6 +3,8 @@ import { getApiBaseUrl } from '@/lib/apiBaseUrl';
 
 export type InboxChannel = 'whatsapp' | 'facebook' | 'instagram';
 
+export type InboxConversationAutoReplyMode = 'inherit' | 'on' | 'off';
+
 export type InboxConversationDto = {
   id: string;
   channel: InboxChannel;
@@ -15,6 +17,8 @@ export type InboxConversationDto = {
   hasProfilePicture?: boolean;
   isGroup?: boolean;
   groupMemberCount?: number | null;
+  autoReplyMode?: InboxConversationAutoReplyMode;
+  autoReplyActive?: boolean;
 };
 
 export type InboxGroupInfoMemberDto = {
@@ -274,6 +278,19 @@ export function markInboxConversationRead(conversationId: string): Promise<Admin
   return adminInboxRequest(`/admin/inbox/conversations/${encodeURIComponent(conversationId)}/mark-read`, {
     method: 'POST',
   });
+}
+
+export function patchInboxConversationAutoReply(
+  conversationId: string,
+  autoReplyMode: InboxConversationAutoReplyMode,
+): Promise<AdminInboxResult<InboxConversationDto>> {
+  return adminInboxRequest<InboxConversationDto>(
+    `/admin/inbox/conversations/${encodeURIComponent(conversationId)}`,
+    {
+      method: 'PATCH',
+      body: JSON.stringify({ autoReplyMode }),
+    },
+  );
 }
 
 export function fetchInboxConnectionStatus(
