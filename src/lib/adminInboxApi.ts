@@ -72,6 +72,8 @@ export type WhatsappLinkStatusDto = {
   webhookConfigured?: boolean;
   webhookUrl?: string | null;
   webhookCallbackUrl?: string;
+  /** False when Evolution API is unreachable (e.g. Droplet off). */
+  evolutionReachable?: boolean;
 };
 
 export type WhatsappConnectDto = {

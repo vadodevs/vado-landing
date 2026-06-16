@@ -240,10 +240,13 @@ export function AdminWhatsappLinkCard() {
   const showQrPanel = linking || !!connectPayload?.qrcodeBase64 || !!connectPayload?.pairingCode;
 
   useEffect(() => {
-    if (linked || linking) return;
-    const interval = window.setInterval(() => void refreshStatus(), 8_000);
-    return () => window.clearInterval(interval);
-  }, [linked, linking, refreshStatus]);
+    if (linked || linking || connectPayload) return;
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') void refreshStatus();
+    };
+    document.addEventListener('visibilitychange', onVisible);
+    return () => document.removeEventListener('visibilitychange', onVisible);
+  }, [linked, linking, connectPayload, refreshStatus]);
 
   return (
     <div
