@@ -80,7 +80,8 @@ export function WhatsappInboxLinkGate({ gate, onRefreshLink }: Props) {
 
   useEffect(() => {
     if (gate === 'linked' || gate === 'no-auth') return;
-    const pollMs = gate === 'connecting' || linking || !!connectPayload ? 3000 : 8000;
+    if (gate !== 'connecting' && !linking && !connectPayload) return;
+    const pollMs = 3000;
     const poll = () => {
       void onRefreshLink().then((nextGate) => {
         if (nextGate !== 'linked') return;

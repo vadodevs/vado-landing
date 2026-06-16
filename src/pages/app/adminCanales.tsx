@@ -93,9 +93,7 @@ import {
 import {
   releaseAllInboxContactAvatarUrls,
 } from '@/lib/inboxContactAvatar';
-import { isInboxAiAutoReplyActiveNow } from '@/lib/inboxAiAutoReply';
 import { flushInboxAiSettingsSync } from '@/lib/inboxAiSettingsSync';
-import { triggerInboxAutoReply } from '@/lib/inboxAiSettingsApi';
 import { loadInboxAutopilotConfig } from '@/lib/inboxAutopilotConfig';
 import { loadInboxBotConfig } from '@/lib/inboxBotConfig';
 import { loadInboxLlmConfig } from '@/lib/inboxLlmConfig';
@@ -114,10 +112,7 @@ import {
   WHATSAPP_LINK_CHANGE_EVENT,
   type WhatsappLinkChangeDetail,
 } from '@/lib/inboxWhatsappLink';
-import {
-  shouldRunWhatsappEvolutionSync,
-  WHATSAPP_PHONE_POLL_MS,
-} from '@/lib/inboxWhatsappSync';
+import { shouldRunWhatsappEvolutionSync } from '@/lib/inboxWhatsappSync';
 
 const INBOX_TIME_ZONE = 'America/Mexico_City';
 import { isAdminChannel, type AdminChannel } from '@/lib/adminCanalesChannel';
@@ -1172,8 +1167,6 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
 
   const whatsappBootSyncDoneRef = useRef(false);
   const lastEvolutionSyncAtRef = useRef(0);
-  const autoReplyInFlightRef = useRef<Set<string>>(new Set());
-  const lastAutoRepliedInboundRef = useRef<Record<string, string>>({});
   const selectedIdRef = useRef(selectedId);
   selectedIdRef.current = selectedId;
   const whatsappGateRef = useRef(whatsappGate);
@@ -1182,7 +1175,6 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
   whatsappOwnerJidRef.current = whatsappOwnerJid;
   const prevLinkedRef = useRef<boolean | null>(null);
   const inboxBootDoneRef = useRef(false);
-  const inboxPollInFlightRef = useRef(false);
   /** Incrementa al desvincular; invalida respuestas de inbox en vuelo. */
   const inboxLinkEpochRef = useRef(0);
   const inboxAiSettingsSyncedRef = useRef(false);
@@ -1413,7 +1405,7 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
       }
 
       return reloadWhatsappConversations({
-        sync: true,
+        sync: opts?.importHistory === true || opts?.fullImport === true,
         activeConversationId: opts?.activeConversationId ?? selectedIdRef.current,
       });
     },
@@ -1451,7 +1443,7 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
       }
       if (detail.reloadInbox) {
         setWhatsappLoadState('loading');
-        void reloadWhatsappConversationsRef.current({ sync: true }).then(() => {
+        void reloadWhatsappConversationsRef.current().then(() => {
           setWhatsappLoadState('ok');
         });
         return;
@@ -1477,11 +1469,8 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
       if (!inboxBootDoneRef.current) {
         inboxBootDoneRef.current = true;
         setWhatsappLoadState('loading');
-        await syncWhatsappChats();
-        lastEvolutionSyncAtRef.current = Date.now();
-        whatsappBootSyncDoneRef.current = true;
       }
-      await reloadWhatsappConversationsRef.current({ sync: true });
+      await reloadWhatsappConversationsRef.current();
     })();
 
     return () => {
@@ -1504,7 +1493,7 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
       void fetchWhatsappHistoryImportStatus().then((res) => {
         if (!res.ok) return;
         if (res.data.running) {
-          void reloadWhatsappConversationsRef.current({ sync: true });
+          void reloadWhatsappConversationsRef.current();
           return;
         }
         setWhatsappHistoryImporting(false);
@@ -1563,7 +1552,7 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
 
       const requestEpoch = inboxLinkEpochRef.current;
       const res = await fetchInboxMessages(conversationId, {
-        sync: opts?.sync !== false,
+        sync: opts?.sync === true,
       });
       if (
         requestEpoch !== inboxLinkEpochRef.current ||
@@ -1582,103 +1571,30 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
         return { ...prev, [conversationId]: next };
       });
       if (opts?.refreshListOnNew && hasNewMessages) {
-        void reloadWhatsappConversations({ sync: true });
+        void reloadWhatsappConversations();
       }
       return next;
     },
     [reloadWhatsappConversations],
   );
 
-  const tryInboxAiAutoReply = useCallback(
-    async (conversationId: string, messages: ChatMsg[]) => {
-      if (!isWhatsappApi || !isRealInboxConversationId(conversationId)) return;
-      if (!isInboxAiAutoReplyActiveNow()) return;
-      const last = messages[messages.length - 1];
-      if (!last || last.from !== 'them') return;
-      if (lastAutoRepliedInboundRef.current[conversationId] === last.id) return;
-      if (autoReplyInFlightRef.current.has(conversationId)) return;
-
-      autoReplyInFlightRef.current.add(conversationId);
-      try {
-        const res = await triggerInboxAutoReply(conversationId);
-        if (res.ok && res.data.replied) {
-          lastAutoRepliedInboundRef.current[conversationId] = last.id;
-          await reloadThreadMessages(conversationId);
-          await reloadWhatsappConversations({ sync: true });
-        }
-      } finally {
-        autoReplyInFlightRef.current.delete(conversationId);
-      }
-    },
-    [isWhatsappApi, reloadThreadMessages, reloadWhatsappConversations],
-  );
-
-  const runInboxPollTick = useCallback(async () => {
-    if (inboxPollInFlightRef.current || whatsappGateRef.current !== 'linked') return;
-    inboxPollInFlightRef.current = true;
-    try {
-      const activeId = selectedIdRef.current;
-      await reloadWhatsappConversations({ sync: true, activeConversationId: activeId });
-      if (activeId && isRealInboxConversationId(activeId)) {
-        const rows = await reloadThreadMessages(activeId, { sync: true });
-        if (rows?.length) void tryInboxAiAutoReply(activeId, rows);
-      }
-    } finally {
-      inboxPollInFlightRef.current = false;
-    }
-  }, [reloadWhatsappConversations, reloadThreadMessages, tryInboxAiAutoReply]);
-
   useEffect(() => {
     if (!isWhatsappApi || whatsappGate !== 'linked') return;
-
-    const pollInterval = window.setInterval(() => {
-      void runInboxPollTick();
-    }, WHATSAPP_PHONE_POLL_MS);
-
-    const linkInterval = window.setInterval(() => {
-      void refreshWhatsappLinkRef.current();
-    }, 15_000);
 
     const onVisible = () => {
       if (document.visibilityState !== 'visible') return;
       void refreshWhatsappLinkRef.current().then((gate) => {
-        if (gate === 'linked') void runInboxPollTick();
+        if (gate === 'linked') {
+          void reloadWhatsappConversationsRef.current();
+        }
       });
     };
     document.addEventListener('visibilitychange', onVisible);
 
     return () => {
-      window.clearInterval(pollInterval);
-      window.clearInterval(linkInterval);
       document.removeEventListener('visibilitychange', onVisible);
     };
-  }, [isWhatsappApi, whatsappGate, runInboxPollTick]);
-
-  useEffect(() => {
-    if (!isWhatsappApi || whatsappGate !== 'linked') return;
-    const scanUnread = () => {
-      if (!isInboxAiAutoReplyActiveNow()) return;
-      for (const row of whatsappRows) {
-        if (!isRealInboxConversationId(row.id)) continue;
-        if ((row.unreadCount ?? 0) <= 0) continue;
-        const msgs = messagesById[row.id];
-        if (msgs?.length) {
-          void tryInboxAiAutoReply(row.id, msgs);
-        } else {
-          void (async () => {
-            const res = await fetchInboxMessages(row.id);
-            if (!res.ok) return;
-            const mapped = res.data.map(mapMessageDto);
-            setMessagesById((prev) => ({ ...prev, [row.id]: mapped }));
-            await tryInboxAiAutoReply(row.id, mapped);
-          })();
-        }
-      }
-    };
-    const interval = window.setInterval(scanUnread, 12_000);
-    scanUnread();
-    return () => window.clearInterval(interval);
-  }, [isWhatsappApi, whatsappGate, whatsappRows, messagesById, tryInboxAiAutoReply]);
+  }, [isWhatsappApi, whatsappGate]);
 
   useEffect(() => {
     if (!isWhatsappApi || !selectedId || !isRealInboxConversationId(selectedId)) return;
@@ -1691,7 +1607,7 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
     if (!isWhatsappApi || !selectedId || !isRealInboxConversationId(selectedId)) return;
     let cancelled = false;
     const run = async () => {
-      await reloadThreadMessages(selectedId, { sync: true });
+      await reloadThreadMessages(selectedId);
       if (cancelled) return;
       await markInboxConversationRead(selectedId);
       setWhatsappRows((prev) => {
@@ -1890,7 +1806,7 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
             ),
           }));
           await reloadThreadMessages(selectedId);
-          await reloadWhatsappConversations({ sync: true });
+          await reloadWhatsappConversations();
           URL.revokeObjectURL(localPreview);
         }
       } catch {
@@ -1950,7 +1866,7 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
             ),
           }));
           await reloadThreadMessages(selectedId);
-          await reloadWhatsappConversations({ sync: true });
+          await reloadWhatsappConversations();
         }
       } catch {
         setMessagesById((prev) => ({
@@ -2008,7 +1924,7 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
         ),
       }));
       await reloadThreadMessages(selectedId);
-      await reloadWhatsappConversations({ sync: true });
+      await reloadWhatsappConversations();
     }
     setSending(false);
     focusComposeInput();
@@ -2922,8 +2838,8 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
             onOpenMemberChat={(conversationId) => {
               setGroupInfoOpen(false);
               openThread(conversationId);
-              void reloadThreadMessages(conversationId, { sync: true });
-              void syncWhatsappInboxData({ fullImport: true, activeConversationId: conversationId });
+              void reloadThreadMessages(conversationId);
+              void reloadWhatsappConversations();
             }}
           />
         <Sheet open={aiContextOpen} onOpenChange={setAiContextOpen}>
