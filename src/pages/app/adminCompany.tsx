@@ -73,9 +73,8 @@ import {
   setAdminCompaniesSeenMax,
 } from '@/lib/appNavBadges';
 import {
+  chatWidgetDetailForAdmin,
   getChatWidgetBudgetQualification,
-  isChatWidgetLeadMessage,
-  parseChatWidgetDetailRows,
 } from '@/lib/chatWidgetLead';
 import {
   loadLeadFavoriteIds,
@@ -228,39 +227,6 @@ function leadInitials(nombre: string): string {
     return `${parts[0][0] ?? ''}${parts[1][0] ?? ''}`.toUpperCase();
   }
   return (parts[0]?.slice(0, 2) || '??').toUpperCase();
-}
-
-function digitsOnly(s: string): string {
-  return s.replace(/\D/g, '');
-}
-
-/** Lead creado desde el chat: filas extra (sin duplicar cabecera del modal). */
-function chatWidgetDetailForAdmin(contact: CompanyContact): {
-  isWidget: boolean;
-  rows: { label: string; value: string }[];
-} {
-  const mensaje = contact.mensaje.trim();
-  if (!isChatWidgetLeadMessage(mensaje)) {
-    return { isWidget: false, rows: [] };
-  }
-  const widgetRows = parseChatWidgetDetailRows(mensaje);
-  if (widgetRows.length === 0) {
-    return { isWidget: true, rows: [] };
-  }
-  const filtered = widgetRows.filter((row) => {
-    const l = row.label.toLowerCase();
-    const v = row.value.trim();
-    if (l === 'empresa' && v === contact.empresa.trim()) return false;
-    if (l === 'correo' && v.toLowerCase() === contact.correo.trim().toLowerCase()) return false;
-    if (l === 'teléfono' || l === 'telefono') {
-      const t = contact.telefono.trim();
-      if (t === '—' || t === '-' || t === '') return true;
-      if (digitsOnly(v) === digitsOnly(t)) return false;
-    }
-    if (l === 'nombre' && v === contact.nombre.trim()) return false;
-    return true;
-  });
-  return { isWidget: true, rows: filtered.length > 0 ? filtered : widgetRows };
 }
 
 function matchesTimeFilter(fechaSolicitud: string, filter: TimeFilter, now: Date): boolean {

@@ -1,21 +1,11 @@
 /** Misma longitud que `message` en CreateContactDto (adminvado). */
+import { CHAT_WIDGET_STEP_LABELS } from '@/lib/companyQuestionnaireConfig';
+
 export const CHAT_WIDGET_MESSAGE_MAX = 1024;
 
 export const CHAT_WIDGET_MESSAGE_PREFIX = '[Chat widget]';
 
-const STEP_LABELS = [
-  'Empresa',
-  'Correo',
-  'Teléfono',
-  'Nombre',
-  'Rol',
-  'Problema a resolver',
-  'Tipo de desarrollo',
-  'Urgencia',
-  'Presupuesto (¿dentro de $5k USD/mes?)',
-  'Monto mensual dispuesto (USD)',
-  'Madurez del proyecto',
-] as const;
+const STEP_LABELS = CHAT_WIDGET_STEP_LABELS;
 
 export type ChatWidgetContactBody = {
   firstName: string;
@@ -165,6 +155,42 @@ function parseBudgetRangeAnswer(raw: string): 'yes' | 'no' | null {
  * **Calificado:** respondió «Sí» (u equivalente) a esa pregunta.
  * **Desconocido:** formulario clásico, mensaje sin esas líneas, o respuesta no reconocible.
  */
+function digitsOnly(s: string): string {
+  return s.replace(/\D/g, '');
+}
+
+/** Filas extra del cuestionario del chat (sin duplicar cabecera del modal). */
+export function chatWidgetDetailForAdmin(contact: {
+  mensaje: string;
+  empresa: string;
+  correo: string;
+  telefono: string;
+  nombre: string;
+}): { isWidget: boolean; rows: { label: string; value: string }[] } {
+  const mensaje = contact.mensaje.trim();
+  if (!isChatWidgetLeadMessage(mensaje)) {
+    return { isWidget: false, rows: [] };
+  }
+  const widgetRows = parseChatWidgetDetailRows(mensaje);
+  if (widgetRows.length === 0) {
+    return { isWidget: true, rows: [] };
+  }
+  const filtered = widgetRows.filter((row) => {
+    const l = row.label.toLowerCase();
+    const v = row.value.trim();
+    if (l === 'empresa' && v === contact.empresa.trim()) return false;
+    if (l === 'correo' && v.toLowerCase() === contact.correo.trim().toLowerCase()) return false;
+    if (l === 'teléfono' || l === 'telefono') {
+      const t = contact.telefono.trim();
+      if (t === '—' || t === '-' || t === '') return true;
+      if (digitsOnly(v) === digitsOnly(t)) return false;
+    }
+    if (l === 'nombre' && v === contact.nombre.trim()) return false;
+    return true;
+  });
+  return { isWidget: true, rows: filtered.length > 0 ? filtered : widgetRows };
+}
+
 export function getChatWidgetBudgetQualification(message: string): ChatWidgetBudgetQualification {
   if (!isChatWidgetLeadMessage(message)) return 'unknown';
 

@@ -15,22 +15,25 @@ import {
   type DragOverEvent,
   type DragStartEvent,
 } from '@dnd-kit/core';
-import { GripVertical, Trash2 } from 'lucide-react';
+import { Eye, GripVertical, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { PipelineLeadDetailDialog } from '@/components/admin/PipelineLeadDetailDialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   PIPELINE_STAGES,
+  formatPipelineAmountUsd,
   parsePipelineCardDndId,
   parsePipelineColumnDndId,
   pipelineCardDndId,
   pipelineColumnDndId,
   removePipelineLead,
   movePipelineLeadToStage,
+  updatePipelineLeadEstimatedAmount,
   type PipelineLeadEntry,
   type PipelineStage,
 } from '@/lib/adminOpportunitiesPipeline';
-import { leadInitials } from '@/lib/evolveLeadUi';
+import { ADMIN_ROW_ACTION_ICON_BUTTON_CLASS } from '@/lib/adminTableActionsUi';
 import { cn } from '@/lib/utils';
 
 const STAGE_HEADER_CLASS: Record<PipelineStage, string> = {
@@ -88,12 +91,14 @@ const pipelineCollision: CollisionDetection = (args) => {
 type PipelineCardProps = {
   entry: PipelineLeadEntry;
   onRemove: () => void;
+  onViewDetail: () => void;
   t: (key: string, opts?: Record<string, string>) => string;
 };
 
-function PipelineCard({ entry, onRemove, t }: PipelineCardProps) {
+function PipelineCard({ entry, onRemove, onViewDetail, t }: PipelineCardProps) {
   const dndId = pipelineCardDndId(entry.source, entry.id);
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({ id: dndId });
+  const amountLabel = formatPipelineAmountUsd(entry.estimatedAmountUsd);
 
   return (
     <article
@@ -107,46 +112,62 @@ function PipelineCard({ entry, onRemove, t }: PipelineCardProps) {
     >
       <div className="flex items-start gap-2">
         <GripVertical className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden />
-        <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-muted text-[10px] font-semibold text-muted-foreground">
-          {leadInitials(entry.nombre)}
-        </div>
         <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-1.5 pr-6">
+          <div className="flex flex-wrap items-center gap-1.5 pr-14">
             <p className="truncate text-sm font-semibold text-foreground">{entry.nombre}</p>
             <Badge variant="secondary" className="text-[10px]">
               {sourceLabel(entry.source, t)}
             </Badge>
           </div>
-          <p className="truncate text-xs text-muted-foreground">{entry.empresa}</p>
-          <p className="truncate text-xs text-muted-foreground">{entry.email}</p>
+          {amountLabel ? (
+            <p className="mt-1 text-xs font-semibold tabular-nums text-emerald-700 dark:text-emerald-300">
+              {amountLabel}
+            </p>
+          ) : null}
         </div>
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          className="size-7 shrink-0 text-muted-foreground hover:text-destructive"
-          aria-label={t('adminOpportunities.removeFromPipeline', { name: entry.nombre })}
-          onPointerDown={(e) => e.stopPropagation()}
-          onClick={(e) => {
-            e.stopPropagation();
-            onRemove();
-          }}
-        >
-          <Trash2 className="size-3.5" aria-hidden />
-        </Button>
+        <div className="flex shrink-0 items-center gap-0.5">
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className={ADMIN_ROW_ACTION_ICON_BUTTON_CLASS}
+            title={t('adminOpportunities.detailView')}
+            aria-label={t('adminOpportunities.detailView', { name: entry.nombre })}
+            onPointerDown={(e) => e.stopPropagation()}
+            onClick={(e) => {
+              e.stopPropagation();
+              onViewDetail();
+            }}
+          >
+            <Eye className="size-4" strokeWidth={1.5} aria-hidden />
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="size-7 shrink-0 text-muted-foreground hover:text-destructive"
+            aria-label={t('adminOpportunities.removeFromPipeline', { name: entry.nombre })}
+            onPointerDown={(e) => e.stopPropagation()}
+            onClick={(e) => {
+              e.stopPropagation();
+              onRemove();
+            }}
+          >
+            <Trash2 className="size-3.5" aria-hidden />
+          </Button>
+        </div>
       </div>
     </article>
   );
 }
 
 function PipelineCardPreview({ entry, t }: { entry: PipelineLeadEntry; t: PipelineCardProps['t'] }) {
+  const amountLabel = formatPipelineAmountUsd(entry.estimatedAmountUsd);
+
   return (
     <article className="w-[248px] cursor-grabbing rounded-xl border border-violet-400/50 bg-card p-3 shadow-xl ring-2 ring-violet-400/30 dark:bg-muted/20">
       <div className="flex items-start gap-2">
         <GripVertical className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden />
-        <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-muted text-[10px] font-semibold text-muted-foreground">
-          {leadInitials(entry.nombre)}
-        </div>
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-1.5">
             <p className="truncate text-sm font-semibold text-foreground">{entry.nombre}</p>
@@ -154,7 +175,11 @@ function PipelineCardPreview({ entry, t }: { entry: PipelineLeadEntry; t: Pipeli
               {sourceLabel(entry.source, t)}
             </Badge>
           </div>
-          <p className="truncate text-xs text-muted-foreground">{entry.empresa}</p>
+          {amountLabel ? (
+            <p className="mt-1 text-xs font-semibold tabular-nums text-emerald-700 dark:text-emerald-300">
+              {amountLabel}
+            </p>
+          ) : null}
         </div>
       </div>
     </article>
@@ -166,10 +191,11 @@ type PipelineColumnProps = {
   entries: PipelineLeadEntry[];
   isOver: boolean;
   onRemove: (entry: PipelineLeadEntry) => void;
+  onViewDetail: (entry: PipelineLeadEntry) => void;
   t: PipelineCardProps['t'];
 };
 
-function PipelineColumn({ stage, entries, isOver, onRemove, t }: PipelineColumnProps) {
+function PipelineColumn({ stage, entries, isOver, onRemove, onViewDetail, t }: PipelineColumnProps) {
   const { setNodeRef } = useDroppable({ id: pipelineColumnDndId(stage) });
 
   return (
@@ -211,6 +237,7 @@ function PipelineColumn({ stage, entries, isOver, onRemove, t }: PipelineColumnP
               key={pipelineCardDndId(entry.source, entry.id)}
               entry={entry}
               onRemove={() => onRemove(entry)}
+              onViewDetail={() => onViewDetail(entry)}
               t={t}
             />
           ))
@@ -224,6 +251,7 @@ export function OpportunityPipelineBoard({ entries, onChange }: Props) {
   const { t } = useTranslation();
   const [activeCardId, setActiveCardId] = useState<string | null>(null);
   const [overStage, setOverStage] = useState<PipelineStage | null>(null);
+  const [detailEntry, setDetailEntry] = useState<PipelineLeadEntry | null>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
@@ -277,6 +305,13 @@ export function OpportunityPipelineBoard({ entries, onChange }: Props) {
     setOverStage(null);
   };
 
+  const detailEntryLive = useMemo(() => {
+    if (!detailEntry) return null;
+    return (
+      entries.find((e) => e.source === detailEntry.source && e.id === detailEntry.id) ?? detailEntry
+    );
+  }, [detailEntry, entries]);
+
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <DndContext
@@ -295,6 +330,7 @@ export function OpportunityPipelineBoard({ entries, onChange }: Props) {
               entries={byStage[stage]}
               isOver={overStage === stage}
               onRemove={(entry) => onChange(removePipelineLead(entry.source, entry.id))}
+              onViewDetail={setDetailEntry}
               t={t}
             />
           ))}
@@ -303,6 +339,19 @@ export function OpportunityPipelineBoard({ entries, onChange }: Props) {
           {activeEntry ? <PipelineCardPreview entry={activeEntry} t={t} /> : null}
         </DragOverlay>
       </DndContext>
+      <PipelineLeadDetailDialog
+        entry={detailEntryLive}
+        open={detailEntryLive != null}
+        onOpenChange={(open) => {
+          if (!open) setDetailEntry(null);
+        }}
+        onAmountChange={(amount) => {
+          if (!detailEntryLive) return;
+          onChange(
+            updatePipelineLeadEstimatedAmount(detailEntryLive.source, detailEntryLive.id, amount),
+          );
+        }}
+      />
     </div>
   );
 }

@@ -25,6 +25,8 @@ export type PipelineLeadEntry = {
   servicio?: string;
   addedAtMs: number;
   stage: PipelineStage;
+  /** Valor estimado de la oportunidad en USD. */
+  estimatedAmountUsd?: number;
 };
 
 export const PIPELINE_LEADS_CHANGE_EVENT = 'vado-pipeline-leads-change';
@@ -38,9 +40,15 @@ function normalizePipelineLead(row: PipelineLeadEntry): PipelineLeadEntry {
   // Migración: etapas renombradas
   if ((row.stage as string) === 'propuesta') stage = 'tomando_decision';
   if ((row.stage as string) === 'calificado') stage = 'en_reuniones';
+  const amountRaw = row.estimatedAmountUsd;
+  const estimatedAmountUsd =
+    typeof amountRaw === 'number' && Number.isFinite(amountRaw) && amountRaw > 0
+      ? Math.round(amountRaw * 100) / 100
+      : undefined;
   return {
     ...row,
     stage,
+    estimatedAmountUsd,
   };
 }
 
@@ -151,4 +159,33 @@ export function removePipelineLead(source: PipelineLeadSource, id: string): Pipe
   const next = loadPipelineLeads().filter((e) => !(e.source === source && e.id === id));
   persistPipelineLeads(next);
   return next;
+}
+
+export function updatePipelineLeadEstimatedAmount(
+  source: PipelineLeadSource,
+  id: string,
+  estimatedAmountUsd: number | undefined,
+): PipelineLeadEntry[] {
+  const normalized =
+    estimatedAmountUsd != null && Number.isFinite(estimatedAmountUsd) && estimatedAmountUsd > 0
+      ? Math.round(estimatedAmountUsd * 100) / 100
+      : undefined;
+  const next = loadPipelineLeads().map((e) =>
+    e.source === source && e.id === id ? { ...e, estimatedAmountUsd: normalized } : e,
+  );
+  persistPipelineLeads(next);
+  return next;
+}
+
+export function formatPipelineAmountUsd(amount: number | undefined, locale = 'es-MX'): string {
+  if (amount == null || !Number.isFinite(amount) || amount <= 0) return '';
+  return new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency: 'USD',
+    maximumFractionDigits: 0,
+  }).format(amount);
+}
+
+export function sumPipelineAmountUsd(entries: PipelineLeadEntry[]): number {
+  return entries.reduce((sum, e) => sum + (e.estimatedAmountUsd ?? 0), 0);
 }

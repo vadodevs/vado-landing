@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { AppShell } from '@/components/layout/app/AppShell';
 import { AdminGoogleCalendarIntegrationCard } from '@/components/admin/AdminGoogleCalendarIntegrationCard';
+import { AdminGmailIntegrationCard } from '@/components/admin/AdminGmailIntegrationCard';
 
 export default function AppAdminSettingsIntegraciones() {
   const { t } = useTranslation();
@@ -13,6 +14,7 @@ export default function AppAdminSettingsIntegraciones() {
     >
       <div className="mx-auto w-full max-w-3xl space-y-4 pb-12 pt-0 md:pb-16">
         <AdminGoogleCalendarIntegrationCard />
+        <AdminGmailIntegrationCard />
       </div>
     </AppShell>
   );

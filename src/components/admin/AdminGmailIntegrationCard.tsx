@@ -2,11 +2,11 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import { GoogleCalendarLogo } from '@/components/admin/integrationBrandLogos';
+import { GmailLogo } from '@/components/admin/integrationBrandLogos';
 import { cn } from '@/lib/utils';
 import { ADMIN_PRIMARY_BTN_CLASS } from '@/lib/adminVadoUi';
 
-export function AdminGoogleCalendarIntegrationCard() {
+export function AdminGmailIntegrationCard() {
   const { t } = useTranslation();
   const [connected, setConnected] = useState(false);
   const [connecting, setConnecting] = useState(false);
@@ -17,7 +17,7 @@ export function AdminGoogleCalendarIntegrationCard() {
     window.setTimeout(() => {
       setConnecting(false);
       setConnected(true);
-      toast.success(t('adminSettings.googleCalendarMockConnected'));
+      toast.success(t('adminSettings.gmailMockConnected'));
     }, 900);
   };
 
@@ -25,13 +25,11 @@ export function AdminGoogleCalendarIntegrationCard() {
     <article className="scroll-mt-24 rounded-xl border border-border bg-card p-5 shadow-sm md:p-6">
       <div className="flex flex-wrap items-start gap-4">
         <div className="flex size-12 shrink-0 items-center justify-center rounded-xl border border-border/70 bg-white p-2 shadow-sm dark:bg-zinc-950">
-          <GoogleCalendarLogo className="size-8" />
+          <GmailLogo className="size-8" />
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <h3 className="text-lg font-semibold text-foreground">
-              {t('adminSettings.googleCalendarTitle')}
-            </h3>
+            <h3 className="text-lg font-semibold text-foreground">{t('adminSettings.gmailTitle')}</h3>
             <span
               className={cn(
                 'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium',
@@ -41,13 +39,11 @@ export function AdminGoogleCalendarIntegrationCard() {
               )}
             >
               {connected
-                ? t('adminSettings.googleCalendarConnected')
-                : t('adminSettings.googleCalendarDisconnected')}
+                ? t('adminSettings.gmailConnected')
+                : t('adminSettings.gmailDisconnected')}
             </span>
           </div>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {t('adminSettings.googleCalendarDescription')}
-          </p>
+          <p className="mt-1 text-sm text-muted-foreground">{t('adminSettings.gmailDescription')}</p>
         </div>
         <Button
           type="button"
@@ -56,13 +52,13 @@ export function AdminGoogleCalendarIntegrationCard() {
           onClick={handleConnect}
         >
           {connecting
-            ? t('adminSettings.googleCalendarConnecting')
+            ? t('adminSettings.gmailConnecting')
             : connected
-              ? t('adminSettings.googleCalendarConnected')
-              : t('adminSettings.googleCalendarConnect')}
+              ? t('adminSettings.gmailConnected')
+              : t('adminSettings.gmailConnect')}
         </Button>
       </div>
-      <p className="mt-4 text-xs text-muted-foreground">{t('adminSettings.googleCalendarMockNote')}</p>
+      <p className="mt-4 text-xs text-muted-foreground">{t('adminSettings.gmailMockNote')}</p>
     </article>
   );
 }

@@ -1,4 +1,4 @@
-import { useEffect, useId, useMemo, useState, type ReactNode } from 'react';
+import { useEffect, useId, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Link, useLocation } from 'wouter';
 import { useTranslation } from 'react-i18next';
 import {
@@ -30,7 +30,11 @@ import { PageMeta } from '@/components/PageMeta';
 import { useLocale } from '@/hooks/useLocale';
 import {
   readAdminChannelsNavOpen,
+  readAdminSettingsNavOpen,
+  readAdminSidebarScrollTop,
   writeAdminChannelsNavOpen,
+  writeAdminSettingsNavOpen,
+  writeAdminSidebarScrollTop,
 } from '@/lib/adminSidebarNavState';
 import { logoutAdmin } from '@/lib/adminAuth';
 import { logoutCompany } from '@/lib/companyAuth';
@@ -228,6 +232,58 @@ function normalizePath(p: string) {
   return x === '' ? '/' : x;
 }
 
+type SidebarNavChrome = AppSidebarChrome;
+
+function SidebarSubnavToggleButton({
+  open,
+  active,
+  collapsedHref,
+  onToggle,
+  sb,
+  chevronNavClass,
+  label,
+  icon,
+}: {
+  open: boolean;
+  active: boolean;
+  collapsedHref: string;
+  onToggle: () => void;
+  sb: SidebarNavChrome;
+  chevronNavClass: string;
+  label: string;
+  icon: ReactNode;
+}) {
+  const [, setLocation] = useLocation();
+  const { state, isMobile } = useSidebar();
+
+  const handleClick = () => {
+    if (state === 'collapsed' && !isMobile) {
+      setLocation(collapsedHref);
+      return;
+    }
+    onToggle();
+  };
+
+  return (
+    <CollapsedIconTooltip label={label}>
+      <button
+        type="button"
+        aria-expanded={open}
+        onClick={handleClick}
+        className={cn(
+          sb.rowGhost,
+          'min-h-10 w-full group-data-[collapsible=icon]:justify-center',
+          active && sb.navActive,
+        )}
+      >
+        <span className={cn('relative flex shrink-0 [&_svg]:size-4', sb.iconMuted)}>{icon}</span>
+        <span className="min-w-0 flex-1 truncate text-left group-data-[collapsible=icon]:hidden">{label}</span>
+        <ChevronDown className={cn(chevronNavClass, open && 'rotate-180')} aria-hidden />
+      </button>
+    </CollapsedIconTooltip>
+  );
+}
+
 /** Alterna el panel Vado Intelligence: icono IA y texto de marca. */
 function VadoIntelligenceChatToggle({
   expanded,
@@ -325,8 +381,13 @@ export function AppShell({
   const [offersOpen, setOffersOpen] = useState(false);
   const [recruitersOpen, setRecruitersOpen] = useState(false);
   const [channelsOpen, setChannelsOpen] = useState(() => readAdminChannelsNavOpen());
-  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(
+    () =>
+      readAdminSettingsNavOpen() ||
+      normalizePath(pathWithoutLang).startsWith('/app/admin/settings'),
+  );
   const [trabajoOpen, setTrabajoOpen] = useState(false);
+  const sidebarContentRef = useRef<HTMLDivElement>(null);
   const [appThemeMode, setAppThemeMode] = useState<AppThemeMode>(() => getStoredAppTheme());
   const [sideChatExpanded, setSideChatExpanded] = useState(true);
   const vadoIntelPanelId = useId();
@@ -420,8 +481,33 @@ export function AppShell({
   }, [channelsActive]);
 
   useEffect(() => {
-    if (settingsActive) queueMicrotask(() => setSettingsOpen(true));
+    if (!settingsActive) return;
+    queueMicrotask(() => {
+      setSettingsOpen(true);
+      writeAdminSettingsNavOpen(true);
+    });
   }, [settingsActive]);
+
+  const toggleSettingsNav = () => {
+    setSettingsOpen((v) => {
+      const next = !v;
+      writeAdminSettingsNavOpen(next);
+      return next;
+    });
+  };
+
+  useEffect(() => {
+    const el = sidebarContentRef.current;
+    if (!el) return;
+    const savedScrollTop = readAdminSidebarScrollTop();
+    if (savedScrollTop > 0) {
+      el.scrollTop = savedScrollTop;
+    }
+  }, []);
+
+  const handleSidebarScroll = (event: React.UIEvent<HTMLDivElement>) => {
+    writeAdminSidebarScrollTop(event.currentTarget.scrollTop);
+  };
 
   const toggleChannelsNav = () => {
     setChannelsOpen((v) => {
@@ -542,7 +628,11 @@ export function AppShell({
             </Link>
           </SidebarHeader>
 
-          <SidebarContent className="min-h-0 flex-1 gap-0 overflow-y-auto overscroll-y-contain px-2 pb-2">
+          <SidebarContent
+            ref={sidebarContentRef}
+            onScroll={handleSidebarScroll}
+            className="min-h-0 flex-1 gap-0 overflow-y-auto overscroll-y-contain px-2 pb-2"
+          >
             <nav className="flex flex-col py-3" aria-label={t('sidebarDemo.appAreaNav')}>
               {isAdminSection ? (
                 <>
@@ -558,29 +648,16 @@ export function AppShell({
                       {t('sidebarDemo.navSectionTalent')}
                     </h2>
                     {navItem(hrefDevelopers, t('sidebarDemo.navDevelopers'), <Code2 />, adminDevelopersUnread)}
-                    <CollapsedIconTooltip label={t('sidebarDemo.navRecruiters')}>
-                      <button
-                        type="button"
-                        aria-expanded={recruitersOpen}
-                        onClick={() => setRecruitersOpen((v) => !v)}
-                        className={cn(
-                          sb.rowGhost,
-                          'min-h-10 w-full group-data-[collapsible=icon]:justify-center',
-                          recruitersActive && sb.navActive,
-                        )}
-                      >
-                        <span className={cn('relative flex shrink-0 [&_svg]:size-4', sb.iconMuted)}>
-                          <UserSearch />
-                        </span>
-                        <span className="min-w-0 flex-1 truncate text-left group-data-[collapsible=icon]:hidden">
-                          {t('sidebarDemo.navRecruiters')}
-                        </span>
-                        <ChevronDown
-                          className={cn(chevronNavClass, recruitersOpen && 'rotate-180')}
-                          aria-hidden
-                        />
-                      </button>
-                    </CollapsedIconTooltip>
+                    <SidebarSubnavToggleButton
+                      open={recruitersOpen}
+                      active={recruitersActive}
+                      collapsedHref={hrefAdminRecruitersList}
+                      onToggle={() => setRecruitersOpen((v) => !v)}
+                      sb={sb}
+                      chevronNavClass={chevronNavClass}
+                      label={t('sidebarDemo.navRecruiters')}
+                      icon={<UserSearch />}
+                    />
                     <SidebarAnimatedCollapse
                       show={recruitersOpen}
                       className="group-data-[collapsible=icon]:hidden"
@@ -615,26 +692,16 @@ export function AppShell({
                       </div>
                     </SidebarAnimatedCollapse>
 
-                    <CollapsedIconTooltip label={t('sidebarDemo.navJobs')}>
-                      <button
-                        type="button"
-                        aria-expanded={offersOpen}
-                        onClick={() => setOffersOpen((v) => !v)}
-                        className={cn(
-                          sb.rowGhost,
-                          'min-h-10 w-full group-data-[collapsible=icon]:justify-center',
-                          offersActive && sb.navActive,
-                        )}
-                      >
-                        <span className={cn('relative flex shrink-0 [&_svg]:size-4', sb.iconMuted)}>
-                          <BriefcaseBusiness />
-                        </span>
-                        <span className="min-w-0 flex-1 truncate text-left group-data-[collapsible=icon]:hidden">
-                          {t('sidebarDemo.navJobs')}
-                        </span>
-                        <ChevronDown className={cn(chevronNavClass, offersOpen && 'rotate-180')} aria-hidden />
-                      </button>
-                    </CollapsedIconTooltip>
+                    <SidebarSubnavToggleButton
+                      open={offersOpen}
+                      active={offersActive}
+                      collapsedHref={hrefAdminActiveJobs}
+                      onToggle={() => setOffersOpen((v) => !v)}
+                      sb={sb}
+                      chevronNavClass={chevronNavClass}
+                      label={t('sidebarDemo.navJobs')}
+                      icon={<BriefcaseBusiness />}
+                    />
                     <SidebarAnimatedCollapse show={offersOpen} className="group-data-[collapsible=icon]:hidden">
                       <div className={cn('ml-2 space-y-1 border-l pl-2.5', sb.borderSubNav)}>
                         <Link
@@ -696,26 +763,16 @@ export function AppShell({
                     <h2 id="nav-admin-channels" className={sidebarNavSectionTitle}>
                       {t('sidebarDemo.navSectionChannels')}
                     </h2>
-                    <CollapsedIconTooltip label={t('sidebarDemo.navChannels')}>
-                      <button
-                        type="button"
-                        aria-expanded={channelsOpen}
-                        onClick={toggleChannelsNav}
-                        className={cn(
-                          sb.rowGhost,
-                          'min-h-10 w-full group-data-[collapsible=icon]:justify-center',
-                          channelsActive && sb.navActive,
-                        )}
-                      >
-                        <span className={cn('relative flex shrink-0 [&_svg]:size-4', sb.iconMuted)}>
-                          <MessagesSquare />
-                        </span>
-                        <span className="min-w-0 flex-1 truncate text-left group-data-[collapsible=icon]:hidden">
-                          {t('sidebarDemo.navChannels')}
-                        </span>
-                        <ChevronDown className={cn(chevronNavClass, channelsOpen && 'rotate-180')} aria-hidden />
-                      </button>
-                    </CollapsedIconTooltip>
+                    <SidebarSubnavToggleButton
+                      open={channelsOpen}
+                      active={channelsActive}
+                      collapsedHref={hrefAdminCanalesWhatsApp}
+                      onToggle={toggleChannelsNav}
+                      sb={sb}
+                      chevronNavClass={chevronNavClass}
+                      label={t('sidebarDemo.navChannels')}
+                      icon={<MessagesSquare />}
+                    />
                     <SidebarAnimatedCollapse show={channelsOpen} className="group-data-[collapsible=icon]:hidden">
                       <div className={cn('ml-2 space-y-1 border-l pl-2.5', sb.borderSubNav)}>
                         <Link
@@ -774,26 +831,16 @@ export function AppShell({
                     <h2 id="nav-admin-account" className={sidebarNavSectionTitle}>
                       {t('sidebarDemo.navSectionAccount')}
                     </h2>
-                    <CollapsedIconTooltip label={t('sidebarDemo.navSettings')}>
-                      <button
-                        type="button"
-                        aria-expanded={settingsOpen}
-                        onClick={() => setSettingsOpen((v) => !v)}
-                        className={cn(
-                          sb.rowGhost,
-                          'min-h-10 w-full group-data-[collapsible=icon]:justify-center',
-                          settingsActive && sb.navActive,
-                        )}
-                      >
-                        <span className={cn('relative flex shrink-0 [&_svg]:size-4', sb.iconMuted)}>
-                          <Settings />
-                        </span>
-                        <span className="min-w-0 flex-1 truncate text-left group-data-[collapsible=icon]:hidden">
-                          {t('sidebarDemo.navSettings')}
-                        </span>
-                        <ChevronDown className={cn(chevronNavClass, settingsOpen && 'rotate-180')} aria-hidden />
-                      </button>
-                    </CollapsedIconTooltip>
+                    <SidebarSubnavToggleButton
+                      open={settingsOpen}
+                      active={settingsActive}
+                      collapsedHref={hrefAdminSettings}
+                      onToggle={toggleSettingsNav}
+                      sb={sb}
+                      chevronNavClass={chevronNavClass}
+                      label={t('sidebarDemo.navSettings')}
+                      icon={<Settings />}
+                    />
                     <SidebarAnimatedCollapse show={settingsOpen} className="group-data-[collapsible=icon]:hidden">
                       <div className={cn('ml-2 space-y-1 border-l pl-2.5', sb.borderSubNav)}>
                         <Link
@@ -863,26 +910,16 @@ export function AppShell({
                         : null}
                       {canRecruiterPanel('panel:jobs') ? (
                         <>
-                          <CollapsedIconTooltip label={t('sidebarDemo.navJobs')}>
-                            <button
-                              type="button"
-                              aria-expanded={offersOpen}
-                              onClick={() => setOffersOpen((v) => !v)}
-                              className={cn(
-                                sb.rowGhost,
-                                'min-h-10 w-full group-data-[collapsible=icon]:justify-center',
-                                offersActive && sb.navActive,
-                              )}
-                            >
-                              <span className={cn('relative flex shrink-0 [&_svg]:size-4', sb.iconMuted)}>
-                                <BriefcaseBusiness />
-                              </span>
-                              <span className="min-w-0 flex-1 truncate text-left group-data-[collapsible=icon]:hidden">
-                                {t('sidebarDemo.navJobs')}
-                              </span>
-                              <ChevronDown className={cn(chevronNavClass, offersOpen && 'rotate-180')} aria-hidden />
-                            </button>
-                          </CollapsedIconTooltip>
+                          <SidebarSubnavToggleButton
+                            open={offersOpen}
+                            active={offersActive}
+                            collapsedHref={hrefRecruiterActiveJobs}
+                            onToggle={() => setOffersOpen((v) => !v)}
+                            sb={sb}
+                            chevronNavClass={chevronNavClass}
+                            label={t('sidebarDemo.navJobs')}
+                            icon={<BriefcaseBusiness />}
+                          />
                           <SidebarAnimatedCollapse show={offersOpen} className="group-data-[collapsible=icon]:hidden">
                             <div className={cn('ml-2 space-y-1 border-l pl-2.5', sb.borderSubNav)}>
                               <Link
