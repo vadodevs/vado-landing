@@ -1,3 +1,5 @@
+import { getApiBaseUrl } from '@/lib/apiBaseUrl';
+
 /** Fila de la vista admin Compañías (lista + detalle). */
 export type CompanyContact = {
   id: string;
@@ -63,24 +65,35 @@ export function mapApiCompanySubmission(row: ApiCompanySubmissionRow): CompanyCo
 
 export type CompanyContactDirectoryEntry = { name: string; email: string };
 
+export type CompanySubmissionsFetchResult =
+  | { ok: true; contacts: CompanyContact[] }
+  | { ok: false; reason: 'no-config' | 'fail' };
+
+/** Lista de leads de compañía (formulario / chat widget). */
+export async function fetchCompanySubmissions(): Promise<CompanySubmissionsFetchResult> {
+  const base = getApiBaseUrl();
+  if (!base) return { ok: false, reason: 'no-config' };
+  try {
+    const res = await fetch(`${base}/contact/company-submissions`);
+    if (!res.ok) return { ok: false, reason: 'fail' };
+    const data = (await res.json()) as unknown;
+    if (!Array.isArray(data)) return { ok: true, contacts: [] };
+    const contacts = data.map((row) => mapApiCompanySubmission(row as ApiCompanySubmissionRow));
+    return { ok: true, contacts };
+  } catch {
+    return { ok: false, reason: 'fail' };
+  }
+}
+
 /** Mapa id → nombre/correo para resolver recordatorios en el calendario. */
 export async function fetchCompanyContactDirectory(): Promise<
   Record<string, CompanyContactDirectoryEntry>
 > {
-  const base = import.meta.env.VITE_API_BASE_URL;
-  if (typeof base !== 'string' || !base.trim()) return {};
-  try {
-    const res = await fetch(`${base.replace(/\/$/, '')}/contact/company-submissions`);
-    if (!res.ok) return {};
-    const data = (await res.json()) as unknown;
-    if (!Array.isArray(data)) return {};
-    const out: Record<string, CompanyContactDirectoryEntry> = {};
-    for (const row of data) {
-      const contact = mapApiCompanySubmission(row as ApiCompanySubmissionRow);
-      out[contact.id] = { name: contact.nombre, email: contact.correo };
-    }
-    return out;
-  } catch {
-    return {};
+  const res = await fetchCompanySubmissions();
+  if (!res.ok) return {};
+  const out: Record<string, CompanyContactDirectoryEntry> = {};
+  for (const contact of res.contacts) {
+    out[contact.id] = { name: contact.nombre, email: contact.correo };
   }
+  return out;
 }

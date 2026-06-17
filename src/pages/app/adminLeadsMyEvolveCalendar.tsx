@@ -229,9 +229,18 @@ export default function AppAdminLeadsMyEvolveCalendar() {
     }
   };
 
+  const dashboardCompanyReminders = useMemo(() => {
+    const { startMs, endMs } = dashboardFetchRange();
+    return loadCompanyLeadReminderCalendarEvents({
+      startMs,
+      endMs,
+      contactDirectory: companyContactDirectory,
+    });
+  }, [companyContactDirectory, companyReminders]);
+
   const dashboardStats = useMemo(
-    () => computeMeetingStats(dashboardMeetings),
-    [dashboardMeetings],
+    () => computeMeetingStats([...dashboardMeetings, ...dashboardCompanyReminders]),
+    [dashboardMeetings, dashboardCompanyReminders],
   );
 
   const allCalendarMeetings = useMemo(() => {

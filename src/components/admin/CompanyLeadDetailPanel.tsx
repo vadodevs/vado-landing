@@ -38,6 +38,7 @@ import {
   isCompanyLeadReminder,
   type CompanyLeadUpdate,
 } from '@/lib/companyLeadUpdates';
+import { CompanyLeadActivityTimeline } from '@/components/admin/CompanyLeadActivityTimeline';
 import { ADMIN_PRIMARY_BTN_CLASS } from '@/lib/adminVadoUi';
 import { cn } from '@/lib/utils';
 
@@ -541,23 +542,17 @@ export function CompanyLeadDetailPanel({
 
             <div
               className={cn(
-                'absolute inset-0 overflow-y-auto overscroll-contain p-5',
+                'absolute inset-0 overflow-hidden',
                 detailTab !== 'actividad' && 'hidden',
               )}
               role="tabpanel"
               aria-hidden={detailTab !== 'actividad'}
             >
-              {updates.length === 0 ? (
-                <p className="rounded-xl border border-dashed border-border/70 px-4 py-12 text-center text-sm text-muted-foreground">
-                  Sin actividad registrada. Las notas que agregues aparecerán aquí.
-                </p>
-              ) : (
-                <div className="space-y-3">
-                  {updates.map((update) => (
-                    <LeadUpdateItem key={update.id} update={update} />
-                  ))}
-                </div>
-              )}
+              <CompanyLeadActivityTimeline
+                contact={contact}
+                updates={updates}
+                isWidget={leadDetailWidget.isWidget}
+              />
             </div>
 
             <div

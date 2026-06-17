@@ -90,7 +90,7 @@ import {
   type CompanyLeadUpdate,
 } from '@/lib/companyLeadUpdates';
 import { consumeOpenCompanyLeadRequest } from '@/lib/companyLeadDeepLink';
-import { ADMIN_FAVORITES_TOOLBAR_BUTTON_ACTIVE, ADMIN_FAVORITES_TOOLBAR_BUTTON_INACTIVE, ADMIN_FILTER_PILL_CLASS, ADMIN_FILTER_VIEW_TOGGLE_CLASS } from '@/lib/adminFilterUi';
+import { ADMIN_FAVORITES_TOOLBAR_BUTTON_ACTIVE, ADMIN_FAVORITES_TOOLBAR_BUTTON_INACTIVE, ADMIN_FILTER_PILL_CLASS, ADMIN_FILTER_VIEW_TOGGLE_CLASS, ADMIN_PRIMARY_TOOLBAR_BUTTON_CLASS } from '@/lib/adminFilterUi';
 import {
   ADMIN_ROW_ACTION_ICON_BUTTON_CLASS,
   ADMIN_ROW_ACTION_ICON_MUTED_CLASS,
@@ -618,12 +618,13 @@ export default function AppAdminCompanyPage() {
     setFavoritesOnly(false);
   };
 
-  const openDetail = (contact: CompanyContact) => {
+  const openDetail = (contact: CompanyContact, opts?: { tab?: CompanyLeadDetailTab }) => {
     setSelected(contact);
     setFlowStep('detalle');
     setSeleccionProspectos({});
     setOpen(true);
     setCopied(false);
+    setDetailTab(opts?.tab ?? 'cuestionario');
   };
 
   const openAssignLead = (contact: CompanyContact) => {
@@ -953,12 +954,11 @@ export default function AppAdminCompanyPage() {
                 type="button"
                 variant="outline"
                 size="sm"
-                className={cn(
-                  'h-10 rounded-xl px-4',
+                className={
                   favoritesOnly
                     ? ADMIN_FAVORITES_TOOLBAR_BUTTON_ACTIVE
-                    : ADMIN_FAVORITES_TOOLBAR_BUTTON_INACTIVE,
-                )}
+                    : ADMIN_FAVORITES_TOOLBAR_BUTTON_INACTIVE
+                }
                 aria-pressed={favoritesOnly}
                 title={favoritesOnly ? 'Mostrar todos los leads' : 'Solo leads marcados como favoritos'}
                 onClick={() => setFavoritesOnly((v) => !v)}
@@ -968,16 +968,17 @@ export default function AppAdminCompanyPage() {
                     'shrink-0',
                     favoritesOnly
                       ? 'size-4 fill-white text-white'
-                      : 'size-4 fill-rose-600 text-rose-600 dark:fill-rose-400 dark:text-rose-400',
+                      : 'size-3.5 fill-rose-600 text-rose-600 dark:fill-rose-400 dark:text-rose-400',
                   )}
                   aria-hidden
                 />
-                <span className="text-sm font-semibold">Favoritos</span>
+                <span className="text-[11px] font-semibold">Favoritos</span>
               </Button>
               <Button
                 type="button"
+                variant="outline"
                 size="sm"
-                className="h-10 gap-2 rounded-xl bg-rose-600 px-4 text-sm font-semibold text-white shadow-sm hover:bg-rose-700 dark:bg-rose-600 dark:hover:bg-rose-500"
+                className={ADMIN_PRIMARY_TOOLBAR_BUTTON_CLASS}
                 title="Agregar lead manualmente"
                 onClick={() =>
                   setManualLeadForm({
@@ -990,8 +991,8 @@ export default function AppAdminCompanyPage() {
                   })
                 }
               >
-                <UserPlus className="size-4" />
-                Agregar Lead
+                <UserPlus className="size-3.5 shrink-0" aria-hidden />
+                <span className="text-[11px] font-semibold">Agregar Lead</span>
               </Button>
             </div>
           </div>
@@ -1162,7 +1163,7 @@ export default function AppAdminCompanyPage() {
                         className={ADMIN_ROW_ACTION_ICON_BUTTON_CLASS}
                         title="Ver detalle"
                         aria-label={`Ver detalle de ${contact.nombre}`}
-                        onClick={() => openDetail(contact)}
+                        onClick={() => openDetail(contact, { tab: 'actividad' })}
                       >
                         <Eye className="size-4" strokeWidth={1.5} aria-hidden />
                       </Button>
@@ -1278,7 +1279,7 @@ export default function AppAdminCompanyPage() {
                     lead={contact}
                     initials={leadInitials(contact.nombre)}
                     isFavorite={isFavorite}
-                    onView={openDetail}
+                    onView={(lead) => openDetail(lead, { tab: 'actividad' })}
                     onToggleFavorite={toggleLeadFavorite}
                     onCopyEmail={copyLeadTableEmail}
                     onAssign={openAssignLead}

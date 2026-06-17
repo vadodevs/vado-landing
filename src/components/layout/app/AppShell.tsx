@@ -14,13 +14,16 @@ import {
   ListChecks,
   LogOut,
   MessagesSquare,
+  Plug,
   PlusCircle,
   Settings,
+  Settings2,
   Sparkles,
   User,
   UserPlus,
   UserSearch,
   Users,
+  Target,
 } from 'lucide-react';
 import { VadoLogo } from '@/assets/vado-logo';
 import { PageMeta } from '@/components/PageMeta';
@@ -322,6 +325,7 @@ export function AppShell({
   const [offersOpen, setOffersOpen] = useState(false);
   const [recruitersOpen, setRecruitersOpen] = useState(false);
   const [channelsOpen, setChannelsOpen] = useState(() => readAdminChannelsNavOpen());
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const [trabajoOpen, setTrabajoOpen] = useState(false);
   const [appThemeMode, setAppThemeMode] = useState<AppThemeMode>(() => getStoredAppTheme());
   const [sideChatExpanded, setSideChatExpanded] = useState(true);
@@ -349,6 +353,7 @@ export function AppShell({
   const hrefAdminActiveJobs = path('/app/admin/ofertas/activas');
   const hrefAdminProjects = path('/app/admin/proyectos');
   const hrefAdminCompanies = path('/app/admin/company');
+  const hrefAdminOpportunities = path('/app/admin/oportunidades');
   const hrefAdminLeadsMyEvolve = path('/app/admin/leads/my-evolve');
   const hrefAdminLeadsCalendar = path('/app/admin/leads/calendar');
   const hrefAdminCanalesFacebook = path('/app/admin/canales/facebook');
@@ -356,6 +361,8 @@ export function AppShell({
   const hrefAdminCanalesInstagram = path('/app/admin/canales/instagram');
   const hrefAdminCanalesBotTest = path('/app/admin/canales/bot-test');
   const hrefAdminSettings = path('/app/admin/settings');
+  const hrefAdminSettingsIntegraciones = path('/app/admin/settings/integraciones');
+  const hrefAdminSettingsCuestionario = path('/app/admin/settings/cuestionario');
   const hrefCompanyProfile = path('/app/company/profile');
   const hrefCompanyProjects = path('/app/company/proyectos');
   const hrefCompanySettings = path('/app/company/settings');
@@ -389,6 +396,8 @@ export function AppShell({
 
   const channelsActive = currentAppPath.startsWith('/app/admin/canales');
 
+  const settingsActive = currentAppPath.startsWith('/app/admin/settings');
+
   const nuevasAperturasActive = isActive(hrefDevDashboard) || isActive(hrefDevOverview);
   const empleosOfertasActive = isActive(hrefEmpleosOfertas);
   const guardadasActive = isActive(hrefEmpleosGuardadas);
@@ -409,6 +418,10 @@ export function AppShell({
       writeAdminChannelsNavOpen(true);
     });
   }, [channelsActive]);
+
+  useEffect(() => {
+    if (settingsActive) queueMicrotask(() => setSettingsOpen(true));
+  }, [settingsActive]);
 
   const toggleChannelsNav = () => {
     setChannelsOpen((v) => {
@@ -663,14 +676,19 @@ export function AppShell({
                       adminCompaniesUnread,
                     )}
                     {navItem(
-                      hrefAdminLeadsCalendar,
-                      t('sidebarDemo.navLeadsCalendar'),
-                      <CalendarDays />,
-                    )}
-                    {navItem(
                       hrefAdminLeadsMyEvolve,
                       t('sidebarDemo.navLeadsMyEvolve'),
                       <Sparkles />,
+                    )}
+                    {navItem(
+                      hrefAdminOpportunities,
+                      t('sidebarDemo.navOpportunities'),
+                      <Target />,
+                    )}
+                    {navItem(
+                      hrefAdminLeadsCalendar,
+                      t('sidebarDemo.navLeadsCalendar'),
+                      <CalendarDays />,
                     )}
                   </section>
 
@@ -756,7 +774,66 @@ export function AppShell({
                     <h2 id="nav-admin-account" className={sidebarNavSectionTitle}>
                       {t('sidebarDemo.navSectionAccount')}
                     </h2>
-                    {navItem(hrefAdminSettings, t('sidebarDemo.navSettings'), <Settings />)}
+                    <CollapsedIconTooltip label={t('sidebarDemo.navSettings')}>
+                      <button
+                        type="button"
+                        aria-expanded={settingsOpen}
+                        onClick={() => setSettingsOpen((v) => !v)}
+                        className={cn(
+                          sb.rowGhost,
+                          'min-h-10 w-full group-data-[collapsible=icon]:justify-center',
+                          settingsActive && sb.navActive,
+                        )}
+                      >
+                        <span className={cn('relative flex shrink-0 [&_svg]:size-4', sb.iconMuted)}>
+                          <Settings />
+                        </span>
+                        <span className="min-w-0 flex-1 truncate text-left group-data-[collapsible=icon]:hidden">
+                          {t('sidebarDemo.navSettings')}
+                        </span>
+                        <ChevronDown className={cn(chevronNavClass, settingsOpen && 'rotate-180')} aria-hidden />
+                      </button>
+                    </CollapsedIconTooltip>
+                    <SidebarAnimatedCollapse show={settingsOpen} className="group-data-[collapsible=icon]:hidden">
+                      <div className={cn('ml-2 space-y-1 border-l pl-2.5', sb.borderSubNav)}>
+                        <Link
+                          href={hrefAdminSettings}
+                          className={cn(
+                            sb.subRowBase,
+                            sb.subNavText,
+                            'gap-2',
+                            isActive(hrefAdminSettings) && sb.navActive,
+                          )}
+                        >
+                          <Settings2 className={cn('size-4 shrink-0', sb.iconMuted)} strokeWidth={2} aria-hidden />
+                          <span className="truncate">{t('sidebarDemo.navSettingsGeneral')}</span>
+                        </Link>
+                        <Link
+                          href={hrefAdminSettingsIntegraciones}
+                          className={cn(
+                            sb.subRowBase,
+                            sb.subNavText,
+                            'gap-2',
+                            isActive(hrefAdminSettingsIntegraciones) && sb.navActive,
+                          )}
+                        >
+                          <Plug className={cn('size-4 shrink-0', sb.iconMuted)} strokeWidth={2} aria-hidden />
+                          <span className="truncate">{t('sidebarDemo.navSettingsIntegrations')}</span>
+                        </Link>
+                        <Link
+                          href={hrefAdminSettingsCuestionario}
+                          className={cn(
+                            sb.subRowBase,
+                            sb.subNavText,
+                            'gap-2',
+                            isActive(hrefAdminSettingsCuestionario) && sb.navActive,
+                          )}
+                        >
+                          <ClipboardList className={cn('size-4 shrink-0', sb.iconMuted)} strokeWidth={2} aria-hidden />
+                          <span className="truncate">{t('sidebarDemo.navSettingsQuestionnaire')}</span>
+                        </Link>
+                      </div>
+                    </SidebarAnimatedCollapse>
                   </section>
                 </>
               ) : isRecruiterPortal ? (

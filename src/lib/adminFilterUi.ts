@@ -8,10 +8,14 @@ export const ADMIN_FILTER_BADGE_CLASS =
 
 /** Botón «Favoritos» en la barra de filtros (rojo, activo = relleno). */
 export const ADMIN_FAVORITES_TOOLBAR_BUTTON_INACTIVE =
-  'h-8 shrink-0 gap-1.5 border-2 border-rose-500 bg-transparent px-2.5 text-[11px] font-semibold text-rose-600 shadow-sm transition-colors hover:bg-rose-50 hover:border-rose-600 dark:border-rose-400/70 dark:text-rose-400 dark:hover:bg-rose-950/45 dark:hover:border-rose-400';
+  'h-8 shrink-0 gap-1.5 rounded-xl border-2 border-rose-500 bg-transparent px-2.5 text-[11px] font-semibold text-rose-600 shadow-sm transition-colors hover:bg-rose-50 hover:border-rose-600 dark:border-rose-400/70 dark:text-rose-400 dark:hover:bg-rose-950/45 dark:hover:border-rose-400';
 
 export const ADMIN_FAVORITES_TOOLBAR_BUTTON_ACTIVE =
-  'h-8 shrink-0 gap-1.5 border-2 border-rose-600 bg-rose-600 px-2.5 text-[11px] font-semibold text-white shadow-md transition-colors hover:bg-rose-700 hover:border-rose-700 dark:border-rose-500 dark:bg-rose-600 dark:hover:bg-rose-500';
+  'h-8 shrink-0 gap-1.5 rounded-xl border-2 border-rose-600 bg-rose-600 px-2.5 text-[11px] font-semibold text-white shadow-md transition-colors hover:bg-rose-700 hover:border-rose-700 dark:border-rose-500 dark:bg-rose-600 dark:hover:bg-rose-500';
+
+/** CTA primario en barra de filtros (misma forma que Favoritos, azul admin). */
+export const ADMIN_PRIMARY_TOOLBAR_BUTTON_CLASS =
+  'h-8 shrink-0 gap-1.5 rounded-xl border-2 border-[#0b2a55] bg-[#0b2a55] px-2.5 text-[11px] font-semibold text-white shadow-md transition-colors hover:bg-[#0a2347] hover:border-[#0a2347] dark:border-sky-700 dark:bg-sky-800 dark:text-white dark:hover:bg-sky-700 dark:hover:border-sky-600';
 
 /** Botón corazón en fila: mismo aspecto en ambos estados; solo cambia el relleno del icono. */
 export const ADMIN_FAVORITE_ROW_HEART_BUTTON_CLASS =

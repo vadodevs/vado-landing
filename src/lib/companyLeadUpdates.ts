@@ -174,7 +174,7 @@ export function loadCompanyLeadReminderCalendarEvents(opts: {
     for (const update of updates) {
       if (!isCompanyLeadReminder(update)) continue;
       const ms = update.scheduledAtMs ?? 0;
-      if (ms < opts.startMs || ms >= opts.endMs) continue;
+      if (ms < opts.startMs || ms > opts.endMs) continue;
 
       const contactName =
         update.contactName?.trim() || directoryEntry?.name?.trim() || 'Sin nombre';
