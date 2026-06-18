@@ -1,11 +1,8 @@
-/**
- * Normaliza etiquetas de expertise para mostrar un formato consistente:
- * nombres conocidos (p. ej. JavaScript, C++) y, si no hay coincidencia, capitalización tipo título.
- */
 
-/** Claves en minúsculas; entrada se compara tras trim + espacios colapsados + toLowerCase. */
+
+
 const CANONICAL: Record<string, string> = {
-  // Lenguajes y runtimes
+  
   javascript: 'JavaScript',
   typescript: 'TypeScript',
   python: 'Python',
@@ -24,12 +21,12 @@ const CANONICAL: Record<string, string> = {
   elixir: 'Elixir',
   dart: 'Dart',
   r: 'R',
-  // Web / markup
+  
   html: 'HTML',
   css: 'CSS',
   sass: 'Sass',
   scss: 'SCSS',
-  // Frameworks / libs
+  
   react: 'React',
   vue: 'Vue',
   'vue.js': 'Vue.js',
@@ -48,14 +45,14 @@ const CANONICAL: Record<string, string> = {
   laravel: 'Laravel',
   rails: 'Rails',
   'ruby on rails': 'Ruby on Rails',
-  // Node
+  
   node: 'Node.js',
   'node.js': 'Node.js',
   npm: 'npm',
   yarn: 'Yarn',
   pnpm: 'pnpm',
   bun: 'Bun',
-  // Datos / infra
+  
   sql: 'SQL',
   mysql: 'MySQL',
   postgres: 'PostgreSQL',
@@ -74,14 +71,14 @@ const CANONICAL: Record<string, string> = {
   git: 'Git',
   github: 'GitHub',
   gitlab: 'GitLab',
-  // Siglas frecuentes
+  
   api: 'API',
   rest: 'REST',
   grpc: 'gRPC',
   oauth: 'OAuth',
   jwt: 'JWT',
   cicd: 'CI/CD',
-  // Frases comunes
+  
   'react native': 'React Native',
   'spring boot': 'Spring Boot',
   'tailwind css': 'Tailwind CSS',
@@ -97,12 +94,12 @@ function titleCaseWord(word: string): string {
   const lower = word.toLowerCase();
   if (CANONICAL[lower]) return CANONICAL[lower];
 
-  // Solo números o símbolos (p. ej. "++", "3.0")
+  
   if (!/[a-zA-Z]/.test(word)) {
     return word;
   }
 
-  // Primera letra mayúscula, resto minúsculas (corrige javasScript → Javascript)
+  
   const first = word.search(/[a-zA-Z]/);
   if (first === -1) return word;
   return (
@@ -112,9 +109,7 @@ function titleCaseWord(word: string): string {
   );
 }
 
-/**
- * Devuelve la etiqueta formateada o cadena vacía si no queda contenido útil.
- */
+
 export function normalizeExpertiseTag(raw: string): string {
   const collapsed = raw.trim().replace(/\s+/g, ' ');
   if (!collapsed) return '';

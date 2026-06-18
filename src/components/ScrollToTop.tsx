@@ -7,7 +7,7 @@ export function ScrollToTop() {
   useEffect(() => {
     window.scrollTo(0, 0);
 
-    // Repeat after drawer / overlay animations that may restore scroll position
+    
     const timer = setTimeout(() => window.scrollTo(0, 0), 350);
     return () => clearTimeout(timer);
   }, [location]);

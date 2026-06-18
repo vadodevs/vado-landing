@@ -9,7 +9,7 @@ export type CompanyQuestionnaireStep = {
   placeholder?: string;
 };
 
-/** Pasos del cuestionario del chat widget en el sitio (orden fijo). */
+
 export const COMPANY_CHAT_QUESTIONNAIRE_STEPS: readonly CompanyQuestionnaireStep[] = [
   {
     id: 0,

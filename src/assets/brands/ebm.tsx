@@ -1,7 +1,7 @@
 export type EbmLogoProps = {
-  /** Color del logo (ej: "white" para hero). Si no se pasa, se usan los colores originales. */
+  
   color?: string;
-  /** Clase CSS opcional para el contenedor */
+  
   className?: string;
 };
 

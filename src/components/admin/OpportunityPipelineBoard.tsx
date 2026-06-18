@@ -297,7 +297,7 @@ export function OpportunityPipelineBoard({ entries, onChange }: Props) {
     if (!nextStage) return;
     const current = entries.find((e) => e.source === parsed.source && e.id === parsed.id);
     if (!current || current.stage === nextStage) return;
-    onChange(movePipelineLeadToStage(parsed.source, parsed.id, nextStage));
+    void movePipelineLeadToStage(parsed.source, parsed.id, nextStage).then(onChange);
   };
 
   const handleDragCancel = () => {
@@ -329,7 +329,7 @@ export function OpportunityPipelineBoard({ entries, onChange }: Props) {
               stage={stage}
               entries={byStage[stage]}
               isOver={overStage === stage}
-              onRemove={(entry) => onChange(removePipelineLead(entry.source, entry.id))}
+              onRemove={(entry) => void removePipelineLead(entry.source, entry.id).then(onChange)}
               onViewDetail={setDetailEntry}
               t={t}
             />
@@ -347,9 +347,11 @@ export function OpportunityPipelineBoard({ entries, onChange }: Props) {
         }}
         onAmountChange={(amount) => {
           if (!detailEntryLive) return;
-          onChange(
-            updatePipelineLeadEstimatedAmount(detailEntryLive.source, detailEntryLive.id, amount),
-          );
+          void updatePipelineLeadEstimatedAmount(
+            detailEntryLive.source,
+            detailEntryLive.id,
+            amount,
+          ).then(onChange);
         }}
       />
     </div>

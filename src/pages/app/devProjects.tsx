@@ -5,10 +5,8 @@ import { AppShell } from '@/components/layout/app/AppShell';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { getDevAccessToken } from '@/lib/devAuth';
-import {
-  devProjectsSignature,
-  setDevProjectsSignatureSeen,
-} from '@/lib/appNavBadges';
+import { devProjectsSignature } from '@/lib/appNavBadges';
+import { persistDevProjectsSignatureSeen } from '@/lib/userPreferencesSync';
 
 type DevAssignedProject = {
   id: string;
@@ -111,7 +109,7 @@ export default function AppDevProjectsPage() {
 
   useEffect(() => {
     if (loading) return;
-    setDevProjectsSignatureSeen(devProjectsSignature(projects));
+    void persistDevProjectsSignatureSeen(devProjectsSignature(projects));
   }, [loading, projects]);
 
   const markAsRead = (id: string) => {

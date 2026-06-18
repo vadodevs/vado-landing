@@ -3,6 +3,8 @@ import { Link, useLocation } from 'wouter';
 import { useTranslation } from 'react-i18next';
 import {
   Bookmark,
+  Bell,
+  Boxes,
   BriefcaseBusiness,
   CalendarDays,
   ChevronDown,
@@ -32,20 +34,25 @@ import {
   readAdminChannelsNavOpen,
   readAdminSettingsNavOpen,
   readAdminSidebarScrollTop,
+  readAdminUtilitiesNavOpen,
   writeAdminChannelsNavOpen,
   writeAdminSettingsNavOpen,
   writeAdminSidebarScrollTop,
+  writeAdminUtilitiesNavOpen,
 } from '@/lib/adminSidebarNavState';
-import { logoutAdmin } from '@/lib/adminAuth';
-import { logoutCompany } from '@/lib/companyAuth';
-import { logoutDeveloper } from '@/lib/devAuth';
+import { ADMIN_AUTH_CHANGE_EVENT, logoutAdmin } from '@/lib/adminAuth';
+import { COMPANY_AUTH_CHANGE_EVENT, logoutCompany } from '@/lib/companyAuth';
+import { DEV_AUTH_CHANGE_EVENT, logoutDeveloper } from '@/lib/devAuth';
 import {
   RECRUITER_AUTH_CHANGE_EVENT,
   getRecruiterPermissions,
   logoutRecruiter,
 } from '@/lib/recruiterAuth';
 import { hasRecruiterPanelPermission } from '@/lib/recruiterPanel';
-import { APP_THEME_CHANGE_EVENT, APP_THEME_STORAGE_KEY, getStoredAppTheme, type AppThemeMode } from '@/lib/appTheme';
+import { APP_THEME_CHANGE_EVENT, getStoredAppTheme, type AppThemeMode } from '@/lib/appTheme';
+import { hydrateThemeFromServer, hydrateUserPreferences } from '@/lib/userPreferencesSync';
+import { migrateLegacyWorkspaceStorageOnce } from '@/lib/workspaceBrowserMigrate';
+import { isUserAuthenticated } from '@/lib/userAuthorizedFetch';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 import {
@@ -69,11 +76,11 @@ export type AppShellProps = {
   title: string;
   description: string;
   children: ReactNode;
-  /** `hidden`: sin scroll en el cuerpo del panel (la página controla scroll interno, p. ej. tabla de leads). */
+  
   contentOverflow?: 'scroll' | 'hidden';
-  /** Sin padding en el área de contenido: la página ocupa todo el panel bajo el header (p. ej. inbox a ancho completo). */
+  
   contentFlush?: boolean;
-  /** Oculta el título de página (p. ej. inbox WhatsApp con chrome propio). */
+  
   hidePageTitle?: boolean;
 };
 
@@ -94,10 +101,7 @@ type AppSidebarChrome = {
   unreadDotRing: string;
 };
 
-/**
- * Cristal tipo visionOS: blur + tinte oscuro translúcido (oscuro) o capa clara con cuerpo zinc (claro).
- * Importante: el inner del Sidebar ya no usa `bg-sidebar` (en app-dark seguía siendo casi blanco → texto blanco invisible).
- */
+
 function buildAppSidebarChrome(isDark: boolean): AppSidebarChrome {
   const glassInner = isDark
     ? cn(
@@ -191,7 +195,7 @@ function buildAppSidebarChrome(isDark: boolean): AppSidebarChrome {
   };
 }
 
-/** Solo desktop colapsado: tooltip al pasar el ratón por el icono */
+
 function CollapsedIconTooltip({ label, children }: { label: string; children: React.ReactElement }) {
   const { state, isMobile } = useSidebar();
   if (state !== 'collapsed' || isMobile) return children;
@@ -205,7 +209,7 @@ function CollapsedIconTooltip({ label, children }: { label: string; children: Re
   );
 }
 
-/** Sublista colapsable con transición suave de altura. */
+
 function SidebarAnimatedCollapse({
   show,
   className,
@@ -284,7 +288,7 @@ function SidebarSubnavToggleButton({
   );
 }
 
-/** Alterna el panel Vado Intelligence: icono IA y texto de marca. */
+
 function VadoIntelligenceChatToggle({
   expanded,
   onToggle,
@@ -386,6 +390,11 @@ export function AppShell({
       readAdminSettingsNavOpen() ||
       normalizePath(pathWithoutLang).startsWith('/app/admin/settings'),
   );
+  const [utilitiesOpen, setUtilitiesOpen] = useState(
+    () =>
+      readAdminUtilitiesNavOpen() ||
+      normalizePath(pathWithoutLang).startsWith('/app/admin/utileria'),
+  );
   const [trabajoOpen, setTrabajoOpen] = useState(false);
   const sidebarContentRef = useRef<HTMLDivElement>(null);
   const [appThemeMode, setAppThemeMode] = useState<AppThemeMode>(() => getStoredAppTheme());
@@ -424,6 +433,8 @@ export function AppShell({
   const hrefAdminSettings = path('/app/admin/settings');
   const hrefAdminSettingsIntegraciones = path('/app/admin/settings/integraciones');
   const hrefAdminSettingsCuestionario = path('/app/admin/settings/cuestionario');
+  const hrefAdminUtileriaTareas = path('/app/admin/utileria/tareas');
+  const hrefAdminUtileriaRecordatorios = path('/app/admin/utileria/recordatorios');
   const hrefCompanyProfile = path('/app/company/profile');
   const hrefCompanyProjects = path('/app/company/proyectos');
   const hrefCompanySettings = path('/app/company/settings');
@@ -459,6 +470,8 @@ export function AppShell({
 
   const settingsActive = currentAppPath.startsWith('/app/admin/settings');
 
+  const utilitiesActive = currentAppPath.startsWith('/app/admin/utileria');
+
   const nuevasAperturasActive = isActive(hrefDevDashboard) || isActive(hrefDevOverview);
   const empleosOfertasActive = isActive(hrefEmpleosOfertas);
   const guardadasActive = isActive(hrefEmpleosGuardadas);
@@ -488,10 +501,26 @@ export function AppShell({
     });
   }, [settingsActive]);
 
+  useEffect(() => {
+    if (!utilitiesActive) return;
+    queueMicrotask(() => {
+      setUtilitiesOpen(true);
+      writeAdminUtilitiesNavOpen(true);
+    });
+  }, [utilitiesActive]);
+
   const toggleSettingsNav = () => {
     setSettingsOpen((v) => {
       const next = !v;
       writeAdminSettingsNavOpen(next);
+      return next;
+    });
+  };
+
+  const toggleUtilitiesNav = () => {
+    setUtilitiesOpen((v) => {
+      const next = !v;
+      writeAdminUtilitiesNavOpen(next);
       return next;
     });
   };
@@ -525,13 +554,29 @@ export function AppShell({
     const sync = () => setAppThemeMode(getStoredAppTheme());
     sync();
     window.addEventListener(APP_THEME_CHANGE_EVENT, sync);
-    const onStorage = (e: StorageEvent) => {
-      if (e.key === APP_THEME_STORAGE_KEY) sync();
+    return () => window.removeEventListener(APP_THEME_CHANGE_EVENT, sync);
+  }, []);
+
+  useEffect(() => {
+    void (async () => {
+      await migrateLegacyWorkspaceStorageOnce();
+      await Promise.all([hydrateUserPreferences(), hydrateThemeFromServer()]);
+      setAppThemeMode(getStoredAppTheme());
+    })();
+  }, []);
+
+  useEffect(() => {
+    const syncThemeFromServer = () => {
+      if (!isUserAuthenticated()) return;
+      void hydrateThemeFromServer().then(() => setAppThemeMode(getStoredAppTheme()));
     };
-    window.addEventListener('storage', onStorage);
+    window.addEventListener(ADMIN_AUTH_CHANGE_EVENT, syncThemeFromServer);
+    window.addEventListener(DEV_AUTH_CHANGE_EVENT, syncThemeFromServer);
+    window.addEventListener(COMPANY_AUTH_CHANGE_EVENT, syncThemeFromServer);
     return () => {
-      window.removeEventListener(APP_THEME_CHANGE_EVENT, sync);
-      window.removeEventListener('storage', onStorage);
+      window.removeEventListener(ADMIN_AUTH_CHANGE_EVENT, syncThemeFromServer);
+      window.removeEventListener(DEV_AUTH_CHANGE_EVENT, syncThemeFromServer);
+      window.removeEventListener(COMPANY_AUTH_CHANGE_EVENT, syncThemeFromServer);
     };
   }, []);
 
@@ -605,7 +650,7 @@ export function AppShell({
         className={cn(
           sb.glassInner,
           'flex h-svh max-h-svh min-h-0 w-full overflow-x-hidden overflow-y-hidden font-sans antialiased',
-          /* Marco exterior tipo ventana de Preferencias del sistema */
+          
           appThemeMode === 'dark'
             ? 'app-dark bg-black text-zinc-100'
             : 'bg-[#d1d1d6] text-zinc-900',
@@ -822,6 +867,50 @@ export function AppShell({
                         >
                           <AdminChannelNavIcon channel="bot-test" />
                           <span className="truncate">{t('sidebarDemo.navChannelBotTest')}</span>
+                        </Link>
+                      </div>
+                    </SidebarAnimatedCollapse>
+                  </section>
+
+                  <section className={sidebarNavSectionShell} aria-labelledby="nav-admin-utilities">
+                    <h2 id="nav-admin-utilities" className={sidebarNavSectionTitle}>
+                      {t('sidebarDemo.navSectionUtilities')}
+                    </h2>
+                    <SidebarSubnavToggleButton
+                      open={utilitiesOpen}
+                      active={utilitiesActive}
+                      collapsedHref={hrefAdminUtileriaTareas}
+                      onToggle={toggleUtilitiesNav}
+                      sb={sb}
+                      chevronNavClass={chevronNavClass}
+                      label={t('sidebarDemo.navUtilities')}
+                      icon={<Boxes />}
+                    />
+                    <SidebarAnimatedCollapse show={utilitiesOpen} className="group-data-[collapsible=icon]:hidden">
+                      <div className={cn('ml-2 space-y-1 border-l pl-2.5', sb.borderSubNav)}>
+                        <Link
+                          href={hrefAdminUtileriaTareas}
+                          className={cn(
+                            sb.subRowBase,
+                            sb.subNavText,
+                            'gap-2',
+                            isActive(hrefAdminUtileriaTareas) && sb.navActive,
+                          )}
+                        >
+                          <ListChecks className={cn('size-4 shrink-0', sb.iconMuted)} strokeWidth={2} aria-hidden />
+                          <span className="truncate">{t('sidebarDemo.navUtilitiesTasks')}</span>
+                        </Link>
+                        <Link
+                          href={hrefAdminUtileriaRecordatorios}
+                          className={cn(
+                            sb.subRowBase,
+                            sb.subNavText,
+                            'gap-2',
+                            isActive(hrefAdminUtileriaRecordatorios) && sb.navActive,
+                          )}
+                        >
+                          <Bell className={cn('size-4 shrink-0', sb.iconMuted)} strokeWidth={2} aria-hidden />
+                          <span className="truncate">{t('sidebarDemo.navUtilitiesReminders')}</span>
                         </Link>
                       </div>
                     </SidebarAnimatedCollapse>
@@ -1159,7 +1248,7 @@ export function AppShell({
         <SidebarInset
           className={cn(
             'flex min-h-0 w-full min-w-0 flex-1 flex-col overflow-hidden rounded-xl border shadow-lg',
-            /* Misma altura visual que el sidebar flotante (p-2 → 1rem vertical) */
+            
             'h-[calc(100svh-1rem)] max-h-[calc(100svh-1rem)]',
             'ml-0 mt-2 mb-2 max-md:mx-2 max-md:mt-2',
             sideChatExpanded

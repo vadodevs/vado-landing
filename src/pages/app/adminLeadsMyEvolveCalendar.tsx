@@ -42,6 +42,7 @@ export default function AppAdminLeadsMyEvolveCalendar() {
   const [companyContactDirectory, setCompanyContactDirectory] = useState<
     Record<string, { name: string; email: string }>
   >({});
+  const [dashboardCompanyReminders, setDashboardCompanyReminders] = useState<EvolveMeetingEvent[]>([]);
   const [dashboardMeetings, setDashboardMeetings] = useState<EvolveMeetingEvent[]>([]);
   const [dashboardLoadState, setDashboardLoadState] = useState<LoadState>('idle');
   const [lastSyncedAt, setLastSyncedAt] = useState<Date | null>(null);
@@ -93,13 +94,11 @@ export default function AppAdminLeadsMyEvolveCalendar() {
 
   const loadCompanyReminders = useCallback(() => {
     const { startMs, endMs } = monthRangeMs(calendarMonth.year, calendarMonth.month);
-    setCompanyReminders(
-      loadCompanyLeadReminderCalendarEvents({
-        startMs,
-        endMs,
-        contactDirectory: companyContactDirectory,
-      }),
-    );
+    void loadCompanyLeadReminderCalendarEvents({
+      startMs,
+      endMs,
+      contactDirectory: companyContactDirectory,
+    }).then(setCompanyReminders);
   }, [calendarMonth.month, calendarMonth.year, companyContactDirectory]);
 
   const loadCalendarMeetings = useCallback(
@@ -224,18 +223,16 @@ export default function AppAdminLeadsMyEvolveCalendar() {
       await navigator.clipboard.writeText(email);
       setCopiedEmail(email);
       window.setTimeout(() => setCopiedEmail((prev) => (prev === email ? null : prev)), 2000);
-    } catch {
-      /* ignore */
-    }
+    } catch {}
   };
 
-  const dashboardCompanyReminders = useMemo(() => {
+  useEffect(() => {
     const { startMs, endMs } = dashboardFetchRange();
-    return loadCompanyLeadReminderCalendarEvents({
+    void loadCompanyLeadReminderCalendarEvents({
       startMs,
       endMs,
       contactDirectory: companyContactDirectory,
-    });
+    }).then(setDashboardCompanyReminders);
   }, [companyContactDirectory, companyReminders]);
 
   const dashboardStats = useMemo(

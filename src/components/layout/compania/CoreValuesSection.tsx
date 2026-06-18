@@ -37,7 +37,7 @@ export function CoreValuesSection() {
                 className="relative h-full w-full transform-[rotateY(0deg)] transition-transform duration-500 group-hover:transform-[rotateY(180deg)] group-focus:transform-[rotateY(180deg)]"
                 style={{ transformStyle: 'preserve-3d' }}
               >
-                {/* Front */}
+                
                 <div
                   className="border-border absolute inset-0 flex flex-col items-center justify-center gap-4 rounded-xl border bg-white px-4 py-6 shadow-sm"
                   style={{
@@ -51,7 +51,7 @@ export function CoreValuesSection() {
                     {t(`cultureYTalentoPage.coreValues.${id}.title`)}
                   </span>
                 </div>
-                {/* Back */}
+                
                 <div
                   className="absolute inset-0 flex flex-col justify-center rounded-xl bg-[#19314c] px-5 py-6 text-left"
                   style={{

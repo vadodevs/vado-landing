@@ -1,6 +1,6 @@
 import { QueryClientProvider } from '@tanstack/react-query'
 import { Toaster } from 'sonner'
-import '@/app/i18n' // inicializa i18n
+import '@/app/i18n' 
 import { AdminAssignedProjectsProvider } from '@/contexts/AdminAssignedProjectsContext'
 import { AppNavBadgesProvider } from '@/contexts/AppNavBadgesContext'
 import { AppSideChatStateProvider } from '@/contexts/AppSideChatStateContext'

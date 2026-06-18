@@ -50,15 +50,20 @@ import {
   type CompanyContact,
 } from '@/lib/companyAdminContact';
 import {
+  fetchCompanyLeadStatuses,
+  createCompanyLeadUpdateApi,
+  patchCompanyLeadStatusApi,
+  toggleFavoriteApi,
+  fetchFavoriteIds,
+} from '@/lib/adminWorkspaceApi';
+import {
   COMPANY_LEAD_STATUSES,
   COMPANY_LEAD_STATUS_DOT_CLASS,
   COMPANY_LEAD_STATUS_LABELS,
   applyCompanyLeadStatusOverride,
+  dispatchLeadStatusChanged,
   getCompanyLeadStatus,
   LEAD_STATUS_CHANGED_EVENT,
-  loadCompanyLeadStatusOverrides,
-  persistCompanyLeadStatus,
-  saveCompanyLeadStatusOverrides,
   type CompanyLeadStatus,
 } from '@/lib/companyLeadStatus';
 import { getCompanySessionProfile } from '@/lib/companyProfile';
@@ -69,23 +74,18 @@ import {
   type ApiDeveloperPayload,
   type DeveloperProfile,
 } from '@/lib/devDevelopers';
-import {
-  setAdminCompaniesSeenMax,
-} from '@/lib/appNavBadges';
+import { persistAdminCompaniesSeenMax } from '@/lib/userPreferencesSync';
 import {
   chatWidgetDetailForAdmin,
   getChatWidgetBudgetQualification,
 } from '@/lib/chatWidgetLead';
+import { toggleLeadFavoriteId } from '@/lib/companyLeadFavorites';
 import {
-  loadLeadFavoriteIds,
-  persistLeadFavoriteIds,
-  toggleLeadFavoriteId,
-} from '@/lib/companyLeadFavorites';
-import {
-  appendCompanyLeadReminder,
   appendCompanyLeadUpdate,
+  dispatchCompanyLeadUpdatesChange,
+  formatCompanyLeadUpdateWhen,
+  getNextReminderCode,
   loadCompanyLeadUpdates,
-  persistCompanyLeadUpdates,
   type CompanyLeadUpdate,
 } from '@/lib/companyLeadUpdates';
 import { consumeOpenCompanyLeadRequest } from '@/lib/companyLeadDeepLink';
@@ -184,7 +184,7 @@ function searchFold(s: string): string {
     .replace(/[\u0300-\u036f]/g, '');
 }
 
-/** Búsqueda en el directorio al asignar (nombre, rol, correo, expertise, disponibilidad). */
+
 function matchesAssignableDirectorySearch(
   raw: string,
   dev: {
@@ -204,7 +204,7 @@ function matchesAssignableDirectorySearch(
   return tokens.every((t) => hay.includes(t));
 }
 
-/** Búsqueda por nombre, empresa, correo o servicio (todas las palabras deben coincidir). */
+
 function matchesCompanySearch(raw: string, c: CompanyContact): boolean {
   const q = searchFold(raw);
   if (!q) return true;
@@ -326,15 +326,15 @@ export default function AppAdminCompanyPage() {
   const [fechaOrden, setFechaOrden] = useState<'newest' | 'oldest'>('newest');
   const [asuntoFilter, setAsuntoFilter] = useState('');
   const [viewMode, setViewMode] = useState<ViewMode>('table');
-  /** Vacío = todos los estados; si hay valor, solo filas con ese estado (mismo patrón que el select de Leads). */
+  
   const [estadoFilter, setEstadoFilter] = useState<'' | CompanyLeadStatus>('');
-  const [leadFavoriteIds, setLeadFavoriteIds] = useState<Set<string>>(() => loadLeadFavoriteIds());
-  /** Si está activo, solo leads marcados con el corazón en la tabla. */
+  const [leadFavoriteIds, setLeadFavoriteIds] = useState<Set<string>>(() => new Set());
+  
   const [favoritesOnly, setFavoritesOnly] = useState(false);
   const [companyPage, setCompanyPage] = useState(1);
   const [leadStatusOverrides, setLeadStatusOverrides] = useState<
     Record<string, CompanyLeadStatus>
-  >(() => loadCompanyLeadStatusOverrides());
+  >({});
   const [contacts, setContacts] = useState<CompanyContact[]>([]);
   const [contactsLoad, setContactsLoad] = useState<'idle' | 'loading' | 'done'>('idle');
   const [contactsError, setContactsError] = useState<'none' | 'no-config' | 'fail'>('none');
@@ -362,7 +362,7 @@ export default function AppAdminCompanyPage() {
     mensaje: string;
   } | null>(null);
   const [leadUpdatesById, setLeadUpdatesById] = useState<Record<string, CompanyLeadUpdate[]>>(
-    () => loadCompanyLeadUpdates(),
+    () => ({}),
   );
   const [leadUpdateDraft, setLeadUpdateDraft] = useState('');
   const [detailTab, setDetailTab] = useState<CompanyLeadDetailTab>('cuestionario');
@@ -373,7 +373,22 @@ export default function AppAdminCompanyPage() {
   }, [selected?.id]);
 
   useEffect(() => {
-    const onLeadStatusExternal = () => setLeadStatusOverrides(loadCompanyLeadStatusOverrides());
+    void (async () => {
+      const [statuses, updates, favorites] = await Promise.all([
+        fetchCompanyLeadStatuses(),
+        loadCompanyLeadUpdates(),
+        fetchFavoriteIds('company_lead'),
+      ]);
+      setLeadStatusOverrides(statuses);
+      setLeadUpdatesById(updates);
+      setLeadFavoriteIds(new Set(favorites));
+    })();
+  }, []);
+
+  useEffect(() => {
+    const onLeadStatusExternal = () => {
+      void fetchCompanyLeadStatuses().then(setLeadStatusOverrides);
+    };
     window.addEventListener(LEAD_STATUS_CHANGED_EVENT, onLeadStatusExternal);
     return () => window.removeEventListener(LEAD_STATUS_CHANGED_EVENT, onLeadStatusExternal);
   }, []);
@@ -416,7 +431,7 @@ export default function AppAdminCompanyPage() {
       0,
       ...contacts.map((c) => (Number.isFinite(c.createdAtMs) ? c.createdAtMs : 0)),
     );
-    setAdminCompaniesSeenMax(maxTs);
+    void persistAdminCompaniesSeenMax(maxTs);
   }, [contactsLoad, contacts]);
 
   useEffect(() => {
@@ -556,19 +571,13 @@ export default function AppAdminCompanyPage() {
   }, [filteredContacts.length]);
 
   const toggleLeadFavorite = (id: string) => {
-    setLeadFavoriteIds((prev) => {
-      const next = toggleLeadFavoriteId(prev, id);
-      persistLeadFavoriteIds(next);
-      return next;
-    });
+    setLeadFavoriteIds((prev) => toggleLeadFavoriteId(prev, id));
+    void toggleFavoriteApi('company_lead', id).then((ids) => setLeadFavoriteIds(new Set(ids)));
   };
 
   const updateLeadStatus = (id: string, next: CompanyLeadStatus) => {
-    setLeadStatusOverrides((prev) => {
-      const merged = applyCompanyLeadStatusOverride(prev, id, next);
-      saveCompanyLeadStatusOverrides(merged);
-      return merged;
-    });
+    setLeadStatusOverrides((prev) => applyCompanyLeadStatusOverride(prev, id, next));
+    void patchCompanyLeadStatusApi(id, next).then(() => dispatchLeadStatusChanged());
     if (next !== 'en_curso') {
       void removeAssignedProjectByContactId(id);
     }
@@ -646,7 +655,12 @@ export default function AppAdminCompanyPage() {
         correo: p.correo,
       })),
     });
-    persistCompanyLeadStatus(selected.id, 'en_curso');
+    void patchCompanyLeadStatusApi(selected.id, 'en_curso').then(() => {
+      setLeadStatusOverrides((prev) =>
+        applyCompanyLeadStatusOverride(prev, selected.id, 'en_curso'),
+      );
+      dispatchLeadStatusChanged();
+    });
     setFlowStep('exito');
   };
 
@@ -691,26 +705,34 @@ export default function AppAdminCompanyPage() {
     if (!selected) return;
     const body = leadUpdateDraft.trim();
     if (!body) return;
-    setLeadUpdatesById((prev) => {
-      const next = appendCompanyLeadUpdate(prev, selected.id, body);
-      persistCompanyLeadUpdates(next);
-      return next;
+    void createCompanyLeadUpdateApi(selected.id, { body, kind: 'note' }).then((created) => {
+      if (!created) return;
+      setLeadUpdatesById((prev) => appendCompanyLeadUpdate(prev, selected.id, created));
+      dispatchCompanyLeadUpdatesChange();
+      setLeadUpdateDraft('');
+      setDetailTab('actividad');
     });
-    setLeadUpdateDraft('');
-    setDetailTab('actividad');
   };
 
   const addLeadReminder = (scheduledAtMs: number, note?: string) => {
     if (!selected) return;
-    setLeadUpdatesById((prev) => {
-      const next = appendCompanyLeadReminder(prev, selected.id, scheduledAtMs, note, {
-        name: selected.nombre,
-        email: selected.correo,
-      });
-      persistCompanyLeadUpdates(next);
-      return next;
+    const list = leadUpdatesById[selected.id] ?? [];
+    const reminderCode = getNextReminderCode(list);
+    const scheduledLabel = formatCompanyLeadUpdateWhen(scheduledAtMs);
+    const trimmedNote = note?.trim();
+    const body = trimmedNote || `Seguimiento ${reminderCode} agendado para ${scheduledLabel}`;
+    void createCompanyLeadUpdateApi(selected.id, {
+      body,
+      kind: 'reminder',
+      scheduledAtMs,
+      contactName: selected.nombre,
+      contactEmail: selected.correo,
+    }).then((created) => {
+      if (!created) return;
+      setLeadUpdatesById((prev) => appendCompanyLeadUpdate(prev, selected.id, created));
+      dispatchCompanyLeadUpdatesChange();
+      setDetailTab('actividad');
     });
-    setDetailTab('actividad');
   };
 
   const runCompanyAccessAction = (
@@ -787,7 +809,7 @@ export default function AppAdminCompanyPage() {
     >
       <div className="flex h-0 min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
       <section className="flex min-h-0 min-w-0 flex-1 flex-col gap-2 overflow-hidden scroll-mt-24">
-        {/* Intro + filtros: siempre visibles; el scroll solo está en la tabla */}
+        
         <div className="min-h-0 shrink-0 space-y-2">
           {contactsLoad === 'loading' ? (
             <p className="text-sm text-muted-foreground">Cargando solicitudes…</p>
@@ -965,7 +987,7 @@ export default function AppAdminCompanyPage() {
         </div>
         </div>
 
-        {/* Panel de vista (tabla o cards): ocupa el alto restante; solo este bloque central hace scroll */}
+        
         <div className="isolate flex h-0 min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-lg border border-border/70 bg-card shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] dark:border-border/50 dark:bg-muted/20 dark:shadow-none">
           <div className="relative min-h-0 min-w-0 flex-1 overflow-hidden">
             <div className="absolute inset-0 overflow-auto overscroll-contain rounded-t-lg">

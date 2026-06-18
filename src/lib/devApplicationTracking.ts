@@ -1,7 +1,4 @@
-/**
- * Estados de seguimiento para el panel del desarrollador (funnel simple).
- * Se mapean desde `application.status` del backend (`EApplicationStatus`).
- */
+
 export type DevTrackingStepId = 'applied' | 'viewed' | 'in_process';
 
 export type DevTrackingTerminalId = 'rejected' | 'finished';
@@ -12,7 +9,7 @@ export type TerminalStepState = 'pending' | 'current' | 'excluded';
 
 export type DevTrackingViewModel = {
   mainLine: { id: DevTrackingStepId; state: LineStepState }[];
-  /** Última etapa: solo una de las dos puede quedar "current"; la otra queda `excluded` o en `pending`. */
+  
   terminal: {
     rejected: { id: 'rejected'; state: TerminalStepState };
     finished: { id: 'finished'; state: TerminalStepState };
@@ -40,14 +37,11 @@ function terminalPending(): DevTrackingViewModel['terminal'] {
   };
 }
 
-/**
- * Mapeo real del estado API hacia el funnel de UI.
- * Referencia backend: `adminvado/src/constants/EApplicationStatus.ts`.
- */
+
 export function getDevApplicationTrackingFromStatus(rawStatus: string): DevTrackingViewModel {
   const status = rawStatus.trim().toLowerCase();
 
-  // Estados terminales (resultado final)
+  
   if (status === 'accepted') {
     return {
       mainLine: [
@@ -69,7 +63,7 @@ export function getDevApplicationTrackingFromStatus(rawStatus: string): DevTrack
     };
   }
 
-  // Funnel intermedio
+  
   if (status === 'applied') {
     return {
       mainLine: [
@@ -91,7 +85,7 @@ export function getDevApplicationTrackingFromStatus(rawStatus: string): DevTrack
     };
   }
 
-  // TPS Requested, Verified, Client Proposed u otros estados no terminales
+  
   return {
     mainLine: [
       { id: 'applied', state: 'completed' },
@@ -102,10 +96,7 @@ export function getDevApplicationTrackingFromStatus(rawStatus: string): DevTrack
   };
 }
 
-/**
- * Mock determinista por posición de la fila. Rotación de escenarios para poder ver todos los
- * estados (una sola postulación = índice 0, típicamente "solo aplicó").
- */
+
 export function getMockDevApplicationTracking(ordinalIndex: number): DevTrackingViewModel {
   const i = ((ordinalIndex % 5) + 5) % 5;
 

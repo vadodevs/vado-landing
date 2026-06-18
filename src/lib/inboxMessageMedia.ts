@@ -24,7 +24,7 @@ export function releaseInboxMessageMediaUrl(messageId: string): void {
   inflight.delete(messageId);
 }
 
-/** Limpia blobs al cambiar de conversación (no en cada re-render del hilo). */
+
 export function releaseAllInboxMessageMediaUrls(): void {
   for (const id of blobUrlCache.keys()) {
     releaseInboxMessageMediaUrl(id);
@@ -54,9 +54,7 @@ async function fetchMediaAsBlob(messageId: string, base: string): Promise<Blob |
       const blob = await res.blob();
       if (blob.size > 0) return blob;
     }
-  } catch {
-    /* fallback JSON */
-  }
+  } catch {}
 
   try {
     const res = await adminAuthorizedFetch(

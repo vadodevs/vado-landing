@@ -1,6 +1,4 @@
-/**
- * Postula el desarrollador autenticado a una oferta (`POST /developer/applications`).
- */
+
 export async function postDeveloperApplication(
   apiBase: string,
   token: string,
@@ -25,9 +23,7 @@ export async function postDeveloperApplication(
       } else if (Array.isArray(j.errors) && j.errors.length) {
         detail = JSON.stringify(j.errors);
       }
-    } catch {
-      /* ignore */
-    }
+    } catch {}
     throw new Error(detail || `HTTP ${res.status}`);
   }
 }

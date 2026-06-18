@@ -200,9 +200,7 @@ export default function AppAdminLeadsMyEvolve() {
       await navigator.clipboard.writeText(email);
       setCopiedEmail(email);
       window.setTimeout(() => setCopiedEmail((prev) => (prev === email ? null : prev)), 2000);
-    } catch {
-      /* ignore */
-    }
+    } catch {}
   };
 
   const clearFilters = () => {

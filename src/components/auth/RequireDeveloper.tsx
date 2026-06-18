@@ -15,7 +15,7 @@ type RequireDeveloperProps = {
   lang?: string;
 };
 
-/** Permite rutas /app/dev solo con login developer válido (y bloquea sesión admin). */
+
 export function RequireDeveloper({ children, lang }: RequireDeveloperProps) {
   const [checking, setChecking] = useState(true);
   const [allowed, setAllowed] = useState(false);

@@ -1,4 +1,9 @@
-const STORAGE_KEY = 'vado-opportunities-pipeline';
+import {
+  createPipelineEntryApi,
+  deletePipelineEntryApi,
+  fetchPipelineEntries,
+  patchPipelineEntryApi,
+} from '@/lib/adminWorkspaceApi';
 
 export type PipelineLeadSource = 'evolve' | 'company';
 
@@ -25,7 +30,6 @@ export type PipelineLeadEntry = {
   servicio?: string;
   addedAtMs: number;
   stage: PipelineStage;
-  /** Valor estimado de la oportunidad en USD. */
   estimatedAmountUsd?: number;
 };
 
@@ -37,7 +41,6 @@ function isPipelineStage(v: unknown): v is PipelineStage {
 
 function normalizePipelineLead(row: PipelineLeadEntry): PipelineLeadEntry {
   let stage = isPipelineStage(row.stage) ? row.stage : DEFAULT_PIPELINE_STAGE;
-  // Migración: etapas renombradas
   if ((row.stage as string) === 'propuesta') stage = 'tomando_decision';
   if ((row.stage as string) === 'calificado') stage = 'en_reuniones';
   const amountRaw = row.estimatedAmountUsd;
@@ -52,37 +55,14 @@ function normalizePipelineLead(row: PipelineLeadEntry): PipelineLeadEntry {
   };
 }
 
-function isPipelineLeadEntry(row: unknown): row is PipelineLeadEntry {
-  return (
-    typeof row === 'object' &&
-    row !== null &&
-    typeof (row as PipelineLeadEntry).id === 'string' &&
-    ((row as PipelineLeadEntry).source === 'evolve' ||
-      (row as PipelineLeadEntry).source === 'company') &&
-    typeof (row as PipelineLeadEntry).nombre === 'string' &&
-    typeof (row as PipelineLeadEntry).email === 'string' &&
-    typeof (row as PipelineLeadEntry).empresa === 'string' &&
-    typeof (row as PipelineLeadEntry).addedAtMs === 'number'
-  );
-}
-
-export function loadPipelineLeads(): PipelineLeadEntry[] {
-  if (typeof window === 'undefined') return [];
-  try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw) as unknown;
-    if (!Array.isArray(parsed)) return [];
-    return parsed.filter(isPipelineLeadEntry).map(normalizePipelineLead);
-  } catch {
-    return [];
-  }
-}
-
-export function persistPipelineLeads(entries: PipelineLeadEntry[]): void {
+export function dispatchPipelineLeadsChange(): void {
   if (typeof window === 'undefined') return;
-  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
   window.dispatchEvent(new CustomEvent(PIPELINE_LEADS_CHANGE_EVENT));
+}
+
+export async function loadPipelineLeads(): Promise<PipelineLeadEntry[]> {
+  const rows = await fetchPipelineEntries();
+  return rows.map(normalizePipelineLead);
 }
 
 export function pipelineLeadKey(source: PipelineLeadSource, id: string): string {
@@ -125,55 +105,57 @@ export function isLeadInPipeline(
   return entries.some((e) => e.source === source && e.id === id);
 }
 
-export function addPipelineLead(
+export async function addPipelineLead(
   entry: Omit<PipelineLeadEntry, 'stage' | 'addedAtMs'> & {
     stage?: PipelineStage;
     addedAtMs?: number;
   },
-): PipelineLeadEntry[] {
-  const prev = loadPipelineLeads();
+): Promise<PipelineLeadEntry[]> {
+  const prev = await loadPipelineLeads();
   if (isLeadInPipeline(prev, entry.source, entry.id)) return prev;
-  const lead: PipelineLeadEntry = normalizePipelineLead({
+  await createPipelineEntryApi({
     ...entry,
     stage: entry.stage ?? DEFAULT_PIPELINE_STAGE,
     addedAtMs: entry.addedAtMs ?? Date.now(),
   });
-  const next = [lead, ...prev];
-  persistPipelineLeads(next);
+  const next = await loadPipelineLeads();
+  dispatchPipelineLeadsChange();
   return next;
 }
 
-export function movePipelineLeadToStage(
+export async function movePipelineLeadToStage(
   source: PipelineLeadSource,
   id: string,
   stage: PipelineStage,
-): PipelineLeadEntry[] {
-  const next = loadPipelineLeads().map((e) =>
-    e.source === source && e.id === id ? { ...e, stage } : e,
-  );
-  persistPipelineLeads(next);
+): Promise<PipelineLeadEntry[]> {
+  await patchPipelineEntryApi(source, id, { stage });
+  const next = await loadPipelineLeads();
+  dispatchPipelineLeadsChange();
   return next;
 }
 
-export function removePipelineLead(source: PipelineLeadSource, id: string): PipelineLeadEntry[] {
-  const next = loadPipelineLeads().filter((e) => !(e.source === source && e.id === id));
-  persistPipelineLeads(next);
+export async function removePipelineLead(
+  source: PipelineLeadSource,
+  id: string,
+): Promise<PipelineLeadEntry[]> {
+  await deletePipelineEntryApi(source, id);
+  const next = await loadPipelineLeads();
+  dispatchPipelineLeadsChange();
   return next;
 }
 
-export function updatePipelineLeadEstimatedAmount(
+export async function updatePipelineLeadEstimatedAmount(
   source: PipelineLeadSource,
   id: string,
   estimatedAmountUsd: number | undefined,
-): PipelineLeadEntry[] {
+): Promise<PipelineLeadEntry[]> {
   const normalized =
     estimatedAmountUsd != null && Number.isFinite(estimatedAmountUsd) && estimatedAmountUsd > 0
       ? Math.round(estimatedAmountUsd * 100) / 100
-      : undefined;
-  const next = loadPipelineLeads().map((e) =>
-    e.source === source && e.id === id ? { ...e, estimatedAmountUsd: normalized } : e,
-  );
-  persistPipelineLeads(next);
+      : null;
+  await patchPipelineEntryApi(source, id, { estimatedAmountUsd: normalized });
+  const next = await loadPipelineLeads();
+  dispatchPipelineLeadsChange();
   return next;
 }
 

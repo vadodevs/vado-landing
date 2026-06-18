@@ -6,7 +6,7 @@ let syncTimer: ReturnType<typeof setTimeout> | null = null;
 
 import type { InboxLlmConfig } from '@/lib/inboxLlmConfig';
 
-/** Sincroniza configuración mock del panel con adminvado (debounced). */
+
 export function scheduleInboxAiSettingsSync(
   partial: { autopilot?: InboxAutopilotConfig; bot?: InboxBotConfig; llm?: InboxLlmConfig },
   delayMs = 400,

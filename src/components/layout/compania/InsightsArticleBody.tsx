@@ -8,15 +8,7 @@ type Block =
 
 const NUMBERED_LIST_REGEX = /^\d+\.\s+/;
 
-/**
- * Renders article body with optional structure:
- * - Lines starting with "## " are rendered as h2 (section title)
- * - Lines starting with "### " are rendered as h3 (subtitle)
- * - Lines starting with "~ " are rendered as signature
- * - Blocks starting with "- " are rendered as bullet list items (consecutive ones in one <ul>)
- * - Blocks starting with "1. ", "2. ", etc. are rendered as ordered list items (consecutive ones in one <ol>)
- * - Other blocks are paragraphs
- */
+
 export function InsightsArticleBody({ body }: { body: string }) {
   const blocks = body
     .split(/\n\n+/)

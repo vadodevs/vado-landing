@@ -19,7 +19,7 @@ function revokeKey(key: string): void {
   inflightByKey.delete(key);
 }
 
-/** Identificador de la cuenta vinculada (ownerJid). Al cambiar, invalida blobs anteriores. */
+
 export function setInboxAccountAvatarCacheKey(cacheKey: string): void {
   const next = cacheKey.trim();
   if (next === activeCacheKey) return;

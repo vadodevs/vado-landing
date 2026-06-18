@@ -1,4 +1,4 @@
-/* eslint-disable react-refresh/only-export-components -- hook + provider */
+
 import {
   createContext,
   useCallback,
@@ -47,15 +47,15 @@ function pathWithoutLocale(pathname: string): string {
 type DevProjectRow = { id?: string | null; createdAt?: string | null };
 
 type Ctx = {
-  /** Punto rojo en Proyectos (dev) */
+  
   devProjectsUnread: boolean;
-  /** Punto rojo en Proyectos (company): cambios desde última visita a proyectos */
+  
   companyProjectsUnread: boolean;
-  /** Punto rojo en Desarrolladores (admin): nuevos perfiles desde última visita */
+  
   adminDevelopersUnread: boolean;
-  /** Punto rojo en Compañías (admin): nuevas solicitudes desde última visita */
+  
   adminCompaniesUnread: boolean;
-  /** Punto rojo en Proyectos (admin): proyecto nuevo desde última visita a proyectos */
+  
   adminProjectsUnread: boolean;
 };
 

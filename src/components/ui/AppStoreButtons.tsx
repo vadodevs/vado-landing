@@ -28,24 +28,12 @@ export interface AppStoreButtonsProps {
   appStoreUrl?: string;
   playStoreUrl?: string;
   variant?: AppStoreButtonsVariant;
-  /** Si true, el contenedor y cada botón ocupan el 100% del ancho (útil en sidebars/cards). */
+  
   fullWidth?: boolean;
   className?: string;
 }
 
-/**
- * Componente reutilizable: botones oficiales de App Store y Google Play.
- * Úsalo en cualquier vista (hero, footer, cards) pasando las URLs.
- * Los dos botones se muestran siempre juntos.
- *
- * @example
- * // En un hero con fondo oscuro
- * <AppStoreButtons appStoreUrl="..." playStoreUrl="..." variant="dark" />
- *
- * @example
- * // En fondo claro (p. ej. sección o card)
- * <AppStoreButtons appStoreUrl="..." playStoreUrl="..." variant="light" />
- */
+
 export function AppStoreButtons({
   appStoreUrl,
   playStoreUrl,

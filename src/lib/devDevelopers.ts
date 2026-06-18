@@ -5,7 +5,7 @@ export type DeveloperProfile = {
   correo: string;
   telefono: string;
   disponibilidad: string;
-  /** ¿Actualmente trabaja? (formulario postulación). */
+  
   currentlyEmployed: boolean;
   expertis: string[];
   rol: string;
@@ -14,17 +14,17 @@ export type DeveloperProfile = {
   disponibilidadViajar: boolean;
   procedencia: string;
   cvFileName: string;
-  /** Fila desde GET /users/developers (CV subido al API). */
+  
   resumeUrl?: string | null;
-  /** Clave estable para React (evita colisiones demo + API). */
+  
   rowKey?: string;
-  /** `createdAt` del API en ms (UTC); 0 si no viene fecha. */
+  
   createdAtMs: number;
-  /** Acceso a login de /app/dev habilitado por admin. */
+  
   accessEnabled?: boolean;
 };
 
-/** Respuesta de adminvado GET /users/developers */
+
 export type ApiDeveloperPayload = {
   id: string;
   fullName: string;
@@ -98,14 +98,14 @@ export function developerInitials(d: DeveloperProfile): string {
   return (n.slice(0, 2) || '??').toUpperCase();
 }
 
-/** Clave estable para asignar / listar (API o demo). */
+
 export function getDeveloperDirectoryRowKey(d: DeveloperProfile): string {
   if (d.rowKey != null && String(d.rowKey).trim() !== '') return String(d.rowKey).trim();
   const base = d.correo.trim() || `${d.nombre}-${d.apellido}`.trim();
   return `demo-${base.replace(/[^a-zA-Z0-9]+/g, '-').toLowerCase()}`;
 }
 
-/** Fila para el diálogo de asignación a leads (misma fuente que admin Desarrolladores). */
+
 export function developerProfileToAssignableRow(d: DeveloperProfile): {
   id: string;
   nombre: string;
@@ -125,7 +125,7 @@ export function developerProfileToAssignableRow(d: DeveloperProfile): {
   };
 }
 
-/** Datos de demostración solo para /app/dev (perfil); el admin lista solo la API. */
+
 export const DEVELOPERS: DeveloperProfile[] = [
   {
     nombre: 'Ana',
@@ -187,7 +187,7 @@ export function cloneDeveloperProfile(p: DeveloperProfile): DeveloperProfile {
   };
 }
 
-/** Texto del CV de demo (sin data URI). */
+
 export function buildCvPlainText(developer: DeveloperProfile): string {
   return [
     `Nombre: ${developer.nombre}`,

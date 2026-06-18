@@ -10,7 +10,7 @@ type RequireRecruiterPanelProps = {
   lang?: string;
 };
 
-/** Restringe una ruta del portal reclutador a un permiso de panel concreto. */
+
 export function RequireRecruiterPanel({ panel, children, lang }: RequireRecruiterPanelProps) {
   const locale = lang && isLocale(lang) ? lang : getPreferredLocaleFromBrowser();
   const [permBump, setPermBump] = useState(0);

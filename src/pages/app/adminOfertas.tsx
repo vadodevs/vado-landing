@@ -131,7 +131,7 @@ export default function AppAdminOfertasPage() {
   const [createExpiresAt, setCreateExpiresAt] = useState('');
   const [detailApplicants, setDetailApplicants] = useState<JobApplicant[]>([]);
   const [detailBusy, setDetailBusy] = useState(false);
-  /** Fuerza remontar el editor Tiptap al reabrir el modal o cambiar de oferta. */
+  
   const [detailEditorSession, setDetailEditorSession] = useState(0);
   const apiBase = String(import.meta.env.VITE_API_BASE_URL ?? '').trim().replace(/\/$/, '');
 

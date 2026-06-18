@@ -26,7 +26,7 @@ import { cn } from '@/lib/utils';
 
 const DASHBOARD_OPENINGS_COUNT = 100;
 const DASHBOARD_RECENT_COUNT = 20;
-/** Incluir vacantes recién publicadas (antes había un mínimo de 1 h que las ocultaba al instante). */
+
 const NEW_OPENINGS_MIN_HOURS = 0;
 const NEW_OPENINGS_MAX_HOURS = 72;
 
@@ -83,16 +83,16 @@ function relativeOrShortDate(iso: string | undefined | null, locale: string): st
 function isWithinNewOpeningsWindow(job: PublicJobListItem): boolean {
   const raw = job.updatedAt ?? job.createdAt;
   const baseMs = Date.parse(String(raw ?? ''));
-  // Sin fechas del API (p. ej. GET /jobs con sólo grupo `common`): no aplicar ventana temporal.
+  
   if (!Number.isFinite(baseMs)) return true;
-  // Reloj del cliente detrás del servidor: tratar como recién publicado.
+  
   const ageMs = Math.max(0, Date.now() - baseMs);
   const ageHours = ageMs / (60 * 60 * 1000);
   return ageHours >= NEW_OPENINGS_MIN_HOURS && ageHours <= NEW_OPENINGS_MAX_HOURS;
 }
 
 export type DevJobBoardProps = {
-  /** Dashboard = ofertas más recientes; `guardadas` = solo ofertas guardadas (submenú Trabajo). */
+  
   variant: 'dashboard' | 'guardadas' | 'empleos';
 };
 
@@ -253,9 +253,7 @@ export function DevJobBoard({ variant }: DevJobBoardProps) {
       await navigator.clipboard.writeText(full);
       setShareHint(true);
       window.setTimeout(() => setShareHint(false), 2000);
-    } catch {
-      /* ignore */
-    }
+    } catch {}
   };
 
   const empty = loadState === 'done' && !error && rows.length === 0;

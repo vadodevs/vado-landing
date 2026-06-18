@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 const API_BASE = import.meta.env.VITE_API_BASE_URL
   ? String(import.meta.env.VITE_API_BASE_URL).replace(/\/$/, '')
   : '';
-/** Endpoint para suscripción al boletín. Ver newsletter.md */
+
 const NEWSLETTER_API_URL = API_BASE ? `${API_BASE}/newsletter` : '';
 
 export function InsightsStayUpdatedSection() {

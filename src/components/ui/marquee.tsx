@@ -6,9 +6,9 @@ type MarqueeProps = {
   gap?: string;
   duration?: number;
   pauseOnHover?: boolean;
-  /** 'left' = scroll left (default), 'right' = scroll right */
+  
   direction?: 'left' | 'right';
-  /** Si true, no aplica el difuminado en los lados */
+  
   noFade?: boolean;
 };
 

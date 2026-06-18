@@ -2,7 +2,7 @@ import { RECRUITER_PANEL_KEYS, defaultRecruiterPermissions } from '@/lib/adminRe
 
 export type RecruiterPanelKey = (typeof RECRUITER_PANEL_KEYS)[number];
 
-/** Rutas bajo `/app/recruiter/*` (sin idioma). */
+
 export const RECRUITER_PANEL_ROUTES: Record<RecruiterPanelKey, string> = {
   'panel:developers': '/app/recruiter/desarrolladores',
   'panel:jobs': '/app/recruiter/ofertas',

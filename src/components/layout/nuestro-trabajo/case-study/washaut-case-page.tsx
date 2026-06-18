@@ -13,7 +13,7 @@ import {
   WashautOtherCases,
 } from './washaut';
 
-/** Imágenes del caso de uso WashAut (public/case-studies/washaut/) */
+
 const WASHAUT_IMAGES = {
   hero: '/case-studies/washaut/bg-hero.webp',
   heroBg: '/case-studies/washaut/bg-hero-washaut.webp',

@@ -1,4 +1,4 @@
-/* eslint-disable react-refresh/only-export-components -- hook + provider */
+
 import {
   createContext,
   useCallback,
@@ -14,7 +14,7 @@ export type AppSideChatMessage = {
   id: string;
   role: 'user' | 'assistant';
   text: string;
-  /** Solo UI: no se envía a /admin/assistant/chat */
+  
   localOnly?: boolean;
 };
 
@@ -28,7 +28,7 @@ type AppSideChatStateContextValue = {
   setDraft: Dispatch<SetStateAction<string>>;
   sending: boolean;
   setSending: Dispatch<SetStateAction<boolean>>;
-  /** Limpia el hilo y deja solo el mensaje de bienvenida (misma sesión de panel). */
+  
   startNewConversation: () => void;
 };
 

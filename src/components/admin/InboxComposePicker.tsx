@@ -30,7 +30,7 @@ type InboxComposePickerProps = {
   onDraftChange: (value: string) => void;
   composeInputRef: React.RefObject<HTMLInputElement | null>;
   onSendImageFile: (file: File) => void | Promise<void>;
-  /** Reenvía un sticker ya guardado en el inbox (mensaje WhatsApp previo) */
+  
   onSendSavedSticker?: (sourceMessageId: string) => void | Promise<void>;
   sending?: boolean;
 };

@@ -1,6 +1,6 @@
 import { useId } from 'react';
 
-/** Brand logos from https://thesvg.org (MIT) */
+
 
 export function GmailLogo({ className }: { className?: string }) {
   return (

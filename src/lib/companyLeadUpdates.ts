@@ -1,6 +1,5 @@
 import type { EvolveMeetingEvent } from '@/lib/adminEvolveLeadsApi';
-
-const STORAGE_KEY = 'vado-company-lead-updates';
+import { fetchCompanyLeadUpdatesMap } from '@/lib/adminWorkspaceApi';
 
 export const COMPANY_LEAD_UPDATES_CHANGE_EVENT = 'vado-company-lead-updates-change';
 
@@ -17,71 +16,13 @@ export type CompanyLeadUpdate = {
   contactEmail?: string;
 };
 
-function normalizeUpdate(row: CompanyLeadUpdate): CompanyLeadUpdate | null {
-  const body = row.body.trim();
-  if (!body) return null;
-  const kind = row.kind === 'reminder' ? 'reminder' : 'note';
-  if (kind === 'reminder') {
-    if (typeof row.scheduledAtMs !== 'number' || !Number.isFinite(row.scheduledAtMs)) return null;
-    return {
-      id: row.id,
-      body,
-      createdAtMs: row.createdAtMs,
-      kind: 'reminder',
-      reminderCode: row.reminderCode?.trim() || undefined,
-      scheduledAtMs: row.scheduledAtMs,
-      contactName: row.contactName?.trim() || undefined,
-      contactEmail: row.contactEmail?.trim() || undefined,
-    };
-  }
-  return {
-    id: row.id,
-    body,
-    createdAtMs: row.createdAtMs,
-    kind: 'note',
-  };
-}
-
-function isStoredUpdate(row: unknown): row is CompanyLeadUpdate {
-  return (
-    typeof row === 'object' &&
-    row !== null &&
-    typeof (row as CompanyLeadUpdate).id === 'string' &&
-    typeof (row as CompanyLeadUpdate).body === 'string' &&
-    typeof (row as CompanyLeadUpdate).createdAtMs === 'number'
-  );
-}
-
-export function loadCompanyLeadUpdates(): Record<string, CompanyLeadUpdate[]> {
-  if (typeof window === 'undefined') return {};
-  try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (!raw) return {};
-    const parsed = JSON.parse(raw) as unknown;
-    if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) return {};
-    const out: Record<string, CompanyLeadUpdate[]> = {};
-    for (const [key, value] of Object.entries(parsed)) {
-      if (!Array.isArray(value)) continue;
-      const rows = value
-        .filter(isStoredUpdate)
-        .map((row) => normalizeUpdate(row))
-        .filter((row): row is CompanyLeadUpdate => row !== null);
-      if (rows.length > 0) out[key] = rows;
-    }
-    return out;
-  } catch {
-    return {};
-  }
-}
-
-export function persistCompanyLeadUpdates(updates: Record<string, CompanyLeadUpdate[]>): void {
+export function dispatchCompanyLeadUpdatesChange(): void {
   if (typeof window === 'undefined') return;
-  try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(updates));
-    window.dispatchEvent(new Event(COMPANY_LEAD_UPDATES_CHANGE_EVENT));
-  } catch {
-    /* ignore quota / private mode */
-  }
+  window.dispatchEvent(new Event(COMPANY_LEAD_UPDATES_CHANGE_EVENT));
+}
+
+export async function loadCompanyLeadUpdates(): Promise<Record<string, CompanyLeadUpdate[]>> {
+  return fetchCompanyLeadUpdatesMap();
 }
 
 export function isCompanyLeadReminder(update: CompanyLeadUpdate): boolean {
@@ -106,42 +47,10 @@ export function getUpcomingReminder(updates: CompanyLeadUpdate[]): CompanyLeadUp
 export function appendCompanyLeadUpdate(
   prev: Record<string, CompanyLeadUpdate[]>,
   contactId: string,
-  body: string,
+  update: CompanyLeadUpdate,
 ): Record<string, CompanyLeadUpdate[]> {
-  const trimmed = body.trim();
-  if (!contactId.trim() || !trimmed) return prev;
-  const update: CompanyLeadUpdate = {
-    id: `upd-${Date.now()}`,
-    body: trimmed,
-    createdAtMs: Date.now(),
-    kind: 'note',
-  };
+  if (!contactId.trim()) return prev;
   const list = prev[contactId] ?? [];
-  return { ...prev, [contactId]: [update, ...list] };
-}
-
-export function appendCompanyLeadReminder(
-  prev: Record<string, CompanyLeadUpdate[]>,
-  contactId: string,
-  scheduledAtMs: number,
-  note?: string,
-  contact?: { name?: string; email?: string },
-): Record<string, CompanyLeadUpdate[]> {
-  if (!contactId.trim() || !Number.isFinite(scheduledAtMs)) return prev;
-  const list = prev[contactId] ?? [];
-  const reminderCode = getNextReminderCode(list);
-  const scheduledLabel = formatCompanyLeadUpdateWhen(scheduledAtMs);
-  const trimmedNote = note?.trim();
-  const update: CompanyLeadUpdate = {
-    id: `rem-${Date.now()}`,
-    kind: 'reminder',
-    reminderCode,
-    scheduledAtMs,
-    body: trimmedNote || `Seguimiento ${reminderCode} agendado para ${scheduledLabel}`,
-    createdAtMs: Date.now(),
-    contactName: contact?.name?.trim() || undefined,
-    contactEmail: contact?.email?.trim() || undefined,
-  };
   return { ...prev, [contactId]: [update, ...list] };
 }
 
@@ -161,12 +70,12 @@ export function defaultReminderScheduleFields(): { date: string; time: string } 
   return { date: `${yyyy}-${mm}-${dd}`, time: '10:00' };
 }
 
-export function loadCompanyLeadReminderCalendarEvents(opts: {
+export async function loadCompanyLeadReminderCalendarEvents(opts: {
   startMs: number;
   endMs: number;
   contactDirectory?: Record<string, { name: string; email: string }>;
-}): EvolveMeetingEvent[] {
-  const all = loadCompanyLeadUpdates();
+}): Promise<EvolveMeetingEvent[]> {
+  const all = await loadCompanyLeadUpdates();
   const events: EvolveMeetingEvent[] = [];
 
   for (const [contactId, updates] of Object.entries(all)) {

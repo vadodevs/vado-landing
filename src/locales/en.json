@@ -138,6 +138,8 @@
     "appAdminSettings": "Admin panel settings.",
     "appAdminSettingsIntegraciones": "Admin panel integrations.",
     "appAdminSettingsCuestionario": "Admin panel questionnaire.",
+    "appAdminUtilitiesTasks": "Admin panel utility tasks.",
+    "appAdminUtilitiesReminders": "Admin panel utility reminders.",
     "appAdminCanalesInstagram": "Instagram channel (inbox demo).",
     "appAdminCanalesBotTest": "Bot test channel: interactive simulated chat in the admin panel.",
     "appAdminRecruiters": "Admin view: recruiters.",
@@ -235,6 +237,10 @@
     "navSettingsGeneral": "General",
     "navSettingsIntegrations": "Integrations",
     "navSettingsQuestionnaire": "Questionnaire",
+    "navSectionUtilities": "Utilities",
+    "navUtilities": "Utilities",
+    "navUtilitiesTasks": "Tasks",
+    "navUtilitiesReminders": "Reminders",
     "backHome": "Back to site",
     "pageNav": "Page",
     "logOut": "Log out",
@@ -321,6 +327,14 @@
     "sectionOverview": "This area is a sample layout: fixed sidebar on desktop, collapsible drawer on mobile, and main content with in-page anchors.",
     "sectionDocs": "Use this route as a starting point for internal tools, docs, or dashboards that should not reuse the marketing navbar.",
     "sectionSettings": "The sidebar uses the same design tokens as the rest of the app (sidebar background, accent, borders)."
+  },
+  "adminUtilities": {
+    "tasksTitle": "Tasks",
+    "tasksSubtitle": "Internal team task list. This view is ready to connect to your API.",
+    "tasksEmpty": "No tasks yet.",
+    "remindersTitle": "Reminders",
+    "remindersSubtitle": "Pending reminders and follow-ups. This view is ready to connect to your API.",
+    "remindersEmpty": "No reminders yet."
   },
   "adminOpportunities": {
     "title": "Opportunities",

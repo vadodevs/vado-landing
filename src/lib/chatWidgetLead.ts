@@ -1,4 +1,4 @@
-/** Misma longitud que `message` en CreateContactDto (adminvado). */
+
 import { CHAT_WIDGET_STEP_LABELS } from '@/lib/companyQuestionnaireConfig';
 
 export const CHAT_WIDGET_MESSAGE_MAX = 1024;
@@ -25,7 +25,7 @@ function truncate(s: string, max: number): string {
   return `${t.slice(0, max - 1)}…`;
 }
 
-/** Construye el cuerpo de `message` con todas las respuestas del chat (orden fijo). */
+
 export function buildChatWidgetMessage(answers: Record<number, string>): string {
   const lines: string[] = [CHAT_WIDGET_MESSAGE_PREFIX];
   for (let i = 0; i < STEP_LABELS.length; i++) {
@@ -40,7 +40,7 @@ export function buildChatWidgetMessage(answers: Record<number, string>): string 
   return body;
 }
 
-/** Payload para POST /contact (CreateContactDto + role opcional en adminvado). */
+
 export function answersToContactPayload(answers: Record<number, string>): ChatWidgetContactBody {
   const phoneRaw = String(answers[2] ?? '').trim();
   const phone =
@@ -82,9 +82,7 @@ export async function submitChatWidgetLead(
     } else if (typeof j?.message === 'string') {
       detail = j.message;
     }
-  } catch {
-    /* ignore */
-  }
+  } catch {}
   return { ok: false, status: res.status, detail };
 }
 
@@ -96,10 +94,7 @@ export function isChatWidgetLeadMessage(message: string): boolean {
   return message.trim().toLowerCase().startsWith(CHAT_WIDGET_MESSAGE_PREFIX.toLowerCase());
 }
 
-/**
- * Parsea el cuerpo guardado en `message` para la vista admin.
- * Soporta saltos de línea y versiones en una sola línea (p. ej. HTML colapsó `\n`).
- */
+
 export function parseChatWidgetDetailRows(message: string): { label: string; value: string }[] {
   const trimmed = message.trim();
   if (!isChatWidgetLeadMessage(trimmed)) return [];
@@ -139,7 +134,7 @@ function fold(s: string): string {
     .replace(/[\u0300-\u036f]/g, '');
 }
 
-/** Respuesta al paso «¿dentro de $5k USD/mes?» (Sí / No o variantes). */
+
 function parseBudgetRangeAnswer(raw: string): 'yes' | 'no' | null {
   const t = fold(raw);
   if (!t) return null;
@@ -149,17 +144,12 @@ function parseBudgetRangeAnswer(raw: string): 'yes' | 'no' | null {
   return null;
 }
 
-/**
- * Calificación por presupuesto (widget en sitio).
- * **No calificado:** respondió «No» al rango desde $5,000 USD/mes e indicó un monto en el paso siguiente.
- * **Calificado:** respondió «Sí» (u equivalente) a esa pregunta.
- * **Desconocido:** formulario clásico, mensaje sin esas líneas, o respuesta no reconocible.
- */
+
 function digitsOnly(s: string): string {
   return s.replace(/\D/g, '');
 }
 
-/** Filas extra del cuestionario del chat (sin duplicar cabecera del modal). */
+
 export function chatWidgetDetailForAdmin(contact: {
   mensaje: string;
   empresa: string;

@@ -251,10 +251,11 @@ export function AddToPipelineDialog({ open, onOpenChange, pipelineEntries, onAdd
       onOpenChange(false);
       return;
     }
-    const next = addPipelineLead({ ...selectedEntry, addedAtMs: Date.now() });
-    onAdded(next);
-    toast.success(t('adminOpportunities.addedToPipeline', { name: selectedEntry.nombre }));
-    onOpenChange(false);
+    void addPipelineLead({ ...selectedEntry, addedAtMs: Date.now() }).then((next) => {
+      onAdded(next);
+      toast.success(t('adminOpportunities.addedToPipeline', { name: selectedEntry.nombre }));
+      onOpenChange(false);
+    });
   };
 
   const renderListState = (load: LoadState, error: string | null, empty: boolean, emptyLabel: string) => {

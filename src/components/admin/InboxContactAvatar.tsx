@@ -22,7 +22,7 @@ const channelBg: Record<string, string> = {
   'bot-test': 'bg-[#14d9ce] text-zinc-900',
 };
 
-/** Avatar estático (iniciales). Sin peticiones a /avatar. */
+
 export function InboxContactAvatar({
   name,
   initials,

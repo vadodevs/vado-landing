@@ -16,12 +16,13 @@ import { cn } from '@/lib/utils';
 export default function AppAdminOportunidades() {
   const { t } = useTranslation();
   const [pickerOpen, setPickerOpen] = useState(false);
-  const [pipelineEntries, setPipelineEntries] = useState<PipelineLeadEntry[]>(() =>
-    loadPipelineLeads(),
-  );
+  const [pipelineEntries, setPipelineEntries] = useState<PipelineLeadEntry[]>([]);
 
   useEffect(() => {
-    const sync = () => setPipelineEntries(loadPipelineLeads());
+    const sync = () => {
+      void loadPipelineLeads().then(setPipelineEntries);
+    };
+    sync();
     window.addEventListener(PIPELINE_LEADS_CHANGE_EVENT, sync);
     return () => window.removeEventListener(PIPELINE_LEADS_CHANGE_EVENT, sync);
   }, []);

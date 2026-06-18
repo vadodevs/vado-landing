@@ -1,6 +1,6 @@
 import { adminAuthorizedFetch, getAdminAccessToken } from '@/lib/adminAuth';
 
-/** Alineado con la sidebar admin (excluye Reclutadores y Ajustes). */
+
 export const RECRUITER_PERMISSION_KEYS = [
   'panel:developers',
   'panel:jobs',
@@ -8,7 +8,7 @@ export const RECRUITER_PERMISSION_KEYS = [
   'panel:companies',
 ] as const;
 
-/** Alias for rutas/permisos de panel (`recruiterPanel.ts`). */
+
 export const RECRUITER_PANEL_KEYS = RECRUITER_PERMISSION_KEYS;
 
 export function defaultRecruiterPermissions(): Record<string, boolean> {
@@ -20,7 +20,7 @@ export function defaultRecruiterPermissions(): Record<string, boolean> {
   };
 }
 
-/** Respuesta de GET /admin/recruiters (coincide con entidad adminvado). */
+
 export type RecruiterApiRecord = {
   id: string;
   firstName: string;
@@ -61,9 +61,7 @@ async function parseErrorMessage(res: Response): Promise<string> {
       const c = e?.constraints && Object.values(e.constraints)[0];
       if (typeof c === 'string') return c;
     }
-  } catch {
-    /* ignore */
-  }
+  } catch {}
   return `Error ${res.status}`;
 }
 

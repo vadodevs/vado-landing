@@ -1,7 +1,7 @@
 export type SenderoLogoProps = {
-  /** Color del logo (ej: "#6D6D6E" por defecto, "white" para hero) */
+  
   color?: string;
-  /** Clase CSS opcional para el contenedor SVG */
+  
   className?: string;
 };
 

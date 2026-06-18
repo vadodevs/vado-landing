@@ -14,7 +14,7 @@ export function StaffAugmentationIntroSection() {
     <section className="bg-white py-12 md:py-16 lg:py-20">
       <CenterContainer>
         <div className="flex flex-col gap-10 lg:flex-row lg:items-center lg:gap-14">
-          {/* Imagen: izquierda en desktop, abajo en mobile */}
+          
           <div className="order-2 flex justify-center lg:order-1 lg:max-w-[48%] lg:flex-1">
             <img
               src={PHONE_IMAGE_SRC}
@@ -23,7 +23,7 @@ export function StaffAugmentationIntroSection() {
             />
           </div>
 
-          {/* Texto: derecha en desktop, arriba en mobile */}
+          
           <div className="order-1 flex flex-col lg:order-2 lg:max-w-[52%] lg:flex-1 lg:justify-center">
             <p className="text-muted-foreground mb-2 text-xs font-medium tracking-wider uppercase md:text-sm">
               {t('services.staffAugmentation.intro.label')}

@@ -16,18 +16,15 @@ export type AdminSelectProps = {
   options: AdminSelectOption[];
   id?: string;
   'aria-label'?: string;
-  /** Clases del disparador: incluye altura (`h-8`, `h-9`), anchos, tipografía. */
+  
   triggerClassName?: string;
-  /** Si la lista debe tener al menos el ancho del disparador (filtros en fila). */
+  
   contentMatchTriggerWidth?: boolean;
-  /** Clases extra del panel desplegable (p. ej. `min-w-[12rem]` en celdas estrechas). */
+  
   contentClassName?: string;
 };
 
-/**
- * Desplegable de una opción (sustituto de `<select>`) con lista redondeada en HTML,
- * porque el menú nativo del sistema no permite bordes redondeados.
- */
+
 export function AdminSelect({
   value,
   onValueChange,

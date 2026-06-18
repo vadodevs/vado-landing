@@ -1,30 +1,30 @@
 export type AppThemeMode = 'light' | 'dark';
 
-export const APP_THEME_STORAGE_KEY = 'vado-app-theme-mode';
 export const APP_THEME_CHANGE_EVENT = 'vado-app-theme-change';
 
-function readThemeFromLocalStorage(): AppThemeMode {
-  if (typeof window === 'undefined') return 'light';
-  try {
-    const raw = window.localStorage.getItem(APP_THEME_STORAGE_KEY);
-    if (raw === 'dark' || raw === 'light') return raw;
-  } catch {
-    /* private mode / quota */
-  }
-  return 'light';
+let cachedTheme: AppThemeMode = 'light';
+let themeHydrated = false;
+
+export function getCachedAppTheme(): AppThemeMode {
+  return cachedTheme;
 }
 
-/** Tema persistido del panel (localStorage). */
+export function isAppThemeHydrated(): boolean {
+  return themeHydrated;
+}
+
+export function setCachedAppTheme(mode: AppThemeMode): void {
+  cachedTheme = mode === 'dark' ? 'dark' : 'light';
+  themeHydrated = true;
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent(APP_THEME_CHANGE_EVENT));
+  }
+}
+
 export function getStoredAppTheme(): AppThemeMode {
-  return readThemeFromLocalStorage();
+  return cachedTheme;
 }
 
 export function setStoredAppTheme(mode: AppThemeMode): void {
-  if (typeof window === 'undefined') return;
-  try {
-    window.localStorage.setItem(APP_THEME_STORAGE_KEY, mode);
-  } catch {
-    /* ignore */
-  }
-  window.dispatchEvent(new CustomEvent(APP_THEME_CHANGE_EVENT));
+  setCachedAppTheme(mode);
 }

@@ -1,7 +1,7 @@
 import { adminAuthorizedFetch, getAdminAccessToken } from '@/lib/adminAuth';
 import { htmlToPreviewPlain } from '@/lib/jobOverviewHtml';
 
-/** Coincide con columnas varchar(255) típicas en adminvado. */
+
 const MAX_VARCHAR255 = 255;
 
 function clamp255(s: string): string {
@@ -9,7 +9,7 @@ function clamp255(s: string): string {
   return t.length <= MAX_VARCHAR255 ? t : t.slice(0, MAX_VARCHAR255);
 }
 
-/** Resumen corto para el API; el HTML completo va en `description`. */
+
 function apiSummaryFromOverviewHtml(overview: string): string {
   return htmlToPreviewPlain(overview, MAX_VARCHAR255);
 }
@@ -24,7 +24,7 @@ export type JobOfferRecord = {
   overview: string;
   status: JobStatus;
   createdAt: string;
-  /** ISO; null si no se ha fijado (se usa creada + 30 días en el cliente) */
+  
   expiresAt: string | null;
   applicationsCount: number;
 };
@@ -91,7 +91,7 @@ function mapRow(row: unknown): JobOfferRecord | null {
     titulo,
     ubicacion: str(x.ubicacion ?? x.location),
     industria: str(x.industria ?? x.industry),
-    /** `description` tiene el HTML completo (Tiptap); `summary` es solo un extracto. */
+    
     overview: str((x as Record<string, unknown>).description ?? x.overview ?? x.summary),
     status: toStatus(x.status),
     createdAt,
@@ -133,9 +133,7 @@ export async function fetchJobOffers(apiBase: string): Promise<JobOfferRecord[]>
       }
       out.sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt));
       return out;
-    } catch {
-      // try fallback
-    }
+    } catch {}
   }
   return [];
 }

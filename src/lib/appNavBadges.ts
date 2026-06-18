@@ -1,21 +1,35 @@
 import type { AssignedProjectRecord } from '@/lib/adminProjectRecord';
-
-/** In-memory seen markers (sin localStorage). */
-export const ADMIN_NAV_PROJECTS_SEEN_KEY = 'vado-admin-nav-proyectos-seen-max';
-export const ADMIN_NAV_DEVELOPERS_SEEN_KEY = 'vado-admin-nav-developers-seen-max';
-export const ADMIN_NAV_COMPANIES_SEEN_KEY = 'vado-admin-nav-companies-seen-max';
-export const DEV_NAV_PROJECTS_SIGNATURE_SEEN_KEY = 'vado-dev-nav-projects-signature';
-export const COMPANY_NAV_PROJECTS_SIGNATURE_KEY = 'vado-company-nav-projects-signature';
+import type { NavBadgesPreference } from '@/lib/userPreferencesApi';
 
 export const APP_NAV_BADGES_REFRESH_EVENT = 'vado-app-nav-badges-refresh';
 
-const navBadgeMemory = {
+const navBadgeMemory: Required<NavBadgesPreference> = {
   adminProjectsSeenMax: 0,
   adminDevelopersSeenMax: 0,
   adminCompaniesSeenMax: 0,
   devProjectsSignatureSeen: '',
   companyProjectsSignatureSeen: '',
 };
+
+let navBadgesHydrated = false;
+
+export function isNavBadgesHydrated(): boolean {
+  return navBadgesHydrated;
+}
+
+export function hydrateNavBadgesFromServer(prefs: NavBadgesPreference): void {
+  navBadgeMemory.adminProjectsSeenMax = Number(prefs.adminProjectsSeenMax) || 0;
+  navBadgeMemory.adminDevelopersSeenMax = Number(prefs.adminDevelopersSeenMax) || 0;
+  navBadgeMemory.adminCompaniesSeenMax = Number(prefs.adminCompaniesSeenMax) || 0;
+  navBadgeMemory.devProjectsSignatureSeen = prefs.devProjectsSignatureSeen ?? '';
+  navBadgeMemory.companyProjectsSignatureSeen = prefs.companyProjectsSignatureSeen ?? '';
+  navBadgesHydrated = true;
+  dispatchAppNavBadgesRefresh();
+}
+
+export function getNavBadgesSnapshot(): NavBadgesPreference {
+  return { ...navBadgeMemory };
+}
 
 export function dispatchAppNavBadgesRefresh(): void {
   if (typeof window === 'undefined') return;
@@ -67,7 +81,6 @@ export function setCompanyProjectsSignatureSeen(value: string): void {
   dispatchAppNavBadgesRefresh();
 }
 
-/** Firma estable para detectar cambios en proyectos asignados (equipo, fechas). */
 export function companyProjectsSignature(projects: AssignedProjectRecord[]): string {
   if (!projects.length) return '';
   const sorted = [...projects].sort((a, b) => a.id.localeCompare(b.id));

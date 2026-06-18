@@ -75,9 +75,7 @@ function renderRichText(text: string, emptyMessage: string) {
   );
 }
 
-/**
- * Cuerpo del overview tal como en la vista previa del admin (HTML Tiptap o texto con ** / [lg] / viñetas).
- */
+
 export function JobOverviewBody({
   overview,
   emptyMessage,
@@ -92,7 +90,7 @@ export function JobOverviewBody({
     return (
       <div
         className="job-overview-display space-y-3 text-[15px] leading-relaxed text-zinc-800 dark:text-zinc-200 [&_a]:text-sky-800 dark:[&_a]:text-sky-300 [&_a]:underline [&_a]:underline-offset-2 [&_blockquote]:border-l-4 [&_blockquote]:border-zinc-200 dark:[&_blockquote]:border-zinc-700 [&_blockquote]:pl-3 [&_code]:rounded [&_code]:bg-zinc-100 dark:[&_code]:bg-zinc-800 [&_code]:px-1 [&_h1]:text-2xl [&_h1]:font-bold [&_h2]:text-xl [&_h2]:font-semibold [&_h3]:text-lg [&_h3]:font-semibold [&_li]:my-0.5 [&_p]:my-1 [&_pre]:overflow-x-auto [&_pre]:rounded-md [&_pre]:bg-zinc-100 dark:[&_pre]:bg-zinc-800 [&_pre]:p-3 [&_ul]:my-1 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:my-1 [&_ol]:list-decimal [&_ol]:pl-5 [&_span[data-job-lg]]:text-lg [&_span[data-job-lg]]:font-medium sm:[&_span[data-job-lg]]:text-xl"
-        // eslint-disable-next-line react/no-danger -- HTML saneado con DOMPurify
+        
         dangerouslySetInnerHTML={{ __html: sanitizeOverviewHtmlForDisplay(overview) }}
       />
     );
@@ -104,11 +102,11 @@ export type JobOfferCreateStylePreviewProps = {
   title: string;
   location: string;
   industry: string;
-  /** Contenido principal: mismo HTML/texto que el overview al crear la oferta. */
+  
   overview: string;
-  /** Título de sección “Vista previa” (create) — omitir o null si no aplica. */
+  
   previewLabel?: string | null;
-  /** Círculo exterior: create usa rounded-xl, ruta preview a veces rounded-2xl. */
+  
   roundedClass?: 'rounded-xl' | 'rounded-2xl';
   className?: string;
   showPreviewLabel?: boolean;
@@ -120,14 +118,12 @@ export type JobOfferCreateStylePreviewProps = {
   emptyOverviewMessage: string;
   companyName?: string | null;
   companyLabel?: string;
-  /** Placeholders al estilo formulario admin (México / remoto, etc.) */
+  
   locationFallback?: string;
   industryFallback?: string;
 };
 
-/**
- * Misma composición que la caja “Vista previa” al crear oferta en admin: título, columna izquierda (ubicación, industria) y sección Overview.
- */
+
 export function JobOfferCreateStylePreview({
   title,
   location,

@@ -15,11 +15,10 @@ export type InboxAutopilotConfig = {
   endTime: string;
   replyDelaySeconds: number;
   maxRepliesPerHour: number;
-  /** Acciones de citas que el autopilot puede atender en el inbox. */
+  
   appointmentTopics: InboxAppointmentTopics;
 };
 
-const STORAGE_KEY = 'vado.admin.inboxAutopilot.v1';
 
 export const INBOX_AUTOPILOT_CONFIG_CHANGE_EVENT = 'vado-inbox-autopilot-config-change';
 
@@ -55,20 +54,7 @@ export const DEFAULT_INBOX_AUTOPILOT_CONFIG: InboxAutopilotConfig = {
   appointmentTopics: { ...DEFAULT_INBOX_APPOINTMENT_TOPICS },
 };
 
-const BOT_STORAGE_KEY = 'vado.admin.inboxBot.v1';
-
-function migrateAppointmentTopicsFromBotConfig(): InboxAppointmentTopics | null {
-  if (typeof window === 'undefined') return null;
-  try {
-    const raw = localStorage.getItem(BOT_STORAGE_KEY);
-    if (!raw) return null;
-    const o = JSON.parse(raw) as { appointmentTopics?: unknown };
-    if (o.appointmentTopics) return parseInboxAppointmentTopics(o.appointmentTopics);
-  } catch {
-    /* ignore */
-  }
-  return null;
-}
+let cachedAutopilotConfig: InboxAutopilotConfig = { ...DEFAULT_INBOX_AUTOPILOT_CONFIG };
 
 function isWeekdayId(x: unknown): x is AutopilotWeekdayId {
   return typeof x === 'string' && (AUTOPILOT_WEEKDAYS as readonly string[]).includes(x);
@@ -109,28 +95,22 @@ function parseConfig(raw: unknown): InboxAutopilotConfig {
         : DEFAULT_INBOX_AUTOPILOT_CONFIG.maxRepliesPerHour,
     appointmentTopics: o.appointmentTopics
       ? parseInboxAppointmentTopics(o.appointmentTopics)
-      : (migrateAppointmentTopicsFromBotConfig() ?? { ...DEFAULT_INBOX_APPOINTMENT_TOPICS }),
+      : { ...DEFAULT_INBOX_APPOINTMENT_TOPICS },
   };
 }
 
 export function loadInboxAutopilotConfig(): InboxAutopilotConfig {
-  if (typeof window === 'undefined') return { ...DEFAULT_INBOX_AUTOPILOT_CONFIG };
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return { ...DEFAULT_INBOX_AUTOPILOT_CONFIG };
-    return parseConfig(JSON.parse(raw) as unknown);
-  } catch {
-    return { ...DEFAULT_INBOX_AUTOPILOT_CONFIG };
-  }
+  return { ...cachedAutopilotConfig };
+}
+
+export function setInboxAutopilotConfigCache(config: InboxAutopilotConfig): void {
+  cachedAutopilotConfig = parseConfig(config);
 }
 
 export function saveInboxAutopilotConfig(config: InboxAutopilotConfig): void {
-  if (typeof window === 'undefined') return;
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+  cachedAutopilotConfig = parseConfig(config);
+  if (typeof window !== 'undefined') {
     window.dispatchEvent(new CustomEvent(INBOX_AUTOPILOT_CONFIG_CHANGE_EVENT));
-  } catch {
-    /* quota / private mode */
   }
 }
 
@@ -164,7 +144,7 @@ function zonedParts(date: Date, timeZone: string): { weekday: string; minutes: n
   return { weekday, minutes: hour * 60 + minute };
 }
 
-/** Si el autopilot mock estaría activo en este momento (para el inbox más adelante). */
+
 export function isInboxAutopilotActiveNow(
   config: InboxAutopilotConfig,
   at: Date = new Date(),

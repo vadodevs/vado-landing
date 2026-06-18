@@ -1,6 +1,7 @@
 const CHANNELS_OPEN_KEY = 'vado.admin.sidebar.channelsOpen.v1';
 const LEADS_OPEN_KEY = 'vado.admin.sidebar.leadsOpen.v1';
 const SETTINGS_OPEN_KEY = 'vado.admin.sidebar.settingsOpen.v1';
+const UTILITIES_OPEN_KEY = 'vado.admin.sidebar.utilitiesOpen.v1';
 const SIDEBAR_SCROLL_KEY = 'vado.admin.sidebar.scrollTop.v1';
 
 export function readAdminChannelsNavOpen(): boolean {
@@ -16,9 +17,7 @@ export function writeAdminChannelsNavOpen(open: boolean): void {
   if (typeof window === 'undefined') return;
   try {
     sessionStorage.setItem(CHANNELS_OPEN_KEY, open ? '1' : '0');
-  } catch {
-    /* ignore */
-  }
+  } catch {}
 }
 
 export function readAdminLeadsNavOpen(): boolean {
@@ -36,9 +35,7 @@ export function writeAdminLeadsNavOpen(open: boolean): void {
   if (typeof window === 'undefined') return;
   try {
     sessionStorage.setItem(LEADS_OPEN_KEY, open ? '1' : '0');
-  } catch {
-    /* ignore */
-  }
+  } catch {}
 }
 
 export function readAdminSettingsNavOpen(): boolean {
@@ -54,9 +51,23 @@ export function writeAdminSettingsNavOpen(open: boolean): void {
   if (typeof window === 'undefined') return;
   try {
     sessionStorage.setItem(SETTINGS_OPEN_KEY, open ? '1' : '0');
+  } catch {}
+}
+
+export function readAdminUtilitiesNavOpen(): boolean {
+  if (typeof window === 'undefined') return false;
+  try {
+    return sessionStorage.getItem(UTILITIES_OPEN_KEY) === '1';
   } catch {
-    /* ignore */
+    return false;
   }
+}
+
+export function writeAdminUtilitiesNavOpen(open: boolean): void {
+  if (typeof window === 'undefined') return;
+  try {
+    sessionStorage.setItem(UTILITIES_OPEN_KEY, open ? '1' : '0');
+  } catch {}
 }
 
 export function readAdminSidebarScrollTop(): number {
@@ -75,7 +86,5 @@ export function writeAdminSidebarScrollTop(scrollTop: number): void {
   if (typeof window === 'undefined') return;
   try {
     sessionStorage.setItem(SIDEBAR_SCROLL_KEY, String(Math.max(0, Math.round(scrollTop))));
-  } catch {
-    /* ignore */
-  }
+  } catch {}
 }

@@ -13,7 +13,7 @@ export function StaffAugmentationProcessSection() {
     <section className="bg-white py-12 md:py-16 lg:py-20">
       <CenterContainer>
         <div className="flex flex-col gap-10 lg:flex-row lg:items-center lg:gap-14">
-          {/* Izquierda: label, título y lista con checks */}
+          
           <div className="order-1 flex flex-col lg:max-w-[55%] lg:flex-1 lg:justify-center">
             <p className="text-muted-foreground mb-2 text-xs font-medium tracking-wider uppercase md:text-sm">
               {t('services.staffAugmentation.process.label')}

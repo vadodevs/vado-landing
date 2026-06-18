@@ -14,7 +14,7 @@ export function CtaContactSection() {
   return (
     <section className="relative min-h-0 overflow-hidden rounded-r-2xl bg-white">
       <CenterContainer className="flex flex-col gap-10 py-12 md:py-16 lg:min-h-[min(80vh,700px)] lg:flex-row lg:items-center lg:gap-14 lg:py-20">
-        {/* Columna izquierda: título, descripción, beneficios */}
+        
         <div className="flex flex-1 flex-col justify-center lg:max-w-[48%]">
           <div className="text-left">
             <h2 className="mb-4 text-2xl leading-tight font-bold md:text-3xl lg:text-5xl">
@@ -37,7 +37,7 @@ export function CtaContactSection() {
           </div>
         </div>
 
-        {/* Columna derecha: formulario en tarjeta blanca */}
+        
         <div className="min-w-0 flex-1 lg:max-w-[52%]">
           <ContactForm />
         </div>

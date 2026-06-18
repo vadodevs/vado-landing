@@ -1,11 +1,11 @@
 import DOMPurify from 'dompurify';
 
-/** Detecta si el guardado es HTML (Tiptap) o el formato antiguo (marcadores de texto). */
+
 export function isProbablyHtml(overview: string): boolean {
   const t = overview.trim();
   if (!t.startsWith('<')) return false;
   if (/^<\s*[!?]/.test(t)) return false;
-  // Cualquier etiqueta (p, a, h1, ul, div de ProseMirror, etc.); evitamos tratar **texto** plano como HTML
+  
   return /<\/?[a-zA-Z][\w-]*\b/.test(t);
 }
 
@@ -46,7 +46,7 @@ function formatInlineUnescaped(s: string): string {
   return parts.join('');
 }
 
-/** Convierte el formato de texto con ** / __ / [lg] / - viñetas a HTML para Tiptap. */
+
 export function legacyPlainToHtml(overview: string): string {
   if (!overview.trim()) return '<p></p>';
   if (isProbablyHtml(overview)) return overview;

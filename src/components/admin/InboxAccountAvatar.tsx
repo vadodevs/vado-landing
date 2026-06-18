@@ -10,7 +10,7 @@ import {
 type InboxAccountAvatarProps = {
   alt?: string;
   enabled?: boolean;
-  /** ownerJid u otro id estable de la cuenta vinculada; al cambiar se recarga la foto */
+  
   cacheKey?: string;
   className?: string;
 };

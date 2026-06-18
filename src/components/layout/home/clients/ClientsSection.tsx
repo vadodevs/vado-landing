@@ -43,7 +43,7 @@ export function ClientsSection() {
 
   return (
     <section className="relative -mt-24 overflow-visible bg-white pt-24 pb-12 md:-mt-32 md:pt-32 md:pb-16 lg:-mt-40 lg:pt-40 lg:pb-20">
-      {/* Fondo onda: cubre toda la section y se extiende sobre la section de arriba */}
+      
       <div className="absolute inset-0 overflow-hidden">
         <img
           src="/backgrounds/bg-cut.webp"
@@ -74,7 +74,7 @@ export function ClientsSection() {
             </h2>
           </div>
 
-          {/* Tarjetas de testimonios */}
+          
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {TESTIMONIAL_IDS.map((id) => {
               const name = t(`home.clients.items.${id}.name`);
@@ -104,7 +104,7 @@ export function ClientsSection() {
             })}
           </div>
 
-          {/* Botones */}
+          
           <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Button
               variant="outline"

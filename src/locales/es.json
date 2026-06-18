@@ -138,6 +138,8 @@
     "appAdminSettings": "Ajustes del panel de administración.",
     "appAdminSettingsIntegraciones": "Integraciones del panel de administración.",
     "appAdminSettingsCuestionario": "Cuestionario del panel de administración.",
+    "appAdminUtilitiesTasks": "Tareas de utilería del panel de administración.",
+    "appAdminUtilitiesReminders": "Recordatorios de utilería del panel de administración.",
     "appAdminCanalesInstagram": "Canal Instagram (demo de bandeja).",
     "appAdminCanalesBotTest": "Canal Bot test: conversación simulada funcional en el panel admin.",
     "appAdminRecruiters": "Vista de administración: reclutadores.",
@@ -235,6 +237,10 @@
     "navSettingsGeneral": "General",
     "navSettingsIntegrations": "Integraciones",
     "navSettingsQuestionnaire": "Cuestionario",
+    "navSectionUtilities": "Utilería",
+    "navUtilities": "Utilería",
+    "navUtilitiesTasks": "Tareas",
+    "navUtilitiesReminders": "Recordatorios",
     "backHome": "Volver al sitio",
     "pageNav": "Página",
     "logOut": "Cerrar sesión",
@@ -321,6 +327,14 @@
     "sectionOverview": "Esta zona es un layout de ejemplo: barra lateral fija en escritorio, panel colapsable en móvil y contenido principal con anclas internas.",
     "sectionDocs": "Puedes usar esta ruta como base para herramientas internas, documentación o paneles que no deban reutilizar la barra de navegación del sitio público.",
     "sectionSettings": "La sidebar usa los mismos tokens de diseño que el resto de la app (fondo, acentos y bordes del tema sidebar)."
+  },
+  "adminUtilities": {
+    "tasksTitle": "Tareas",
+    "tasksSubtitle": "Lista de tareas internas del equipo. Esta vista está lista para conectarse a tu API.",
+    "tasksEmpty": "No hay tareas por ahora.",
+    "remindersTitle": "Recordatorios",
+    "remindersSubtitle": "Recordatorios y seguimientos pendientes. Esta vista está lista para conectarse a tu API.",
+    "remindersEmpty": "No hay recordatorios por ahora."
   },
   "adminOpportunities": {
     "title": "Oportunidades",

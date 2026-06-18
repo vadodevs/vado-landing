@@ -7,21 +7,14 @@ import { AdminBotExclusionsCard } from '@/components/admin/AdminBotExclusionsCar
 import { AdminBotSettingsCard } from '@/components/admin/AdminBotSettingsCard';
 import { AdminWhatsappLinkCard } from '@/components/admin/AdminWhatsappLinkCard';
 import { getStoredAppTheme, type AppThemeMode } from '@/lib/appTheme';
-import { flushInboxAiSettingsSync } from '@/lib/inboxAiSettingsSync';
-import { loadInboxAutopilotConfig } from '@/lib/inboxAutopilotConfig';
-import { loadInboxBotConfig } from '@/lib/inboxBotConfig';
-import { loadInboxLlmConfig } from '@/lib/inboxLlmConfig';
+import { hydrateInboxAiSettingsFromApi } from '@/lib/inboxAiSettingsApi';
 
 export default function AppAdminSettings() {
   const { t } = useTranslation();
   const [themeMode, setThemeMode] = useState<AppThemeMode>(() => getStoredAppTheme());
 
   useEffect(() => {
-    flushInboxAiSettingsSync({
-      autopilot: loadInboxAutopilotConfig(),
-      bot: loadInboxBotConfig(),
-      llm: loadInboxLlmConfig(),
-    });
+    void hydrateInboxAiSettingsFromApi();
   }, []);
 
   return (

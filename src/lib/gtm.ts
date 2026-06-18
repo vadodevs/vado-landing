@@ -4,7 +4,7 @@ declare global {
   }
 }
 
-/** GTM custom event for client-side navigations. Trigger GA4 page_view on this in GTM. */
+
 export const GTM_VIRTUAL_PAGEVIEW_EVENT = 'virtual_pageview';
 
 export function pushVirtualPageView(pagePath: string) {

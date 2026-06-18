@@ -358,9 +358,7 @@ export function PipelineLeadDetailDialog({ entry, open, onOpenChange, onAmountCh
   const [loadState, setLoadState] = useState<LoadState>('idle');
   const [contact, setContact] = useState<CompanyContact | null>(null);
   const [evolveLead, setEvolveLead] = useState<EvolveLeadRow | null>(null);
-  const [updatesMap, setUpdatesMap] = useState<Record<string, CompanyLeadUpdate[]>>(() =>
-    loadCompanyLeadUpdates(),
-  );
+  const [updatesMap, setUpdatesMap] = useState<Record<string, CompanyLeadUpdate[]>>({});
   const [amountDraft, setAmountDraft] = useState('');
 
   const stageLabel = entry
@@ -368,7 +366,7 @@ export function PipelineLeadDetailDialog({ entry, open, onOpenChange, onAmountCh
     : '';
 
   const refreshUpdates = useCallback(() => {
-    setUpdatesMap(loadCompanyLeadUpdates());
+    void loadCompanyLeadUpdates().then(setUpdatesMap);
   }, []);
 
   useEffect(() => {

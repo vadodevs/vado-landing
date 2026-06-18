@@ -3,7 +3,7 @@ const DEFAULT_SECONDARY = '#19314C';
 const WHITE = '#ffffff';
 
 export const VadoLogo = ({ white = false }: { white?: boolean }) => {
-  const primaryFill = DEFAULT_PRIMARY; // azul siempre igual
+  const primaryFill = DEFAULT_PRIMARY; 
   const secondaryFill = white ? WHITE : DEFAULT_SECONDARY;
 
   return (

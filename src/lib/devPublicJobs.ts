@@ -1,6 +1,6 @@
 export type CompanyRef = { id?: string; name?: string } | null;
 
-/** Fila de `GET /jobs` (ofertas publicadas, orden reciente en servidor). */
+
 export type PublicJobListItem = {
   id: string;
   title: string;
@@ -12,14 +12,14 @@ export type PublicJobListItem = {
   minSalary?: number | string | null;
   maxSalary?: number | string | null;
   isEvergreen?: boolean | null;
-  /** Si el API expone fechas, se usan en la UI (p. ej. "actualizado hace X"). */
+  
   createdAt?: string | null;
   updatedAt?: string | null;
-  /** Fecha de expiración explícita de la vacante, si la API la incluye. */
+  
   expiresAt?: string | null;
-  /** Solo en `GET /developer/jobs` (sesión). */
+  
   applied?: boolean;
-  /** Solo en `GET /developer/jobs` (sesión). */
+  
   saved?: boolean;
 };
 
@@ -81,7 +81,7 @@ export function previewTextForJob(job: PublicJobListItem, maxLen = 280): string 
   return fromDesc.length > maxLen ? `${fromDesc.slice(0, maxLen)}…` : fromDesc;
 }
 
-/** Vacante cerrada por fecha: evergreen no expira; sin `expiresAt` se considera vigente. */
+
 export function isPublicJobExpired(job: PublicJobListItem): boolean {
   if (job.isEvergreen) return false;
   const raw = job.expiresAt?.trim();
@@ -91,7 +91,7 @@ export function isPublicJobExpired(job: PublicJobListItem): boolean {
   return ms < Date.now();
 }
 
-/** Cómo aplica el trabajo, inferido de texto (la API aún no envía un campo fijo de modalidad). */
+
 export type InferredWorkMode = 'remote' | 'onsite' | 'hybrid' | 'unknown';
 
 const HYBRID_RE = /h[íi]brido|hybrid/i;
@@ -99,10 +99,7 @@ const REMOTE_RE =
   /remot|remoto|teletrabaj|wfh|work\s*from\s*home|home\s*office|trabaj\w* desde casa|desde su casa|anywhere|\b100%\s*remot/i;
 const ONSITE_RE = /presencial|on-?site|in\s*office|en oficina|in\s*persona/i;
 
-/**
- * Infiere remoto / presencia / híbrido a partir de título, resumen, descripción y ubicación.
- * Si no hay pistas, devuelve `unknown`.
- */
+
 export function inferWorkModeFromJob(job: PublicJobListItem): InferredWorkMode {
   const text = [job.title, job.summary, job.description, job.location, job.industry]
     .map((x) => (x != null ? String(x) : ''))
@@ -127,9 +124,7 @@ function searchFold(s: string): string {
     .replace(/[\u0300-\u036f]/g, '');
 }
 
-/**
- * Búsqueda en oferta: título, resumen, descripción plana, empresa, ubicación, industria.
- */
+
 export function jobMatchesSearch(job: PublicJobListItem, query: string): boolean {
   const q = searchFold(query);
   if (!q) return true;
@@ -148,17 +143,13 @@ export function jobMatchesSearch(job: PublicJobListItem, query: string): boolean
 
 export type WorkModeFilter = 'all' | 'remote' | 'onsite' | 'hybrid';
 
-/**
- * Filtro por modalidad. Las ofertas `unknown` no coinciden con un modo concreto (pero sí con "all").
- */
+
 export function jobMatchesWorkMode(job: PublicJobListItem, mode: WorkModeFilter): boolean {
   if (mode === 'all') return true;
   return inferWorkModeFromJob(job) === mode;
 }
 
-/**
- * Ofertas visibles y publicadas; el backend ordena por `updatedAt` DESC (más recientes primero).
- */
+
 export async function fetchPublicPostedJobs(
   apiBase: string,
   pageSize = 20,
@@ -174,9 +165,7 @@ export async function fetchPublicPostedJobs(
   return Array.isArray(body.data) ? body.data : [];
 }
 
-/**
- * Ofertas publicadas con flags `applied` / `saved` para el usuario actual (`GET /developer/jobs`, Bearer).
- */
+
 export async function fetchDeveloperPostedJobs(
   apiBase: string,
   accessToken: string,
@@ -195,7 +184,7 @@ export async function fetchDeveloperPostedJobs(
   return raw.map(mapDeveloperJobRow).filter((x): x is PublicJobListItem => x != null);
 }
 
-/** Solo guardadas del developer (`GET /developer/jobs/saved`, Bearer). */
+
 export async function fetchDeveloperSavedJobs(
   apiBase: string,
   accessToken: string,
@@ -214,7 +203,7 @@ export async function fetchDeveloperSavedJobs(
   return raw.map(mapDeveloperJobRow).filter((x): x is PublicJobListItem => x != null);
 }
 
-/** Marca una oferta como guardada (`POST /developer/jobs/saved`, Bearer). */
+
 export async function saveDeveloperJob(apiBase: string, accessToken: string, jobId: string): Promise<void> {
   const base = apiBase.replace(/\/$/, '');
   const res = await fetch(`${base}/developer/jobs/saved`, {
@@ -228,7 +217,7 @@ export async function saveDeveloperJob(apiBase: string, accessToken: string, job
   if (!res.ok) throw new Error(String(res.status));
 }
 
-/** Quita una oferta guardada (`DELETE /developer/jobs/saved/:id`, Bearer). */
+
 export async function unsaveDeveloperJob(apiBase: string, accessToken: string, jobId: string): Promise<void> {
   const base = apiBase.replace(/\/$/, '');
   const res = await fetch(`${base}/developer/jobs/saved/${encodeURIComponent(jobId)}`, {

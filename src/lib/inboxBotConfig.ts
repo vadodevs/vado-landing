@@ -19,8 +19,6 @@ export type InboxBotConfig = {
   customGreeting: string;
 };
 
-const STORAGE_KEY = 'vado.admin.inboxBot.v1';
-
 export const INBOX_BOT_CONFIG_CHANGE_EVENT = 'vado-inbox-bot-config-change';
 
 export const BOT_CONVERSATION_TONES: BotConversationTone[] = [
@@ -52,6 +50,8 @@ export const DEFAULT_INBOX_BOT_CONFIG: InboxBotConfig = {
   offTopicStrictness: 'balanced',
   customGreeting: '',
 };
+
+let cachedBotConfig: InboxBotConfig = { ...DEFAULT_INBOX_BOT_CONFIG };
 
 function isTone(x: unknown): x is BotConversationTone {
   return typeof x === 'string' && (BOT_CONVERSATION_TONES as readonly string[]).includes(x);
@@ -98,22 +98,16 @@ function parseConfig(raw: unknown): InboxBotConfig {
 }
 
 export function loadInboxBotConfig(): InboxBotConfig {
-  if (typeof window === 'undefined') return { ...DEFAULT_INBOX_BOT_CONFIG };
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return { ...DEFAULT_INBOX_BOT_CONFIG };
-    return parseConfig(JSON.parse(raw) as unknown);
-  } catch {
-    return { ...DEFAULT_INBOX_BOT_CONFIG };
-  }
+  return { ...cachedBotConfig };
+}
+
+export function setInboxBotConfigCache(config: InboxBotConfig): void {
+  cachedBotConfig = parseConfig(config);
 }
 
 export function saveInboxBotConfig(config: InboxBotConfig): void {
-  if (typeof window === 'undefined') return;
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+  cachedBotConfig = parseConfig(config);
+  if (typeof window !== 'undefined') {
     window.dispatchEvent(new CustomEvent(INBOX_BOT_CONFIG_CHANGE_EVENT));
-  } catch {
-    /* quota / private mode */
   }
 }

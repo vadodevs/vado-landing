@@ -78,7 +78,7 @@ async function refreshAdminAccessToken(base: string, session: AdminSession): Pro
   }
 }
 
-/** Fetch con JWT admin; renueva el access token automáticamente si expiró (401). */
+
 export async function adminAuthorizedFetch(
   input: string,
   init: RequestInit = {},

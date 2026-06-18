@@ -299,7 +299,7 @@ export default function AppDevEmpleosPage() {
     const inProgress = viewed + finalist;
     return { total, applied, viewed, finalist, rejected, closed, inProgress };
   }, [apps, rows]);
-  /** Las 3 postulaciones más recientes por fecha (todas las aplicaciones, sin filtros de la lista). */
+  
   const recentApplicationsPreview = useMemo(() => {
     const jobsMap = new Map<string, PublicJobListItem>();
     for (const r of rows) jobsMap.set(r.id, r);
@@ -826,7 +826,7 @@ export default function AppDevEmpleosPage() {
                 <div className="max-h-64 overflow-y-auto rounded-md border border-zinc-200 p-3">
                   <div
                     className="job-overview-display text-sm leading-relaxed text-zinc-800 [&_a]:text-sky-800 [&_a]:underline [&_ol]:my-1 [&_ol]:list-decimal [&_ol]:pl-5 [&_ul]:my-1 [&_ul]:list-disc [&_ul]:pl-5"
-                    // eslint-disable-next-line react/no-danger -- HTML de la API, saneado
+                    
                     dangerouslySetInnerHTML={{
                       __html: sanitizeOverviewHtmlForDisplay(
                         ensureEditorHtml(selected.description?.trim() || selected.summary?.trim() || ''),

@@ -33,7 +33,7 @@ export function SoftwareProcessSection() {
 
               return (
                 <li key={stepId} className="flex gap-4 md:gap-6">
-                  {/* Punto de la línea de tiempo */}
+                  
                   <div className="flex flex-col items-center">
                     <div className="bg-primary text-primary-foreground flex h-10 w-10 items-center justify-center rounded-full shadow-md md:h-11 md:w-11">
                       <Icon className="h-5 w-5 md:h-6 md:w-6" aria-hidden />
@@ -43,7 +43,7 @@ export function SoftwareProcessSection() {
                     )}
                   </div>
 
-                  {/* Contenido del paso */}
+                  
                   <div className="pb-4">
                     <h3 className="font-semibold text-[#19314c] md:text-lg">
                       {t(`services.customSoftware.process.steps.${stepId}.title`)}

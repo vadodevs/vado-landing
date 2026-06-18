@@ -13,10 +13,8 @@ import { AppShell } from '@/components/layout/app/AppShell';
 import { getCompanyAccessToken } from '@/lib/companyAuth';
 import { mapApiProjectRow } from '@/lib/adminProjectsApi';
 import type { AssignedProjectRecord } from '@/lib/adminProjectRecord';
-import {
-  companyProjectsSignature,
-  setCompanyProjectsSignatureSeen,
-} from '@/lib/appNavBadges';
+import { companyProjectsSignature } from '@/lib/appNavBadges';
+import { persistCompanyProjectsSignatureSeen } from '@/lib/userPreferencesSync';
 
 type CompanySubmissionMe = {
   id: string;
@@ -81,7 +79,7 @@ export default function AppCompanyProyectosPage() {
 
   useEffect(() => {
     if (loading) return;
-    setCompanyProjectsSignatureSeen(companyProjectsSignature(assignedProjects));
+    void persistCompanyProjectsSignatureSeen(companyProjectsSignature(assignedProjects));
   }, [loading, assignedProjects]);
 
   const requestDate = (() => {

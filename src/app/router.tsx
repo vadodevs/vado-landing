@@ -30,6 +30,8 @@ import AppDevSettings from '@/pages/app/devSettings'
 import AppAdminSettings from '@/pages/app/adminSettings'
 import AppAdminSettingsIntegraciones from '@/pages/app/adminSettingsIntegraciones'
 import AppAdminSettingsCuestionario from '@/pages/app/adminSettingsCuestionario'
+import AppAdminUtileriaTareas from '@/pages/app/adminUtileriaTareas'
+import AppAdminUtileriaRecordatorios from '@/pages/app/adminUtileriaRecordatorios'
 import AppCompanySettings from '@/pages/app/companySettings'
 import AppCompanyProfile from '@/pages/app/companyProfile'
 import AppCompanyProyectos from '@/pages/app/companyProyectos'
@@ -311,6 +313,20 @@ function AdminSettingsCuestionarioRoute() {
     </RequireAdmin>
   );
 }
+function AdminUtileriaTareasRoute() {
+  return (
+    <RequireAdmin>
+      <AppAdminUtileriaTareas />
+    </RequireAdmin>
+  );
+}
+function AdminUtileriaRecordatoriosRoute() {
+  return (
+    <RequireAdmin>
+      <AppAdminUtileriaRecordatorios />
+    </RequireAdmin>
+  );
+}
 const AppAdminDesarrolladoresPage = withLocale(AdminDesarrolladoresRoute)
 const AppAdminProyectosPage = withLocale(AdminProyectosRoute)
 const AppAdminCompanyPage = withLocale(AdminCompanyRoute)
@@ -324,6 +340,8 @@ const AppAdminOfertasCandidatoPerfilPage = withLocale(AdminOfertasCandidatoPerfi
 const AppAdminSettingsPage = withLocale(AdminSettingsRoute)
 const AppAdminSettingsIntegracionesPage = withLocale(AdminSettingsIntegracionesRoute)
 const AppAdminSettingsCuestionarioPage = withLocale(AdminSettingsCuestionarioRoute)
+const AppAdminUtileriaTareasPage = withLocale(AdminUtileriaTareasRoute)
+const AppAdminUtileriaRecordatoriosPage = withLocale(AdminUtileriaRecordatoriosRoute)
 const AppAdminCanalesPage = withLocale(AdminCanalesRoute)
 const AppDevProfileGuardedPage = withLocale(DevProfileRoute)
 const AppDevDashboardGuardedPage = withLocale(DevDashboardRoute)
@@ -449,6 +467,8 @@ export function Router() {
       <Route path="/:lang/app/admin/leads/my-evolve" component={AppAdminLeadsMyEvolvePage} />
       <Route path="/:lang/app/admin/leads/calendar" component={AppAdminLeadsCalendarPage} />
       <Route path="/:lang/app/admin/canales/:canal" component={AppAdminCanalesPage} />
+      <Route path="/:lang/app/admin/utileria/tareas" component={AppAdminUtileriaTareasPage} />
+      <Route path="/:lang/app/admin/utileria/recordatorios" component={AppAdminUtileriaRecordatoriosPage} />
       <Route path="/:lang/app/admin/settings/integraciones" component={AppAdminSettingsIntegracionesPage} />
       <Route path="/:lang/app/admin/settings/cuestionario" component={AppAdminSettingsCuestionarioPage} />
       <Route path="/:lang/app/admin/settings" component={AppAdminSettingsPage} />

@@ -10,23 +10,23 @@ export type CardFeatureSectionButton = {
 };
 
 export type CardFeatureSectionProps = {
-  /** Etiqueta pequeña arriba del título (ej. "SOLUCIONES DE IA") */
+  
   label: string;
-  /** Título principal */
+  
   title: string;
-  /** Párrafo descriptivo */
+  
   description: string;
-  /** Botón principal (relleno) */
+  
   primaryButton: CardFeatureSectionButton;
-  /** Botón secundario (outline) */
+  
   secondaryButton: CardFeatureSectionButton;
-  /** Contenido de la columna derecha (ej. mockup, imagen, etc.) */
+  
   rightContent: React.ReactNode;
-  /** URL de la imagen de fondo. Por defecto: /backgrounds/bg-card.webp */
+  
   backgroundSrc?: string;
-  /** Alt de la imagen de fondo (accesibilidad) */
+  
   backgroundAlt?: string;
-  /** Clase adicional para el contenedor de la sección */
+  
   className?: string;
 };
 

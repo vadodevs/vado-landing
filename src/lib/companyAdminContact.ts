@@ -1,6 +1,6 @@
 import { getApiBaseUrl } from '@/lib/apiBaseUrl';
 
-/** Fila de la vista admin Compañías (lista + detalle). */
+
 export type CompanyContact = {
   id: string;
   servicio: string;
@@ -12,11 +12,11 @@ export type CompanyContact = {
   sector: string;
   ciudad: string;
   fechaSolicitud: string;
-  /** Para ordenar (ms desde epoch; desde `createdAt` del API o fecha demo). */
+  
   createdAtMs: number;
 };
 
-/** Respuesta de GET /contact/company-submissions (ServiceRequest en JSON). */
+
 export type ApiCompanySubmissionRow = {
   id: string;
   firstName: string;
@@ -69,7 +69,7 @@ export type CompanySubmissionsFetchResult =
   | { ok: true; contacts: CompanyContact[] }
   | { ok: false; reason: 'no-config' | 'fail' };
 
-/** Lista de leads de compañía (formulario / chat widget). */
+
 export async function fetchCompanySubmissions(): Promise<CompanySubmissionsFetchResult> {
   const base = getApiBaseUrl();
   if (!base) return { ok: false, reason: 'no-config' };
@@ -85,7 +85,7 @@ export async function fetchCompanySubmissions(): Promise<CompanySubmissionsFetch
   }
 }
 
-/** Mapa id → nombre/correo para resolver recordatorios en el calendario. */
+
 export async function fetchCompanyContactDirectory(): Promise<
   Record<string, CompanyContactDirectoryEntry>
 > {
