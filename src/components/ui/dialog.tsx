@@ -57,7 +57,7 @@ function DialogContent({
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Content> & {
   showCloseButton?: boolean
-  /** Portales van a `body`; alinea claro/oscuro con el tema del panel app (no forzar siempre oscuro). */
+  
   useAppDark?: boolean
 }) {
   const [appThemeIsDark, setAppThemeIsDark] = React.useState(

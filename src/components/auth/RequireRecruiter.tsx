@@ -19,7 +19,7 @@ type RequireRecruiterProps = {
   lang?: string;
 };
 
-/** Permite /app/recruiter solo con sesión de reclutador (rol Recruiter) y bloquea admin. */
+
 export function RequireRecruiter({ children, lang }: RequireRecruiterProps) {
   const [checking, setChecking] = useState(true);
   const [allowed, setAllowed] = useState(false);

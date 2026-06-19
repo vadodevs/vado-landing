@@ -56,18 +56,14 @@ function generateSitemapXml(baseUrl: string): string {
     .join('\n')
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${entries}\n</urlset>`
 }
-
-// https://vite.dev/config/
 export default defineConfig({
   server: {
-    // Túneles (ngrok, etc.): sin esto Vite bloquea el Host header en desarrollo.
     allowedHosts: [
       '.ngrok-free.dev',
       '.ngrok-free.app',
       '.ngrok.io',
       'localhost',
     ],
-    // Mismo origen en dev: evita CORS y que localhost:8000 falle al abrir por IP de red (WSL).
     proxy: {
       '/api': {
         target: process.env.VITE_API_PROXY_TARGET ?? 'http://127.0.0.1:8000',
@@ -80,7 +76,6 @@ export default defineConfig({
     react(),
     tailwindcss(),
     eslint({}),
-    // Sustituye %VITE_SITE_URL% en index.html y genera sitemap + robots en build
     {
       name: 'vado-seo',
       apply: 'build',

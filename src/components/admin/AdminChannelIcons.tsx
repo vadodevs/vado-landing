@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 
 export type AdminChannelSlug = 'facebook' | 'whatsapp' | 'instagram' | 'bot-test';
 
-/** Logo WhatsApp (relleno), color vía `text-*` o `currentColor`. */
+
 export function WhatsAppGlyph({ className }: { className?: string }) {
   return (
     <svg
@@ -21,7 +21,7 @@ export function WhatsAppGlyph({ className }: { className?: string }) {
   );
 }
 
-/** Icono de marca para sidebar / listas (Facebook, WhatsApp, Instagram, Bot test). */
+
 export function AdminChannelNavIcon({
   channel,
   className,

@@ -11,7 +11,7 @@ export function monthRangeMs(year: number, month: number): { startMs: number; en
   return { startMs: start.getTime(), endMs: end.getTime() };
 }
 
-/** Lunes 00:00 → domingo 23:59 de la semana que contiene `ref`. */
+
 export function weekRangeMs(ref = new Date()): { startMs: number; endMs: number } {
   const d = new Date(ref);
   const mondayOffset = (d.getDay() + 6) % 7;
@@ -28,7 +28,7 @@ export function todayRangeMs(ref = new Date()): { startMs: number; endMs: number
   return { startMs: start.getTime(), endMs: end.getTime() };
 }
 
-/** Rango mínimo que cubre la semana y el mes actuales (para stats del dashboard). */
+
 export function dashboardFetchRange(ref = new Date()): { startMs: number; endMs: number } {
   const month = monthRangeMs(ref.getFullYear(), ref.getMonth());
   const week = weekRangeMs(ref);

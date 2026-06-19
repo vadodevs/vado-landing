@@ -17,7 +17,7 @@ type BasePanelProps = {
 type SubPanelProps = BasePanelProps & {
   variant: 'sub';
   description: string;
-  /** Solo en servicios: fondo #435c78 y texto claro */
+  
   appearance?: 'default' | 'darkSub';
 };
 
@@ -27,11 +27,11 @@ type MainPanelProps = BasePanelProps & {
   titlePart1: string;
   titlePart2: string;
   description: string;
-  /** Párrafo adicional opcional (ej. para AI Why Vado) */
+  
   descriptionPart2?: string;
   primaryButton: FeatureCardPanelButton;
   secondaryButton?: FeatureCardPanelButton;
-  /** Solo en servicios: fondo #263e59 y texto claro */
+  
   appearance?: 'default' | 'darkMain';
 };
 

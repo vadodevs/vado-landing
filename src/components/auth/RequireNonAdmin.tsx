@@ -8,7 +8,7 @@ type RequireNonAdminProps = {
   lang?: string;
 };
 
-/** Impide acceder a rutas dev/company cuando existe sesión admin activa. */
+
 export function RequireNonAdmin({ children, lang }: RequireNonAdminProps) {
   const [isAdmin, setIsAdmin] = useState(() => isAdminAuthenticated());
 

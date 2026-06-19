@@ -28,6 +28,10 @@ import AppDevProjects from '@/pages/app/devProjects'
 import AppDevEmpleos from '@/pages/app/devEmpleos'
 import AppDevSettings from '@/pages/app/devSettings'
 import AppAdminSettings from '@/pages/app/adminSettings'
+import AppAdminSettingsIntegraciones from '@/pages/app/adminSettingsIntegraciones'
+import AppAdminSettingsCuestionario from '@/pages/app/adminSettingsCuestionario'
+import AppAdminUtileriaTareas from '@/pages/app/adminUtileriaTareas'
+import AppAdminUtileriaRecordatorios from '@/pages/app/adminUtileriaRecordatorios'
 import AppCompanySettings from '@/pages/app/companySettings'
 import AppCompanyProfile from '@/pages/app/companyProfile'
 import AppCompanyProyectos from '@/pages/app/companyProyectos'
@@ -37,6 +41,7 @@ import AppRecruiterSettings from '@/pages/app/recruiterSettings'
 import AppAdminDesarrolladores from '@/pages/app/adminDesarrolladores'
 import AppAdminProyectos from '@/pages/app/adminProyectos'
 import AppAdminCompany from '@/pages/app/adminCompany'
+import AppAdminOportunidades from '@/pages/app/adminOportunidades'
 import AppAdminLeadsMyEvolve from '@/pages/app/adminLeadsMyEvolve'
 import AppAdminLeadsMyEvolveCalendar from '@/pages/app/adminLeadsMyEvolveCalendar'
 import AppAdminCanales from '@/pages/app/adminCanales'
@@ -84,6 +89,13 @@ function AdminLeadsCalendarRoute() {
   return (
     <RequireAdmin>
       <AppAdminLeadsMyEvolveCalendar />
+    </RequireAdmin>
+  );
+}
+function AdminOpportunitiesRoute() {
+  return (
+    <RequireAdmin>
+      <AppAdminOportunidades />
     </RequireAdmin>
   );
 }
@@ -287,9 +299,38 @@ function AdminSettingsRoute() {
     </RequireAdmin>
   );
 }
+function AdminSettingsIntegracionesRoute() {
+  return (
+    <RequireAdmin>
+      <AppAdminSettingsIntegraciones />
+    </RequireAdmin>
+  );
+}
+function AdminSettingsCuestionarioRoute() {
+  return (
+    <RequireAdmin>
+      <AppAdminSettingsCuestionario />
+    </RequireAdmin>
+  );
+}
+function AdminUtileriaTareasRoute() {
+  return (
+    <RequireAdmin>
+      <AppAdminUtileriaTareas />
+    </RequireAdmin>
+  );
+}
+function AdminUtileriaRecordatoriosRoute() {
+  return (
+    <RequireAdmin>
+      <AppAdminUtileriaRecordatorios />
+    </RequireAdmin>
+  );
+}
 const AppAdminDesarrolladoresPage = withLocale(AdminDesarrolladoresRoute)
 const AppAdminProyectosPage = withLocale(AdminProyectosRoute)
 const AppAdminCompanyPage = withLocale(AdminCompanyRoute)
+const AppAdminOpportunitiesPage = withLocale(AdminOpportunitiesRoute)
 const AppAdminLeadsMyEvolvePage = withLocale(AdminLeadsMyEvolveRoute)
 const AppAdminLeadsCalendarPage = withLocale(AdminLeadsCalendarRoute)
 const AppAdminReclutadoresPage = withLocale(AdminReclutadoresRoute)
@@ -297,6 +338,10 @@ const AppAdminOfertasPage = withLocale(AdminOfertasRoute)
 const AppAdminOfertasCandidatosPage = withLocale(AdminOfertasCandidatosRoute)
 const AppAdminOfertasCandidatoPerfilPage = withLocale(AdminOfertasCandidatoPerfilRoute)
 const AppAdminSettingsPage = withLocale(AdminSettingsRoute)
+const AppAdminSettingsIntegracionesPage = withLocale(AdminSettingsIntegracionesRoute)
+const AppAdminSettingsCuestionarioPage = withLocale(AdminSettingsCuestionarioRoute)
+const AppAdminUtileriaTareasPage = withLocale(AdminUtileriaTareasRoute)
+const AppAdminUtileriaRecordatoriosPage = withLocale(AdminUtileriaRecordatoriosRoute)
 const AppAdminCanalesPage = withLocale(AdminCanalesRoute)
 const AppDevProfileGuardedPage = withLocale(DevProfileRoute)
 const AppDevDashboardGuardedPage = withLocale(DevDashboardRoute)
@@ -418,9 +463,14 @@ export function Router() {
       <Route path="/:lang/app/admin/ofertas" component={RedirectAdminJobsToActive} />
       <Route path="/:lang/app/admin/proyectos" component={AppAdminProyectosPage} />
       <Route path="/:lang/app/admin/company" component={AppAdminCompanyPage} />
+      <Route path="/:lang/app/admin/oportunidades" component={AppAdminOpportunitiesPage} />
       <Route path="/:lang/app/admin/leads/my-evolve" component={AppAdminLeadsMyEvolvePage} />
       <Route path="/:lang/app/admin/leads/calendar" component={AppAdminLeadsCalendarPage} />
       <Route path="/:lang/app/admin/canales/:canal" component={AppAdminCanalesPage} />
+      <Route path="/:lang/app/admin/utileria/tareas" component={AppAdminUtileriaTareasPage} />
+      <Route path="/:lang/app/admin/utileria/recordatorios" component={AppAdminUtileriaRecordatoriosPage} />
+      <Route path="/:lang/app/admin/settings/integraciones" component={AppAdminSettingsIntegracionesPage} />
+      <Route path="/:lang/app/admin/settings/cuestionario" component={AppAdminSettingsCuestionarioPage} />
       <Route path="/:lang/app/admin/settings" component={AppAdminSettingsPage} />
       <Route path="/:lang/app/admin" component={RedirectAdminToDesarrolladores} />
       <Route path="/:lang/app/" component={RedirectAppRootToAdmin} />

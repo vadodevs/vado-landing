@@ -3,22 +3,22 @@ import { CenterContainer } from '@/components/layout/CenterContainer';
 const STACK_BASE = '/stack';
 
 export type ProjectStackItem = {
-  /** Nombre para mostrar (ej: "Vue", "Node.js") */
+  
   name: string;
-  /** Nombre del archivo en public/stack sin extensión (ej: "vue", "node-js") */
+  
   icon: string;
 };
 
 export type ProjectStackVariant = 'inline' | 'logos-row' | 'logos-grid' | 'pills';
 
 export type ProjectStackProps = {
-  /** Items del stack: name + icon (archivo en public/stack) */
+  
   items: ProjectStackItem[];
-  /** Estilo de visualización */
+  
   variant?: ProjectStackVariant;
-  /** Color de acento para label "Stack" (opcional) */
+  
   accentColor?: string;
-  /** Label de la sección */
+  
   label?: string;
 };
 
@@ -30,7 +30,7 @@ function StackIcon({ icon, name, size = 'default' }: { icon: string; name: strin
         ? 'h-8 w-8'
         : size === 'lg'
           ? 'h-12 w-12'
-          : 'h-14 w-14'; /* xl */
+          : 'h-14 w-14'; 
   return (
     <img
       src={`${STACK_BASE}/${icon}.svg`}

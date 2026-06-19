@@ -15,7 +15,7 @@ type RequireCompanyProps = {
   lang?: string;
 };
 
-/** Permite /app/company solo con sesión de compañía (Partner) y bloquea admin. */
+
 export function RequireCompany({ children, lang }: RequireCompanyProps) {
   const [checking, setChecking] = useState(true);
   const [allowed, setAllowed] = useState(false);

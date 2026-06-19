@@ -1,7 +1,7 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
-/* Activa `dark:` para nuestro scope interno (.app-dark) sin afectar la landing. */
+
 @custom-variant dark (&:is(.dark *, .app-dark *));
 
 @theme inline {
@@ -94,12 +94,12 @@
   animation-play-state: paused;
 }
 
-/* Logo EBM: cuando se pasa color, todos los path usan currentColor */
+
 .ebm-logo-tint path {
   fill: currentColor;
 }
 
-/* Tiptap: editor de ofertas (admin) */
+
 .tiptap-prose .ProseMirror p {
   margin: 0.35em 0;
   min-height: 1.25em;
@@ -127,11 +127,11 @@
   height: 0;
   pointer-events: none;
 }
-/* Placeholder Tiptap v2: primer párrafo vacío */
+
 .tiptap-prose p.is-editor-empty::before {
   content: attr(data-placeholder);
 }
-/* Contenido HTML (Tiptap) en viste previa / dev / admin: asegurar bloques y salto de línea */
+
 .job-overview-display {
   min-width: 0;
   max-width: 100%;
@@ -171,7 +171,7 @@
   text-decoration: underline;
 }
 
-/* Tema oscuro SOLO para el área AppShell (admin/dev/company). */
+
 .app-dark {
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
@@ -273,7 +273,7 @@
   color: rgb(161 161 170) !important;
 }
 
-/* Dev dashboard: mejorar contraste en lista de nuevas aperturas (modo oscuro). */
+
 .app-dark .dev-job-list-item {
   background-color: rgb(24 24 27) !important;
   border-color: rgb(63 63 70) !important;
@@ -292,11 +292,7 @@
   color: rgb(228 228 231) !important;
 }
 
-/*
- * Native selects (app panel): evitar fondo forzado cuando el markup usa `bg-transparent`
- * dentro de un label — antes `.app-dark select` ganaba a `.bg-transparent` y el rectángulo
- * más oscuro que la barra de filtros producía halos / AA raro en el texto.
- */
+
 .app-dark select {
   color: rgb(228 228 231);
   border-color: rgb(63 63 70);
@@ -321,13 +317,13 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Inputs/textarea shadcn: shadow-xs en oscuro deja un halo tenue en el borde del texto */
+
 .app-dark input[data-slot='input'],
 .app-dark textarea[data-slot='textarea'] {
   box-shadow: none !important;
 }
 
-/* Scrollbars — panel admin (.app-dark): finos, zinc oscuro, sin track blanco */
+
 .app-dark,
 .app-dark * {
   scrollbar-width: thin;

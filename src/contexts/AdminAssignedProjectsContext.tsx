@@ -1,4 +1,4 @@
-/* eslint-disable react-refresh/only-export-components -- hook and type re-exports share module with Provider */
+
 import {
   createContext,
   useCallback,
@@ -26,9 +26,9 @@ const projectsRemoteEnabled =
 type Ctx = {
   assignedProjects: AssignedProjectRecord[];
   projectsLoad: ProjectsLoadState;
-  /** `true` si `VITE_API_BASE_URL` está definido (la lista intenta salir solo de GET /projects). */
+  
   projectsRemoteEnabled: boolean;
-  /** Último GET /projects falló o respondió inválido. Solo aplica con `projectsRemoteEnabled`. */
+  
   projectsRemoteFetchFailed: boolean;
   refreshProjects: () => Promise<void>;
   addAssignedProject: (input: Omit<AssignedProjectRecord, 'id' | 'createdAt'>) => void;
@@ -77,7 +77,7 @@ export function AdminAssignedProjectsProvider({ children }: { children: ReactNod
       const record: AssignedProjectRecord = {
         ...input,
         id: existing?.id ?? `ap-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
-        /** Siempre la hora del guardado: la deduplicación por contactId elige la fila más reciente. */
+        
         createdAt: new Date().toISOString(),
       };
       const saved = await upsertRemoteProject(base, record, Boolean(existing));

@@ -1,6 +1,4 @@
-/**
- * Datos de la solicitud de una empresa (alineados con campos base del admin Compañías).
- */
+
 export type CompanySolicitudProfile = {
   empresa: string;
   nombre: string;
@@ -10,7 +8,7 @@ export type CompanySolicitudProfile = {
   mensaje: string;
   sector: string;
   ciudad: string;
-  /** Fecha en formato yyyy-mm-dd */
+  
   fechaSolicitud: string;
 };
 
@@ -21,8 +19,8 @@ function formatDateOnly(d: Date): string {
   return `${y}-${m}-${day}`;
 }
 
-/** Campos fijos de la demo (misma fila id "1" que en admin/compañías). */
-/** Valores alineados con placeholders del formulario de contacto (demo). */
+
+
 const COMPANY_SESSION_BASE: Omit<CompanySolicitudProfile, 'fechaSolicitud'> = {
   empresa: 'Mi Empresa',
   nombre: 'Perla Guerrero',
@@ -34,10 +32,7 @@ const COMPANY_SESSION_BASE: Omit<CompanySolicitudProfile, 'fechaSolicitud'> = {
   ciudad: '',
 };
 
-/**
- * Perfil de sesión en /app/company/profile (demo).
- * La fecha de solicitud es el día actual para alinearla con la primera fila del admin.
- */
+
 export function getCompanySessionProfile(): CompanySolicitudProfile {
   return {
     ...COMPANY_SESSION_BASE,

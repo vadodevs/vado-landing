@@ -1,4 +1,6 @@
-/** Fila de la vista admin Compañías (lista + detalle). */
+import { getApiBaseUrl } from '@/lib/apiBaseUrl';
+
+
 export type CompanyContact = {
   id: string;
   servicio: string;
@@ -10,11 +12,11 @@ export type CompanyContact = {
   sector: string;
   ciudad: string;
   fechaSolicitud: string;
-  /** Para ordenar (ms desde epoch; desde `createdAt` del API o fecha demo). */
+  
   createdAtMs: number;
 };
 
-/** Respuesta de GET /contact/company-submissions (ServiceRequest en JSON). */
+
 export type ApiCompanySubmissionRow = {
   id: string;
   firstName: string;
@@ -59,4 +61,39 @@ export function mapApiCompanySubmission(row: ApiCompanySubmissionRow): CompanyCo
     fechaSolicitud,
     createdAtMs,
   };
+}
+
+export type CompanyContactDirectoryEntry = { name: string; email: string };
+
+export type CompanySubmissionsFetchResult =
+  | { ok: true; contacts: CompanyContact[] }
+  | { ok: false; reason: 'no-config' | 'fail' };
+
+
+export async function fetchCompanySubmissions(): Promise<CompanySubmissionsFetchResult> {
+  const base = getApiBaseUrl();
+  if (!base) return { ok: false, reason: 'no-config' };
+  try {
+    const res = await fetch(`${base}/contact/company-submissions`);
+    if (!res.ok) return { ok: false, reason: 'fail' };
+    const data = (await res.json()) as unknown;
+    if (!Array.isArray(data)) return { ok: true, contacts: [] };
+    const contacts = data.map((row) => mapApiCompanySubmission(row as ApiCompanySubmissionRow));
+    return { ok: true, contacts };
+  } catch {
+    return { ok: false, reason: 'fail' };
+  }
+}
+
+
+export async function fetchCompanyContactDirectory(): Promise<
+  Record<string, CompanyContactDirectoryEntry>
+> {
+  const res = await fetchCompanySubmissions();
+  if (!res.ok) return {};
+  const out: Record<string, CompanyContactDirectoryEntry> = {};
+  for (const contact of res.contacts) {
+    out[contact.id] = { name: contact.nombre, email: contact.correo };
+  }
+  return out;
 }

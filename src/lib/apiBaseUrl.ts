@@ -1,4 +1,4 @@
-/** URL base del backend (adminvado). En dev usa `/api` vía proxy de Vite (mismo origen). */
+
 export function getApiBaseUrl(): string {
   const primary = String(import.meta.env.VITE_API_BASE_URL ?? '').trim();
   const fallback = String(import.meta.env.VITE_ADMIN_API_BASE_URL ?? '').trim();

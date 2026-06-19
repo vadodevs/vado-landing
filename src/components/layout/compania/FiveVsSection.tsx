@@ -3,7 +3,7 @@ import { CenterContainer } from '@/components/layout/CenterContainer';
 
 const V_KEYS = ['v1', 'v2', 'v3', 'v4', 'v5'] as const;
 
-// Imágenes del equipo Vado (puedes cambiar los números 1–49)
+
 const IMAGE_1 = '/team-vado/vado-team-24.webp';
 const IMAGE_2 = '/team-vado/vado-team-33.webp';
 
@@ -14,7 +14,7 @@ export function FiveVsSection() {
     <section className="bg-white py-12 md:py-16 lg:py-20">
       <CenterContainer>
         <div className="flex flex-col gap-10 lg:flex-row lg:items-center lg:gap-14">
-          {/* Left: text content */}
+          
           <div className="flex-1 lg:max-w-xl">
             <p className="mb-2 text-xs font-semibold tracking-wider text-[#19314c] uppercase md:text-sm">
               {t('cultureYTalentoPage.fiveVs.subtitle')}

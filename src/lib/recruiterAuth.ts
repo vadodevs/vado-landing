@@ -163,9 +163,9 @@ export async function loginRecruiter(
     const profileRes = await fetch(`${base}/recruiters/me`, {
       headers: { Authorization: `Bearer ${loginData.accessToken}` },
     });
-    /** 404: ruta no registrada (p. ej. `dist` del backend sin reconstruir tras añadir el controlador). */
+    
     if (profileRes.status === 404) return { ok: false, reason: 'recruiter-me-unavailable' };
-    /** 401: JWT válido con rol Recruiter pero sin fila en `recruiters`. */
+    
     if (profileRes.status === 401) return { ok: false, reason: 'recruiter-record-missing' };
     if (!profileRes.ok) return { ok: false, reason: 'invalid-credentials' };
     const profile = recruiterProfileFromJson(await profileRes.json());
@@ -202,7 +202,7 @@ export async function verifyRecruiterSession(): Promise<boolean> {
     const profile = await fetchRecruiterProfile(token);
     if (!profile) return false;
 
-    /** Sin esto, cada verify guardaba `at: Date.now()`, disparaba RECRUITER_AUTH_CHANGE_EVENT y RequireRecruiter volvía a verify en bucle infinito. */
+    
     const unchanged =
       cur.email === profile.email &&
       cur.recruiterId === profile.id &&

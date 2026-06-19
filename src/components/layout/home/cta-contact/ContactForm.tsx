@@ -16,7 +16,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
 import { normalizeExpertiseTag } from '@/lib/expertiseFormat';
 
-/** Esquema Zod para el formulario de contacto (no postularse). Alineado con CreateContactDto (lead-slack-readme.md). */
+
 function buildContactSchema(messages: {
   required: string;
   emailInvalid: string;
@@ -54,7 +54,7 @@ const initialContactValues: ContactFormValues = {
   message: '',
 };
 
-/** Esquema Zod para el paso 1 del formulario "Quiero postularme". */
+
 function buildApplyStep1Schema(messages: {
   required: string;
   emailInvalid: string;
@@ -73,7 +73,7 @@ function buildApplyStep1Schema(messages: {
 type ApplyStep1Field = 'fullName' | 'email' | 'password';
 
 interface ContactFormProps {
-  /** Prefijo para los ids de los campos (evita duplicados si hay varios formularios en la página). */
+  
   idPrefix?: string;
   className?: string;
 }
@@ -131,7 +131,7 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
   const isPostularse = subject === SUBJECT_POSTULARSE;
   const isInApplyFlow = isPostularse && showApplyForm;
 
-  /** Abrir formulario de postulación si la URL tiene ?apply=1 (ej. desde "Aplicar Ahora" en Cultura y Talento). */
+  
   useEffect(() => {
     const params = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
     if (params.get('apply') === '1' || params.get('subject') === SUBJECT_POSTULARSE) {
@@ -416,9 +416,7 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
       try {
         form.reset();
         if (applyCvInputRef.current) applyCvInputRef.current.value = '';
-      } catch {
-        // ignorar errores al limpiar el formulario; el envío ya fue exitoso
-      }
+      } catch {}
     } catch (err) {
       setSubmitStatus('error');
       setSubmitError(err instanceof Error ? err.message : t('home.ctaContact.errors.generic'));
@@ -484,7 +482,7 @@ export function ContactForm({ idPrefix = 'cta-', className }: ContactFormProps) 
     setSubmitStatus('loading');
     setSubmitError(null);
 
-    /** Body según CreateContactDto (lead-slack-readme.md). campaignID fijo para este formulario. */
+    
     const body = {
       firstName: fullName,
       email,

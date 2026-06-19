@@ -11,7 +11,7 @@ function getApiBaseUrl(): string {
   return (primary || fallback).replace(/\/$/, '');
 }
 
-/** Orden de preferencia según la zona del panel (evita token admin caducado tapando al reclutador activo, etc.). */
+
 function getBearerCandidatesForAssistant(): string[] {
   if (typeof window === 'undefined') return [];
   const path = window.location.pathname;
@@ -37,7 +37,7 @@ function getBearerCandidatesForAssistant(): string[] {
   return out;
 }
 
-/** Primer Bearer del panel según la ruta actual (compatibilidad). */
+
 export function getAnyPanelAccessToken(): string | null {
   const c = getBearerCandidatesForAssistant();
   return c[0] ?? null;
@@ -49,7 +49,7 @@ export type PostAssistantChatResult =
 
 export type InboxLeadChannel = 'whatsapp' | 'facebook' | 'instagram' | 'bot-test';
 
-/** Bot de inbox (solo leads + registro); requiere JWT admin. */
+
 export async function postInboxLeadAssistantChat(
   messages: AssistantChatMessage[],
   channel: InboxLeadChannel,

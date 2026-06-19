@@ -20,7 +20,7 @@ export function FAQSection() {
     <section className="bg-background relative overflow-hidden py-12 md:py-16 lg:py-20">
       <CenterContainer>
         <div className="flex flex-col gap-10 lg:flex-row lg:items-start lg:gap-14">
-          {/* Left: CTA */}
+          
           <div className="flex flex-1 flex-col lg:max-w-md">
             <p className="text-muted-foreground mb-2 text-xs font-medium tracking-wider uppercase md:text-sm">
               {t('home.faq.label')}
@@ -39,7 +39,7 @@ export function FAQSection() {
             </div>
           </div>
 
-          {/* Right: Accordion */}
+          
           <div className="min-w-0 flex-1 lg:max-w-xl">
             <Accordion type="single" collapsible className="w-full">
               {FAQ_KEYS.map((key) => (

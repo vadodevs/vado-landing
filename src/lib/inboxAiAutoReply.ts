@@ -11,7 +11,7 @@ export function isInboxAiAutoReplyActiveNow(
   at: Date = new Date(),
 ): boolean {
   if (!bot.enabled) return false;
-  // Bot activo sin autopilot = responde siempre (24/7).
+  
   if (!autopilot.enabled) return true;
   if (!autopilot.channels.whatsapp) return false;
   return isInboxAutopilotActiveNow(autopilot, at);

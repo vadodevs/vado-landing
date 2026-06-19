@@ -2,11 +2,7 @@ import { useEffect, useState } from 'react';
 import { useLocation } from 'wouter';
 import { APP_THEME_CHANGE_EVENT, getStoredAppTheme } from '@/lib/appTheme';
 
-/**
- * Portales de Radix (dropdown, popover, etc.) se montan en `document.body` y no heredan
- * `.app-dark` del `SidebarProvider`. Cuando el usuario está en rutas `/…/app/…` con tema
- * oscuro, los overlays deben llevar `app-dark` para que `bg-popover` y tokens coincidan.
- */
+
 export function useInAppDarkPortals(): boolean {
   const [path] = useLocation();
   const [dark, setDark] = useState(() =>

@@ -1,16 +1,6 @@
 #!/usr/bin/env node
 
-/**
- * Seed temporal para entorno de pruebas:
- * - crea compañías
- * - crea desarrolladores
- * - crea proyectos enlazando ambos
- *
- * Uso:
- *   API_BASE_URL="https://mi-api.com" npm run seed:temp
- *
- * También toma VITE_API_BASE_URL si API_BASE_URL no existe.
- */
+
 
 const apiBaseRaw = process.env.API_BASE_URL || process.env.VITE_API_BASE_URL || "";
 const apiBase = String(apiBaseRaw).trim().replace(/\/$/, "");
@@ -50,7 +40,6 @@ async function postFirstOk(paths, payload) {
       const data = await parseJsonSafe(res);
       return { ok: true, path, data };
     } catch {
-      // try next
     }
   }
   return { ok: false, path: null, data: null };

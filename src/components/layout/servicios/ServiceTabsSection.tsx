@@ -15,27 +15,27 @@ export type TabItem = {
 };
 
 export type ServiceTabsSectionProps = {
-  /** Tabs con id, label (para el trigger), title y description (para el contenido) */
+  
   tabs: TabItem[];
-  /** Texto del botón CTA */
+  
   ctaText: string;
-  /** URL del CTA (por defecto /contact) */
+  
   ctaHref?: string;
-  /** Label pequeño encima del título (ej. NUESTRAS SOLUCIONES DE IA) */
+  
   label?: string;
-  /** Primera parte del título (ej. Impulsamos tu negocio) */
+  
   titlePart1?: string;
-  /** Segunda parte del título en azul (ej. con soluciones inteligentes) */
+  
   titlePart2?: string;
-  /** Párrafo descriptivo debajo del título */
+  
   description?: string;
-  /** Permite que el texto de las tabs haga salto de línea (ej. para Soluciones IA) */
+  
   tabLabelWrap?: boolean;
-  /** Desactiva la selección de texto en las tabs */
+  
   disableTabTextSelection?: boolean;
-  /** Variante visual del contenedor principal */
+  
   variant?: 'default' | 'imageHero';
-  /** Imagen de fondo cuando se usa la variante imageHero */
+  
   backgroundImageSrc?: string;
 };
 
@@ -87,7 +87,7 @@ export function ServiceTabsSection({
               tabLabelWrap
                 ? 'mb-6 flex w-full flex-nowrap justify-start gap-1 overflow-x-auto overflow-y-hidden bg-transparent pb-0 [scrollbar-width:none] md:flex-wrap md:items-stretch md:gap-3 md:overflow-visible [&::-webkit-scrollbar]:hidden'
                 : 'mb-6 flex w-full justify-start gap-1 overflow-x-auto overflow-y-hidden bg-transparent pb-0',
-              // Sin borde en el contenedor ni línea del pseudo-elemento; solo el borde azul del trigger activo.
+              
               '[&_[data-slot=tabs-trigger]:after:h-0] [&_[data-slot=tabs-trigger]:after:bg-transparent]',
             )}
             style={{ WebkitOverflowScrolling: 'touch', touchAction: 'pan-x' }}

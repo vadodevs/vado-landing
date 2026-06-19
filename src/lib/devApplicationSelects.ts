@@ -1,10 +1,10 @@
 import type { TFunction } from 'i18next';
 
-/** Mismas claves que el `<select id="…apply-start">` en `ContactForm`. */
+
 export const START_VADO_KEYS = ['inmediato', '1-mes', '2-3-meses', 'mas'] as const;
 export type StartVadoKey = (typeof START_VADO_KEYS)[number];
 
-/** Mismas claves que el `<select id="…apply-heard">` en `ContactForm`. */
+
 export const HEARD_VADO_KEYS = ['linkedin', 'referido', 'web', 'otro'] as const;
 export type HeardVadoKey = (typeof HEARD_VADO_KEYS)[number];
 
@@ -36,7 +36,7 @@ function norm(s: string): string {
     .replace(/[\u0300-\u036f]/g, '');
 }
 
-/** Textos demo u otros valores viejos → clave del select (alineado al contacto). */
+
 function legacyStartKey(stored: string): StartVadoKey | undefined {
   const n = norm(stored);
   if (n === 'inmediata' || n === 'immediate') return 'inmediato';

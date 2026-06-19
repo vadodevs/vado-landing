@@ -17,7 +17,7 @@ import type { ProjectHeroProps } from '@/components/layout/nuestro-trabajo/Proje
 export type CaseStudySection = {
   label: string;
   title: string;
-  /** Recibe el componente Accent para resaltar texto con el color del proyecto */
+  
   content: (Accent: React.ComponentType<{ children: React.ReactNode }>) => React.ReactNode;
   imageSrc?: string;
   imageAlt?: string;
@@ -25,7 +25,7 @@ export type CaseStudySection = {
 };
 
 export type ProjectCaseStudyConfig = {
-  /** Id del proyecto (ej: 'zenqur') para filtrar en "Otros casos de uso" */
+  
   projectId: string;
   hero: Omit<ProjectHeroProps, 'backHref' | 'backLabel'>;
   stack: ProjectStackItem[];

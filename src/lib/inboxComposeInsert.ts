@@ -1,4 +1,4 @@
-/** Inserta texto en un input respetando la posición del cursor. */
+
 export function insertTextAtComposeInput(
   input: HTMLInputElement | null,
   current: string,

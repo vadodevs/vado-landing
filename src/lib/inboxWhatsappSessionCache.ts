@@ -1,4 +1,4 @@
-/** Cache de sesión para no “pantalla negra” al volver de Ajustes u otra ruta admin. */
+
 
 const STORAGE_KEY = 'vado.inbox.whatsapp.session.v1';
 const TTL_MS = 30 * 60_000;
@@ -38,11 +38,11 @@ export type WhatsappInboxSessionSnapshot = {
   conversations: CachedWhatsappConversation[];
   messagesById: Record<string, CachedWhatsappChatMsg[]>;
   bootSyncDone: boolean;
-  /** Última sync con Evolution (ms); para no saltarla al rehidratar caché. */
+  
   lastEvolutionSyncAt?: number;
 };
 
-/** Si la caché tiene más de esta edad, forzar sync con Evolution al montar. */
+
 export const WHATSAPP_INBOX_STALE_CACHE_MS = 45_000;
 
 function trimMessagesById(
@@ -97,16 +97,12 @@ export function saveWhatsappInboxSession(snapshot: Omit<WhatsappInboxSessionSnap
       lastEvolutionSyncAt: snapshot.lastEvolutionSyncAt,
     };
     sessionStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
-  } catch {
-    /* quota */
-  }
+  } catch {}
 }
 
 export function clearWhatsappInboxSession(): void {
   if (typeof window === 'undefined') return;
   try {
     sessionStorage.removeItem(STORAGE_KEY);
-  } catch {
-    /* ignore */
-  }
+  } catch {}
 }

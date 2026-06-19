@@ -29,7 +29,7 @@ export function Footer() {
     <footer className="bg-[#112331] text-white">
       <CenterContainer className="py-10 md:py-12 lg:py-14">
         <div className="flex flex-col gap-10 md:flex-row md:flex-wrap md:justify-between md:gap-x-8 lg:gap-x-12">
-          {/* Brand + social */}
+          
           <div className="flex flex-col gap-4">
             <Link href={path('')} className="inline-block">
               <VadoLogo white />
@@ -53,7 +53,7 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Policies */}
+          
           <div className="flex flex-col gap-3">
             <h3 className="text-sm font-bold tracking-wide text-white uppercase">
               {t('footer.policiesHeading')}
@@ -80,7 +80,7 @@ export function Footer() {
             </nav>
           </div>
 
-          {/* Contact */}
+          
           <div className="flex flex-col gap-3">
             <h3 className="text-sm font-bold tracking-wide text-white uppercase">
               {t('footer.contactHeading')}
@@ -98,7 +98,7 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Language */}
+          
           <div className="flex flex-col gap-3">
             <h3 className="text-sm font-bold tracking-wide text-white uppercase">
               {t('footer.languageHeading')}

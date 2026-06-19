@@ -7,7 +7,7 @@ type Props = {
   tracking: DevTrackingViewModel;
   className?: string;
   compact?: boolean;
-  /** Muestra aviso de que el seguimiento está mockeado (hasta back). */
+  
   showMockNotice?: boolean;
 };
 

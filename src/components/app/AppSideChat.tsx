@@ -34,7 +34,7 @@ function useDesktopDock() {
   return wide;
 }
 
-/** Misma lógica visual que el rail lateral: vidrio translúcido + blur (visionOS-ish). */
+
 function chatDockGlassShell(isDark: boolean) {
   return isDark
     ? cn(
@@ -193,7 +193,7 @@ function SideChatPanel({ theme }: { theme: AppThemeMode }) {
         <div ref={listEndRef} />
       </div>
 
-      {/* Compositor: mismo lenguaje visual que el hilo (claro u oscuro según tema). */}
+      
       <form
         onSubmit={onSubmit}
         className={cn(
@@ -275,18 +275,18 @@ function SideChatPanel({ theme }: { theme: AppThemeMode }) {
   );
 }
 
-/** Ancho del dock en desktop; el shell usa `md:pr-[calc(400px+0.5rem)]` por el `right-2`. */
+
 export const APP_SIDE_CHAT_DESKTOP_WIDTH_PX = 400;
 
 export type AppSideChatDockProps = {
   theme: AppThemeMode;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  /** Mismo `id` que `aria-controls` del botón Vado Intelligence */
+  
   regionId: string;
 };
 
-/** Desktop: tarjeta ficha a la derecha con slide. Móvil: hoja controlada por el mismo estado. */
+
 export function AppSideChatDock({ theme, open, onOpenChange, regionId }: AppSideChatDockProps) {
   const wide = useDesktopDock();
   const isDark = theme === 'dark';

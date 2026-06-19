@@ -1,16 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
-  Building2,
   Copy,
   Eye,
-  Filter,
   Heart,
   Key,
   KeyRound,
+  LayoutGrid,
+  List,
   Loader2,
-  Mail,
   MoreVertical,
-  Phone,
   Search,
   UserCheck,
   UserPlus,
@@ -21,9 +19,13 @@ import { useLocation } from 'wouter';
 import { useAdminAssignedProjects } from '@/contexts/AdminAssignedProjectsContext';
 import { AdminSelect, type AdminSelectOption } from '@/components/app/AdminSelect';
 import { AdminTablePagination } from '@/components/app/AdminTablePagination';
+import { CompanyLeadCard } from '@/components/admin/CompanyLeadCard';
+import {
+  CompanyLeadDetailPanel,
+  type CompanyLeadDetailTab,
+} from '@/components/admin/CompanyLeadDetailPanel';
 import { ADMIN_PAGE_SIZE, slicePage } from '@/lib/adminPagination';
 import { AppShell } from '@/components/layout/app/AppShell';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -48,15 +50,20 @@ import {
   type CompanyContact,
 } from '@/lib/companyAdminContact';
 import {
+  fetchCompanyLeadStatuses,
+  createCompanyLeadUpdateApi,
+  patchCompanyLeadStatusApi,
+  toggleFavoriteApi,
+  fetchFavoriteIds,
+} from '@/lib/adminWorkspaceApi';
+import {
   COMPANY_LEAD_STATUSES,
   COMPANY_LEAD_STATUS_DOT_CLASS,
   COMPANY_LEAD_STATUS_LABELS,
   applyCompanyLeadStatusOverride,
+  dispatchLeadStatusChanged,
   getCompanyLeadStatus,
   LEAD_STATUS_CHANGED_EVENT,
-  loadCompanyLeadStatusOverrides,
-  persistCompanyLeadStatus,
-  saveCompanyLeadStatusOverrides,
   type CompanyLeadStatus,
 } from '@/lib/companyLeadStatus';
 import { getCompanySessionProfile } from '@/lib/companyProfile';
@@ -67,20 +74,22 @@ import {
   type ApiDeveloperPayload,
   type DeveloperProfile,
 } from '@/lib/devDevelopers';
+import { persistAdminCompaniesSeenMax } from '@/lib/userPreferencesSync';
 import {
-  setAdminCompaniesSeenMax,
-} from '@/lib/appNavBadges';
-import {
+  chatWidgetDetailForAdmin,
   getChatWidgetBudgetQualification,
-  isChatWidgetLeadMessage,
-  parseChatWidgetDetailRows,
 } from '@/lib/chatWidgetLead';
+import { toggleLeadFavoriteId } from '@/lib/companyLeadFavorites';
 import {
-  loadLeadFavoriteIds,
-  persistLeadFavoriteIds,
-  toggleLeadFavoriteId,
-} from '@/lib/companyLeadFavorites';
-import { ADMIN_FILTER_BADGE_CLASS, ADMIN_FILTER_CONTROL_CLASS, ADMIN_FAVORITES_TOOLBAR_BUTTON_ACTIVE, ADMIN_FAVORITES_TOOLBAR_BUTTON_INACTIVE } from '@/lib/adminFilterUi';
+  appendCompanyLeadUpdate,
+  dispatchCompanyLeadUpdatesChange,
+  formatCompanyLeadUpdateWhen,
+  getNextReminderCode,
+  loadCompanyLeadUpdates,
+  type CompanyLeadUpdate,
+} from '@/lib/companyLeadUpdates';
+import { consumeOpenCompanyLeadRequest } from '@/lib/companyLeadDeepLink';
+import { ADMIN_FAVORITES_TOOLBAR_BUTTON_ACTIVE, ADMIN_FAVORITES_TOOLBAR_BUTTON_INACTIVE, ADMIN_FILTER_PILL_CLASS, ADMIN_FILTER_VIEW_TOGGLE_CLASS, ADMIN_PRIMARY_TOOLBAR_BUTTON_CLASS } from '@/lib/adminFilterUi';
 import {
   ADMIN_ROW_ACTION_ICON_BUTTON_CLASS,
   ADMIN_ROW_ACTION_ICON_MUTED_CLASS,
@@ -94,12 +103,16 @@ type TimeFilter = 'todos' | 'hoy' | 'semana' | 'mes';
 
 type FlowStep = 'detalle' | 'prospectos' | 'confirmacion' | 'exito';
 
+type ViewMode = 'table' | 'cards';
+
 const PERIODO_FILTER_OPTIONS: AdminSelectOption[] = [
   { value: 'todos', label: 'Periodo: todos' },
   { value: 'hoy', label: 'Periodo: hoy' },
   { value: 'semana', label: 'Periodo: esta semana' },
   { value: 'mes', label: 'Periodo: este mes' },
 ];
+
+const CARD_PAGE_SIZE = 12;
 
 const LEAD_QUALITY_OPTIONS: AdminSelectOption[] = [
   { value: 'todos', label: 'Leads: todos' },
@@ -119,7 +132,10 @@ const LEAD_STATUS_TABLE_OPTIONS: AdminSelectOption[] = COMPANY_LEAD_STATUSES.map
 
 const ESTADO_FILTER_OPTIONS: AdminSelectOption[] = [
   { value: '', label: 'Estado: todos' },
-  ...COMPANY_LEAD_STATUSES.map((s) => ({ value: s, label: COMPANY_LEAD_STATUS_LABELS[s] })),
+  ...COMPANY_LEAD_STATUSES.map((s) => ({
+    value: s,
+    label: `Estado: ${COMPANY_LEAD_STATUS_LABELS[s]}`,
+  })),
 ];
 
 function formatDateOnly(d: Date): string {
@@ -168,7 +184,7 @@ function searchFold(s: string): string {
     .replace(/[\u0300-\u036f]/g, '');
 }
 
-/** Búsqueda en el directorio al asignar (nombre, rol, correo, expertise, disponibilidad). */
+
 function matchesAssignableDirectorySearch(
   raw: string,
   dev: {
@@ -188,7 +204,7 @@ function matchesAssignableDirectorySearch(
   return tokens.every((t) => hay.includes(t));
 }
 
-/** Búsqueda por nombre, empresa, correo o servicio (todas las palabras deben coincidir). */
+
 function matchesCompanySearch(raw: string, c: CompanyContact): boolean {
   const q = searchFold(raw);
   if (!q) return true;
@@ -211,39 +227,6 @@ function leadInitials(nombre: string): string {
     return `${parts[0][0] ?? ''}${parts[1][0] ?? ''}`.toUpperCase();
   }
   return (parts[0]?.slice(0, 2) || '??').toUpperCase();
-}
-
-function digitsOnly(s: string): string {
-  return s.replace(/\D/g, '');
-}
-
-/** Lead creado desde el chat: filas extra (sin duplicar cabecera del modal). */
-function chatWidgetDetailForAdmin(contact: CompanyContact): {
-  isWidget: boolean;
-  rows: { label: string; value: string }[];
-} {
-  const mensaje = contact.mensaje.trim();
-  if (!isChatWidgetLeadMessage(mensaje)) {
-    return { isWidget: false, rows: [] };
-  }
-  const widgetRows = parseChatWidgetDetailRows(mensaje);
-  if (widgetRows.length === 0) {
-    return { isWidget: true, rows: [] };
-  }
-  const filtered = widgetRows.filter((row) => {
-    const l = row.label.toLowerCase();
-    const v = row.value.trim();
-    if (l === 'empresa' && v === contact.empresa.trim()) return false;
-    if (l === 'correo' && v.toLowerCase() === contact.correo.trim().toLowerCase()) return false;
-    if (l === 'teléfono' || l === 'telefono') {
-      const t = contact.telefono.trim();
-      if (t === '—' || t === '-' || t === '') return true;
-      if (digitsOnly(v) === digitsOnly(t)) return false;
-    }
-    if (l === 'nombre' && v === contact.nombre.trim()) return false;
-    return true;
-  });
-  return { isWidget: true, rows: filtered.length > 0 ? filtered : widgetRows };
 }
 
 function matchesTimeFilter(fechaSolicitud: string, filter: TimeFilter, now: Date): boolean {
@@ -328,7 +311,8 @@ export default function AppAdminCompanyPage() {
   const { t } = useTranslation();
   const [location] = useLocation();
   const portalBase = location.includes('/app/recruiter/') ? '/app/recruiter' : '/app/admin';
-  const { addAssignedProject, removeAssignedProjectByContactId } = useAdminAssignedProjects();
+  const { addAssignedProject, removeAssignedProjectByContactId, assignedProjects } =
+    useAdminAssignedProjects();
   const [selected, setSelected] = useState<CompanyContact | null>(null);
   const [open, setOpen] = useState(false);
   const [flowStep, setFlowStep] = useState<FlowStep>('detalle');
@@ -341,18 +325,18 @@ export default function AppAdminCompanyPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [fechaOrden, setFechaOrden] = useState<'newest' | 'oldest'>('newest');
   const [asuntoFilter, setAsuntoFilter] = useState('');
-  /** Vacío = todos los estados; si hay valor, solo filas con ese estado (mismo patrón que el select de Leads). */
+  const [viewMode, setViewMode] = useState<ViewMode>('table');
+  
   const [estadoFilter, setEstadoFilter] = useState<'' | CompanyLeadStatus>('');
-  const [leadFavoriteIds, setLeadFavoriteIds] = useState<Set<string>>(() => loadLeadFavoriteIds());
-  /** Si está activo, solo leads marcados con el corazón en la tabla. */
+  const [leadFavoriteIds, setLeadFavoriteIds] = useState<Set<string>>(() => new Set());
+  
   const [favoritesOnly, setFavoritesOnly] = useState(false);
   const [companyPage, setCompanyPage] = useState(1);
   const [leadStatusOverrides, setLeadStatusOverrides] = useState<
     Record<string, CompanyLeadStatus>
-  >(() => loadCompanyLeadStatusOverrides());
+  >({});
   const [contacts, setContacts] = useState<CompanyContact[]>([]);
   const [contactsLoad, setContactsLoad] = useState<'idle' | 'loading' | 'done'>('idle');
-  const [contactsSource, setContactsSource] = useState<'demo' | 'api'>('demo');
   const [contactsError, setContactsError] = useState<'none' | 'no-config' | 'fail'>('none');
   const [assignDirectory, setAssignDirectory] = useState<DeveloperProfile[]>([]);
   const [assignDirectoryLoad, setAssignDirectoryLoad] = useState<'idle' | 'loading' | 'done'>('idle');
@@ -369,9 +353,42 @@ export default function AppAdminCompanyPage() {
     password: string;
   }>({ open: false, title: '', email: '', password: '' });
   const [copiedGeneratedPassword, setCopiedGeneratedPassword] = useState(false);
+  const [manualLeadForm, setManualLeadForm] = useState<{
+    nombre: string;
+    correo: string;
+    empresa: string;
+    telefono: string;
+    servicio: string;
+    mensaje: string;
+  } | null>(null);
+  const [leadUpdatesById, setLeadUpdatesById] = useState<Record<string, CompanyLeadUpdate[]>>(
+    () => ({}),
+  );
+  const [leadUpdateDraft, setLeadUpdateDraft] = useState('');
+  const [detailTab, setDetailTab] = useState<CompanyLeadDetailTab>('cuestionario');
 
   useEffect(() => {
-    const onLeadStatusExternal = () => setLeadStatusOverrides(loadCompanyLeadStatusOverrides());
+    setLeadUpdateDraft('');
+    setDetailTab('cuestionario');
+  }, [selected?.id]);
+
+  useEffect(() => {
+    void (async () => {
+      const [statuses, updates, favorites] = await Promise.all([
+        fetchCompanyLeadStatuses(),
+        loadCompanyLeadUpdates(),
+        fetchFavoriteIds('company_lead'),
+      ]);
+      setLeadStatusOverrides(statuses);
+      setLeadUpdatesById(updates);
+      setLeadFavoriteIds(new Set(favorites));
+    })();
+  }, []);
+
+  useEffect(() => {
+    const onLeadStatusExternal = () => {
+      void fetchCompanyLeadStatuses().then(setLeadStatusOverrides);
+    };
     window.addEventListener(LEAD_STATUS_CHANGED_EVENT, onLeadStatusExternal);
     return () => window.removeEventListener(LEAD_STATUS_CHANGED_EVENT, onLeadStatusExternal);
   }, []);
@@ -414,7 +431,21 @@ export default function AppAdminCompanyPage() {
       0,
       ...contacts.map((c) => (Number.isFinite(c.createdAtMs) ? c.createdAtMs : 0)),
     );
-    setAdminCompaniesSeenMax(maxTs);
+    void persistAdminCompaniesSeenMax(maxTs);
+  }, [contactsLoad, contacts]);
+
+  useEffect(() => {
+    if (contactsLoad !== 'done') return;
+    const req = consumeOpenCompanyLeadRequest();
+    if (!req) return;
+    const contact = contacts.find((c) => c.id === req.contactId);
+    if (!contact) return;
+    setSelected(contact);
+    setFlowStep('detalle');
+    setSeleccionProspectos({});
+    setOpen(true);
+    setCopied(false);
+    if (req.tab) setDetailTab(req.tab);
   }, [contactsLoad, contacts]);
 
   useEffect(() => {
@@ -423,7 +454,6 @@ export default function AppAdminCompanyPage() {
       if (typeof base !== 'string' || !base.trim()) {
         setContacts(buildDemoContacts());
         setCompanyAccessById({});
-        setContactsSource('demo');
         setContactsError('no-config');
         setContactsLoad('done');
         return;
@@ -448,7 +478,6 @@ export default function AppAdminCompanyPage() {
         .then(([data, accessRows]) => {
           if (!Array.isArray(data)) {
             setContacts([]);
-            setContactsSource('api');
             return;
           }
           const mapped = data.map((row) => mapApiCompanySubmission(row as ApiCompanySubmissionRow));
@@ -460,13 +489,11 @@ export default function AppAdminCompanyPage() {
             }
           }
           setCompanyAccessById(byId);
-          setContactsSource('api');
         })
         .catch(() => {
           setContactsError('fail');
           setContacts([]);
           setCompanyAccessById({});
-          setContactsSource('api');
         })
         .finally(() => setContactsLoad('done'));
     });
@@ -482,7 +509,7 @@ export default function AppAdminCompanyPage() {
   const asuntoSelectOptions = useMemo(
     (): AdminSelectOption[] => [
       { value: '', label: 'Asunto: todos' },
-      ...asuntoOptions.map((a) => ({ value: a, label: a })),
+      ...asuntoOptions.map((a) => ({ value: a, label: `Asunto: ${a}` })),
     ],
     [asuntoOptions],
   );
@@ -527,8 +554,11 @@ export default function AppAdminCompanyPage() {
   ]);
 
   const paginatedContacts = useMemo(
-    () => slicePage(filteredContacts, companyPage, ADMIN_PAGE_SIZE),
-    [filteredContacts, companyPage],
+    () => {
+      const pageSize = viewMode === 'cards' ? CARD_PAGE_SIZE : ADMIN_PAGE_SIZE;
+      return slicePage(filteredContacts, companyPage, pageSize);
+    },
+    [filteredContacts, companyPage, viewMode],
   );
 
   useEffect(() => {
@@ -541,19 +571,13 @@ export default function AppAdminCompanyPage() {
   }, [filteredContacts.length]);
 
   const toggleLeadFavorite = (id: string) => {
-    setLeadFavoriteIds((prev) => {
-      const next = toggleLeadFavoriteId(prev, id);
-      persistLeadFavoriteIds(next);
-      return next;
-    });
+    setLeadFavoriteIds((prev) => toggleLeadFavoriteId(prev, id));
+    void toggleFavoriteApi('company_lead', id).then((ids) => setLeadFavoriteIds(new Set(ids)));
   };
 
   const updateLeadStatus = (id: string, next: CompanyLeadStatus) => {
-    setLeadStatusOverrides((prev) => {
-      const merged = applyCompanyLeadStatusOverride(prev, id, next);
-      saveCompanyLeadStatusOverrides(merged);
-      return merged;
-    });
+    setLeadStatusOverrides((prev) => applyCompanyLeadStatusOverride(prev, id, next));
+    void patchCompanyLeadStatusApi(id, next).then(() => dispatchLeadStatusChanged());
     if (next !== 'en_curso') {
       void removeAssignedProjectByContactId(id);
     }
@@ -569,12 +593,13 @@ export default function AppAdminCompanyPage() {
     setFavoritesOnly(false);
   };
 
-  const openDetail = (contact: CompanyContact) => {
+  const openDetail = (contact: CompanyContact, opts?: { tab?: CompanyLeadDetailTab }) => {
     setSelected(contact);
     setFlowStep('detalle');
     setSeleccionProspectos({});
     setOpen(true);
     setCopied(false);
+    setDetailTab(opts?.tab ?? 'cuestionario');
   };
 
   const openAssignLead = (contact: CompanyContact) => {
@@ -630,7 +655,12 @@ export default function AppAdminCompanyPage() {
         correo: p.correo,
       })),
     });
-    persistCompanyLeadStatus(selected.id, 'en_curso');
+    void patchCompanyLeadStatusApi(selected.id, 'en_curso').then(() => {
+      setLeadStatusOverrides((prev) =>
+        applyCompanyLeadStatusOverride(prev, selected.id, 'en_curso'),
+      );
+      dispatchLeadStatusChanged();
+    });
     setFlowStep('exito');
   };
 
@@ -645,6 +675,63 @@ export default function AppAdminCompanyPage() {
     void navigator.clipboard.writeText(password).then(() => {
       setCopiedGeneratedPassword(true);
       window.setTimeout(() => setCopiedGeneratedPassword(false), 1400);
+    });
+  };
+
+  const addManualLead = () => {
+    if (!manualLeadForm) return;
+    const { nombre, correo, empresa, telefono, servicio, mensaje } = manualLeadForm;
+    if (!nombre.trim() || !correo.trim()) return;
+
+    const newLead: CompanyContact = {
+      id: `manual-${Date.now()}`,
+      nombre: nombre.trim(),
+      correo: correo.trim(),
+      empresa: empresa.trim(),
+      telefono: telefono.trim(),
+      servicio: servicio.trim(),
+      mensaje: mensaje.trim(),
+      sector: '',
+      ciudad: '',
+      fechaSolicitud: formatDateOnly(new Date()),
+      createdAtMs: Date.now(),
+    };
+
+    setContacts((prev) => [newLead, ...prev]);
+    setManualLeadForm(null);
+  };
+
+  const addLeadUpdate = () => {
+    if (!selected) return;
+    const body = leadUpdateDraft.trim();
+    if (!body) return;
+    void createCompanyLeadUpdateApi(selected.id, { body, kind: 'note' }).then((created) => {
+      if (!created) return;
+      setLeadUpdatesById((prev) => appendCompanyLeadUpdate(prev, selected.id, created));
+      dispatchCompanyLeadUpdatesChange();
+      setLeadUpdateDraft('');
+      setDetailTab('actividad');
+    });
+  };
+
+  const addLeadReminder = (scheduledAtMs: number, note?: string) => {
+    if (!selected) return;
+    const list = leadUpdatesById[selected.id] ?? [];
+    const reminderCode = getNextReminderCode(list);
+    const scheduledLabel = formatCompanyLeadUpdateWhen(scheduledAtMs);
+    const trimmedNote = note?.trim();
+    const body = trimmedNote || `Seguimiento ${reminderCode} agendado para ${scheduledLabel}`;
+    void createCompanyLeadUpdateApi(selected.id, {
+      body,
+      kind: 'reminder',
+      scheduledAtMs,
+      contactName: selected.nombre,
+      contactEmail: selected.correo,
+    }).then((created) => {
+      if (!created) return;
+      setLeadUpdatesById((prev) => appendCompanyLeadUpdate(prev, selected.id, created));
+      dispatchCompanyLeadUpdatesChange();
+      setDetailTab('actividad');
     });
   };
 
@@ -702,6 +789,17 @@ export default function AppAdminCompanyPage() {
     [selected],
   );
 
+  const selectedLeadUpdates = useMemo(
+    () => (selected ? (leadUpdatesById[selected.id] ?? []) : []),
+    [selected, leadUpdatesById],
+  );
+
+  const selectedAssignedMemberCount = useMemo(() => {
+    if (!selected) return 0;
+    const project = assignedProjects.find((p) => p.contactId === selected.id);
+    return project?.prospectos.length ?? 0;
+  }, [assignedProjects, selected]);
+
   return (
     <AppShell
       pathWithoutLang={`${portalBase}/company`}
@@ -711,11 +809,8 @@ export default function AppAdminCompanyPage() {
     >
       <div className="flex h-0 min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
       <section className="flex min-h-0 min-w-0 flex-1 flex-col gap-2 overflow-hidden scroll-mt-24">
-        {/* Intro + filtros: siempre visibles; el scroll solo está en la tabla */}
+        
         <div className="min-h-0 shrink-0 space-y-2">
-          <p className="text-xs leading-snug text-muted-foreground">
-            Solicitudes del formulario y del widget; filtra para acotar la lista.
-          </p>
           {contactsLoad === 'loading' ? (
             <p className="text-sm text-muted-foreground">Cargando solicitudes…</p>
           ) : null}
@@ -737,36 +832,27 @@ export default function AppAdminCompanyPage() {
           {companyAccessError ? (
             <p className="text-sm text-red-700 dark:text-red-400">{companyAccessError}</p>
           ) : null}
-          {contactsSource === 'api' && contactsLoad === 'done' && contactsError === 'none' ? (
-            <p className="text-sm text-emerald-800 dark:text-emerald-400/90">
-              {contacts.length === 0
-                ? 'Aún no hay solicitudes desde el formulario de contacto.'
-                : `${contacts.length} solicitud(es) desde el formulario de contacto.`}
-            </p>
-          ) : null}
 
-        <div className="rounded-lg border border-border/70 bg-card shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] dark:border-border/50 dark:bg-muted/25 dark:shadow-none">
-          <div className="flex flex-col gap-2 p-2 sm:p-3">
-            {/* Una sola fila de selects con scroll horizontal cuando el hueco es estrecho (p. ej. chat Vado Intelligence abierto). */}
-            <div className="min-w-0 overflow-x-auto overscroll-x-contain pb-0.5 [scrollbar-width:thin]">
-              <div className="flex w-max flex-nowrap items-center gap-1.5 pr-0.5">
-                <span className={ADMIN_FILTER_BADGE_CLASS}>
-                  <Filter className="size-3" aria-hidden />
-                  Filtros rápidos
-                </span>
+        <div
+          id="company-leads-filters-panel"
+          className="rounded-xl border border-border/70 bg-card p-3 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.04)] dark:border-border/50 dark:bg-muted/25 dark:shadow-none sm:p-3.5"
+        >
+          <div className="flex min-w-0 flex-wrap items-center gap-2">
+            <div className="min-w-0 flex-1 overflow-x-auto overscroll-x-contain [scrollbar-width:thin]">
+              <div className="flex w-max flex-nowrap items-center gap-2 pr-1">
                 <AdminSelect
                   value={timeFilter}
                   onValueChange={(v) => setTimeFilter(v as TimeFilter)}
                   options={PERIODO_FILTER_OPTIONS}
                   aria-label="Periodo"
-                  triggerClassName="h-8 shrink-0"
+                  triggerClassName={ADMIN_FILTER_PILL_CLASS}
                 />
                 <AdminSelect
                   value={asuntoFilter}
                   onValueChange={setAsuntoFilter}
                   options={asuntoSelectOptions}
                   aria-label="Filtrar por asunto"
-                  triggerClassName="h-8 min-w-[11rem] max-w-[17rem] shrink-0 sm:min-w-[12rem] sm:max-w-[280px]"
+                  triggerClassName={cn(ADMIN_FILTER_PILL_CLASS, 'min-w-[9.5rem] max-w-[15rem]')}
                 />
                 <AdminSelect
                   value={leadQualityFilter}
@@ -775,74 +861,137 @@ export default function AppAdminCompanyPage() {
                   }
                   options={LEAD_QUALITY_OPTIONS}
                   aria-label="Tipo de lead"
-                  triggerClassName="h-8 shrink-0"
+                  triggerClassName={ADMIN_FILTER_PILL_CLASS}
                 />
                 <AdminSelect
                   value={estadoFilter}
                   onValueChange={(v) => setEstadoFilter(v === '' ? '' : (v as CompanyLeadStatus))}
                   options={ESTADO_FILTER_OPTIONS}
                   aria-label="Filtrar por estado del lead"
-                  triggerClassName="h-8 min-w-[10.5rem] max-w-[18rem] shrink-0"
+                  triggerClassName={cn(ADMIN_FILTER_PILL_CLASS, 'min-w-[10rem] max-w-[16rem]')}
                 />
                 <AdminSelect
                   value={fechaOrden}
                   onValueChange={(v) => setFechaOrden(v as 'newest' | 'oldest')}
                   options={FECHA_ORDEN_OPTIONS}
                   aria-label="Orden por fecha"
-                  triggerClassName="h-8 shrink-0"
+                  triggerClassName={ADMIN_FILTER_PILL_CLASS}
                 />
               </div>
             </div>
-            <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
-              <div className="relative min-w-0 flex-1">
-                <Search
-                  className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground"
-                  aria-hidden
-                />
-                <input
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  placeholder="Nombre, empresa, correo o asunto…"
-                  aria-label="Buscar por nombre, empresa, correo o asunto"
-                  className={cn(
-                    'h-8 w-full pr-2 pl-8',
-                    ADMIN_FILTER_CONTROL_CLASS,
-                    'placeholder:text-muted-foreground',
-                  )}
-                />
-              </div>
-              <div className="flex shrink-0 flex-wrap items-center gap-1.5 sm:justify-end">
+
+            <div className="ml-auto flex shrink-0 items-center gap-2">
+              <div className={ADMIN_FILTER_VIEW_TOGGLE_CLASS}>
                 <Button
                   type="button"
-                  variant="outline"
+                  variant={viewMode === 'table' ? 'secondary' : 'ghost'}
                   size="sm"
-                  className={favoritesOnly ? ADMIN_FAVORITES_TOOLBAR_BUTTON_ACTIVE : ADMIN_FAVORITES_TOOLBAR_BUTTON_INACTIVE}
-                  aria-pressed={favoritesOnly}
-                  title={favoritesOnly ? 'Mostrar todos los leads' : 'Solo leads marcados como favoritos'}
-                  onClick={() => setFavoritesOnly((v) => !v)}
+                  className="h-8 w-8 shrink-0 rounded-lg p-0"
+                  title="Vista de tabla"
+                  onClick={() => setViewMode('table')}
+                  aria-pressed={viewMode === 'table'}
                 >
-                  <Heart
-                    className={cn(
-                      'shrink-0',
-                      favoritesOnly ? 'size-4 fill-white text-white' : 'size-3.5 fill-rose-600 text-rose-600 dark:fill-rose-400 dark:text-rose-400',
-                    )}
-                    aria-hidden
-                  />
-                  <span className="text-[11px] font-semibold">Favoritos</span>
+                  <List className="size-4" />
                 </Button>
-                <Button variant="ghost" size="sm" type="button" className="shrink-0" onClick={clearFilters}>
-                  Limpiar filtros
+                <Button
+                  type="button"
+                  variant={viewMode === 'cards' ? 'secondary' : 'ghost'}
+                  size="sm"
+                  className="h-8 w-8 shrink-0 rounded-lg p-0"
+                  title="Vista de cards"
+                  onClick={() => setViewMode('cards')}
+                  aria-pressed={viewMode === 'cards'}
+                >
+                  <LayoutGrid className="size-4" />
                 </Button>
               </div>
+
+              <Button
+                variant="ghost"
+                size="sm"
+                type="button"
+                className="h-9 shrink-0 text-xs text-muted-foreground hover:text-foreground"
+                onClick={clearFilters}
+              >
+                Limpiar filtros
+              </Button>
+            </div>
+          </div>
+
+          <div className="mt-3 flex min-w-0 flex-col gap-2 sm:flex-row sm:items-center sm:gap-2.5">
+            <div className="relative min-w-0 flex-1">
+              <Search
+                className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
+                aria-hidden
+              />
+              <input
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Nombre, empresa, correo o asunto…"
+                aria-label="Buscar por nombre, empresa, correo o asunto"
+                className={cn(
+                  'h-10 w-full rounded-xl border border-border/70 bg-muted/30 pr-3 pl-10 text-sm',
+                  'text-foreground outline-none placeholder:text-muted-foreground',
+                  'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+                  'dark:bg-muted/20',
+                )}
+              />
+            </div>
+            <div className="flex shrink-0 items-center gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className={
+                  favoritesOnly
+                    ? ADMIN_FAVORITES_TOOLBAR_BUTTON_ACTIVE
+                    : ADMIN_FAVORITES_TOOLBAR_BUTTON_INACTIVE
+                }
+                aria-pressed={favoritesOnly}
+                title={favoritesOnly ? 'Mostrar todos los leads' : 'Solo leads marcados como favoritos'}
+                onClick={() => setFavoritesOnly((v) => !v)}
+              >
+                <Heart
+                  className={cn(
+                    'shrink-0',
+                    favoritesOnly
+                      ? 'size-4 fill-white text-white'
+                      : 'size-3.5 fill-rose-600 text-rose-600 dark:fill-rose-400 dark:text-rose-400',
+                  )}
+                  aria-hidden
+                />
+                <span className="text-[11px] font-semibold">Favoritos</span>
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className={ADMIN_PRIMARY_TOOLBAR_BUTTON_CLASS}
+                title="Agregar lead manualmente"
+                onClick={() =>
+                  setManualLeadForm({
+                    nombre: '',
+                    correo: '',
+                    empresa: '',
+                    telefono: '',
+                    servicio: '',
+                    mensaje: '',
+                  })
+                }
+              >
+                <UserPlus className="size-3.5 shrink-0" aria-hidden />
+                <span className="text-[11px] font-semibold">Agregar Lead</span>
+              </Button>
             </div>
           </div>
         </div>
         </div>
 
-        {/* Panel de tabla: ocupa el alto restante; solo este bloque central hace scroll */}
+        
         <div className="isolate flex h-0 min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-lg border border-border/70 bg-card shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] dark:border-border/50 dark:bg-muted/20 dark:shadow-none">
           <div className="relative min-h-0 min-w-0 flex-1 overflow-hidden">
             <div className="absolute inset-0 overflow-auto overscroll-contain rounded-t-lg">
+            {viewMode === 'table' ? (
             <table className="w-full min-w-0 table-fixed border-collapse text-left text-[12px]">
               <colgroup>
                 <col className="w-[12%]" />
@@ -1002,7 +1151,7 @@ export default function AppAdminCompanyPage() {
                         className={ADMIN_ROW_ACTION_ICON_BUTTON_CLASS}
                         title="Ver detalle"
                         aria-label={`Ver detalle de ${contact.nombre}`}
-                        onClick={() => openDetail(contact)}
+                        onClick={() => openDetail(contact, { tab: 'actividad' })}
                       >
                         <Eye className="size-4" strokeWidth={1.5} aria-hidden />
                       </Button>
@@ -1107,12 +1256,41 @@ export default function AppAdminCompanyPage() {
               ) : null}
             </tbody>
           </table>
+            ) : (
+            <div className="grid grid-cols-1 gap-3 p-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {paginatedContacts.map((contact) => {
+                const leadEstado = getCompanyLeadStatus(leadStatusOverrides, contact.id);
+                const isFavorite = leadFavoriteIds.has(contact.id);
+                return (
+                  <CompanyLeadCard
+                    key={contact.id}
+                    lead={contact}
+                    initials={leadInitials(contact.nombre)}
+                    isFavorite={isFavorite}
+                    onView={(lead) => openDetail(lead, { tab: 'actividad' })}
+                    onToggleFavorite={toggleLeadFavorite}
+                    onCopyEmail={copyLeadTableEmail}
+                    onAssign={openAssignLead}
+                    copiedEmail={copiedLeadEmail}
+                    leadEstado={leadEstado}
+                  />
+                );
+              })}
+              {paginatedContacts.length === 0 && contactsLoad === 'done' ? (
+                <div className="col-span-full text-center text-muted-foreground py-8">
+                  {contacts.length === 0
+                    ? 'No hay contactos para mostrar.'
+                    : 'No hay contactos con los filtros u orden seleccionados.'}
+                </div>
+              ) : null}
+            </div>
+            )}
             </div>
           </div>
           <AdminTablePagination
             page={companyPage}
             totalItems={filteredContacts.length}
-            pageSize={ADMIN_PAGE_SIZE}
+            pageSize={viewMode === 'cards' ? CARD_PAGE_SIZE : ADMIN_PAGE_SIZE}
             onPageChange={setCompanyPage}
             nounPlural="leads"
             className="shrink-0 gap-1 border-border/60 bg-muted/20 px-3 py-2 text-xs sm:flex-row sm:items-center sm:justify-between sm:px-4 dark:bg-muted/10"
@@ -1129,6 +1307,7 @@ export default function AppAdminCompanyPage() {
             setFlowStep('detalle');
             setSeleccionProspectos({});
             setAssignDeveloperSearch('');
+            setDetailTab('cuestionario');
           }
         }}
       >
@@ -1137,172 +1316,36 @@ export default function AppAdminCompanyPage() {
           showCloseButton
           className={cn(
             flowStep === 'detalle' &&
-              'flex max-h-[min(92svh,900px)] min-h-0 flex-col gap-0 overflow-hidden !p-4 sm:!p-5 sm:max-w-6xl',
+              'flex h-[min(760px,calc(100vh-2rem))] max-h-[min(760px,calc(100vh-2rem))] w-[min(1200px,calc(100vw-2rem))] min-h-0 flex-col gap-0 overflow-hidden !p-0 sm:!max-w-[min(1200px,calc(100vw-2rem))]',
             flowStep === 'prospectos' && 'max-h-[85vh] overflow-y-auto sm:max-w-lg',
             flowStep === 'confirmacion' && 'max-h-[85vh] overflow-y-auto sm:max-w-md',
             flowStep === 'exito' && 'max-h-[85vh] overflow-y-auto sm:max-w-lg',
           )}
         >
           {selected && flowStep === 'detalle' ? (
-            <>
-              <DialogHeader className="shrink-0 space-y-1 pr-8 text-left">
-                <DialogTitle className="text-lg leading-tight">{selected.nombre}</DialogTitle>
-                <DialogDescription className="line-clamp-1">{selected.empresa}</DialogDescription>
-              </DialogHeader>
-
-              <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-hidden pt-2 lg:flex-row lg:gap-5">
-                <aside className="flex w-full shrink-0 flex-col gap-2 lg:w-[280px] lg:max-w-[300px]">
-                  <div className="rounded-lg border border-border bg-muted/30 p-2.5">
-                    <Label
-                      htmlFor="lead-estado-detalle"
-                      className="text-[10px] uppercase tracking-wide text-muted-foreground"
-                    >
-                      Estado del lead
-                    </Label>
-                    <div className="mt-1.5 flex items-center gap-2">
-                      <span
-                        className={cn(
-                          'size-2 shrink-0 rounded-full',
-                          COMPANY_LEAD_STATUS_DOT_CLASS[
-                            getCompanyLeadStatus(leadStatusOverrides, selected.id)
-                          ],
-                        )}
-                        aria-hidden
-                      />
-                      <AdminSelect
-                        id="lead-estado-detalle"
-                        value={getCompanyLeadStatus(leadStatusOverrides, selected.id)}
-                        onValueChange={(v) =>
-                          updateLeadStatus(selected.id, v as CompanyLeadStatus)
-                        }
-                        options={LEAD_STATUS_TABLE_OPTIONS}
-                        aria-label="Estado del lead"
-                        triggerClassName="h-9 min-w-0 flex-1 text-xs"
-                        contentMatchTriggerWidth={false}
-                        contentClassName="min-w-[12rem]"
-                      />
-                    </div>
-                  </div>
-                  <div className="rounded-lg border border-border bg-muted/30 p-2.5">
-                    <p className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
-                      Asunto
-                    </p>
-                    <p className="mt-0.5 line-clamp-2 text-sm font-medium leading-snug text-foreground">
-                      {leadDetailWidget.isWidget ? 'Widget de contacto (web)' : selected.servicio}
-                    </p>
-                  </div>
-
-                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-1">
-                    <div className="flex min-h-0 items-start gap-2 rounded-lg border border-border p-2.5">
-                      <Mail className="mt-0.5 size-3.5 shrink-0 text-muted-foreground" />
-                      <div className="min-w-0 flex-1">
-                        <p className="text-[10px] text-muted-foreground">Correo</p>
-                        <p className="truncate text-xs font-medium text-foreground" title={selected.correo}>
-                          {selected.correo}
-                        </p>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          className="mt-1.5 h-7 gap-1 px-2 text-[11px]"
-                          onClick={() => copyEmail(selected.correo)}
-                        >
-                          <Copy className="size-3" />
-                          {copied ? 'Copiado' : 'Copiar'}
-                        </Button>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-2 rounded-lg border border-border p-2.5">
-                      <Phone className="mt-0.5 size-3.5 shrink-0 text-muted-foreground" />
-                      <div className="min-w-0">
-                        <p className="text-[10px] text-muted-foreground">Teléfono</p>
-                        <p className="truncate text-xs font-medium text-foreground" title={selected.telefono}>
-                          {selected.telefono}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-2">
-                    <div className="flex min-h-0 items-start gap-2 rounded-lg border border-border p-2.5">
-                      <Building2 className="mt-0.5 size-3.5 shrink-0 text-muted-foreground" />
-                      <div className="min-w-0">
-                        <p className="text-[10px] text-muted-foreground">Empresa</p>
-                        <p className="truncate text-xs font-medium text-foreground" title={selected.empresa}>
-                          {selected.empresa}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="rounded-lg border border-border p-2.5">
-                      <p className="text-[10px] text-muted-foreground">Fecha</p>
-                      <p className="text-xs font-medium text-foreground">{selected.fechaSolicitud}</p>
-                    </div>
-                  </div>
-                </aside>
-
-                <section className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden border-t border-border pt-3 lg:border-t-0 lg:border-l lg:pl-5 lg:pt-0">
-                  <div className="flex shrink-0 flex-wrap items-center gap-2">
-                    <p className="text-[10px] font-medium tracking-wide text-muted-foreground uppercase">
-                      {leadDetailWidget.isWidget ? 'Cuestionario' : 'Mensaje'}
-                    </p>
-                    {leadDetailWidget.isWidget ? (
-                      <Badge
-                        variant="secondary"
-                        className="text-[9px] font-normal tracking-wide uppercase"
-                      >
-                        Chat en sitio
-                      </Badge>
-                    ) : null}
-                  </div>
-                  {selected.mensaje.trim() === '' ? (
-                    <p className="mt-2 text-xs text-muted-foreground">(sin mensaje enviado)</p>
-                  ) : leadDetailWidget.isWidget && leadDetailWidget.rows.length > 0 ? (
-                    <div className="mt-2 grid min-h-0 auto-rows-min grid-cols-2 gap-1.5 overflow-hidden 2xl:grid-cols-3">
-                      {leadDetailWidget.rows.map((row, idx) => {
-                        const val = row.value.trim() !== '' ? row.value : '—';
-                        return (
-                          <div
-                            key={`${idx}-${row.label}`}
-                            className="rounded-md border border-border bg-muted/20 px-2 py-1.5"
-                          >
-                            <p className="text-[10px] font-medium leading-tight text-muted-foreground">
-                              {row.label}
-                            </p>
-                            <p
-                              className="mt-0.5 line-clamp-2 text-xs font-medium text-foreground"
-                              title={val}
-                            >
-                              {val}
-                            </p>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  ) : (
-                    <p
-                      className="mt-2 line-clamp-[10] rounded-md border border-border bg-muted/30 px-2 py-1.5 text-xs leading-snug break-words whitespace-pre-wrap text-foreground"
-                      title={selected.mensaje}
-                    >
-                      {selected.mensaje}
-                    </p>
-                  )}
-                </section>
-              </div>
-
-              <DialogFooter className="mt-2 shrink-0 border-t border-border pt-3">
-                <Button
-                  type="button"
-                  className={cn(ADMIN_PRIMARY_BTN_CLASS, 'w-full sm:w-auto')}
-                  onClick={() => {
-                    setAssignDeveloperSearch('');
-                    setFlowStep('prospectos');
-                  }}
-                >
-                  <UserPlus className="size-4" />
-                  Asignar proyecto
-                </Button>
-              </DialogFooter>
-            </>
+              <CompanyLeadDetailPanel
+                contact={selected}
+                leadEstado={getCompanyLeadStatus(leadStatusOverrides, selected.id)}
+                leadDetailWidget={leadDetailWidget}
+                detailTab={detailTab}
+                onDetailTabChange={setDetailTab}
+                updates={selectedLeadUpdates}
+                updateDraft={leadUpdateDraft}
+                onUpdateDraftChange={setLeadUpdateDraft}
+                onAddUpdate={addLeadUpdate}
+                onAddReminder={addLeadReminder}
+                onStatusChange={(status) => updateLeadStatus(selected.id, status)}
+                statusOptions={LEAD_STATUS_TABLE_OPTIONS}
+                onCopyEmail={copyEmail}
+                emailCopied={copied}
+                assignedMemberCount={selectedAssignedMemberCount}
+                onDiscard={() => updateLeadStatus(selected.id, 'descartado')}
+                onAssignProject={() => {
+                  setAssignDeveloperSearch('');
+                  setFlowStep('prospectos');
+                }}
+                initials={leadInitials(selected.nombre)}
+              />
           ) : null}
 
           {selected && flowStep === 'prospectos' ? (
@@ -1535,6 +1578,124 @@ export default function AppAdminCompanyPage() {
               {copiedGeneratedPassword ? 'Contraseña copiada' : 'Copiar contraseña'}
             </Button>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={manualLeadForm !== null}
+        onOpenChange={(next) => {
+          if (!next) setManualLeadForm(null);
+        }}
+      >
+        <DialogContent useAppDark className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Agregar Lead Manualmente</DialogTitle>
+            <DialogDescription>
+              Ingresa los datos del nuevo lead de contacto.
+            </DialogDescription>
+          </DialogHeader>
+
+          {manualLeadForm && (
+            <div className="space-y-3">
+              <div>
+                <Label htmlFor="manual-nombre" className="text-xs font-semibold">
+                  Nombre <span className="text-red-500">*</span>
+                </Label>
+                <input
+                  id="manual-nombre"
+                  value={manualLeadForm.nombre}
+                  onChange={(e) => setManualLeadForm({ ...manualLeadForm, nombre: e.target.value })}
+                  placeholder="Ej: Juan Pérez"
+                  className="mt-1 w-full rounded border border-zinc-200 bg-white px-2.5 py-1.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-[#17304b]/20 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:focus-visible:ring-zinc-500/30"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="manual-correo" className="text-xs font-semibold">
+                  Correo <span className="text-red-500">*</span>
+                </Label>
+                <input
+                  id="manual-correo"
+                  type="email"
+                  value={manualLeadForm.correo}
+                  onChange={(e) => setManualLeadForm({ ...manualLeadForm, correo: e.target.value })}
+                  placeholder="ej@empresa.com"
+                  className="mt-1 w-full rounded border border-zinc-200 bg-white px-2.5 py-1.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-[#17304b]/20 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:focus-visible:ring-zinc-500/30"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="manual-empresa" className="text-xs font-semibold">
+                  Empresa
+                </Label>
+                <input
+                  id="manual-empresa"
+                  value={manualLeadForm.empresa}
+                  onChange={(e) => setManualLeadForm({ ...manualLeadForm, empresa: e.target.value })}
+                  placeholder="Ej: Acme Corp"
+                  className="mt-1 w-full rounded border border-zinc-200 bg-white px-2.5 py-1.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-[#17304b]/20 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:focus-visible:ring-zinc-500/30"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="manual-telefono" className="text-xs font-semibold">
+                  Teléfono
+                </Label>
+                <input
+                  id="manual-telefono"
+                  value={manualLeadForm.telefono}
+                  onChange={(e) => setManualLeadForm({ ...manualLeadForm, telefono: e.target.value })}
+                  placeholder="555 123 4567"
+                  className="mt-1 w-full rounded border border-zinc-200 bg-white px-2.5 py-1.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-[#17304b]/20 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:focus-visible:ring-zinc-500/30"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="manual-servicio" className="text-xs font-semibold">
+                  Servicio / Asunto
+                </Label>
+                <input
+                  id="manual-servicio"
+                  value={manualLeadForm.servicio}
+                  onChange={(e) => setManualLeadForm({ ...manualLeadForm, servicio: e.target.value })}
+                  placeholder="Ej: Custom Software Development"
+                  className="mt-1 w-full rounded border border-zinc-200 bg-white px-2.5 py-1.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-[#17304b]/20 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:focus-visible:ring-zinc-500/30"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="manual-mensaje" className="text-xs font-semibold">
+                  Mensaje / Notas
+                </Label>
+                <textarea
+                  id="manual-mensaje"
+                  value={manualLeadForm.mensaje}
+                  onChange={(e) => setManualLeadForm({ ...manualLeadForm, mensaje: e.target.value })}
+                  placeholder="Detalles adicionales..."
+                  rows={4}
+                  className="mt-1 w-full rounded border border-zinc-200 bg-white px-2.5 py-1.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-[#17304b]/20 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:focus-visible:ring-zinc-500/30 resize-none"
+                />
+              </div>
+            </div>
+          )}
+
+          <DialogFooter className="flex-col gap-2 sm:flex-row sm:justify-between">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setManualLeadForm(null)}
+            >
+              Cancelar
+            </Button>
+            <Button
+              type="button"
+              className={ADMIN_PRIMARY_BTN_CLASS}
+              onClick={addManualLead}
+              disabled={!manualLeadForm?.nombre.trim() || !manualLeadForm?.correo.trim()}
+            >
+              Agregar Lead
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
       </div>

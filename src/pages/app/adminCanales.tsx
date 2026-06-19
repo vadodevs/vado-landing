@@ -93,12 +93,10 @@ import {
   notifyInboxAccountAvatarChanged,
   releaseInboxAccountAvatarUrl,
 } from '@/lib/inboxAccountAvatar';
-import { flushInboxAiSettingsSync } from '@/lib/inboxAiSettingsSync';
-import { loadInboxAutopilotConfig } from '@/lib/inboxAutopilotConfig';
-import { loadInboxBotConfig } from '@/lib/inboxBotConfig';
-import { loadInboxLlmConfig } from '@/lib/inboxLlmConfig';
+import { hydrateInboxAiSettingsFromApi } from '@/lib/inboxAiSettingsApi';
 import {
   applyInboxReadState,
+  hydrateInboxReadState,
   markInboxConversationReadLocal,
 } from '@/lib/inboxReadState';
 import {
@@ -124,11 +122,11 @@ type ChatMsg = {
   time: string;
   mediaType?: string | null;
   hasMedia?: boolean;
-  /** Vista previa local mientras se sube (solo optimista). */
+  
   localMediaUrl?: string | null;
-  /** Solo salientes (nosotros): reloj / ✓ / ✓✓ / ✓✓ azul. */
+  
   deliveryStatus?: InboxDeliveryStatus | null;
-  /** Grupos: quién envió el mensaje entrante */
+  
   senderName?: string | null;
 };
 
@@ -186,9 +184,7 @@ function persistBotThreadToSession(messages: ChatMsg[]) {
   try {
     const capped = messages.length > 200 ? messages.slice(-200) : messages;
     sessionStorage.setItem(BOT_TEST_THREAD_SESSION_KEY, JSON.stringify(capped));
-  } catch {
-    /* ignore quota / private mode */
-  }
+  } catch {}
 }
 
 export type InboxConversation = {
@@ -858,7 +854,7 @@ function buildInboxThreadAiContextMarkdown(
 type ChannelChrome = {
   titleKey: string;
   seoKey: string;
-  /** Barra superior del panel de conversación (estilo WhatsApp / marca canal) */
+  
   headerBar: string;
   listBg: string;
 };
@@ -922,7 +918,7 @@ function useIsDesktopMd(): boolean {
   return ok;
 }
 
-/** Fondo del hilo: patrón WA clásico o gradiente oscuro estilo messenger. */
+
 function WaThreadBackdrop({ messenger }: { messenger?: boolean }) {
   if (messenger) {
     return (
@@ -1114,7 +1110,7 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
     el.scrollTo({ top, behavior });
   }, []);
 
-  /** Tras pintar mensajes o cargar media, el alto del hilo cambia; reintenta ir al final. */
+  
   const scrollThreadToBottomAfterLayout = useCallback(
     (behavior: ScrollBehavior = 'auto') => {
       scrollThreadToBottom(behavior);
@@ -1180,7 +1176,7 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
   whatsappOwnerJidRef.current = whatsappOwnerJid;
   const prevLinkedRef = useRef<boolean | null>(null);
   const inboxBootDoneRef = useRef(false);
-  /** Incrementa al desvincular; invalida respuestas de inbox en vuelo. */
+  
   const inboxLinkEpochRef = useRef(0);
   const inboxAiSettingsSyncedRef = useRef(false);
   const prevChannelRef = useRef<AdminChannel | null>(null);
@@ -1426,11 +1422,7 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
     }
     if (inboxAiSettingsSyncedRef.current) return;
     inboxAiSettingsSyncedRef.current = true;
-    flushInboxAiSettingsSync({
-      autopilot: loadInboxAutopilotConfig(),
-      bot: loadInboxBotConfig(),
-      llm: loadInboxLlmConfig(),
-    });
+    void hydrateInboxAiSettingsFromApi();
   }, [isWhatsappApi, whatsappGate]);
 
   useEffect(() => {
@@ -1508,6 +1500,11 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
     const interval = window.setInterval(poll, 12_000);
     return () => window.clearInterval(interval);
   }, [isWhatsappApi, whatsappHistoryImporting]);
+
+  useEffect(() => {
+    if (!isWhatsappApi || !whatsappOwnerJid.trim()) return;
+    void hydrateInboxReadState(whatsappOwnerJid);
+  }, [isWhatsappApi, whatsappOwnerJid]);
 
   useEffect(() => {
     if (!isWhatsappApi || !whatsappOwnerJid.trim()) return;
@@ -2036,9 +2033,7 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
       setBotThread([welcome]);
       try {
         sessionStorage.removeItem(BOT_TEST_THREAD_SESSION_KEY);
-      } catch {
-        /* ignore */
-      }
+      } catch {}
       setDraft('');
       setSelectedId('bot');
       if (!isMd) setMobileShowThread(true);
@@ -2101,7 +2096,7 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
         'border-0 shadow-none',
       )}
     >
-      {/* Lista de chats (estilo WhatsApp Web) */}
+      
       <div
         className={cn(
           'flex h-full max-h-full min-h-0 w-full min-w-0 flex-col overflow-hidden border-black/10 md:w-[min(520px,38vw)] md:min-w-[300px] md:max-w-[560px] md:shrink-0 md:border-r dark:border-white/10',
@@ -2303,7 +2298,7 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
         </div>
       </div>
 
-      {/* Hilo de mensajes */}
+      
       <div
         className={cn(
           'relative flex h-full max-h-full min-h-0 min-w-0 flex-1 flex-col overflow-hidden',

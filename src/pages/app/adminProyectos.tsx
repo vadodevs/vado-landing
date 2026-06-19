@@ -20,13 +20,15 @@ import {
   COMPANY_LEAD_STATUS_BADGE_CLASS,
   COMPANY_LEAD_STATUS_DOT_CLASS,
   COMPANY_LEAD_STATUS_LABELS,
+  applyCompanyLeadStatusOverride,
+  dispatchLeadStatusChanged,
   getCompanyLeadStatus,
   LEAD_STATUS_CHANGED_EVENT,
-  loadCompanyLeadStatusOverrides,
-  persistCompanyLeadStatus,
+  type CompanyLeadStatus,
 } from '@/lib/companyLeadStatus';
+import { fetchCompanyLeadStatuses, patchCompanyLeadStatusApi } from '@/lib/adminWorkspaceApi';
 import { cn } from '@/lib/utils';
-import { setAdminProjectsSeenMax } from '@/lib/appNavBadges';
+import { persistAdminProjectsSeenMax } from '@/lib/userPreferencesSync';
 import {
   ADMIN_FIELD_INPUT_SM_CLASS,
   ADMIN_PRIMARY_BTN_CLASS,
@@ -131,7 +133,9 @@ export default function AppAdminProyectosPage() {
   const [detalleId, setDetalleId] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>('cards');
   const [leadStatusFeedback, setLeadStatusFeedback] = useState<string | null>(null);
-  const [leadStatusOverrides, setLeadStatusOverrides] = useState(() => loadCompanyLeadStatusOverrides());
+  const [leadStatusOverrides, setLeadStatusOverrides] = useState<Record<string, CompanyLeadStatus>>(
+    () => ({}),
+  );
   const [projectPage, setProjectPage] = useState(1);
   const [assignDirectory, setAssignDirectory] = useState<DeveloperProfile[]>([]);
   const [assignDirectoryLoad, setAssignDirectoryLoad] = useState<'idle' | 'loading' | 'done'>('idle');
@@ -171,9 +175,7 @@ export default function AppAdminProyectosPage() {
   }, [projectsRemoteEnabled, projectsRemoteFetchFailed, assignedProjects.length]);
 
   useEffect(() => {
-    queueMicrotask(() => {
-      setLeadStatusOverrides(loadCompanyLeadStatusOverrides());
-    });
+    void fetchCompanyLeadStatuses().then(setLeadStatusOverrides);
   }, [assignedProjects, location]);
 
   useEffect(() => {
@@ -184,11 +186,13 @@ export default function AppAdminProyectosPage() {
         return Number.isFinite(x) ? x : 0;
       }),
     );
-    setAdminProjectsSeenMax(maxTs);
+    void persistAdminProjectsSeenMax(maxTs);
   }, [assignedProjects]);
 
   useEffect(() => {
-    const sync = () => setLeadStatusOverrides(loadCompanyLeadStatusOverrides());
+    const sync = () => {
+      void fetchCompanyLeadStatuses().then(setLeadStatusOverrides);
+    };
     window.addEventListener(LEAD_STATUS_CHANGED_EVENT, sync);
     return () => window.removeEventListener(LEAD_STATUS_CHANGED_EVENT, sync);
   }, []);
@@ -584,7 +588,13 @@ export default function AppAdminProyectosPage() {
                         'hover:bg-emerald-200/90 hover:text-emerald-950 dark:hover:bg-emerald-900/45 dark:hover:text-emerald-50',
                       )}
                       onClick={() => {
-                        persistCompanyLeadStatus(registroAbierto.contactId, 'completado');
+                        const contactId = registroAbierto.contactId;
+                        void patchCompanyLeadStatusApi(contactId, 'completado').then(() => {
+                          setLeadStatusOverrides((prev) =>
+                            applyCompanyLeadStatusOverride(prev, contactId, 'completado'),
+                          );
+                          dispatchLeadStatusChanged();
+                        });
                         setLeadStatusFeedback(
                           `Actualizado en Compañías: ${COMPANY_LEAD_STATUS_LABELS.completado}`,
                         );
@@ -606,7 +616,13 @@ export default function AppAdminProyectosPage() {
                         'hover:bg-rose-200/90 hover:text-rose-950 dark:hover:bg-rose-900/45 dark:hover:text-rose-50',
                       )}
                       onClick={() => {
-                        persistCompanyLeadStatus(registroAbierto.contactId, 'descartado');
+                        const contactId = registroAbierto.contactId;
+                        void patchCompanyLeadStatusApi(contactId, 'descartado').then(() => {
+                          setLeadStatusOverrides((prev) =>
+                            applyCompanyLeadStatusOverride(prev, contactId, 'descartado'),
+                          );
+                          dispatchLeadStatusChanged();
+                        });
                         void removeAssignedProjectByContactId(registroAbierto.contactId);
                         setDetalleId(null);
                       }}

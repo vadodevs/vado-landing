@@ -25,10 +25,7 @@ const WEBSITE_JSON_LD = {
 
 const ID = 'vado-jsonld';
 
-/**
- * Inyecta JSON-LD de Organization y WebSite en el head para SEO.
- * Se monta una sola vez en la app (p. ej. en el Router).
- */
+
 export function JsonLd() {
   useEffect(() => {
     const existing = document.getElementById(ID);

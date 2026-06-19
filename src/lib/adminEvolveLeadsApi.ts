@@ -32,6 +32,9 @@ export type EvolveMeetingEvent = {
   endTime: string | null;
   meetingLink: string | null;
   status: string;
+  
+  source?: 'evolve' | 'company';
+  reminderCode?: string;
 };
 
 export type EvolveLeadsListResponse = {

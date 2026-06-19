@@ -18,32 +18,32 @@ export type ProjectHeroStoreLinks = {
 };
 
 export type ProjectHeroProps = {
-  /** Enlace y texto del breadcrumb (ej: "← Nuestro trabajo"). Omitir para no mostrar. */
+  
   backHref?: string;
   backLabel?: React.ReactNode;
-  /** Logo del proyecto como imagen (se muestra en blanco con invert). Omitir si usas logoNode. */
+  
   logoSrc?: string;
   logoAlt: string;
-  /** Logo del proyecto como componente (ej: <SenderoLogo color="white" />). Omitir si usas logoSrc. */
+  
   logoNode?: React.ReactNode;
   title: string;
   description: string;
-  /** Detalle opcional del tipo de industria (ej. "Restaurantes, retail y eventos") */
+  
   industry?: string;
-  /** Detalle opcional del tipo de solución (ej. "Plataforma SaaS") */
+  
   solutionType?: string;
-  /** CTA opcional (ej: "Visitar sitio web") */
+  
   cta?: ProjectHeroCta;
-  /** Links a App Store y/o Google Play (opcional) */
+  
   storeLinks?: ProjectHeroStoreLinks;
-  /** Imagen principal del hero (lado derecho, no se corta con el diagonal) */
+  
   heroImageSrc: string;
   heroImageAlt: string;
-  /** Color principal del proyecto para fondo y acentos (ej: #10b981) */
+  
   backgroundColor: string;
-  /** Imagen de fondo del contenedor del hero (opcional; se aplica dentro del corte diagonal) */
+  
   backgroundImageSrc?: string;
-  /** Opacidad del overlay de color sobre la imagen de fondo (0–1). Por defecto 0.6. */
+  
   backgroundOverlayOpacity?: number;
 };
 
@@ -70,7 +70,7 @@ export function ProjectHero({
     <header
       className="relative overflow-visible py-10 md:py-12 lg:py-14"
     >
-      {/* Fondo con corte diagonal (solo estos layers se cortan) */}
+      
       <div
         className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
         style={{
@@ -118,7 +118,7 @@ export function ProjectHero({
           </div>
         )}
         <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between lg:gap-8">
-          {/* Texto a la izquierda */}
+          
           <div className="flex-1 space-y-4 text-left">
             <div
               className="flex h-16 w-auto max-w-[180px] items-center md:h-20 md:max-w-[200px]"
@@ -189,7 +189,7 @@ export function ProjectHero({
               )}
             </div>
           </div>
-          {/* Imagen a la derecha (sin clip, se ve completa) */}
+          
           <div
             className="flex flex-1 justify-center lg:justify-end"
           >

@@ -33,7 +33,7 @@ export default function Contacto() {
           }}
         >
           <CenterContainer className="relative z-10 flex flex-col gap-10 lg:flex-row lg:items-center lg:gap-14">
-            {/* Columna izquierda: título, descripción, beneficios */}
+            
             <div className="flex-1 text-left lg:max-w-[48%]">
               <h2 className="mb-4 text-2xl leading-tight font-bold text-white md:text-3xl lg:text-4xl">
                 <span className="block">{t('home.ctaContact.titlePart1')}</span>
@@ -55,7 +55,7 @@ export default function Contacto() {
               </ul>
             </div>
 
-            {/* Columna derecha: formulario */}
+            
             <div className="min-w-0 flex-1 lg:max-w-[52%]">
               <ContactForm idPrefix="contact-" />
             </div>

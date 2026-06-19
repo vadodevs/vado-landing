@@ -50,7 +50,7 @@ function mapGiphyItem(item: GiphyItem): GiphyMediaItem | null {
   };
 }
 
-/** GIFs/stickers locales cuando no hay VITE_GIPHY_API_KEY (envío por URL pública). */
+
 const FALLBACK_GIFS: GiphyMediaItem[] = [
   {
     id: 'fb-thumbs-up',
@@ -158,7 +158,7 @@ export function searchStickers(query: string): Promise<GiphyMediaItem[]> {
   return giphyFetch('stickers/search', { q });
 }
 
-/** Descarga una URL de imagen/GIF para enviar por WhatsApp (Evolution sendMedia). */
+
 export async function fetchRemoteImageAsFile(
   url: string,
   fallbackMime = 'image/gif',

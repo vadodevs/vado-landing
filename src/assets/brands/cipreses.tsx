@@ -1,7 +1,7 @@
 const DEFAULT_FILL = '#6D6D6E';
 
 export type CipresesLogoProps = {
-  /** Color del logo (ej. "white" para hero) */
+  
   color?: string;
   className?: string;
 };

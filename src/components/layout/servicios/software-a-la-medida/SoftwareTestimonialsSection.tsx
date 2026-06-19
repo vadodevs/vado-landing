@@ -43,7 +43,7 @@ export function SoftwareTestimonialsSection() {
 
   return (
     <section className="relative overflow-hidden bg-white py-12 md:py-16 lg:py-20">
-      {/* Decoración a la derecha */}
+      
       <img
         src="/backgrounds/decoration-blue.webp"
         alt=""
@@ -53,7 +53,7 @@ export function SoftwareTestimonialsSection() {
 
       <CenterContainer className="relative">
         <div className="flex flex-col gap-10">
-          {/* Título: label + Historias reales / Impacto real */}
+          
           <div className="flex flex-col gap-2 text-left">
             <p className="text-xs font-medium tracking-wider text-[#19314c] uppercase md:text-sm">
               {t('services.customSoftware.testimonials.label')}

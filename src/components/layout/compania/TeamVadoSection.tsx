@@ -14,7 +14,7 @@ const toPaths = (nums: number[]) => nums.map((n) => `/team-vado/vado-team-${n}.w
 const TEAM_IMAGES_ROW1 = toPaths(ROW1_IMAGE_NUMBERS);
 const TEAM_IMAGES_ROW2 = toPaths(ROW2_IMAGE_NUMBERS);
 
-/** Contenedores más altos y más largos para el carrusel */
+
 const IMAGE_CLASS =
   'h-48 w-[20rem] shrink-0 overflow-hidden rounded-xl border border-border bg-muted object-cover sm:h-52 sm:w-[22rem] md:h-56 md:w-[24rem] lg:h-60 lg:w-[28rem]';
 

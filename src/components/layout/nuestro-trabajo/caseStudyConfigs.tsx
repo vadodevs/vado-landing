@@ -36,7 +36,7 @@ const ACCENT_COLORS: Record<string, string> = {
   washaut: '#3390ff',
 };
 
-/** Secciones placeholder para proyectos que aún no tienen contenido propio */
+
 function placeholderSections(projectTitle: string): CaseStudySection[] {
   return [
     {
@@ -111,7 +111,7 @@ function placeholderSections(projectTitle: string): CaseStudySection[] {
   ];
 }
 
-/** Config completo para ZenQR (contenido real) */
+
 function zenqrConfig(_t: TFunction): ProjectCaseStudyConfig {
   const accentColor = ACCENT_COLORS.zenqr ?? '#10b981';
   return {
@@ -291,7 +291,7 @@ const CIPRESES_STACK: ProjectStackItem[] = [
   { name: 'Digital Ocean', icon: 'digital-ocean' },
 ];
 
-/** Config para Sendero: logo componente blanco, hero zenqr_hero, stack propio */
+
 function senderoConfig(t: TFunction): ProjectCaseStudyConfig {
   const accentColor = ACCENT_COLORS.sendero ?? '#27bfad';
   const title = t('ourWork.projects.sendero.title');
@@ -312,7 +312,7 @@ function senderoConfig(t: TFunction): ProjectCaseStudyConfig {
   };
 }
 
-/** Config para EBM: logo componente blanco, color #1e446f, stack propio. Hero: zenqr_hero por ahora. */
+
 function ebmConfig(t: TFunction): ProjectCaseStudyConfig {
   const accentColor = ACCENT_COLORS.ebm ?? '#1e446f';
   const title = t('ourWork.projects.ebm.title');
@@ -333,7 +333,7 @@ function ebmConfig(t: TFunction): ProjectCaseStudyConfig {
   };
 }
 
-/** Config para Digital Ranch: logo componente blanco, hero zenqr_hero, color #00681c, stack propio */
+
 function digitalRanchConfig(t: TFunction): ProjectCaseStudyConfig {
   const accentColor = ACCENT_COLORS.digitalRanch ?? '#00681c';
   const title = t('ourWork.projects.digitalRanch.title');
@@ -356,7 +356,7 @@ function digitalRanchConfig(t: TFunction): ProjectCaseStudyConfig {
   };
 }
 
-/** Config para Easy Sales: logo easy-sales en blanco, hero zenqr_hero, color #fd7113, stack propio */
+
 function easySalesConfig(t: TFunction): ProjectCaseStudyConfig {
   const accentColor = ACCENT_COLORS.easySales ?? '#fd7113';
   const title = t('ourWork.projects.easySales.title');
@@ -379,7 +379,7 @@ function easySalesConfig(t: TFunction): ProjectCaseStudyConfig {
   };
 }
 
-/** Config para Cipreses: logo cipreses en blanco, hero zenqr_hero, color #cc8b33, stack propio */
+
 function cipresesConfig(t: TFunction): ProjectCaseStudyConfig {
   const accentColor = ACCENT_COLORS.cipreses ?? '#cc8b33';
   const title = t('ourWork.projects.cipreses.title');
@@ -400,7 +400,7 @@ function cipresesConfig(t: TFunction): ProjectCaseStudyConfig {
   };
 }
 
-/** Config genérico para proyectos con placeholder */
+
 function genericProjectConfig(projectId: string, t: TFunction): ProjectCaseStudyConfig {
   const project = OUR_WORK_PROJECTS.find((p) => p.id === projectId);
   const title = project ? t(`ourWork.projects.${projectId}.title`) : projectId;
@@ -461,11 +461,7 @@ export const getCaseStudyConfig = (slug: string, t: TFunction): ProjectCaseStudy
   return genericProjectConfig(slug, t);
 };
 
-/**
- * Estructura para iniciar un nuevo caso de uso.
- * Copia este objeto y rellena con los datos del proyecto.
- * Luego regístralo en getCaseStudyConfig y en CASE_STUDY_SLUGS.
- */
+
 export const CASE_STUDY_CONFIG_TEMPLATE = (
   projectId: string,
   t: TFunction,

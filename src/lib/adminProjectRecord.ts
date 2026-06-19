@@ -1,6 +1,6 @@
 import type { AdminProspecto } from '@/lib/adminProspectos';
 
-/** Proyecto creado al asignar desarrolladores a un lead de compañías. */
+
 export type AssignedProjectRecord = {
   id: string;
   contactId: string;

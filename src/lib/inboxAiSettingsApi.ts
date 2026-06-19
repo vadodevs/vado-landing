@@ -3,6 +3,9 @@ import type { InboxLlmOptionsResponse } from '@/lib/inboxLlmConfig';
 import type { InboxAutopilotConfig } from '@/lib/inboxAutopilotConfig';
 import type { InboxBotConfig } from '@/lib/inboxBotConfig';
 import type { InboxLlmConfig } from '@/lib/inboxLlmConfig';
+import { setInboxAutopilotConfigCache } from '@/lib/inboxAutopilotConfig';
+import { setInboxBotConfigCache } from '@/lib/inboxBotConfig';
+import { setInboxLlmConfigCache } from '@/lib/inboxLlmConfig';
 
 export type InboxAiSettingsPayload = {
   autopilot: InboxAutopilotConfig;
@@ -51,6 +54,14 @@ async function inboxAiRequest<T>(path: string, init?: RequestInit): Promise<Inbo
 
 export function fetchInboxAiSettings(): Promise<InboxAiSettingsResult<InboxAiSettingsPayload>> {
   return inboxAiRequest<InboxAiSettingsPayload>('/admin/inbox/ai-settings');
+}
+
+export async function hydrateInboxAiSettingsFromApi(): Promise<void> {
+  const res = await fetchInboxAiSettings();
+  if (!res.ok) return;
+  setInboxBotConfigCache(res.data.bot);
+  setInboxAutopilotConfigCache(res.data.autopilot);
+  if (res.data.llm) setInboxLlmConfigCache(res.data.llm);
 }
 
 export function saveInboxAiSettings(payload: {

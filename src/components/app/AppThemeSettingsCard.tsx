@@ -1,5 +1,6 @@
 import { Moon, Sun } from 'lucide-react';
-import { setStoredAppTheme, type AppThemeMode } from '@/lib/appTheme';
+import { type AppThemeMode, setStoredAppTheme } from '@/lib/appTheme';
+import { persistThemePreference } from '@/lib/userPreferencesSync';
 import { cn } from '@/lib/utils';
 
 type Props = {
@@ -11,6 +12,7 @@ export function AppThemeSettingsCard({ mode, onChange }: Props) {
   const pick = (next: AppThemeMode) => {
     setStoredAppTheme(next);
     onChange(next);
+    void persistThemePreference(next);
   };
   const isDark = mode === 'dark';
 

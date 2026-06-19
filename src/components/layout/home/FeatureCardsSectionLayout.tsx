@@ -2,14 +2,14 @@ import { cn } from '@/lib/utils';
 import { FeatureCardPanel, type FeatureCardPanelProps } from './FeatureCardPanel';
 
 export type FeatureCardsSectionLayoutProps = {
-  /** Card principal (izquierda en desktop) */
+  
   mainCard: FeatureCardPanelProps & { variant: 'main' };
-  /** Dos cards secundarias (derecha en desktop, apiladas) */
+  
   subCards: [
     FeatureCardPanelProps & { variant: 'sub' },
     FeatureCardPanelProps & { variant: 'sub' },
   ];
-  /** Clase opcional para el contenedor de la sección */
+  
   className?: string;
 };
 

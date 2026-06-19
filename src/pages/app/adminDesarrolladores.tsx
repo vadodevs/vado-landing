@@ -42,14 +42,9 @@ import {
   type ApiDeveloperPayload,
   type DeveloperProfile,
 } from '@/lib/devDevelopers';
-import {
-  loadDeveloperFavoriteIds,
-  persistDeveloperFavoriteIds,
-  toggleDeveloperFavoriteId,
-} from '@/lib/developerFavorites';
-import {
-  setAdminDevelopersSeenMax,
-} from '@/lib/appNavBadges';
+import { fetchFavoriteIds, toggleFavoriteApi } from '@/lib/adminWorkspaceApi';
+import { toggleDeveloperFavoriteId } from '@/lib/developerFavorites';
+import { persistAdminDevelopersSeenMax } from '@/lib/userPreferencesSync';
 import { ADMIN_FILTER_BADGE_CLASS, ADMIN_FILTER_CONTROL_CLASS, ADMIN_FAVORITES_TOOLBAR_BUTTON_ACTIVE, ADMIN_FAVORITES_TOOLBAR_BUTTON_INACTIVE } from '@/lib/adminFilterUi';
 import {
   ADMIN_ROW_ACTION_ICON_BUTTON_CLASS,
@@ -82,7 +77,7 @@ const EMPLEO_FILTER_OPTIONS: AdminSelectOption[] = [
   { value: 'no', label: 'Sin empleo actual' },
 ];
 
-/** Texto para comparar búsquedas: minúsculas, sin acentos comunes, espacios colapsados. */
+
 function searchFold(s: string): string {
   return s
     .trim()
@@ -92,7 +87,7 @@ function searchFold(s: string): string {
     .replace(/[\u0300-\u036f]/g, '');
 }
 
-/** Coincide solo con nombre, apellido, correo y etiquetas de expertise; varias palabras = todas deben aparecer. */
+
 function matchesDeveloperSearch(raw: string, d: DeveloperProfile): boolean {
   const q = searchFold(raw);
   if (!q) return true;
@@ -118,8 +113,12 @@ export default function AppAdminDesarrolladoresPage() {
     password: string;
   }>({ open: false, title: '', email: '', password: '' });
   const [copiedPassword, setCopiedPassword] = useState(false);
-  const [devFavoriteIds, setDevFavoriteIds] = useState<Set<string>>(() => loadDeveloperFavoriteIds());
+  const [devFavoriteIds, setDevFavoriteIds] = useState<Set<string>>(() => new Set());
   const [favoritesOnly, setFavoritesOnly] = useState(false);
+
+  useEffect(() => {
+    void fetchFavoriteIds('developer').then((ids) => setDevFavoriteIds(new Set(ids)));
+  }, []);
 
   useEffect(() => {
     const base = import.meta.env.VITE_API_BASE_URL;
@@ -179,7 +178,7 @@ export default function AppAdminDesarrolladoresPage() {
       0,
       ...developers.map((d) => (Number.isFinite(d.createdAtMs) ? d.createdAtMs : 0)),
     );
-    setAdminDevelopersSeenMax(maxTs);
+    void persistAdminDevelopersSeenMax(maxTs);
   }, [apiLoad, developers]);
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -187,9 +186,9 @@ export default function AppAdminDesarrolladoresPage() {
   const [cvPreview, setCvPreview] = useState<{
     open: boolean;
     kind: 'pdf' | 'pdf-loading' | 'pdf-error' | 'text';
-    /** URL del blob (mismo origen que el admin) para el iframe; revocar al cerrar. */
+    
     pdfBlobUrl?: string;
-    /** URL original del API (fallback si falla el fetch). */
+    
     pdfSourceUrl?: string;
     textBody?: string;
     title: string;
@@ -257,7 +256,7 @@ export default function AppAdminDesarrolladoresPage() {
   const [viajesFilter, setViajesFilter] = useState('');
   const [empleoActualFilter, setEmpleoActualFilter] = useState('');
   const [procedenciaFilter, setProcedenciaFilter] = useState('');
-  /** Orden por fecha de alta (`createdAt` del API). */
+  
   const [fechaOrden, setFechaOrden] = useState<'newest' | 'oldest'>('newest');
   const [devPage, setDevPage] = useState(1);
 
@@ -369,11 +368,8 @@ export default function AppAdminDesarrolladoresPage() {
 
   const toggleDeveloperFavorite = (developer: DeveloperProfile) => {
     const id = getDeveloperDirectoryRowKey(developer);
-    setDevFavoriteIds((prev) => {
-      const next = toggleDeveloperFavoriteId(prev, id);
-      persistDeveloperFavoriteIds(next);
-      return next;
-    });
+    setDevFavoriteIds((prev) => toggleDeveloperFavoriteId(prev, id));
+    void toggleFavoriteApi('developer', id).then((ids) => setDevFavoriteIds(new Set(ids)));
   };
 
   const copyEmail = (email: string) => {
@@ -913,7 +909,7 @@ export default function AppAdminDesarrolladoresPage() {
         <DialogContent
           className={cn(
             'flex max-h-[90vh] flex-col gap-0 overflow-hidden p-0',
-            /* Dialog base usa sm:w-auto: el iframe hace colapsar el ancho; forzar ancho tipo max-w-4xl (56rem) */
+            
             'w-[min(calc(100vw-2rem),56rem)] max-w-[min(calc(100vw-2rem),56rem)] sm:w-[min(calc(100vw-2rem),56rem)] sm:max-w-[min(calc(100vw-2rem),56rem)]',
           )}
         >

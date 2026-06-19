@@ -1,4 +1,4 @@
-/** Seguimiento local del lead (hasta que la API exponga un campo equivalente). */
+
 export const COMPANY_LEAD_STATUSES = [
   'sin_contactar',
   'pendiente_revision',
@@ -8,8 +8,6 @@ export const COMPANY_LEAD_STATUSES = [
 ] as const;
 export type CompanyLeadStatus = (typeof COMPANY_LEAD_STATUSES)[number];
 
-let leadStatusMemory: Record<string, CompanyLeadStatus> = {};
-
 export const COMPANY_LEAD_STATUS_LABELS: Record<CompanyLeadStatus, string> = {
   sin_contactar: 'Sin contactar',
   pendiente_revision: 'Pendiente / revisión',
@@ -18,7 +16,6 @@ export const COMPANY_LEAD_STATUS_LABELS: Record<CompanyLeadStatus, string> = {
   descartado: 'Descartado',
 };
 
-/** Punto de color junto al selector (el menú nativo se deja neutro). */
 export const COMPANY_LEAD_STATUS_DOT_CLASS: Record<CompanyLeadStatus, string> = {
   sin_contactar: 'bg-sky-500',
   pendiente_revision: 'bg-amber-500',
@@ -40,16 +37,10 @@ export const COMPANY_LEAD_STATUS_BADGE_CLASS: Record<CompanyLeadStatus, string> 
     'border border-rose-200 bg-rose-100 text-rose-900 dark:border-rose-800 dark:bg-rose-950/45 dark:text-rose-200',
 };
 
+export const LEAD_STATUS_CHANGED_EVENT = 'vado-lead-status-changed';
+
 export function isCompanyLeadStatus(v: unknown): v is CompanyLeadStatus {
   return typeof v === 'string' && (COMPANY_LEAD_STATUSES as readonly string[]).includes(v);
-}
-
-export function loadCompanyLeadStatusOverrides(): Record<string, CompanyLeadStatus> {
-  return { ...leadStatusMemory };
-}
-
-export function saveCompanyLeadStatusOverrides(overrides: Record<string, CompanyLeadStatus>) {
-  leadStatusMemory = { ...overrides };
 }
 
 export function getCompanyLeadStatus(
@@ -60,7 +51,6 @@ export function getCompanyLeadStatus(
   return s ?? 'sin_contactar';
 }
 
-/** `sin_contactar` quita la entrada del mapa (valor por defecto, no ocupa storage). */
 export function applyCompanyLeadStatusOverride(
   prev: Record<string, CompanyLeadStatus>,
   id: string,
@@ -74,15 +64,7 @@ export function applyCompanyLeadStatusOverride(
   return { ...prev, [id]: next };
 }
 
-/** Tras guardar desde otro módulo (p. ej. Proyectos); Compañías puede escuchar en la misma pestaña. */
-export const LEAD_STATUS_CHANGED_EVENT = 'vado-lead-status-changed';
-
-export function persistCompanyLeadStatus(contactId: string, status: CompanyLeadStatus): void {
-  const id = contactId.trim();
-  if (!id) return;
-  const prev = loadCompanyLeadStatusOverrides();
-  const merged = applyCompanyLeadStatusOverride(prev, id, status);
-  saveCompanyLeadStatusOverrides(merged);
+export function dispatchLeadStatusChanged(): void {
   if (typeof window !== 'undefined') {
     window.dispatchEvent(new CustomEvent(LEAD_STATUS_CHANGED_EVENT));
   }

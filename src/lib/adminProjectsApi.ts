@@ -22,7 +22,7 @@ function parseProspectos(raw: unknown): AssignedProjectRecord['prospectos'] {
   return out;
 }
 
-/** Convierte una fila JSON del backend a nuestro modelo (acepta camelCase o snake_case). */
+
 export function mapApiProjectRow(row: unknown): AssignedProjectRecord | null {
   if (!row || typeof row !== 'object') return null;
   const o = row as Record<string, unknown>;
@@ -56,11 +56,7 @@ export function mapApiProjectRow(row: unknown): AssignedProjectRecord | null {
   };
 }
 
-/**
- * Un lead (contactId) → un solo proyecto en UI.
- * Si hay varias filas (datos viejos o API duplicada), se usa solo la más reciente
- * por `createdAt` — sin unir equipos: lo que importa es la última asignación guardada.
- */
+
 export function dedupeAssignedProjectsByContactId(
   projects: AssignedProjectRecord[],
 ): AssignedProjectRecord[] {
@@ -88,12 +84,12 @@ export function dedupeAssignedProjectsByContactId(
 }
 
 export type FetchProjectsResult = {
-  /** HTTP 200 y cuerpo JSON array (puede estar vacío). */
+  
   ok: boolean;
   projects: AssignedProjectRecord[];
 };
 
-/** GET /projects — lista desde la base de datos. */
+
 export async function fetchRemoteProjects(apiBase: string): Promise<FetchProjectsResult> {
   const base = apiBase.replace(/\/$/, '');
   let res: Response;
@@ -132,7 +128,7 @@ function projectPayload(record: AssignedProjectRecord) {
   };
 }
 
-/** POST /projects — persiste en la base de datos. */
+
 export async function postRemoteProject(
   apiBase: string,
   record: AssignedProjectRecord,
@@ -150,10 +146,7 @@ export async function postRemoteProject(
   }
 }
 
-/**
- * PUT /projects/:id — actualiza un proyecto existente (si el backend lo expone).
- * Si no existe la ruta, devuelve false y se puede usar POST con el mismo id.
- */
+
 export async function putRemoteProject(
   apiBase: string,
   record: AssignedProjectRecord,
@@ -171,7 +164,7 @@ export async function putRemoteProject(
   }
 }
 
-/** POST o PUT según convenga: actualización por id existente vs alta nueva. */
+
 export async function upsertRemoteProject(
   apiBase: string,
   record: AssignedProjectRecord,
@@ -184,7 +177,7 @@ export async function upsertRemoteProject(
   return postRemoteProject(apiBase, record);
 }
 
-/** DELETE /projects/by-contact/:contactId — elimina asignación vigente del lead. */
+
 export async function deleteRemoteProjectsByContactId(
   apiBase: string,
   contactId: string,

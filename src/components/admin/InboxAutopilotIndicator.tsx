@@ -37,7 +37,7 @@ type InboxAutopilotStatusLineProps = {
   className?: string;
 };
 
-/** Pill de estado bajo el título del inbox, al lado del avatar. */
+
 export function InboxAutopilotStatusLine({ className }: InboxAutopilotStatusLineProps) {
   const { t } = useTranslation();
   const live = useInboxAutopilotLive();

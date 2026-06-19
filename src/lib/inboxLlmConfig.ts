@@ -5,14 +5,14 @@ export type InboxLlmConfig = {
   model: string;
 };
 
-const STORAGE_KEY = 'vado.admin.inboxLlm.v1';
-
 export const INBOX_LLM_CONFIG_CHANGE_EVENT = 'vado-inbox-llm-config-change';
 
 export const DEFAULT_INBOX_LLM_CONFIG: InboxLlmConfig = {
   provider: 'anthropic',
   model: 'claude-sonnet-4-6',
 };
+
+let cachedLlmConfig: InboxLlmConfig = { ...DEFAULT_INBOX_LLM_CONFIG };
 
 export function normalizeLlmProvider(raw: unknown): InboxLlmProviderId {
   const v = typeof raw === 'string' ? raw.trim().toLowerCase() : '';
@@ -31,23 +31,17 @@ export function parseInboxLlmConfig(raw: unknown): InboxLlmConfig {
 }
 
 export function loadInboxLlmConfig(): InboxLlmConfig {
-  if (typeof window === 'undefined') return { ...DEFAULT_INBOX_LLM_CONFIG };
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return { ...DEFAULT_INBOX_LLM_CONFIG };
-    return parseInboxLlmConfig(JSON.parse(raw) as unknown);
-  } catch {
-    return { ...DEFAULT_INBOX_LLM_CONFIG };
-  }
+  return { ...cachedLlmConfig };
+}
+
+export function setInboxLlmConfigCache(config: InboxLlmConfig): void {
+  cachedLlmConfig = parseInboxLlmConfig(config);
 }
 
 export function saveInboxLlmConfig(config: InboxLlmConfig): void {
-  if (typeof window === 'undefined') return;
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+  cachedLlmConfig = parseInboxLlmConfig(config);
+  if (typeof window !== 'undefined') {
     window.dispatchEvent(new CustomEvent(INBOX_LLM_CONFIG_CHANGE_EVENT));
-  } catch {
-    /* quota / private mode */
   }
 }
 

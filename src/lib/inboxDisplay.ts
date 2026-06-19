@@ -4,7 +4,7 @@ function digitsOnly(value: string): string {
   return value.replace(/\D/g, '');
 }
 
-/** Nunca mostrar lid, JIDs ni IDs largos en la lista de chats. */
+
 export function isTechnicalInboxLabel(value: string | null | undefined): boolean {
   if (!value?.trim()) return true;
   const v = value.trim().toLowerCase();
@@ -22,7 +22,7 @@ function isDigitsOnlyLabel(value: string): boolean {
   return digits.length >= 8 && digits.length === value.replace(/[\s+()-]/g, '').length;
 }
 
-/** Mismo criterio que WhatsApp iOS para números MX/US en la lista. */
+
 export function formatInboxPhoneDisplay(digits: string): string | null {
   const d = digits.replace(/\D/g, '');
   if (d.length < 10 || d.length > 15) return null;

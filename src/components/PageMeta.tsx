@@ -4,27 +4,24 @@ const SUPPORTED_LOCALES = ['es', 'en'] as const;
 const DEFAULT_LOCALE = 'es';
 
 export type PageMetaProps = {
-  /** Título de la página (pestaña y og:title) */
+  
   title: string;
-  /** Descripción para meta description y og:description */
+  
   description: string;
-  /** URL de la imagen para og:image (relativa o absoluta). Si es relativa, se convierte a absoluta con origin. */
+  
   image?: string;
-  /** Ruta canónica relativa (ej: /es/our-work/sendero). Se convierte a URL absoluta en el cliente. */
+  
   canonicalPath?: string;
-  /** Tipo Open Graph: "website" para páginas estáticas, "article" para artículos/blog. */
+  
   ogType?: 'website' | 'article';
-  /** Ruta sin prefijo de idioma (ej: /contact) para generar hreflang es/en y x-default. */
+  
   pathWithoutLang?: string;
 };
 
 const OG_IMAGE_DEFAULT = '/case-studies/ebm/ebm-cover-card.webp';
 const SITE_NAME = 'Vado Devs';
 
-/**
- * Actualiza título, meta description, Open Graph, canonical y hreflang.
- * Usar en cada página para SEO y previews en redes sociales.
- */
+
 export function PageMeta({
   title,
   description,
@@ -84,7 +81,7 @@ export function PageMeta({
       setMeta('twitter:url', canonicalUrl, false);
     }
 
-    // hreflang: alternates para es/en y x-default
+    
     if (pathWithoutLang !== undefined) {
       const normalized =
         pathWithoutLang === '' ? '' : pathWithoutLang.startsWith('/') ? pathWithoutLang : `/${pathWithoutLang}`;
@@ -105,7 +102,6 @@ export function PageMeta({
     }
 
     return () => {
-      // No revertimos title/description al desmontar; la siguiente página los actualizará
     };
   }, [title, description, image, canonicalPath, ogType, pathWithoutLang]);
 

@@ -10,7 +10,7 @@ export function SoftwareProductsSection() {
     <section className="bg-white py-12 md:py-16 lg:py-20">
       <CenterContainer>
         <div className="flex flex-col gap-10 lg:flex-row lg:items-center lg:gap-14">
-          {/* Imagen: en mobile va al final (order-2), en desktop a la izquierda (order-1) */}
+          
           <div className="order-2 flex justify-center lg:order-1 lg:max-w-[48%] lg:flex-1">
             <img
               src={PHONE_IMAGE_SRC}
@@ -20,7 +20,7 @@ export function SoftwareProductsSection() {
             />
           </div>
 
-          {/* Texto: en mobile primero (order-1), en desktop a la derecha (order-2) */}
+          
           <div className="order-1 flex flex-col lg:order-2 lg:max-w-[52%] lg:flex-1 lg:justify-center">
             <p className="text-muted-foreground mb-2 text-xs font-medium tracking-wider uppercase md:text-sm">
               {t('services.customSoftware.products.label')}

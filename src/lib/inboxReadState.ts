@@ -1,34 +1,12 @@
-/** Marca local de conversaciones leídas (evita puntos verdes tras recargar si el API/cache van retrasados). */
-
-const STORAGE_KEY = 'vado.admin.inboxRead.v2';
+import {
+  clearInboxReadCursorsApi,
+  fetchInboxReadCursors,
+  markInboxReadCursorApi,
+} from '@/lib/adminWorkspaceApi';
 
 type ReadEntry = { lastMessageAtMs: number };
 
-type PersistedReadState = {
-  byOwner: Record<string, Record<string, ReadEntry>>;
-};
-
-function loadAll(): PersistedReadState {
-  if (typeof window === 'undefined') return { byOwner: {} };
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return { byOwner: {} };
-    const parsed = JSON.parse(raw) as PersistedReadState;
-    if (!parsed?.byOwner || typeof parsed.byOwner !== 'object') return { byOwner: {} };
-    return parsed;
-  } catch {
-    return { byOwner: {} };
-  }
-}
-
-function saveAll(state: PersistedReadState): void {
-  if (typeof window === 'undefined') return;
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  } catch {
-    /* quota / private mode */
-  }
-}
+const cursorsByOwner = new Map<string, Record<string, ReadEntry>>();
 
 function ownerKey(ownerJid: string): string {
   const key = ownerJid.trim();
@@ -36,7 +14,17 @@ function ownerKey(ownerJid: string): string {
 }
 
 function readsForOwner(ownerJid: string): Record<string, ReadEntry> {
-  return loadAll().byOwner[ownerKey(ownerJid)] ?? {};
+  return cursorsByOwner.get(ownerKey(ownerJid)) ?? {};
+}
+
+export async function hydrateInboxReadState(ownerJid: string): Promise<void> {
+  const owner = ownerKey(ownerJid);
+  const rows = await fetchInboxReadCursors(ownerJid);
+  const mapped: Record<string, ReadEntry> = {};
+  for (const [conversationId, lastMessageAtMs] of Object.entries(rows)) {
+    mapped[conversationId] = { lastMessageAtMs };
+  }
+  cursorsByOwner.set(owner, mapped);
 }
 
 export function getInboxConversationLastReadMs(
@@ -55,18 +43,17 @@ export function markInboxConversationReadLocal(
   if (!conversationId.trim() || !Number.isFinite(lastMessageAtMs) || lastMessageAtMs <= 0) {
     return;
   }
-  const all = loadAll();
   const oKey = ownerKey(ownerJid);
-  const prev = all.byOwner[oKey] ?? {};
+  const prev = cursorsByOwner.get(oKey) ?? {};
   const cur = prev[conversationId]?.lastMessageAtMs ?? 0;
-  all.byOwner[oKey] = {
+  const nextMs = Math.max(cur, lastMessageAtMs);
+  cursorsByOwner.set(oKey, {
     ...prev,
-    [conversationId]: { lastMessageAtMs: Math.max(cur, lastMessageAtMs) },
-  };
-  saveAll(all);
+    [conversationId]: { lastMessageAtMs: nextMs },
+  });
+  void markInboxReadCursorApi(ownerJid, conversationId, nextMs);
 }
 
-/** Si no hay mensajes nuevos desde la última lectura local, unread = 0. */
 export function resolveInboxUnreadCount(
   ownerJid: string,
   conversationId: string,
@@ -107,10 +94,7 @@ export function applyInboxReadState<T extends InboxRowWithUnread>(
 
 export function clearInboxReadStateForOwner(ownerJid: string): void {
   if (!ownerJid.trim()) return;
-  const all = loadAll();
   const oKey = ownerKey(ownerJid);
-  if (!all.byOwner[oKey]) return;
-  const next = { ...all.byOwner };
-  delete next[oKey];
-  saveAll({ byOwner: next });
+  cursorsByOwner.delete(oKey);
+  void clearInboxReadCursorsApi(ownerJid);
 }

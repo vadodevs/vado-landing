@@ -55,7 +55,7 @@ export type InboxMessageDto = {
   mediaMime?: string | null;
   hasMedia?: boolean;
   deliveryStatus?: InboxDeliveryStatus | null;
-  /** Grupos: remitente del mensaje entrante */
+  
   senderName?: string | null;
 };
 
@@ -69,14 +69,14 @@ export type WhatsappLinkStatusDto = {
   state: 'open' | 'close' | 'connecting' | 'unknown';
   instanceName: string;
   linked: boolean;
-  /** JID del número vinculado; cambia al desvincular y escanear otro QR */
+  
   ownerJid?: string | null;
-  /** Teléfono formateado del número vinculado (solo si ownerJid es válido) */
+  
   ownerPhone?: string | null;
   webhookConfigured?: boolean;
   webhookUrl?: string | null;
   webhookCallbackUrl?: string;
-  /** False when Evolution API is unreachable (e.g. Droplet off). */
+  
   evolutionReachable?: boolean;
 };
 
@@ -91,7 +91,7 @@ export type AdminInboxResult<T> =
   | { ok: true; data: T }
   | { ok: false; reason: 'no-config' | 'no-auth' | 'http'; message?: string };
 
-/** User-facing error from an admin inbox API call (shows backend message when available). */
+
 export function adminInboxErrorMessage(
   res: Extract<AdminInboxResult<unknown>, { ok: false }>,
   t: (key: string) => string,

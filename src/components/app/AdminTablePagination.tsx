@@ -8,7 +8,7 @@ type AdminTablePaginationProps = {
   totalItems: number;
   pageSize?: number;
   onPageChange: (page: number) => void;
-  /** Sustantivo en plural para el pie (p. ej. «leads», «desarrolladores», «proyectos»). */
+  
   nounPlural: string;
   className?: string;
 };

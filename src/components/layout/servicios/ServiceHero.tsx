@@ -1,7 +1,7 @@
 import { CenterContainer } from '@/components/layout/CenterContainer';
 
 export type ServiceHeroProps = {
-  /** Ruta del fondo (ej: /backgrounds/bg-blue.svg) */
+  
   backgroundImage: string;
   titleLine1: string;
   titleLine2: string;
