@@ -11,8 +11,7 @@ export function isInboxAiAutoReplyActiveNow(
   at: Date = new Date(),
 ): boolean {
   if (!bot.enabled) return false;
-  
-  if (!autopilot.enabled) return true;
+  if (!autopilot.enabled) return false;
   if (!autopilot.channels.whatsapp) return false;
   return isInboxAutopilotActiveNow(autopilot, at);
 }

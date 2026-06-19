@@ -5,6 +5,7 @@ import { AppThemeSettingsCard } from '@/components/app/AppThemeSettingsCard';
 import { AdminAutopilotSettingsCard } from '@/components/admin/AdminAutopilotSettingsCard';
 import { AdminBotExclusionsCard } from '@/components/admin/AdminBotExclusionsCard';
 import { AdminBotSettingsCard } from '@/components/admin/AdminBotSettingsCard';
+import { AdminMessagesSettingsCard } from '@/components/admin/AdminMessagesSettingsCard';
 import { AdminWhatsappLinkCard } from '@/components/admin/AdminWhatsappLinkCard';
 import { getStoredAppTheme, type AppThemeMode } from '@/lib/appTheme';
 import { hydrateInboxAiSettingsFromApi } from '@/lib/inboxAiSettingsApi';
@@ -30,6 +31,7 @@ export default function AppAdminSettings() {
           </h2>
           <AppThemeSettingsCard mode={themeMode} onChange={setThemeMode} />
         </section>
+        <AdminMessagesSettingsCard />
         <AdminAutopilotSettingsCard />
         <AdminBotSettingsCard />
         <AdminBotExclusionsCard />
