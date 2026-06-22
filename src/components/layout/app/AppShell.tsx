@@ -1,4 +1,4 @@
-import { useEffect, useId, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useId, useMemo, useRef, useState, useCallback, type ReactNode } from 'react';
 import { Link, useLocation } from 'wouter';
 import { useTranslation } from 'react-i18next';
 import {
@@ -70,6 +70,10 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { AppSideChatDock } from '@/components/app/AppSideChat';
 import { useAppNavBadges } from '@/contexts/AppNavBadgesContext';
 import { AdminChannelNavIcon } from '@/components/admin/AdminChannelIcons';
+import {
+  resolveInitialSideChatOpen,
+  writeSideChatOpen,
+} from '@/lib/appSideChatUiState';
 
 export type AppShellProps = {
   pathWithoutLang: string;
@@ -398,9 +402,17 @@ export function AppShell({
   const [trabajoOpen, setTrabajoOpen] = useState(false);
   const sidebarContentRef = useRef<HTMLDivElement>(null);
   const [appThemeMode, setAppThemeMode] = useState<AppThemeMode>(() => getStoredAppTheme());
-  const [sideChatExpanded, setSideChatExpanded] = useState(true);
+  const [sideChatExpanded, setSideChatExpandedState] = useState(() => resolveInitialSideChatOpen());
   const vadoIntelPanelId = useId();
   const canonicalPath = path(pathWithoutLang);
+
+  const setSideChatExpanded = useCallback((next: boolean | ((prev: boolean) => boolean)) => {
+    setSideChatExpandedState((prev) => {
+      const value = typeof next === 'function' ? next(prev) : next;
+      writeSideChatOpen(value);
+      return value;
+    });
+  }, []);
 
   const currentAppPath = normalizePath(pathWithoutLang);
   const isAdminSection = currentAppPath.startsWith('/app/admin');
@@ -1330,7 +1342,9 @@ export function AppShell({
         <AppSideChatDock
           theme={appThemeMode}
           open={sideChatExpanded}
-          onOpenChange={setSideChatExpanded}
+          onOpenChange={(open) => {
+            if (!open) setSideChatExpanded(false);
+          }}
           regionId={vadoIntelPanelId}
         />
       </SidebarProvider>
