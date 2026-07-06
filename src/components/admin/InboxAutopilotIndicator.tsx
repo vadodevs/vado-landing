@@ -30,7 +30,7 @@ export function useInboxAutopilotLive(): boolean {
     };
   }, []);
 
-  return useMemo(() => isInboxAiAutoReplyActiveNow(), [tick]);
+  return useMemo(() => isInboxAiAutoReplyActiveNow(), [tick]); // tick: periodic + event-driven refresh
 }
 
 type InboxAutopilotStatusLineProps = {
