@@ -8,6 +8,7 @@ export type InboxAppointmentTopicId =
 
 export type InboxAppointmentPrimaryToggleId =
   | 'confirmAppointments'
+  | 'scheduleAppointments'
   | 'cancelAppointments'
   | 'rescheduleAppointments';
 
@@ -15,13 +16,14 @@ export type InboxAppointmentTopics = Record<InboxAppointmentTopicId, boolean>;
 
 export const INBOX_APPOINTMENT_PRIMARY_TOGGLES: InboxAppointmentPrimaryToggleId[] = [
   'confirmAppointments',
+  'scheduleAppointments',
   'cancelAppointments',
   'rescheduleAppointments',
 ];
 
 export const DEFAULT_INBOX_APPOINTMENT_TOPICS: InboxAppointmentTopics = {
   confirmAppointments: true,
-  scheduleAppointments: false,
+  scheduleAppointments: true,
   rescheduleAppointments: true,
   cancelAppointments: true,
   appointmentReminders: false,

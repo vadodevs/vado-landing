@@ -27,6 +27,7 @@ import {
 
 const APPOINTMENT_TOGGLE_I18N: Record<InboxAppointmentPrimaryToggleId, string> = {
   confirmAppointments: 'adminSettings.autopilotApptQuery',
+  scheduleAppointments: 'adminSettings.autopilotApptSchedule',
   cancelAppointments: 'adminSettings.autopilotApptCancel',
   rescheduleAppointments: 'adminSettings.autopilotApptPostpone',
 };
