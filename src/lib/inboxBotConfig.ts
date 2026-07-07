@@ -40,15 +40,16 @@ export const BOT_OFF_TOPIC_STRICTNESS: BotOffTopicStrictness[] = [
 
 export const DEFAULT_INBOX_BOT_CONFIG: InboxBotConfig = {
   enabled: true,
-  displayName: 'Asistente Vado',
+  displayName: '',
   conversationTone: 'natural',
   language: 'auto',
   responseLength: 'balanced',
   useEmoji: true,
-  signOffWithName: true,
-  askCompanyBeforeDetails: true,
-  offTopicStrictness: 'balanced',
-  customGreeting: '',
+  signOffWithName: false,
+  askCompanyBeforeDetails: false,
+  offTopicStrictness: 'relaxed',
+  customGreeting:
+    'Hola, ¿en qué te puedo ayudar? Puedo contarte sobre nuestros servicios, tu cita o un proyecto que tengas en mente.',
 };
 
 let cachedBotConfig: InboxBotConfig = { ...DEFAULT_INBOX_BOT_CONFIG };
