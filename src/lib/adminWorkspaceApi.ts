@@ -1,6 +1,9 @@
 import type { CompanyLeadStatus } from '@/lib/companyLeadStatus';
 import type { CompanyLeadUpdate } from '@/lib/companyLeadUpdates';
 import type { PipelineLeadEntry, PipelineLeadSource, PipelineStage } from '@/lib/adminOpportunitiesPipeline';
+import type { ApiCompanySubmissionRow } from '@/lib/companyAdminContact';
+import { adminAuthorizedFetch, getAdminAccessToken } from '@/lib/adminAuth';
+import { getApiBaseUrl } from '@/lib/apiBaseUrl';
 import { adminWorkspaceRequest } from '@/lib/userAuthorizedFetch';
 
 export async function fetchCompanyLeadStatuses(): Promise<Record<string, CompanyLeadStatus>> {
@@ -168,4 +171,53 @@ export async function migrateBrowserWorkspaceData(
     { method: 'POST', body: JSON.stringify(payload) },
   );
   return res.ok;
+}
+
+export type CreateManualCompanyLeadApiPayload = {
+  firstName: string;
+  email: string;
+  phone?: string;
+  company?: string;
+  subject?: string;
+  message?: string;
+};
+
+export type CreateManualCompanyLeadApiResult =
+  | { ok: true; data: ApiCompanySubmissionRow }
+  | { ok: false; reason: 'no-config' | 'unauthorized' | 'fail'; detail?: string };
+
+export async function createManualCompanyLeadApi(
+  payload: CreateManualCompanyLeadApiPayload,
+): Promise<CreateManualCompanyLeadApiResult> {
+  const base = getApiBaseUrl();
+  if (!base) return { ok: false, reason: 'no-config' };
+  if (!getAdminAccessToken()) return { ok: false, reason: 'unauthorized' };
+
+  try {
+    const res = await adminAuthorizedFetch(`${base}/admin/workspace/crm/company-leads`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (!res?.ok) {
+      let detail: string | undefined;
+      try {
+        const j = (await res?.json()) as { message?: unknown; error?: unknown };
+        if (Array.isArray(j?.message)) {
+          detail = j.message.map(String).join(' ');
+        } else if (typeof j?.message === 'string') {
+          detail = j.message;
+        } else if (typeof j?.error === 'string') {
+          detail = j.error;
+        }
+      } catch {
+        /* ignore */
+      }
+      return { ok: false, reason: 'fail', detail };
+    }
+    const data = (await res.json()) as ApiCompanySubmissionRow;
+    return { ok: true, data };
+  } catch {
+    return { ok: false, reason: 'fail' };
+  }
 }
