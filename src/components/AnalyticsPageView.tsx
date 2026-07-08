@@ -1,9 +1,8 @@
 import { useEffect, useRef } from 'react';
 import { useLocation } from 'wouter';
-import { pushVirtualPageView } from '@/lib/gtm';
+import { trackPageView } from '@/lib/analytics';
 
-
-export function GtmPageView() {
+export function AnalyticsPageView() {
   const [location] = useLocation();
   const isInitialMount = useRef(true);
 
@@ -13,7 +12,7 @@ export function GtmPageView() {
       return;
     }
 
-    pushVirtualPageView(location);
+    trackPageView(location);
   }, [location]);
 
   return null;
