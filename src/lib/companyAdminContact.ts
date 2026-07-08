@@ -1,4 +1,5 @@
 import { getApiBaseUrl } from '@/lib/apiBaseUrl';
+import { createManualCompanyLeadApi } from '@/lib/adminWorkspaceApi';
 
 
 export type CompanyContact = {
@@ -96,4 +97,75 @@ export async function fetchCompanyContactDirectory(): Promise<
     out[contact.id] = { name: contact.nombre, email: contact.correo };
   }
   return out;
+}
+
+const COMPANY_SUBJECT_VALUES = [
+  'Staff Augmentation',
+  'Custom Software Development',
+  'AI Solutions',
+  'Other',
+] as const;
+
+type CompanySubject = (typeof COMPANY_SUBJECT_VALUES)[number];
+
+function resolveCompanySubject(servicio: string): CompanySubject | undefined {
+  const trimmed = servicio.trim();
+  return (COMPANY_SUBJECT_VALUES as readonly string[]).includes(trimmed)
+    ? (trimmed as CompanySubject)
+    : undefined;
+}
+
+function buildManualLeadMessage(servicio: string, mensaje: string): string {
+  const parts: string[] = [];
+  const subject = resolveCompanySubject(servicio);
+  if (servicio.trim() && !subject) parts.push(`Asunto: ${servicio.trim()}`);
+  if (mensaje.trim()) parts.push(mensaje.trim());
+  return parts.join('\n\n').slice(0, 1024);
+}
+
+export type CreateCompanySubmissionInput = {
+  nombre: string;
+  correo: string;
+  empresa?: string;
+  telefono?: string;
+  servicio?: string;
+  mensaje?: string;
+};
+
+export type CreateCompanySubmissionResult =
+  | { ok: true; contact: CompanyContact }
+  | { ok: false; reason: 'no-config' | 'fail'; detail?: string };
+
+export async function createCompanySubmission(
+  input: CreateCompanySubmissionInput,
+): Promise<CreateCompanySubmissionResult> {
+  if (!getApiBaseUrl()) return { ok: false, reason: 'no-config' };
+
+  const servicio = (input.servicio ?? '').trim();
+  const subject = resolveCompanySubject(servicio);
+  const result = await createManualCompanyLeadApi({
+    firstName: input.nombre.trim(),
+    email: input.correo.trim(),
+    phone: input.telefono?.trim() || undefined,
+    company: input.empresa?.trim() || undefined,
+    ...(subject ? { subject } : {}),
+    message: buildManualLeadMessage(servicio, input.mensaje ?? ''),
+  });
+
+  if (!result.ok) {
+    if (result.reason === 'unauthorized') {
+      return {
+        ok: false,
+        reason: 'fail',
+        detail: 'Inicia sesión como administrador para guardar leads.',
+      };
+    }
+    return {
+      ok: false,
+      reason: result.reason === 'no-config' ? 'no-config' : 'fail',
+      detail: result.detail,
+    };
+  }
+
+  return { ok: true, contact: mapApiCompanySubmission(result.data) };
 }

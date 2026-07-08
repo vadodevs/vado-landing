@@ -45,6 +45,7 @@ import {
 import { Label } from '@/components/ui/label';
 import type { AdminProspecto } from '@/lib/adminProspectos';
 import {
+  createCompanySubmission,
   mapApiCompanySubmission,
   type ApiCompanySubmissionRow,
   type CompanyContact,
@@ -361,6 +362,8 @@ export default function AppAdminCompanyPage() {
     servicio: string;
     mensaje: string;
   } | null>(null);
+  const [manualLeadSaving, setManualLeadSaving] = useState(false);
+  const [manualLeadError, setManualLeadError] = useState<string | null>(null);
   const [leadUpdatesById, setLeadUpdatesById] = useState<Record<string, CompanyLeadUpdate[]>>(
     () => ({}),
   );
@@ -679,26 +682,37 @@ export default function AppAdminCompanyPage() {
   };
 
   const addManualLead = () => {
-    if (!manualLeadForm) return;
+    if (!manualLeadForm || manualLeadSaving) return;
     const { nombre, correo, empresa, telefono, servicio, mensaje } = manualLeadForm;
     if (!nombre.trim() || !correo.trim()) return;
 
-    const newLead: CompanyContact = {
-      id: `manual-${Date.now()}`,
-      nombre: nombre.trim(),
-      correo: correo.trim(),
-      empresa: empresa.trim(),
-      telefono: telefono.trim(),
-      servicio: servicio.trim(),
-      mensaje: mensaje.trim(),
-      sector: '',
-      ciudad: '',
-      fechaSolicitud: formatDateOnly(new Date()),
-      createdAtMs: Date.now(),
-    };
-
-    setContacts((prev) => [newLead, ...prev]);
-    setManualLeadForm(null);
+    setManualLeadSaving(true);
+    setManualLeadError(null);
+    void createCompanySubmission({
+      nombre,
+      correo,
+      empresa,
+      telefono,
+      servicio,
+      mensaje,
+    })
+      .then((result) => {
+        if (!result.ok) {
+          if (result.reason === 'no-config') {
+            setManualLeadError(
+              'Configura VITE_API_BASE_URL para guardar leads en la base de datos.',
+            );
+            return;
+          }
+          setManualLeadError(
+            result.detail ?? 'No se pudo guardar el lead. Revisa la red o el servidor.',
+          );
+          return;
+        }
+        setContacts((prev) => [result.contact, ...prev]);
+        setManualLeadForm(null);
+      })
+      .finally(() => setManualLeadSaving(false));
   };
 
   const addLeadUpdate = () => {
@@ -968,7 +982,8 @@ export default function AppAdminCompanyPage() {
                 size="sm"
                 className={ADMIN_PRIMARY_TOOLBAR_BUTTON_CLASS}
                 title="Agregar lead manualmente"
-                onClick={() =>
+                onClick={() => {
+                  setManualLeadError(null);
                   setManualLeadForm({
                     nombre: '',
                     correo: '',
@@ -976,8 +991,8 @@ export default function AppAdminCompanyPage() {
                     telefono: '',
                     servicio: '',
                     mensaje: '',
-                  })
-                }
+                  });
+                }}
               >
                 <UserPlus className="size-3.5 shrink-0" aria-hidden />
                 <span className="text-[11px] font-semibold">Agregar Lead</span>
@@ -1584,7 +1599,11 @@ export default function AppAdminCompanyPage() {
       <Dialog
         open={manualLeadForm !== null}
         onOpenChange={(next) => {
-          if (!next) setManualLeadForm(null);
+          if (!next) {
+            setManualLeadForm(null);
+            setManualLeadError(null);
+            setManualLeadSaving(false);
+          }
         }}
       >
         <DialogContent useAppDark className="max-w-md">
@@ -1594,6 +1613,10 @@ export default function AppAdminCompanyPage() {
               Ingresa los datos del nuevo lead de contacto.
             </DialogDescription>
           </DialogHeader>
+
+          {manualLeadError ? (
+            <p className="text-sm text-red-700 dark:text-red-400">{manualLeadError}</p>
+          ) : null}
 
           {manualLeadForm && (
             <div className="space-y-3">
@@ -1684,6 +1707,7 @@ export default function AppAdminCompanyPage() {
               type="button"
               variant="outline"
               onClick={() => setManualLeadForm(null)}
+              disabled={manualLeadSaving}
             >
               Cancelar
             </Button>
@@ -1691,9 +1715,20 @@ export default function AppAdminCompanyPage() {
               type="button"
               className={ADMIN_PRIMARY_BTN_CLASS}
               onClick={addManualLead}
-              disabled={!manualLeadForm?.nombre.trim() || !manualLeadForm?.correo.trim()}
+              disabled={
+                manualLeadSaving ||
+                !manualLeadForm?.nombre.trim() ||
+                !manualLeadForm?.correo.trim()
+              }
             >
-              Agregar Lead
+              {manualLeadSaving ? (
+                <>
+                  <Loader2 className="size-3.5 animate-spin" aria-hidden />
+                  Guardando…
+                </>
+              ) : (
+                'Agregar Lead'
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>
