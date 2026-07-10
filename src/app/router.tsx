@@ -44,6 +44,7 @@ import AppAdminCompany from '@/pages/app/adminCompany'
 import AppAdminOportunidades from '@/pages/app/adminOportunidades'
 import AppAdminLeadsMyEvolve from '@/pages/app/adminLeadsMyEvolve'
 import AppAdminLeadsMyEvolveCalendar from '@/pages/app/adminLeadsMyEvolveCalendar'
+import AppAdminAutoLeads from '@/pages/app/adminAutoLeads'
 import AppAdminCanales from '@/pages/app/adminCanales'
 import AppAdminReclutadores from '@/pages/app/adminReclutadores'
 import AppAdminOfertas from '@/pages/app/adminOfertas'
@@ -82,6 +83,13 @@ function AdminLeadsMyEvolveRoute() {
   return (
     <RequireAdmin>
       <AppAdminLeadsMyEvolve />
+    </RequireAdmin>
+  );
+}
+function AdminAutoLeadsRoute() {
+  return (
+    <RequireAdmin>
+      <AppAdminAutoLeads />
     </RequireAdmin>
   );
 }
@@ -332,6 +340,7 @@ const AppAdminProyectosPage = withLocale(AdminProyectosRoute)
 const AppAdminCompanyPage = withLocale(AdminCompanyRoute)
 const AppAdminOpportunitiesPage = withLocale(AdminOpportunitiesRoute)
 const AppAdminLeadsMyEvolvePage = withLocale(AdminLeadsMyEvolveRoute)
+const AppAdminAutoLeadsPage = withLocale(AdminAutoLeadsRoute)
 const AppAdminLeadsCalendarPage = withLocale(AdminLeadsCalendarRoute)
 const AppAdminReclutadoresPage = withLocale(AdminReclutadoresRoute)
 const AppAdminOfertasPage = withLocale(AdminOfertasRoute)
@@ -465,6 +474,7 @@ export function Router() {
       <Route path="/:lang/app/admin/company" component={AppAdminCompanyPage} />
       <Route path="/:lang/app/admin/oportunidades" component={AppAdminOpportunitiesPage} />
       <Route path="/:lang/app/admin/leads/my-evolve" component={AppAdminLeadsMyEvolvePage} />
+      <Route path="/:lang/app/admin/leads/auto" component={AppAdminAutoLeadsPage} />
       <Route path="/:lang/app/admin/leads/calendar" component={AppAdminLeadsCalendarPage} />
       <Route path="/:lang/app/admin/canales/:canal" component={AppAdminCanalesPage} />
       <Route path="/:lang/app/admin/utileria/tareas" component={AppAdminUtileriaTareasPage} />

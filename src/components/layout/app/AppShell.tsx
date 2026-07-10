@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import {
   Bookmark,
   Bell,
+  Bot,
   Boxes,
   BriefcaseBusiness,
   CalendarDays,
@@ -437,6 +438,7 @@ export function AppShell({
   const hrefAdminCompanies = path('/app/admin/company');
   const hrefAdminOpportunities = path('/app/admin/oportunidades');
   const hrefAdminLeadsMyEvolve = path('/app/admin/leads/my-evolve');
+  const hrefAdminAutoLeads = path('/app/admin/leads/auto');
   const hrefAdminLeadsCalendar = path('/app/admin/leads/calendar');
   const hrefAdminCanalesFacebook = path('/app/admin/canales/facebook');
   const hrefAdminCanalesWhatsApp = path('/app/admin/canales/whatsapp');
@@ -803,6 +805,11 @@ export function AppShell({
                       hrefAdminLeadsMyEvolve,
                       t('sidebarDemo.navLeadsMyEvolve'),
                       <Sparkles />,
+                    )}
+                    {navItem(
+                      hrefAdminAutoLeads,
+                      t('sidebarDemo.navAutoLeads'),
+                      <Bot />,
                     )}
                     {navItem(
                       hrefAdminOpportunities,

@@ -132,6 +132,7 @@
     "appAdminCompanies": "Vista de administración: contactos de compañías.",
     "appAdminOpportunities": "Vista de administración: oportunidades de venta.",
     "appAdminLeadsMyEvolve": "Vista de administración: Leads Evolve.",
+    "appAdminAutoLeads": "Vista de administración: Auto Leads desde autosales.",
     "appAdminLeadsCalendar": "Vista de administración: calendario de reuniones Evolve.",
     "appAdminCanalesFacebook": "Canal Facebook (demo de bandeja).",
     "appAdminCanalesWhatsApp": "Bandeja de WhatsApp vinculada a Evolution.",
@@ -271,6 +272,7 @@
     "navCompanies": "Leads",
     "navOpportunities": "Oportunidades",
     "navLeadsMyEvolve": "Leads Evolve",
+    "navAutoLeads": "Auto Leads",
     "navLeadsCalendar": "Calendario",
     "navLeadsMyEvolveHome": "Inicio",
     "navChannels": "Canales",
@@ -529,6 +531,48 @@
     "evolveColPipeline": "Pipeline",
     "evolveColCita": "Cita",
     "evolveColFecha": "Alta"
+  },
+  "adminAutoLeads": {
+    "placeholderTitle": "Auto Leads",
+    "placeholderBody": "Aquí llegarán los leads generados y calificados desde autosales para contacto outbound.",
+    "title": "Auto Leads",
+    "subtitle": "Monitor del outreach automático (autosales → correo / WhatsApp). Datos de demostración.",
+    "mockBadge": "Mock",
+    "backToRuns": "Todos los runs",
+    "openRun": "Abrir",
+    "lastActivity": "Última actividad: {{time}}",
+    "statFound": "Encontrados",
+    "statQualified": "Calificados",
+    "statContacted": "Contactados",
+    "statReplied": "Respondieron",
+    "statMeetings": "Reuniones",
+    "contactsSection": "Leads contactados ({{count}})",
+    "viewConversation": "Ver conversación",
+    "meetingBooked": "Reunión: {{when}}",
+    "conversationEmpty": "Aún no hay mensajes en este hilo.",
+    "conversationFailed": "El envío falló (bounce o error de canal).",
+    "runStatus": {
+      "active": "Activo",
+      "paused": "Pausado",
+      "completed": "Completado"
+    },
+    "contactStatus": {
+      "queued": "En cola",
+      "sent": "Enviado",
+      "replied": "Respondió",
+      "meeting": "Reunión",
+      "no_response": "Sin respuesta",
+      "failed": "Fallido"
+    },
+    "channel": {
+      "email": "Correo",
+      "whatsapp": "WhatsApp"
+    },
+    "actor": {
+      "bot": "Bot",
+      "human": "Humano",
+      "lead": "Lead"
+    }
   },
   "adminCanales": {
     "mockNotice": "Vista de demostración. La conexión real a Meta / WhatsApp / Instagram llegará en una siguiente fase.",
