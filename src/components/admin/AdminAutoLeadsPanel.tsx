@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   ArrowLeft,
   Bot,
@@ -10,6 +10,8 @@ import {
   CheckCircle2,
   ExternalLink,
   Inbox,
+  Loader2,
+  RefreshCw,
 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Badge } from '@/components/ui/badge'
@@ -22,8 +24,8 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { ADMIN_FILTER_BADGE_CLASS, ADMIN_PRIMARY_TOOLBAR_BUTTON_CLASS } from '@/lib/adminFilterUi'
+import { fetchAutoLeadRuns } from '@/lib/autoLeadsApi'
 import {
-  AUTO_LEADS_MOCK_RUNS,
   formatAutoLeadRelative,
   type AutoLeadChannel,
   type AutoLeadContact,
@@ -89,10 +91,30 @@ export function AdminAutoLeadsPanel() {
   const { locale } = useLocale()
   const [selectedRunId, setSelectedRunId] = useState<string | null>(null)
   const [selectedContact, setSelectedContact] = useState<AutoLeadContact | null>(null)
+  const [runs, setRuns] = useState<AutoLeadRun[]>([])
+  const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState(false)
+
+  const loadRuns = async () => {
+    setLoading(true)
+    setLoadError(false)
+    const data = await fetchAutoLeadRuns()
+    if (data == null) {
+      setLoadError(true)
+      setRuns([])
+    } else {
+      setRuns(data)
+    }
+    setLoading(false)
+  }
+
+  useEffect(() => {
+    void loadRuns()
+  }, [])
 
   const selectedRun = useMemo(
-    () => AUTO_LEADS_MOCK_RUNS.find((r) => r.id === selectedRunId) ?? null,
-    [selectedRunId],
+    () => runs.find((r) => r.id === selectedRunId) ?? null,
+    [runs, selectedRunId],
   )
 
   return (
@@ -105,34 +127,73 @@ export function AdminAutoLeadsPanel() {
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
               <h2 className="text-base font-semibold text-foreground">{t('adminAutoLeads.title')}</h2>
-              <span className={ADMIN_FILTER_BADGE_CLASS}>{t('adminAutoLeads.mockBadge')}</span>
+              <span className={ADMIN_FILTER_BADGE_CLASS}>{t('adminAutoLeads.liveBadge')}</span>
             </div>
             <p className="mt-0.5 text-xs text-muted-foreground">{t('adminAutoLeads.subtitle')}</p>
           </div>
         </div>
-        {selectedRun ? (
+        <div className="flex flex-wrap items-center gap-2">
+          {!selectedRun ? (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="h-8 gap-1.5 rounded-xl text-[11px] font-semibold"
+              disabled={loading}
+              onClick={() => void loadRuns()}
+            >
+              {loading ? (
+                <Loader2 className="size-3.5 animate-spin" aria-hidden />
+              ) : (
+                <RefreshCw className="size-3.5" aria-hidden />
+              )}
+              {t('adminAutoLeads.refresh')}
+            </Button>
+          ) : (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="h-8 gap-1.5 rounded-xl text-[11px] font-semibold"
+              onClick={() => {
+                setSelectedRunId(null)
+                setSelectedContact(null)
+              }}
+            >
+              <ArrowLeft className="size-3.5" aria-hidden />
+              {t('adminAutoLeads.backToRuns')}
+            </Button>
+          )}
+        </div>
+      </div>
+
+      {loading && runs.length === 0 ? (
+        <div className="flex items-center justify-center gap-2 rounded-2xl border border-dashed border-border/70 px-4 py-16 text-sm text-muted-foreground">
+          <Loader2 className="size-4 animate-spin" aria-hidden />
+          {t('adminAutoLeads.loading')}
+        </div>
+      ) : loadError ? (
+        <div className="rounded-2xl border border-dashed border-border/70 px-4 py-10 text-center">
+          <p className="text-sm text-muted-foreground">{t('adminAutoLeads.loadError')}</p>
           <Button
             type="button"
             variant="outline"
             size="sm"
-            className="h-8 gap-1.5 rounded-xl text-[11px] font-semibold"
-            onClick={() => {
-              setSelectedRunId(null)
-              setSelectedContact(null)
-            }}
+            className="mt-3 h-8 rounded-xl text-[11px] font-semibold"
+            onClick={() => void loadRuns()}
           >
-            <ArrowLeft className="size-3.5" aria-hidden />
-            {t('adminAutoLeads.backToRuns')}
+            {t('adminAutoLeads.refresh')}
           </Button>
-        ) : null}
-      </div>
-
-      {!selectedRun ? (
-        <RunsList
-          runs={AUTO_LEADS_MOCK_RUNS}
-          locale={locale}
-          onOpen={(id) => setSelectedRunId(id)}
-        />
+        </div>
+      ) : !selectedRun ? (
+        runs.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-border/70 px-4 py-10 text-center">
+            <p className="text-sm font-medium text-foreground">{t('adminAutoLeads.emptyTitle')}</p>
+            <p className="mt-1 text-xs text-muted-foreground">{t('adminAutoLeads.emptyBody')}</p>
+          </div>
+        ) : (
+          <RunsList runs={runs} locale={locale} onOpen={(id) => setSelectedRunId(id)} />
+        )
       ) : (
         <RunDetail
           run={selectedRun}

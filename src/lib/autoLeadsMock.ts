@@ -1,4 +1,4 @@
-/** Datos mock para Auto Leads (monitor de outreach autosales → adminvado). */
+/** Tipos + helpers para Auto Leads (autosales → adminvado). El mock histórico queda sin uso en UI. */
 
 export type AutoLeadRunStatus = 'active' | 'paused' | 'completed'
 export type AutoLeadChannel = 'email' | 'whatsapp'
