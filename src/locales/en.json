@@ -132,6 +132,7 @@
     "appAdminCompanies": "Admin view: company contacts.",
     "appAdminOpportunities": "Admin view: sales opportunities.",
     "appAdminLeadsMyEvolve": "Admin view: Leads Evolve.",
+    "appAdminAutoLeads": "Admin view: Auto Leads from autosales.",
     "appAdminLeadsCalendar": "Admin view: Evolve meetings calendar.",
     "appAdminCanalesFacebook": "Facebook channel (inbox demo).",
     "appAdminCanalesWhatsApp": "WhatsApp inbox linked to Evolution.",
@@ -271,6 +272,7 @@
     "navCompanies": "Leads",
     "navOpportunities": "Opportunities",
     "navLeadsMyEvolve": "Leads Evolve",
+    "navAutoLeads": "Auto Leads",
     "navLeadsCalendar": "Calendar",
     "navLeadsMyEvolveHome": "Home",
     "navChannels": "Channels",
@@ -529,6 +531,54 @@
     "evolveColPipeline": "Pipeline",
     "evolveColCita": "Meeting",
     "evolveColFecha": "Added"
+  },
+  "adminAutoLeads": {
+    "placeholderTitle": "Auto Leads",
+    "placeholderBody": "Leads generated and qualified from autosales for outbound contact will appear here.",
+    "title": "Auto Leads",
+    "subtitle": "Leads ready from autosales (context + contacts). Email sending comes next.",
+    "mockBadge": "Mock",
+    "liveBadge": "Live",
+    "refresh": "Refresh",
+    "loading": "Loading runs…",
+    "loadError": "Could not load Auto Leads. Check admin session and adminvado.",
+    "emptyTitle": "No published leads yet",
+    "emptyBody": "When a workflow finishes extracting contacts (email or phone), they will show up here queued.",
+    "backToRuns": "All runs",
+    "openRun": "Open",
+    "lastActivity": "Last activity: {{time}}",
+    "statFound": "Found",
+    "statQualified": "Qualified",
+    "statContacted": "Contacted",
+    "statReplied": "Replied",
+    "statMeetings": "Meetings",
+    "contactsSection": "Ready leads ({{count}})",
+    "viewConversation": "View conversation",
+    "meetingBooked": "Meeting: {{when}}",
+    "conversationEmpty": "No messages in this thread yet.",
+    "conversationFailed": "Send failed (bounce or channel error).",
+    "runStatus": {
+      "active": "Active",
+      "paused": "Paused",
+      "completed": "Completed"
+    },
+    "contactStatus": {
+      "queued": "Queued",
+      "sent": "Sent",
+      "replied": "Replied",
+      "meeting": "Meeting",
+      "no_response": "No response",
+      "failed": "Failed"
+    },
+    "channel": {
+      "email": "Email",
+      "whatsapp": "WhatsApp"
+    },
+    "actor": {
+      "bot": "Bot",
+      "human": "Human",
+      "lead": "Lead"
+    }
   },
   "adminCanales": {
     "mockNotice": "Demo view. A real connection to Meta / WhatsApp / Instagram will come in a later phase.",
