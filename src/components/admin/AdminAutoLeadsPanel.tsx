@@ -133,22 +133,38 @@ export function AdminAutoLeadsPanel() {
   const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState(false)
 
-  const loadRuns = useCallback(async () => {
-    setLoading(true)
+  const loadRuns = useCallback(async (opts?: { silent?: boolean }) => {
+    if (!opts?.silent) setLoading(true)
     setLoadError(false)
     const data = await fetchAutoLeadRuns()
     if (data == null) {
-      setLoadError(true)
-      setRuns([])
+      if (!opts?.silent) setLoadError(true)
+      if (!opts?.silent) setRuns([])
     } else {
       setRuns(data.runs)
       setSettings(data.settings)
+      setSelectedContact((prev) => {
+        if (!prev) return prev
+        for (const run of data.runs) {
+          const updated = run.contacts.find((c) => c.id === prev.id)
+          if (updated) return updated
+        }
+        return prev
+      })
     }
-    setLoading(false)
+    if (!opts?.silent) setLoading(false)
   }, [])
 
   useEffect(() => {
     void loadRuns()
+  }, [loadRuns])
+
+  // Refresco suave: reuniones/respuestas llegan por email_threads y deben verse sin F5.
+  useEffect(() => {
+    const id = window.setInterval(() => {
+      void loadRuns({ silent: true })
+    }, 12_000)
+    return () => window.clearInterval(id)
   }, [loadRuns])
 
   const selectedRun = useMemo(
@@ -509,10 +525,14 @@ function RunDetail({
                   <span className="text-[10px] tabular-nums text-muted-foreground">
                     ICP {contact.score}
                   </span>
-                  <span className="inline-flex items-center gap-1 text-[11px] font-medium text-sky-700 dark:text-sky-300">
+                  <button
+                    type="button"
+                    onClick={() => onOpenContact(contact)}
+                    className="inline-flex items-center gap-1 text-[11px] font-medium text-sky-700 hover:underline dark:text-sky-300"
+                  >
                     <Inbox className="size-3.5" aria-hidden />
                     {t('adminAutoLeads.viewConversation')}
-                  </span>
+                  </button>
                 </div>
               </li>
             )
@@ -594,14 +614,14 @@ function ConversationDialog({
         ) : null}
 
         <div className="min-h-0 flex-1 space-y-3 overflow-y-auto px-4 py-4">
-          {contact.messages.length === 0 ? (
+          {(contact.messages ?? []).length === 0 ? (
             <p className="rounded-xl border border-dashed border-border px-3 py-6 text-center text-sm text-muted-foreground">
               {contact.status === 'failed'
                 ? t('adminAutoLeads.conversationFailed')
                 : t('adminAutoLeads.conversationEmpty')}
             </p>
           ) : (
-            contact.messages.map((msg) => {
+            (contact.messages ?? []).map((msg) => {
               const outbound = msg.direction === 'outbound'
               return (
                 <div
