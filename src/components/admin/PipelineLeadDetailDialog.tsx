@@ -1,43 +1,54 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import {
-  Building2,
-  Calendar,
-  ExternalLink,
-  Loader2,
-  Mail,
-  Phone,
-} from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { CompanyLeadActivityTimeline } from '@/components/admin/CompanyLeadActivityTimeline';
-import { Badge } from '@/components/ui/badge';
+import { useLocation } from 'wouter';
+import { useAdminAssignedProjects } from '@/contexts/AdminAssignedProjectsContext';
+import type { AdminSelectOption } from '@/components/app/AdminSelect';
+import {
+  CompanyLeadDetailPanel,
+  type CompanyLeadDetailTab,
+} from '@/components/admin/CompanyLeadDetailPanel';
+import { EvolveLeadDetailDialog } from '@/components/admin/EvolveLeadDetailDialog';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { fetchEvolveLeads, type EvolveLeadRow } from '@/lib/adminEvolveLeadsApi';
+import {
+  createCompanyLeadUpdateApi,
+  fetchCompanyLeadStatuses,
+  patchCompanyLeadStatusApi,
+} from '@/lib/adminWorkspaceApi';
 import {
   formatPipelineAmountUsd,
   type PipelineLeadEntry,
-  type PipelineStage,
 } from '@/lib/adminOpportunitiesPipeline';
 import { chatWidgetDetailForAdmin } from '@/lib/chatWidgetLead';
 import { fetchCompanySubmissions, type CompanyContact } from '@/lib/companyAdminContact';
+import { requestOpenCompanyLead } from '@/lib/companyLeadDeepLink';
 import {
+  COMPANY_LEAD_STATUSES,
+  COMPANY_LEAD_STATUS_LABELS,
+  applyCompanyLeadStatusOverride,
+  dispatchLeadStatusChanged,
+  getCompanyLeadStatus,
+  LEAD_STATUS_CHANGED_EVENT,
+  type CompanyLeadStatus,
+} from '@/lib/companyLeadStatus';
+import {
+  appendCompanyLeadUpdate,
   COMPANY_LEAD_UPDATES_CHANGE_EVENT,
+  dispatchCompanyLeadUpdatesChange,
+  formatCompanyLeadUpdateWhen,
+  getNextReminderCode,
   loadCompanyLeadUpdates,
   type CompanyLeadUpdate,
 } from '@/lib/companyLeadUpdates';
 import { calificacionBadgeClass } from '@/lib/evolveLeadUi';
-import { cn } from '@/lib/utils';
-
-type DetailTab = 'datos' | 'actividad';
+import { useLocale } from '@/hooks/useLocale';
 
 type Props = {
   entry: PipelineLeadEntry | null;
@@ -47,6 +58,11 @@ type Props = {
 };
 
 type LoadState = 'idle' | 'loading' | 'done' | 'error';
+
+const LEAD_STATUS_OPTIONS: AdminSelectOption[] = COMPANY_LEAD_STATUSES.map((s) => ({
+  value: s,
+  label: COMPANY_LEAD_STATUS_LABELS[s],
+}));
 
 function pipelineEntryToFallbackContact(entry: PipelineLeadEntry): CompanyContact {
   return {
@@ -64,287 +80,70 @@ function pipelineEntryToFallbackContact(entry: PipelineLeadEntry): CompanyContac
   };
 }
 
-function DetailField({
-  label,
-  value,
-  className,
-}: {
-  label: string;
-  value: string;
-  className?: string;
-}) {
-  return (
-    <div className={cn('rounded-lg border border-border bg-muted/25 p-2.5', className)}>
-      <p className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">{label}</p>
-      <p className="mt-0.5 text-sm font-medium leading-snug text-foreground">{value || '—'}</p>
-    </div>
-  );
+function leadInitials(nombre: string): string {
+  const parts = nombre.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return '?';
+  if (parts.length === 1) return parts[0]!.slice(0, 2).toUpperCase();
+  return `${parts[0]![0] ?? ''}${parts[1]![0] ?? ''}`.toUpperCase();
 }
 
-function CompanyDatosTab({
-  contact,
-  widgetDetail,
-  stageLabel,
+function PipelineAmountBar({
   amountDraft,
   onAmountDraftChange,
-  onAmountSave,
-  onAmountClear,
+  onSave,
+  onClear,
   hasAmount,
+  amountLabel,
   t,
 }: {
-  contact: CompanyContact;
-  widgetDetail: ReturnType<typeof chatWidgetDetailForAdmin>;
-  stageLabel: string;
   amountDraft: string;
   onAmountDraftChange: (value: string) => void;
-  onAmountSave: () => void;
-  onAmountClear: () => void;
+  onSave: () => void;
+  onClear: () => void;
   hasAmount: boolean;
-  t: (key: string, opts?: Record<string, string>) => string;
+  amountLabel: string | null;
+  t: (key: string) => string;
 }) {
-  const questionnaireRows = widgetDetail.rows;
-  const longRows = questionnaireRows.filter((row) => row.value.length > 80);
-  const shortRows = questionnaireRows.filter((row) => row.value.length <= 80);
-
   return (
-    <div className="space-y-4">
-      <div className="grid gap-2 sm:grid-cols-2">
-        <div className="flex items-start gap-2 rounded-lg border border-border bg-muted/25 p-2.5 sm:col-span-2">
-          <Mail className="mt-0.5 size-3.5 shrink-0 text-muted-foreground" aria-hidden />
-          <div className="min-w-0">
-            <p className="text-[10px] text-muted-foreground">{t('adminOpportunities.detailEmail')}</p>
-            <p className="truncate text-sm font-medium text-foreground" title={contact.correo}>
-              {contact.correo || '—'}
-            </p>
-          </div>
-        </div>
-        <div className="flex items-start gap-2 rounded-lg border border-border bg-muted/25 p-2.5">
-          <Phone className="mt-0.5 size-3.5 shrink-0 text-muted-foreground" aria-hidden />
-          <div className="min-w-0">
-            <p className="text-[10px] text-muted-foreground">{t('adminOpportunities.detailPhone')}</p>
-            <p className="text-sm font-medium text-foreground">{contact.telefono || '—'}</p>
-          </div>
-        </div>
-        <div className="flex items-start gap-2 rounded-lg border border-border bg-muted/25 p-2.5">
-          <Building2 className="mt-0.5 size-3.5 shrink-0 text-muted-foreground" aria-hidden />
-          <div className="min-w-0">
-            <p className="text-[10px] text-muted-foreground">{t('adminOpportunities.detailCompany')}</p>
-            <p className="text-sm font-medium text-foreground">{contact.empresa || '—'}</p>
-          </div>
-        </div>
-        <DetailField label={t('adminOpportunities.detailInterest')} value={contact.servicio} />
-        <DetailField label={t('adminOpportunities.detailRequestDate')} value={contact.fechaSolicitud} />
-        <DetailField label={t('adminOpportunities.detailPipelineStage')} value={stageLabel} className="sm:col-span-2" />
-        {shortRows.map((row, idx) => (
-          <DetailField key={`${idx}-${row.label}`} label={row.label} value={row.value} />
-        ))}
-        {longRows.map((row, idx) => (
-          <DetailField
-            key={`long-${idx}-${row.label}`}
-            label={row.label}
-            value={row.value}
-            className="sm:col-span-2"
-          />
-        ))}
-        {!widgetDetail.isWidget && contact.mensaje.trim() ? (
-          <DetailField
-            label={t('adminOpportunities.detailMessage')}
-            value={contact.mensaje.trim()}
-            className="sm:col-span-2"
-          />
+    <div className="shrink-0 border-b border-border/60 bg-muted/15 px-5 py-3 dark:bg-muted/10">
+      <Label htmlFor="pipeline-detail-amount" className="text-xs">
+        {t('adminOpportunities.estimatedAmountLabel')}
+        {amountLabel ? (
+          <span className="ml-2 font-semibold tabular-nums text-emerald-700 dark:text-emerald-300">
+            ({amountLabel})
+          </span>
         ) : null}
-      </div>
-
-      <div className="rounded-xl border border-border/70 bg-muted/15 p-3 dark:bg-muted/10">
-        <Label htmlFor="pipeline-detail-amount" className="text-xs">
-          {t('adminOpportunities.estimatedAmountLabel')}
-        </Label>
-        <div className="mt-2 flex flex-wrap gap-2">
-          <Input
-            id="pipeline-detail-amount"
-            type="number"
-            min={0}
-            step={100}
-            inputMode="decimal"
-            placeholder={t('adminOpportunities.estimatedAmountPlaceholder')}
-            value={amountDraft}
-            onChange={(e) => onAmountDraftChange(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault();
-                onAmountSave();
-              }
-            }}
-            className="h-9 max-w-[200px] text-sm"
-          />
-          <Button type="button" size="sm" className="h-9 text-xs" onClick={onAmountSave}>
-            {t('adminOpportunities.estimatedAmountSave')}
-          </Button>
-          {hasAmount ? (
-            <Button
-              type="button"
-              size="sm"
-              variant="ghost"
-              className="h-9 text-xs text-muted-foreground"
-              onClick={onAmountClear}
-            >
-              {t('adminOpportunities.estimatedAmountClear')}
-            </Button>
-          ) : null}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function EvolveDatosTab({
-  lead,
-  stageLabel,
-  amountDraft,
-  onAmountDraftChange,
-  onAmountSave,
-  onAmountClear,
-  hasAmount,
-  t,
-}: {
-  lead: EvolveLeadRow;
-  stageLabel: string;
-  amountDraft: string;
-  onAmountDraftChange: (value: string) => void;
-  onAmountSave: () => void;
-  onAmountClear: () => void;
-  hasAmount: boolean;
-  t: (key: string, opts?: Record<string, string>) => string;
-}) {
-  return (
-    <div className="space-y-4">
-      <div className="grid gap-2 sm:grid-cols-2">
-        <div className="flex items-start gap-2 rounded-lg border border-border bg-muted/25 p-2.5 sm:col-span-2">
-          <Mail className="mt-0.5 size-3.5 shrink-0 text-muted-foreground" aria-hidden />
-          <div className="min-w-0">
-            <p className="text-[10px] text-muted-foreground">{t('adminLeads.evolveColContacto')}</p>
-            <p className="truncate text-sm font-medium text-foreground" title={lead.email}>
-              {lead.email}
-            </p>
-          </div>
-        </div>
-        <div className="flex items-start gap-2 rounded-lg border border-border bg-muted/25 p-2.5">
-          <Phone className="mt-0.5 size-3.5 shrink-0 text-muted-foreground" aria-hidden />
-          <div className="min-w-0">
-            <p className="text-[10px] text-muted-foreground">{t('adminLeads.evolveDetailPhone')}</p>
-            <p className="text-sm font-medium text-foreground">{lead.telefono}</p>
-          </div>
-        </div>
-        <div className="flex items-start gap-2 rounded-lg border border-border bg-muted/25 p-2.5">
-          <Building2 className="mt-0.5 size-3.5 shrink-0 text-muted-foreground" aria-hidden />
-          <div className="min-w-0">
-            <p className="text-[10px] text-muted-foreground">{t('adminLeads.evolveColEmpresa')}</p>
-            <p className="text-sm font-medium text-foreground">{lead.empresa}</p>
-          </div>
-        </div>
-        <DetailField label={t('adminLeads.evolveColFuente')} value={lead.fuente} />
-        <DetailField label={t('adminLeads.evolveColUrgencia')} value={lead.urgencia} />
-        <DetailField label={t('adminLeads.evolveColEtapa')} value={lead.etapaNegocio} />
-        <DetailField label={t('adminLeads.evolveDetailClaridad')} value={lead.claridad} />
-        <DetailField label={t('adminLeads.evolveColAnuncio')} value={lead.anuncio} />
-        <DetailField
-          label={t('adminLeads.evolveColPipeline')}
-          value={lead.pipelineStatus}
-          className="capitalize"
+      </Label>
+      <div className="mt-2 flex flex-wrap gap-2">
+        <Input
+          id="pipeline-detail-amount"
+          type="number"
+          min={0}
+          step={100}
+          inputMode="decimal"
+          placeholder={t('adminOpportunities.estimatedAmountPlaceholder')}
+          value={amountDraft}
+          onChange={(e) => onAmountDraftChange(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              onSave();
+            }
+          }}
+          className="h-9 max-w-[200px] text-sm"
         />
-        <DetailField label={t('adminLeads.evolveColFecha')} value={lead.fechaAlta} />
-        <DetailField label={t('adminOpportunities.detailPipelineStage')} value={stageLabel} />
-        {lead.meetingLink ? (
-          <div className="rounded-lg border border-border bg-muted/25 p-2.5 sm:col-span-2">
-            <div className="flex items-center gap-2">
-              <Calendar className="size-3.5 shrink-0 text-muted-foreground" aria-hidden />
-              <p className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
-                {t('adminLeads.evolveColCita')}
-              </p>
-            </div>
-            {lead.meetingTitle ? (
-              <p className="mt-2 text-sm font-medium text-foreground">{lead.meetingTitle}</p>
-            ) : null}
-            {lead.meetingStart ? (
-              <p className="text-xs text-muted-foreground">{lead.meetingStart}</p>
-            ) : null}
-            <Button asChild variant="outline" size="sm" className="mt-2 h-8 gap-1.5">
-              <a href={lead.meetingLink} target="_blank" rel="noopener noreferrer">
-                {t('adminLeads.evolveMeetingLink')}
-                <ExternalLink className="size-3" aria-hidden />
-              </a>
-            </Button>
-          </div>
-        ) : null}
-      </div>
-
-      <div className="rounded-xl border border-border/70 bg-muted/15 p-3 dark:bg-muted/10">
-        <Label htmlFor="pipeline-detail-amount-evolve" className="text-xs">
-          {t('adminOpportunities.estimatedAmountLabel')}
-        </Label>
-        <div className="mt-2 flex flex-wrap gap-2">
-          <Input
-            id="pipeline-detail-amount-evolve"
-            type="number"
-            min={0}
-            step={100}
-            inputMode="decimal"
-            placeholder={t('adminOpportunities.estimatedAmountPlaceholder')}
-            value={amountDraft}
-            onChange={(e) => onAmountDraftChange(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault();
-                onAmountSave();
-              }
-            }}
-            className="h-9 max-w-[200px] text-sm"
-          />
-          <Button type="button" size="sm" className="h-9 text-xs" onClick={onAmountSave}>
-            {t('adminOpportunities.estimatedAmountSave')}
-          </Button>
-          {hasAmount ? (
-            <Button
-              type="button"
-              size="sm"
-              variant="ghost"
-              className="h-9 text-xs text-muted-foreground"
-              onClick={onAmountClear}
-            >
-              {t('adminOpportunities.estimatedAmountClear')}
-            </Button>
-          ) : null}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function EvolveActivityTab({ lead, t }: { lead: EvolveLeadRow; t: (key: string) => string }) {
-  if (!lead.meetingStart && !lead.meetingLink) {
-    return (
-      <p className="px-5 py-10 text-center text-sm text-muted-foreground">
-        {t('adminOpportunities.evolveActivityEmpty')}
-      </p>
-    );
-  }
-
-  return (
-    <div className="px-5 py-4">
-      <div className="rounded-xl border border-border/70 bg-muted/10 p-4">
-        <p className="text-sm font-semibold text-foreground">{t('adminLeads.evolveColCita')}</p>
-        {lead.meetingTitle ? (
-          <p className="mt-1 text-sm text-foreground">{lead.meetingTitle}</p>
-        ) : null}
-        {lead.meetingStart ? (
-          <p className="mt-1 text-xs text-muted-foreground">{lead.meetingStart}</p>
-        ) : null}
-        {lead.meetingLink ? (
-          <Button asChild variant="outline" size="sm" className="mt-3 h-8 gap-1.5">
-            <a href={lead.meetingLink} target="_blank" rel="noopener noreferrer">
-              {t('adminLeads.evolveMeetingLink')}
-              <ExternalLink className="size-3" aria-hidden />
-            </a>
+        <Button type="button" size="sm" className="h-9 text-xs" onClick={onSave}>
+          {t('adminOpportunities.estimatedAmountSave')}
+        </Button>
+        {hasAmount ? (
+          <Button
+            type="button"
+            size="sm"
+            variant="ghost"
+            className="h-9 text-xs text-muted-foreground"
+            onClick={onClear}
+          >
+            {t('adminOpportunities.estimatedAmountClear')}
           </Button>
         ) : null}
       </div>
@@ -354,37 +153,58 @@ function EvolveActivityTab({ lead, t }: { lead: EvolveLeadRow; t: (key: string) 
 
 export function PipelineLeadDetailDialog({ entry, open, onOpenChange, onAmountChange }: Props) {
   const { t } = useTranslation();
-  const [tab, setTab] = useState<DetailTab>('datos');
+  const { path } = useLocale();
+  const [, setLocation] = useLocation();
+  const { assignedProjects, removeAssignedProjectByContactId } = useAdminAssignedProjects();
+
   const [loadState, setLoadState] = useState<LoadState>('idle');
   const [contact, setContact] = useState<CompanyContact | null>(null);
   const [evolveLead, setEvolveLead] = useState<EvolveLeadRow | null>(null);
-  const [updatesMap, setUpdatesMap] = useState<Record<string, CompanyLeadUpdate[]>>({});
+  const [leadStatusOverrides, setLeadStatusOverrides] = useState<Record<string, CompanyLeadStatus>>(
+    {},
+  );
+  const [leadUpdatesById, setLeadUpdatesById] = useState<Record<string, CompanyLeadUpdate[]>>({});
+  const [leadUpdateDraft, setLeadUpdateDraft] = useState('');
+  const [detailTab, setDetailTab] = useState<CompanyLeadDetailTab>('actividad');
+  const [emailCopied, setEmailCopied] = useState(false);
+  const [copiedEvolveEmail, setCopiedEvolveEmail] = useState<string | null>(null);
   const [amountDraft, setAmountDraft] = useState('');
 
-  const stageLabel = entry
-    ? t(`adminOpportunities.stage.${entry.stage as PipelineStage}`)
-    : '';
-
   const refreshUpdates = useCallback(() => {
-    void loadCompanyLeadUpdates().then(setUpdatesMap);
+    void loadCompanyLeadUpdates().then(setLeadUpdatesById);
+  }, []);
+
+  const refreshStatuses = useCallback(() => {
+    void fetchCompanyLeadStatuses().then(setLeadStatusOverrides);
   }, []);
 
   useEffect(() => {
     if (!open) return;
     refreshUpdates();
+    refreshStatuses();
     window.addEventListener(COMPANY_LEAD_UPDATES_CHANGE_EVENT, refreshUpdates);
-    return () => window.removeEventListener(COMPANY_LEAD_UPDATES_CHANGE_EVENT, refreshUpdates);
-  }, [open, refreshUpdates]);
+    window.addEventListener(LEAD_STATUS_CHANGED_EVENT, refreshStatuses);
+    return () => {
+      window.removeEventListener(COMPANY_LEAD_UPDATES_CHANGE_EVENT, refreshUpdates);
+      window.removeEventListener(LEAD_STATUS_CHANGED_EVENT, refreshStatuses);
+    };
+  }, [open, refreshUpdates, refreshStatuses]);
 
   useEffect(() => {
     if (!open || !entry) {
       setLoadState('idle');
+      setContact(null);
+      setEvolveLead(null);
       return;
     }
 
     const currentEntry = entry;
-    setTab('datos');
-    setAmountDraft(currentEntry.estimatedAmountUsd != null ? String(currentEntry.estimatedAmountUsd) : '');
+    setDetailTab('actividad');
+    setLeadUpdateDraft('');
+    setEmailCopied(false);
+    setAmountDraft(
+      currentEntry.estimatedAmountUsd != null ? String(currentEntry.estimatedAmountUsd) : '',
+    );
     let cancelled = false;
 
     async function load() {
@@ -413,15 +233,24 @@ export function PipelineLeadDetailDialog({ entry, open, onOpenChange, onAmountCh
     };
   }, [open, entry]);
 
-  const widgetDetail = useMemo(
-    () => (contact ? chatWidgetDetailForAdmin(contact) : { isWidget: false, rows: [] }),
+  const leadDetailWidget = useMemo(
+    () =>
+      contact
+        ? chatWidgetDetailForAdmin(contact)
+        : { isWidget: false as const, rows: [] as { label: string; value: string }[] },
     [contact],
   );
 
   const updates = useMemo(() => {
-    if (!entry || !contact) return [];
-    return updatesMap[entry.id] ?? [];
-  }, [entry, contact, updatesMap]);
+    if (!contact) return [];
+    return leadUpdatesById[contact.id] ?? [];
+  }, [contact, leadUpdatesById]);
+
+  const assignedMemberCount = useMemo(() => {
+    if (!contact) return 0;
+    const project = assignedProjects.find((p) => p.contactId === contact.id);
+    return project?.prospectos.length ?? 0;
+  }, [assignedProjects, contact]);
 
   const saveAmount = () => {
     const trimmed = amountDraft.trim().replace(/,/g, '');
@@ -439,117 +268,176 @@ export function PipelineLeadDetailDialog({ entry, open, onOpenChange, onAmountCh
     onAmountChange(undefined);
   };
 
-  if (!entry) return null;
+  const updateLeadStatus = (id: string, next: CompanyLeadStatus) => {
+    setLeadStatusOverrides((prev) => applyCompanyLeadStatusOverride(prev, id, next));
+    void patchCompanyLeadStatusApi(id, next).then(() => dispatchLeadStatusChanged());
+    if (next !== 'en_curso') {
+      void removeAssignedProjectByContactId(id);
+    }
+  };
 
-  const sourceBadge =
-    entry.source === 'evolve'
-      ? t('adminOpportunities.sourceEvolve')
-      : t('adminOpportunities.sourceCompany');
+  const addLeadUpdate = () => {
+    if (!contact) return;
+    const body = leadUpdateDraft.trim();
+    if (!body) return;
+    void createCompanyLeadUpdateApi(contact.id, { body, kind: 'note' }).then((created) => {
+      if (!created) return;
+      setLeadUpdatesById((prev) => appendCompanyLeadUpdate(prev, contact.id, created));
+      dispatchCompanyLeadUpdatesChange();
+      setLeadUpdateDraft('');
+      setDetailTab('actividad');
+    });
+  };
+
+  const addLeadReminder = (scheduledAtMs: number, note?: string) => {
+    if (!contact) return;
+    const list = leadUpdatesById[contact.id] ?? [];
+    const reminderCode = getNextReminderCode(list);
+    const scheduledLabel = formatCompanyLeadUpdateWhen(scheduledAtMs);
+    const trimmedNote = note?.trim();
+    const body = trimmedNote || `Seguimiento ${reminderCode} agendado para ${scheduledLabel}`;
+    void createCompanyLeadUpdateApi(contact.id, {
+      body,
+      kind: 'reminder',
+      scheduledAtMs,
+      contactName: contact.nombre,
+      contactEmail: contact.correo,
+    }).then((created) => {
+      if (!created) return;
+      setLeadUpdatesById((prev) => appendCompanyLeadUpdate(prev, contact.id, created));
+      dispatchCompanyLeadUpdatesChange();
+      setDetailTab('actividad');
+    });
+  };
+
+  const copyEmail = (email: string) => {
+    void navigator.clipboard.writeText(email).then(() => {
+      setEmailCopied(true);
+      window.setTimeout(() => setEmailCopied(false), 1500);
+    });
+  };
+
+  const copyEvolveEmail = (email: string) => {
+    void navigator.clipboard.writeText(email).then(() => {
+      setCopiedEvolveEmail(email);
+      window.setTimeout(() => setCopiedEvolveEmail(null), 1500);
+    });
+  };
+
+  const goAssignOnLeadsPage = () => {
+    if (!contact) return;
+    requestOpenCompanyLead(contact.id, 'cuestionario');
+    onOpenChange(false);
+    setLocation(path('/app/admin/company'));
+  };
+
+  if (!entry) return null;
 
   const amountLabel = formatPipelineAmountUsd(entry.estimatedAmountUsd);
 
+  if (entry.source === 'evolve') {
+    if (loadState === 'loading') {
+      return (
+        <Dialog open={open} onOpenChange={onOpenChange}>
+          <DialogContent useAppDark showCloseButton className="sm:max-w-md">
+            <div className="flex items-center justify-center gap-2 py-10 text-sm text-muted-foreground">
+              <Loader2 className="size-4 animate-spin" aria-hidden />
+              {t('adminOpportunities.detailLoading')}
+            </div>
+          </DialogContent>
+        </Dialog>
+      );
+    }
+    if (loadState === 'error' || !evolveLead) {
+      return (
+        <Dialog open={open} onOpenChange={onOpenChange}>
+          <DialogContent useAppDark showCloseButton className="sm:max-w-md">
+            <p className="py-8 text-center text-sm text-muted-foreground">
+              {t('adminOpportunities.detailLoadError')}
+            </p>
+          </DialogContent>
+        </Dialog>
+      );
+    }
+    return (
+      <EvolveLeadDetailDialog
+        lead={evolveLead}
+        open={open}
+        onOpenChange={onOpenChange}
+        calificacionBadgeClass={calificacionBadgeClass}
+        onCopyEmail={copyEvolveEmail}
+        copiedEmail={copiedEvolveEmail}
+        headerExtra={
+          <PipelineAmountBar
+            amountDraft={amountDraft}
+            onAmountDraftChange={setAmountDraft}
+            onSave={saveAmount}
+            onClear={clearAmount}
+            hasAmount={entry.estimatedAmountUsd != null}
+            amountLabel={amountLabel}
+            t={t}
+          />
+        }
+      />
+    );
+  }
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog
+      open={open}
+      onOpenChange={(next) => {
+        onOpenChange(next);
+        if (!next) {
+          setDetailTab('actividad');
+          setLeadUpdateDraft('');
+        }
+      }}
+    >
       <DialogContent
         useAppDark
         showCloseButton
-        className="flex max-h-[min(92svh,880px)] min-h-0 flex-col gap-0 overflow-hidden !p-0 sm:!max-w-2xl"
+        className="flex h-[min(760px,calc(100vh-2rem))] max-h-[min(760px,calc(100vh-2rem))] w-[min(1200px,calc(100vw-2rem))] min-h-0 flex-col gap-0 overflow-hidden !p-0 sm:!max-w-[min(1200px,calc(100vw-2rem))]"
       >
-        <DialogHeader className="shrink-0 space-y-2 border-b border-border/60 px-5 py-4 pr-12 text-left">
-          <div className="flex flex-wrap items-start gap-2">
-            <DialogTitle className="text-lg leading-tight">{entry.nombre}</DialogTitle>
-            <Badge variant="secondary" className="text-[10px]">
-              {sourceBadge}
-            </Badge>
-            {evolveLead ? (
-              <Badge
-                variant="secondary"
-                className={cn('text-[10px] font-medium', calificacionBadgeClass(evolveLead.calificacion))}
-              >
-                {evolveLead.calificacion}
-              </Badge>
-            ) : null}
-          </div>
-          <DialogDescription className="line-clamp-2">
-            {entry.empresa}
-            {amountLabel ? (
-              <span className="ml-2 font-semibold tabular-nums text-emerald-700 dark:text-emerald-300">
-                · {amountLabel}
-              </span>
-            ) : null}
-          </DialogDescription>
-        </DialogHeader>
-
         {loadState === 'loading' ? (
           <div className="flex flex-1 items-center justify-center gap-2 py-16 text-sm text-muted-foreground">
             <Loader2 className="size-4 animate-spin" aria-hidden />
             {t('adminOpportunities.detailLoading')}
           </div>
-        ) : loadState === 'error' && entry.source === 'evolve' ? (
-          <p className="px-5 py-10 text-center text-sm text-muted-foreground">
-            {t('adminOpportunities.detailLoadError')}
-          </p>
-        ) : (
-          <Tabs
-            value={tab}
-            onValueChange={(v) => setTab(v as DetailTab)}
-            className="flex min-h-0 flex-1 flex-col"
-          >
-            <TabsList className="mx-5 mt-3 h-9 w-full shrink-0 justify-start rounded-lg bg-muted/40 p-1">
-              <TabsTrigger value="datos" className="flex-1 text-xs sm:flex-none sm:px-4">
-                {t('adminOpportunities.detailTabDatos')}
-              </TabsTrigger>
-              <TabsTrigger value="actividad" className="flex-1 text-xs sm:flex-none sm:px-4">
-                {t('adminOpportunities.detailTabActividad')}
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent
-              value="datos"
-              className="mt-0 min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-4 focus-visible:outline-none"
-            >
-              {entry.source === 'company' && contact ? (
-                <CompanyDatosTab
-                  contact={contact}
-                  widgetDetail={widgetDetail}
-                  stageLabel={stageLabel}
-                  amountDraft={amountDraft}
-                  onAmountDraftChange={setAmountDraft}
-                  onAmountSave={saveAmount}
-                  onAmountClear={clearAmount}
-                  hasAmount={entry.estimatedAmountUsd != null}
-                  t={t}
-                />
-              ) : evolveLead ? (
-                <EvolveDatosTab
-                  lead={evolveLead}
-                  stageLabel={stageLabel}
-                  amountDraft={amountDraft}
-                  onAmountDraftChange={setAmountDraft}
-                  onAmountSave={saveAmount}
-                  onAmountClear={clearAmount}
-                  hasAmount={entry.estimatedAmountUsd != null}
-                  t={t}
-                />
-              ) : null}
-            </TabsContent>
-
-            <TabsContent
-              value="actividad"
-              className="mt-0 min-h-0 flex-1 overflow-hidden focus-visible:outline-none"
-            >
-              {entry.source === 'company' && contact ? (
-                <CompanyLeadActivityTimeline
-                  contact={contact}
-                  updates={updates}
-                  isWidget={widgetDetail.isWidget}
-                />
-              ) : evolveLead ? (
-                <EvolveActivityTab lead={evolveLead} t={t} />
-              ) : null}
-            </TabsContent>
-          </Tabs>
-        )}
+        ) : contact ? (
+          <>
+            <PipelineAmountBar
+              amountDraft={amountDraft}
+              onAmountDraftChange={setAmountDraft}
+              onSave={saveAmount}
+              onClear={clearAmount}
+              hasAmount={entry.estimatedAmountUsd != null}
+              amountLabel={amountLabel}
+              t={t}
+            />
+            <div className="min-h-0 flex-1 overflow-hidden">
+              <CompanyLeadDetailPanel
+                contact={contact}
+                leadEstado={getCompanyLeadStatus(leadStatusOverrides, contact.id)}
+                leadDetailWidget={leadDetailWidget}
+                detailTab={detailTab}
+                onDetailTabChange={setDetailTab}
+                updates={updates}
+                updateDraft={leadUpdateDraft}
+                onUpdateDraftChange={setLeadUpdateDraft}
+                onAddUpdate={addLeadUpdate}
+                onAddReminder={addLeadReminder}
+                onStatusChange={(status) => updateLeadStatus(contact.id, status)}
+                statusOptions={LEAD_STATUS_OPTIONS}
+                onCopyEmail={copyEmail}
+                emailCopied={emailCopied}
+                assignedMemberCount={assignedMemberCount}
+                onDiscard={() => updateLeadStatus(contact.id, 'descartado')}
+                onAssignProject={goAssignOnLeadsPage}
+                initials={leadInitials(contact.nombre)}
+              />
+            </div>
+          </>
+        ) : null}
       </DialogContent>
     </Dialog>
   );

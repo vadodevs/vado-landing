@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { ADMIN_PRIMARY_BTN_CLASS } from '@/lib/adminVadoUi';
 import { cn } from '@/lib/utils';
+import { SettingsCollapsibleCard } from '@/components/settings/settings-ui';
 
 export function AdminMessagesSettingsCard() {
   const { t } = useTranslation();
@@ -31,73 +32,65 @@ export function AdminMessagesSettingsCard() {
   };
 
   return (
-    <article className="scroll-mt-24 rounded-xl border border-border bg-card p-5 shadow-sm md:p-6">
-      <div className="flex flex-wrap items-start gap-4">
-        <div className="flex size-12 shrink-0 items-center justify-center rounded-xl border border-border/70 bg-sky-500/10 text-sky-600 dark:bg-sky-500/15 dark:text-sky-300">
-          <MessageSquareText className="size-6" strokeWidth={1.75} aria-hidden />
-        </div>
-        <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <h3 className="text-lg font-semibold text-foreground">
-              {t('adminSettings.messagesTitle')}
-            </h3>
-            <Badge variant="secondary" className="text-[10px] font-semibold uppercase tracking-wide">
-              {t('adminSettings.messagesMockBadge')}
-            </Badge>
-          </div>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {t('adminSettings.messagesDescription')}
-          </p>
-        </div>
-      </div>
-
-      <div className="mt-6 space-y-5">
-        <div className="space-y-2">
-          <Label htmlFor="admin-messages-welcome">{t('adminSettings.messagesWelcomeLabel')}</Label>
+    <SettingsCollapsibleCard
+      icon={MessageSquareText}
+      title={t('adminSettings.messagesTitle')}
+      badge={
+        <Badge variant="secondary" className="text-[10px] font-medium uppercase tracking-wide">
+          {t('adminSettings.messagesMockBadge')}
+        </Badge>
+      }
+      description={t('adminSettings.messagesDescription')}
+    >
+      <div className="space-y-3">
+        <div className="space-y-1">
+          <Label htmlFor="admin-messages-welcome" className="text-xs">
+            {t('adminSettings.messagesWelcomeLabel')}
+          </Label>
           <Textarea
             id="admin-messages-welcome"
-            rows={3}
+            rows={2}
             value={welcomeMessage}
             onChange={(e) => setWelcomeMessage(e.target.value)}
             placeholder={t('adminSettings.messagesWelcomePlaceholder')}
-            className="resize-y rounded-xl"
+            className="min-h-0 resize-y text-sm"
           />
-          <p className="text-xs text-muted-foreground">{t('adminSettings.messagesWelcomeHint')}</p>
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="admin-messages-out-of-hours">
+        <div className="space-y-1">
+          <Label htmlFor="admin-messages-out-of-hours" className="text-xs">
             {t('adminSettings.messagesOutOfHoursLabel')}
           </Label>
           <Textarea
             id="admin-messages-out-of-hours"
-            rows={3}
+            rows={2}
             value={outOfHoursMessage}
             onChange={(e) => setOutOfHoursMessage(e.target.value)}
             placeholder={t('adminSettings.messagesOutOfHoursPlaceholder')}
-            className="resize-y rounded-xl"
+            className="min-h-0 resize-y text-sm"
           />
-          <p className="text-xs text-muted-foreground">{t('adminSettings.messagesOutOfHoursHint')}</p>
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="admin-messages-closing">{t('adminSettings.messagesClosingLabel')}</Label>
+        <div className="space-y-1">
+          <Label htmlFor="admin-messages-closing" className="text-xs">
+            {t('adminSettings.messagesClosingLabel')}
+          </Label>
           <Textarea
             id="admin-messages-closing"
             rows={2}
             value={closingMessage}
             onChange={(e) => setClosingMessage(e.target.value)}
             placeholder={t('adminSettings.messagesClosingPlaceholder')}
-            className="resize-y rounded-xl"
+            className="min-h-0 resize-y text-sm"
           />
-          <p className="text-xs text-muted-foreground">{t('adminSettings.messagesClosingHint')}</p>
         </div>
       </div>
 
-      <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-border/70 pt-5">
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-border pt-2">
         <p className="text-xs text-muted-foreground">{t('adminSettings.messagesMockNote')}</p>
         <Button
           type="button"
+          size="sm"
           className={cn(ADMIN_PRIMARY_BTN_CLASS, 'shrink-0')}
           disabled={saving}
           onClick={handleSave}
@@ -105,6 +98,6 @@ export function AdminMessagesSettingsCard() {
           {saving ? t('adminSettings.messagesSaving') : t('adminSettings.messagesSave')}
         </Button>
       </div>
-    </article>
+    </SettingsCollapsibleCard>
   );
 }

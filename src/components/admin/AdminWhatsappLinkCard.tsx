@@ -1,10 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'wouter';
-import { Loader2 } from 'lucide-react';
+import { Loader2, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useLocale } from '@/hooks/useLocale';
+import {
+  SettingsCollapsibleCard,
+} from '@/components/settings/settings-ui';
 import {
   configureWhatsappWebhook,
   importWhatsappHistoryAfterLink,
@@ -249,44 +252,40 @@ export function AdminWhatsappLinkCard() {
   }, [linked, linking, connectPayload, refreshStatus]);
 
   return (
-    <div
+    <SettingsCollapsibleCard
       id="whatsapp"
-      className="scroll-mt-24 rounded-xl border border-border bg-card p-5 pb-7 shadow-sm md:p-6 md:pb-8"
-    >
-      <h3 className="text-lg font-semibold text-foreground">{t('adminSettings.whatsappTitle')}</h3>
-
-      <div className="mt-4 flex flex-wrap items-center gap-2">
+      icon={MessageCircle}
+      title={t('adminSettings.whatsappTitle')}
+      badge={
         <span
           className={cn(
-            'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium',
+            'inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium',
             statusBadgeClass(state),
           )}
         >
           {loadingStatus ? t('adminSettings.whatsappChecking') : statusLabel}
         </span>
-        {linkStatus?.instanceName ? (
-          <span className="text-xs text-muted-foreground">{linkStatus.instanceName}</span>
-        ) : null}
-      </div>
-
+      }
+      description={linkStatus?.instanceName ?? undefined}
+    >
       {error ? (
-        <p className="mt-3 text-sm text-red-600 dark:text-red-400" role="alert">
+        <p className="mb-2 text-sm text-red-600 dark:text-red-400" role="alert">
           {error}
         </p>
       ) : null}
 
       {historyImportMessage ? (
-        <p className="mt-3 text-sm text-emerald-700 dark:text-emerald-300">{historyImportMessage}</p>
+        <p className="mb-2 text-sm text-emerald-700 dark:text-emerald-300">{historyImportMessage}</p>
       ) : null}
 
       {loadingStatus ? (
-        <div className="mt-6 flex items-center gap-2 text-sm text-muted-foreground">
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Loader2 className="size-4 animate-spin" aria-hidden />
           {t('adminSettings.whatsappChecking')}
         </div>
       ) : linked && !showQrPanel ? (
-        <div className="mt-6 space-y-5">
-          <div className="space-y-2">
+        <div className="space-y-4">
+          <div className="space-y-1.5">
             <p className="text-sm text-foreground">{t('adminSettings.whatsappLinkedSuccess')}</p>
             {linkStatus?.ownerPhone ? (
               <p className="text-sm font-medium text-foreground">{linkStatus.ownerPhone}</p>
@@ -298,7 +297,8 @@ export function AdminWhatsappLinkCard() {
           <Button
             type="button"
             variant="default"
-            className="h-10 w-full sm:w-auto"
+            size="sm"
+            className="w-full sm:w-auto"
             disabled={syncingWebhook || disconnecting}
             onClick={() => void handleRelinkForHistory()}
           >
@@ -340,7 +340,7 @@ export function AdminWhatsappLinkCard() {
           </div>
         </div>
       ) : showQrPanel ? (
-        <div className="mt-6 space-y-4">
+        <div className="space-y-3">
           <p className="text-sm text-muted-foreground">{t('adminSettings.whatsappRelinkScanHint')}</p>
           {connectPayload?.qrcodeBase64 ? (
             <div className="flex flex-col items-start gap-3">
@@ -352,7 +352,7 @@ export function AdminWhatsappLinkCard() {
             </div>
           ) : null}
           {connectPayload?.pairingCode ? (
-            <div className="rounded-lg border border-border bg-muted/40 p-4">
+            <div className="rounded-lg border border-border bg-muted/40 p-3">
               <p className="text-sm font-medium text-foreground">{t('adminSettings.whatsappPairingHint')}</p>
               <p className="mt-2 font-mono text-2xl tracking-widest text-foreground">
                 {formatPairingCode(connectPayload.pairingCode)}
@@ -364,8 +364,8 @@ export function AdminWhatsappLinkCard() {
           ) : null}
         </div>
       ) : (
-        <div className="mt-6 space-y-4">
-          <Button type="button" onClick={() => void handleLink()} disabled={linking}>
+        <div>
+          <Button type="button" size="sm" onClick={() => void handleLink()} disabled={linking}>
             {linking ? (
               <>
                 <Loader2 className="mr-2 size-4 animate-spin" aria-hidden />
@@ -378,10 +378,10 @@ export function AdminWhatsappLinkCard() {
         </div>
       )}
 
-      <div className="mt-8 flex flex-col gap-2 border-t border-border/80 pt-5">
+      <div className="mt-3 flex flex-col gap-1 border-t border-border pt-2">
         <Link
           href={path('/app/admin/canales/whatsapp')}
-          className="text-sm font-medium text-[#128c7e] underline-offset-4 hover:underline dark:text-teal-400"
+          className="text-sm font-medium text-primary underline-offset-4 hover:underline"
         >
           {t('adminSettings.whatsappOpenInbox')}
         </Link>
@@ -396,6 +396,6 @@ export function AdminWhatsappLinkCard() {
           </a>
         ) : null}
       </div>
-    </div>
+    </SettingsCollapsibleCard>
   );
 }

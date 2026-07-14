@@ -7,6 +7,7 @@ import { AdminBotExclusionsCard } from '@/components/admin/AdminBotExclusionsCar
 import { AdminBotSettingsCard } from '@/components/admin/AdminBotSettingsCard';
 import { AdminMessagesSettingsCard } from '@/components/admin/AdminMessagesSettingsCard';
 import { AdminWhatsappLinkCard } from '@/components/admin/AdminWhatsappLinkCard';
+import { SettingsSectionLabel } from '@/components/settings/settings-ui';
 import { getStoredAppTheme, type AppThemeMode } from '@/lib/appTheme';
 import { hydrateInboxAiSettingsFromApi } from '@/lib/inboxAiSettingsApi';
 
@@ -24,14 +25,14 @@ export default function AppAdminSettings() {
       title={t('sidebarDemo.navSettings')}
       description={t('seo.appAdminSettings')}
     >
-      <div className="mx-auto w-full max-w-3xl space-y-8 pb-12 pt-0 md:pb-16">
-        <section id="settings" className="scroll-mt-24">
-          <h2 className="mb-2 text-xl font-semibold text-foreground">
-            {t('sidebarDemo.navSettings')}
-          </h2>
-          <AppThemeSettingsCard mode={themeMode} onChange={setThemeMode} />
-        </section>
+      <div className="mx-auto w-full max-w-3xl space-y-3 pb-10 pt-0 md:pb-12">
+        <SettingsSectionLabel>{t('adminSettings.sectionAppearance')}</SettingsSectionLabel>
+        <AppThemeSettingsCard mode={themeMode} onChange={setThemeMode} />
+
+        <SettingsSectionLabel>{t('adminSettings.sectionMessages')}</SettingsSectionLabel>
         <AdminMessagesSettingsCard />
+
+        <SettingsSectionLabel>{t('adminSettings.sectionAutomation')}</SettingsSectionLabel>
         <AdminAutopilotSettingsCard />
         <AdminBotSettingsCard />
         <AdminBotExclusionsCard />
