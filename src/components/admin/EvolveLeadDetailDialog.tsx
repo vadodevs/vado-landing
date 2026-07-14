@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import {
   Building2,
   Calendar,
@@ -27,6 +28,8 @@ type Props = {
   calificacionBadgeClass: (calificacion: string) => string;
   onCopyEmail: (email: string) => void;
   copiedEmail: string | null;
+  /** Optional block under the header (e.g. pipeline estimated amount). */
+  headerExtra?: ReactNode;
 };
 
 function DetailField({
@@ -53,6 +56,7 @@ export function EvolveLeadDetailDialog({
   calificacionBadgeClass,
   onCopyEmail,
   copiedEmail,
+  headerExtra,
 }: Props) {
   const { t } = useTranslation();
   if (!lead) return null;
@@ -62,9 +66,9 @@ export function EvolveLeadDetailDialog({
       <DialogContent
         useAppDark
         showCloseButton
-        className="flex max-h-[min(92svh,880px)] min-h-0 flex-col gap-0 overflow-hidden !p-4 sm:!max-w-2xl sm:!p-5"
+        className="flex max-h-[min(92svh,880px)] min-h-0 flex-col gap-0 overflow-hidden !p-0 sm:!max-w-2xl"
       >
-        <DialogHeader className="shrink-0 space-y-2 pr-8 text-left">
+        <DialogHeader className="shrink-0 space-y-2 px-4 pt-4 pr-12 text-left sm:px-5 sm:pt-5">
           <div className="flex flex-wrap items-start gap-2">
             <DialogTitle className="text-lg leading-tight">{lead.nombre}</DialogTitle>
             <Badge
@@ -76,8 +80,9 @@ export function EvolveLeadDetailDialog({
           </div>
           <DialogDescription className="line-clamp-2">{lead.empresa}</DialogDescription>
         </DialogHeader>
+        {headerExtra}
 
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain pt-3">
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-4 pt-3 sm:px-5 sm:pb-5">
           <div className="grid gap-2 sm:grid-cols-2">
             <div className="flex items-start gap-2 rounded-lg border border-border bg-muted/25 p-2.5 sm:col-span-2">
               <Mail className="mt-0.5 size-3.5 shrink-0 text-muted-foreground" aria-hidden />

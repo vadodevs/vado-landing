@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   ArrowLeft,
   Bot,
@@ -23,8 +23,15 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { Switch } from '@/components/ui/switch'
 import { ADMIN_FILTER_BADGE_CLASS, ADMIN_PRIMARY_TOOLBAR_BUTTON_CLASS } from '@/lib/adminFilterUi'
-import { fetchAutoLeadRuns } from '@/lib/autoLeadsApi'
+import {
+  fetchAutoLeadRuns,
+  patchAutoLeadContactAuto,
+  patchAutoLeadRunStatus,
+  patchAutoLeadsSettings,
+  type AutoLeadsSettings,
+} from '@/lib/autoLeadsApi'
 import {
   formatAutoLeadRelative,
   type AutoLeadChannel,
@@ -86,36 +93,135 @@ function StatPill({ label, value }: { label: string; value: number }) {
   )
 }
 
+function AutoSwitch({
+  label,
+  checked,
+  disabled,
+  onCheckedChange,
+}: {
+  label: string
+  checked: boolean
+  disabled?: boolean
+  onCheckedChange: (next: boolean) => void
+}) {
+  return (
+    <label
+      className="inline-flex items-center gap-2 text-[11px] font-medium text-muted-foreground"
+      onClick={(e) => e.stopPropagation()}
+      onKeyDown={(e) => e.stopPropagation()}
+    >
+      <span>{label}</span>
+      <Switch
+        checked={checked}
+        disabled={disabled}
+        onCheckedChange={onCheckedChange}
+        aria-label={label}
+      />
+    </label>
+  )
+}
+
 export function AdminAutoLeadsPanel() {
   const { t } = useTranslation()
   const { locale } = useLocale()
   const [selectedRunId, setSelectedRunId] = useState<string | null>(null)
   const [selectedContact, setSelectedContact] = useState<AutoLeadContact | null>(null)
   const [runs, setRuns] = useState<AutoLeadRun[]>([])
+  const [settings, setSettings] = useState<AutoLeadsSettings>({ defaultAutoEnabled: true })
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState(false)
+  const [saving, setSaving] = useState(false)
+  const [saveError, setSaveError] = useState(false)
 
-  const loadRuns = async () => {
-    setLoading(true)
+  const loadRuns = useCallback(async (opts?: { silent?: boolean }) => {
+    if (!opts?.silent) setLoading(true)
     setLoadError(false)
     const data = await fetchAutoLeadRuns()
     if (data == null) {
-      setLoadError(true)
-      setRuns([])
+      if (!opts?.silent) setLoadError(true)
+      if (!opts?.silent) setRuns([])
     } else {
-      setRuns(data)
+      setRuns(data.runs)
+      setSettings(data.settings)
+      setSelectedContact((prev) => {
+        if (!prev) return prev
+        for (const run of data.runs) {
+          const updated = run.contacts.find((c) => c.id === prev.id)
+          if (updated) return updated
+        }
+        return prev
+      })
     }
-    setLoading(false)
-  }
+    if (!opts?.silent) setLoading(false)
+  }, [])
 
   useEffect(() => {
     void loadRuns()
-  }, [])
+  }, [loadRuns])
+
+  // Refresco suave: reuniones/respuestas llegan por email_threads y deben verse sin F5.
+  useEffect(() => {
+    const id = window.setInterval(() => {
+      void loadRuns({ silent: true })
+    }, 12_000)
+    return () => window.clearInterval(id)
+  }, [loadRuns])
 
   const selectedRun = useMemo(
     () => runs.find((r) => r.id === selectedRunId) ?? null,
     [runs, selectedRunId],
   )
+
+  const applyRunUpdate = useCallback((updated: AutoLeadRun) => {
+    setRuns((prev) => prev.map((r) => (r.id === updated.id ? updated : r)))
+  }, [])
+
+  const applyContactUpdate = useCallback((updated: AutoLeadContact) => {
+    setRuns((prev) =>
+      prev.map((run) => ({
+        ...run,
+        contacts: run.contacts.map((c) => (c.id === updated.id ? { ...c, ...updated } : c)),
+      })),
+    )
+    setSelectedContact((prev) => (prev?.id === updated.id ? { ...prev, ...updated } : prev))
+  }, [])
+
+  const onToggleGlobal = async (next: boolean) => {
+    setSaving(true)
+    setSaveError(false)
+    const result = await patchAutoLeadsSettings(next)
+    setSaving(false)
+    if (!result) {
+      setSaveError(true)
+      return
+    }
+    setSettings(result)
+    await loadRuns()
+  }
+
+  const onToggleRun = async (runId: string, enabled: boolean) => {
+    setSaving(true)
+    setSaveError(false)
+    const updated = await patchAutoLeadRunStatus(runId, enabled ? 'active' : 'paused')
+    setSaving(false)
+    if (!updated) {
+      setSaveError(true)
+      return
+    }
+    applyRunUpdate(updated)
+  }
+
+  const onToggleContact = async (contactId: string, enabled: boolean) => {
+    setSaving(true)
+    setSaveError(false)
+    const updated = await patchAutoLeadContactAuto(contactId, enabled)
+    setSaving(false)
+    if (!updated) {
+      setSaveError(true)
+      return
+    }
+    applyContactUpdate(updated)
+  }
 
   return (
     <div className="mx-auto flex w-full max-w-5xl flex-col gap-4 pb-12 pt-0 md:pb-16">
@@ -130,9 +236,24 @@ export function AdminAutoLeadsPanel() {
               <span className={ADMIN_FILTER_BADGE_CLASS}>{t('adminAutoLeads.liveBadge')}</span>
             </div>
             <p className="mt-0.5 text-xs text-muted-foreground">{t('adminAutoLeads.subtitle')}</p>
+            <p className="mt-1 text-[11px] text-muted-foreground">{t('adminAutoLeads.autoGlobalHint')}</p>
           </div>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-3">
+          <AutoSwitch
+            label={t('adminAutoLeads.autoGlobalLabel')}
+            checked={settings.defaultAutoEnabled}
+            disabled={saving || loading}
+            onCheckedChange={(next) => void onToggleGlobal(next)}
+          />
+          {saving ? (
+            <span className="text-[11px] text-muted-foreground">{t('adminAutoLeads.autoSaving')}</span>
+          ) : null}
+          {saveError ? (
+            <span className="text-[11px] text-rose-600 dark:text-rose-400">
+              {t('adminAutoLeads.autoSaveError')}
+            </span>
+          ) : null}
           {!selectedRun ? (
             <Button
               type="button"
@@ -192,13 +313,22 @@ export function AdminAutoLeadsPanel() {
             <p className="mt-1 text-xs text-muted-foreground">{t('adminAutoLeads.emptyBody')}</p>
           </div>
         ) : (
-          <RunsList runs={runs} locale={locale} onOpen={(id) => setSelectedRunId(id)} />
+          <RunsList
+            runs={runs}
+            locale={locale}
+            saving={saving}
+            onOpen={(id) => setSelectedRunId(id)}
+            onToggleRun={(id, enabled) => void onToggleRun(id, enabled)}
+          />
         )
       ) : (
         <RunDetail
           run={selectedRun}
           locale={locale}
+          saving={saving}
           onOpenContact={(c) => setSelectedContact(c)}
+          onToggleRun={(enabled) => void onToggleRun(selectedRun.id, enabled)}
+          onToggleContact={(id, enabled) => void onToggleContact(id, enabled)}
         />
       )}
 
@@ -209,6 +339,8 @@ export function AdminAutoLeadsPanel() {
           if (!open) setSelectedContact(null)
         }}
         locale={locale}
+        saving={saving}
+        onToggleContact={(id, enabled) => void onToggleContact(id, enabled)}
       />
     </div>
   )
@@ -217,11 +349,15 @@ export function AdminAutoLeadsPanel() {
 function RunsList({
   runs,
   locale,
+  saving,
   onOpen,
+  onToggleRun,
 }: {
   runs: AutoLeadRun[]
   locale: string
+  saving: boolean
   onOpen: (id: string) => void
+  onToggleRun: (id: string, enabled: boolean) => void
 }) {
   const { t } = useTranslation()
 
@@ -243,7 +379,10 @@ function RunsList({
                   <p className="truncate text-sm font-semibold text-foreground">{run.name}</p>
                   <Badge
                     variant="outline"
-                    className={cn('gap-1 rounded-lg text-[10px] font-semibold uppercase', runStatusClass(run.status))}
+                    className={cn(
+                      'gap-1 rounded-lg text-[10px] font-semibold uppercase',
+                      runStatusClass(run.status),
+                    )}
                   >
                     <RunStatusIcon status={run.status} />
                     {t(`adminAutoLeads.runStatus.${run.status}`)}
@@ -256,9 +395,17 @@ function RunsList({
                   })}
                 </p>
               </div>
-              <span className="text-[11px] font-medium text-sky-700 dark:text-sky-300">
-                {t('adminAutoLeads.openRun')} →
-              </span>
+              <div className="flex flex-col items-end gap-2">
+                <AutoSwitch
+                  label={t('adminAutoLeads.autoRunLabel')}
+                  checked={run.status === 'active'}
+                  disabled={saving}
+                  onCheckedChange={(next) => onToggleRun(run.id, next)}
+                />
+                <span className="text-[11px] font-medium text-sky-700 dark:text-sky-300">
+                  {t('adminAutoLeads.openRun')} →
+                </span>
+              </div>
             </div>
             <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-5">
               <StatPill label={t('adminAutoLeads.statFound')} value={run.stats.found} />
@@ -277,11 +424,17 @@ function RunsList({
 function RunDetail({
   run,
   locale,
+  saving,
   onOpenContact,
+  onToggleRun,
+  onToggleContact,
 }: {
   run: AutoLeadRun
   locale: string
+  saving: boolean
   onOpenContact: (c: AutoLeadContact) => void
+  onToggleRun: (enabled: boolean) => void
+  onToggleContact: (id: string, enabled: boolean) => void
 }) {
   const { t } = useTranslation()
 
@@ -294,7 +447,10 @@ function RunDetail({
               <h3 className="text-sm font-semibold text-foreground">{run.name}</h3>
               <Badge
                 variant="outline"
-                className={cn('gap-1 rounded-lg text-[10px] font-semibold uppercase', runStatusClass(run.status))}
+                className={cn(
+                  'gap-1 rounded-lg text-[10px] font-semibold uppercase',
+                  runStatusClass(run.status),
+                )}
               >
                 <RunStatusIcon status={run.status} />
                 {t(`adminAutoLeads.runStatus.${run.status}`)}
@@ -302,6 +458,12 @@ function RunDetail({
             </div>
             <p className="text-[11px] text-muted-foreground">{run.icpLabel}</p>
           </div>
+          <AutoSwitch
+            label={t('adminAutoLeads.autoRunLabel')}
+            checked={run.status === 'active'}
+            disabled={saving}
+            onCheckedChange={onToggleRun}
+          />
         </div>
         <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-5">
           <StatPill label={t('adminAutoLeads.statFound')} value={run.stats.found} />
@@ -319,52 +481,62 @@ function RunDetail({
           </p>
         </div>
         <ul className="divide-y divide-border/60">
-          {run.contacts.map((contact) => (
-            <li key={contact.id}>
-              <button
-                type="button"
-                onClick={() => onOpenContact(contact)}
-                className="flex w-full flex-col gap-2 px-3 py-3 text-left transition-colors hover:bg-muted/30 sm:flex-row sm:items-center sm:justify-between"
-              >
-                <div className="min-w-0 space-y-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <p className="truncate text-sm font-medium text-foreground">{contact.company}</p>
-                    <Badge
-                      variant="outline"
-                      className={cn(
-                        'rounded-lg text-[10px] font-semibold uppercase',
-                        contactStatusClass(contact.status),
-                      )}
-                    >
-                      {t(`adminAutoLeads.contactStatus.${contact.status}`)}
-                    </Badge>
-                    <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground">
-                      <ChannelIcon channel={contact.channel} />
-                      {t(`adminAutoLeads.channel.${contact.channel}`)}
-                    </span>
+          {run.contacts.map((contact) => {
+            const contactAuto = contact.autoEnabled !== false
+            return (
+              <li key={contact.id} className="flex flex-col gap-2 px-3 py-3 sm:flex-row sm:items-center sm:justify-between">
+                <button
+                  type="button"
+                  onClick={() => onOpenContact(contact)}
+                  className="min-w-0 flex-1 text-left transition-colors hover:opacity-90"
+                >
+                  <div className="space-y-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <p className="truncate text-sm font-medium text-foreground">{contact.company}</p>
+                      <Badge
+                        variant="outline"
+                        className={cn(
+                          'rounded-lg text-[10px] font-semibold uppercase',
+                          contactStatusClass(contact.status),
+                        )}
+                      >
+                        {t(`adminAutoLeads.contactStatus.${contact.status}`)}
+                      </Badge>
+                      <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground">
+                        <ChannelIcon channel={contact.channel} />
+                        {t(`adminAutoLeads.channel.${contact.channel}`)}
+                      </span>
+                    </div>
+                    <p className="truncate text-[12px] text-muted-foreground">
+                      {contact.contactName}
+                      {contact.email ? ` · ${contact.email}` : null}
+                      {contact.phone ? ` · ${contact.phone}` : null}
+                    </p>
+                    <p className="line-clamp-1 text-[12px] text-foreground/80">{contact.snippet}</p>
                   </div>
-                  <p className="truncate text-[12px] text-muted-foreground">
-                    {contact.contactName}
-                    {contact.email ? ` · ${contact.email}` : null}
-                    {contact.phone ? ` · ${contact.phone}` : null}
-                  </p>
-                  <p className="line-clamp-1 text-[12px] text-foreground/80">{contact.snippet}</p>
-                </div>
-                <div className="flex shrink-0 flex-col items-start gap-1 sm:items-end">
+                </button>
+                <div className="flex shrink-0 flex-col items-start gap-2 sm:items-end">
+                  <AutoSwitch
+                    label={t('adminAutoLeads.autoContactLabel')}
+                    checked={contactAuto}
+                    disabled={saving}
+                    onCheckedChange={(next) => onToggleContact(contact.id, next)}
+                  />
                   <span className="text-[10px] tabular-nums text-muted-foreground">
                     ICP {contact.score}
                   </span>
-                  <span className="text-[10px] text-muted-foreground">
-                    {formatAutoLeadRelative(contact.lastActivityAt, locale)}
-                  </span>
-                  <span className="inline-flex items-center gap-1 text-[11px] font-medium text-sky-700 dark:text-sky-300">
+                  <button
+                    type="button"
+                    onClick={() => onOpenContact(contact)}
+                    className="inline-flex items-center gap-1 text-[11px] font-medium text-sky-700 hover:underline dark:text-sky-300"
+                  >
                     <Inbox className="size-3.5" aria-hidden />
                     {t('adminAutoLeads.viewConversation')}
-                  </span>
+                  </button>
                 </div>
-              </button>
-            </li>
-          ))}
+              </li>
+            )
+          })}
         </ul>
       </div>
     </div>
@@ -376,11 +548,15 @@ function ConversationDialog({
   open,
   onOpenChange,
   locale,
+  saving,
+  onToggleContact,
 }: {
   contact: AutoLeadContact | null
   open: boolean
   onOpenChange: (open: boolean) => void
   locale: string
+  saving: boolean
+  onToggleContact: (id: string, enabled: boolean) => void
 }) {
   const { t } = useTranslation()
   if (!contact) return null
@@ -389,14 +565,24 @@ function ConversationDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="flex max-h-[85vh] max-w-lg flex-col gap-0 overflow-hidden p-0 sm:max-w-xl">
         <DialogHeader className="space-y-1 border-b border-border/60 px-4 py-3 text-left">
-          <DialogTitle className="text-base">{contact.company}</DialogTitle>
-          <DialogDescription className="text-xs">
-            {contact.contactName}
-            {' · '}
-            {t(`adminAutoLeads.channel.${contact.channel}`)}
-            {' · '}
-            {t(`adminAutoLeads.contactStatus.${contact.status}`)}
-          </DialogDescription>
+          <div className="flex flex-wrap items-start justify-between gap-2 pr-6">
+            <div className="min-w-0">
+              <DialogTitle className="text-base">{contact.company}</DialogTitle>
+              <DialogDescription className="text-xs">
+                {contact.contactName}
+                {' · '}
+                {t(`adminAutoLeads.channel.${contact.channel}`)}
+                {' · '}
+                {t(`adminAutoLeads.contactStatus.${contact.status}`)}
+              </DialogDescription>
+            </div>
+            <AutoSwitch
+              label={t('adminAutoLeads.autoContactLabel')}
+              checked={contact.autoEnabled !== false}
+              disabled={saving}
+              onCheckedChange={(next) => onToggleContact(contact.id, next)}
+            />
+          </div>
         </DialogHeader>
 
         {contact.status === 'meeting' && contact.meetingAt ? (
@@ -428,14 +614,14 @@ function ConversationDialog({
         ) : null}
 
         <div className="min-h-0 flex-1 space-y-3 overflow-y-auto px-4 py-4">
-          {contact.messages.length === 0 ? (
+          {(contact.messages ?? []).length === 0 ? (
             <p className="rounded-xl border border-dashed border-border px-3 py-6 text-center text-sm text-muted-foreground">
               {contact.status === 'failed'
                 ? t('adminAutoLeads.conversationFailed')
                 : t('adminAutoLeads.conversationEmpty')}
             </p>
           ) : (
-            contact.messages.map((msg) => {
+            (contact.messages ?? []).map((msg) => {
               const outbound = msg.direction === 'outbound'
               return (
                 <div

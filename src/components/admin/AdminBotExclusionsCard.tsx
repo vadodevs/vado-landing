@@ -10,6 +10,9 @@ import { Switch } from '@/components/ui/switch';
 import { InboxContactAvatar } from '@/components/admin/InboxContactAvatar';
 import { cn } from '@/lib/utils';
 import {
+  SettingsCollapsibleCard,
+} from '@/components/settings/settings-ui';
+import {
   adminInboxErrorMessage,
   fetchInboxConversations,
   fetchWhatsappLinkStatus,
@@ -189,24 +192,12 @@ export function AdminBotExclusionsCard() {
   }, [rows]);
 
   return (
-    <div
+    <SettingsCollapsibleCard
       id="bot-exclusions"
-      className="scroll-mt-24 rounded-xl border border-border bg-card p-5 pb-7 shadow-sm md:p-6 md:pb-8"
-    >
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div className="flex min-w-0 items-start gap-3">
-          <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-rose-500/15 text-rose-600 dark:bg-rose-500/20 dark:text-rose-300">
-            <MessageCircleOff className="size-5" strokeWidth={1.75} aria-hidden />
-          </div>
-          <div className="min-w-0">
-            <h3 className="text-lg font-semibold text-foreground">
-              {t('adminSettings.botExclusionsTitle')}
-            </h3>
-            <p className="mt-1 text-sm text-muted-foreground">
-              {t('adminSettings.botExclusionsSubtitle')}
-            </p>
-          </div>
-        </div>
+      icon={MessageCircleOff}
+      title={t('adminSettings.botExclusionsTitle')}
+      description={t('adminSettings.botExclusionsSubtitle')}
+      action={
         <Button
           type="button"
           variant="outline"
@@ -220,12 +211,11 @@ export function AdminBotExclusionsCard() {
           ) : (
             <RefreshCw className="size-4" aria-hidden />
           )}
-          <span className="ml-2">{t('adminSettings.botExclusionsRefresh')}</span>
         </Button>
-      </div>
-
+      }
+    >
       {linked === false && (
-        <p className="mt-4 text-sm text-muted-foreground">
+        <p className="text-sm text-muted-foreground">
           {t('adminSettings.botExclusionsNotLinked')}{' '}
           <Link
             href={`${path('/app/admin/settings')}#whatsapp`}
@@ -238,8 +228,8 @@ export function AdminBotExclusionsCard() {
 
       {linked === true && (
         <>
-          <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-sm text-muted-foreground">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-xs text-muted-foreground">
               {t('adminSettings.botExclusionsSummary', {
                 total: rows.length,
                 excluded: excludedCount,
@@ -261,7 +251,7 @@ export function AdminBotExclusionsCard() {
             </Button>
           </div>
 
-          <div className="mt-4 flex flex-col gap-3 sm:flex-row">
+          <div className="mt-2 flex flex-col gap-2 sm:flex-row">
             <div className="relative min-w-0 flex-1">
               <Search
                 className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
@@ -271,7 +261,7 @@ export function AdminBotExclusionsCard() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder={t('adminSettings.botExclusionsSearch')}
-                className="pl-9"
+                className="h-8 pl-9 text-sm"
                 aria-label={t('adminSettings.botExclusionsSearch')}
               />
             </div>
@@ -282,10 +272,10 @@ export function AdminBotExclusionsCard() {
                   type="button"
                   onClick={() => setFilter(id)}
                   className={cn(
-                    'rounded-full px-3 py-1 text-xs font-medium transition-colors',
+                    'rounded-md border px-2.5 py-1 text-xs font-medium transition-colors',
                     filter === id
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-muted text-muted-foreground hover:bg-muted/80',
+                      ? 'border-primary bg-primary text-primary-foreground'
+                      : 'border-border bg-background text-muted-foreground hover:bg-accent',
                   )}
                 >
                   {t(FILTER_I18N[id])}
@@ -295,33 +285,33 @@ export function AdminBotExclusionsCard() {
           </div>
 
           {loadState === 'error' && loadError && (
-            <p className="mt-4 text-sm text-destructive" role="alert">
+            <p className="mt-2 text-sm text-destructive" role="alert">
               {loadError}
             </p>
           )}
 
           {loadState === 'loading' && rows.length === 0 && (
-            <div className="mt-6 flex items-center justify-center gap-2 text-sm text-muted-foreground">
+            <div className="mt-3 flex items-center justify-center gap-2 text-sm text-muted-foreground">
               <Loader2 className="size-4 animate-spin" aria-hidden />
               {t('adminSettings.botExclusionsLoading')}
             </div>
           )}
 
           {loadState === 'ok' && linked && rows.length === 0 && (
-            <p className="mt-4 text-sm text-muted-foreground">
+            <p className="mt-2 text-sm text-muted-foreground">
               {t('adminSettings.botExclusionsEmpty')}
             </p>
           )}
 
           {filteredRows.length > 0 && (
-            <ul className="mt-4 max-h-[min(28rem,60vh)] divide-y divide-border overflow-y-auto rounded-lg border border-border">
+            <ul className="mt-2 max-h-[min(16rem,40vh)] divide-y divide-border overflow-y-auto rounded-lg border border-border">
               {filteredRows.map((row) => {
                 const allowed = !isExcluded(row.autoReplyMode);
                 const rowBusy = busyId === row.id;
                 return (
                   <li
                     key={row.id}
-                    className="flex items-center gap-3 px-3 py-2.5 sm:px-4"
+                    className="flex items-center gap-3 px-3 py-2"
                   >
                     <InboxContactAvatar
                       name={row.name}
@@ -353,14 +343,14 @@ export function AdminBotExclusionsCard() {
           )}
 
           {loadState === 'ok' && rows.length > 0 && filteredRows.length === 0 && (
-            <p className="mt-4 text-sm text-muted-foreground">
+            <p className="mt-2 text-sm text-muted-foreground">
               {t('adminSettings.botExclusionsNoMatches')}
             </p>
           )}
 
-          <p className="mt-4 text-xs text-muted-foreground">{t('adminSettings.botExclusionsHint')}</p>
+          <p className="mt-2 text-xs text-muted-foreground">{t('adminSettings.botExclusionsHint')}</p>
         </>
       )}
-    </div>
+    </SettingsCollapsibleCard>
   );
 }

@@ -26,6 +26,10 @@ export type AutoLeadContact = {
   phone: string | null
   channel: AutoLeadChannel
   status: AutoLeadContactStatus
+  /** Switch por conversación (default true). */
+  autoEnabled?: boolean
+  /** Resultado de global ∧ run ∧ contacto. */
+  autoEffective?: boolean
   lastActivityAt: string
   snippet: string
   score: number
@@ -39,6 +43,8 @@ export type AutoLeadRun = {
   name: string
   icpLabel: string
   status: AutoLeadRunStatus
+  /** true si status === active */
+  autoEnabled?: boolean
   channelMode: 'auto'
   startedAt: string
   lastActivityAt: string

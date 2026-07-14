@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Bot, CalendarClock, Clock, MessageCircle, Sparkles } from 'lucide-react';
+import { Bot, CalendarClock, Clock, MessageCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
+import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { scheduleInboxAiSettingsSync } from '@/lib/inboxAiSettingsSync';
 import {
@@ -24,6 +25,10 @@ import {
   loadInboxAutopilotConfig,
   saveInboxAutopilotConfig,
 } from '@/lib/inboxAutopilotConfig';
+import {
+  SettingsCollapsibleCard,
+  settingsIconToggleClass,
+} from '@/components/settings/settings-ui';
 
 const APPOINTMENT_TOGGLE_I18N: Record<InboxAppointmentPrimaryToggleId, string> = {
   confirmAppointments: 'adminSettings.autopilotApptQuery',
@@ -99,52 +104,28 @@ export function AdminAutopilotSettingsCard() {
   }, [enabledAppointmentIds, t]);
 
   return (
-    <div
+    <SettingsCollapsibleCard
       id="autopilot"
-      className="scroll-mt-24 rounded-xl border border-border bg-card p-5 pb-7 shadow-sm md:p-6 md:pb-8"
-    >
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div className="flex min-w-0 items-start gap-3">
-          <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-teal-500/15 text-teal-600 dark:bg-teal-500/20 dark:text-teal-300">
-            <Bot className="size-5" strokeWidth={1.75} aria-hidden />
-          </div>
-          <div className="min-w-0">
-            <div className="flex flex-wrap items-center gap-2">
-              <h3 className="text-lg font-semibold text-foreground">
-                {t('adminSettings.autopilotTitle')}
-              </h3>
-              <span className="inline-flex items-center gap-1 rounded-full bg-violet-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-violet-700 dark:bg-violet-500/20 dark:text-violet-300">
-                <Sparkles className="size-3" aria-hidden />
-                {t('adminSettings.autopilotMockBadge')}
-              </span>
-            </div>
-            <p className="mt-1 text-sm text-muted-foreground">{t('adminSettings.autopilotSubtitle')}</p>
-          </div>
-        </div>
-
-        <div
-          className={cn(
-            'flex shrink-0 items-center gap-3 rounded-2xl border px-3 py-2.5 sm:min-w-[11rem]',
-            config.enabled
-              ? 'border-teal-500/30 bg-teal-500/5 dark:border-teal-500/25 dark:bg-teal-500/10'
-              : 'border-border bg-muted/40',
-          )}
-        >
-          <div className="min-w-0 flex-1">
-            <p className="text-sm font-semibold text-foreground">
-              {t('adminSettings.autopilotEnabledLabel')}
-            </p>
-            <p
-              className={cn(
-                'mt-0.5 text-xs font-medium',
-                !config.enabled && 'text-muted-foreground',
-                config.enabled && activeNow && 'text-emerald-600 dark:text-emerald-400',
-                config.enabled && !activeNow && 'text-amber-700 dark:text-amber-300',
-              )}
-            >
-              {status}
-            </p>
-          </div>
+      icon={Bot}
+      title={t('adminSettings.autopilotTitle')}
+      badge={
+        <Badge variant="secondary" className="text-[10px] font-medium uppercase tracking-wide">
+          {t('adminSettings.autopilotMockBadge')}
+        </Badge>
+      }
+      description={t('adminSettings.autopilotSubtitle')}
+      action={
+        <div className="flex items-center gap-2">
+          <span
+            className={cn(
+              'hidden text-[11px] sm:inline',
+              !config.enabled && 'text-muted-foreground',
+              config.enabled && activeNow && 'text-emerald-600 dark:text-emerald-400',
+              config.enabled && !activeNow && 'text-amber-700 dark:text-amber-300',
+            )}
+          >
+            {status}
+          </span>
           <Switch
             id="autopilot-enabled"
             checked={config.enabled}
@@ -152,23 +133,20 @@ export function AdminAutopilotSettingsCard() {
             aria-label={t('adminSettings.autopilotEnabledLabel')}
           />
         </div>
-      </div>
+      }
+    >
+      <p className="mb-3 text-xs text-muted-foreground">{t('adminSettings.autopilotEnabledHint')}</p>
 
-      <p className="mt-3 text-xs text-muted-foreground">{t('adminSettings.autopilotEnabledHint')}</p>
-
-      <div className="mt-6 space-y-6">
+      <div className="space-y-3">
         <fieldset
           disabled={!config.enabled}
-          className="space-y-5 disabled:pointer-events-none disabled:opacity-55"
+          className="space-y-3 disabled:pointer-events-none disabled:opacity-55"
         >
-          <div className="w-fit max-w-full rounded-xl border border-border/90 bg-muted/15 p-3">
-            <div className="mb-2.5 flex items-start gap-2">
-              <CalendarClock
-                className="mt-0.5 size-4 shrink-0 text-teal-600 dark:text-teal-300"
-                aria-hidden
-              />
-              <div className="min-w-0 max-w-[11rem]">
-                <p className="text-sm font-medium text-foreground">
+          <div>
+            <div className="mb-2 flex items-start gap-2">
+              <CalendarClock className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
+              <div className="min-w-0">
+                <p className="text-xs font-medium text-muted-foreground">
                   {t('adminSettings.autopilotAppointmentsTitle')}
                 </p>
                 <p className="mt-0.5 text-xs leading-snug text-muted-foreground">
@@ -176,20 +154,15 @@ export function AdminAutopilotSettingsCard() {
                 </p>
               </div>
             </div>
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-1.5 sm:max-w-xs">
               {INBOX_APPOINTMENT_PRIMARY_TOGGLES.map((topicId) => {
                 const on = config.appointmentTopics[topicId];
                 return (
                   <label
                     key={topicId}
-                    className={cn(
-                      'flex w-[11rem] cursor-pointer items-center justify-between gap-2 rounded-2xl border px-2.5 py-2',
-                      on
-                        ? 'border-teal-500/30 bg-teal-500/5 dark:border-teal-500/25 dark:bg-teal-500/10'
-                        : 'border-border bg-muted/40',
-                    )}
+                    className="flex cursor-pointer items-center justify-between gap-2 rounded-lg border border-border px-3 py-2"
                   >
-                    <span className="text-xs font-semibold text-foreground">
+                    <span className="text-xs font-medium text-foreground">
                       {t(APPOINTMENT_TOGGLE_I18N[topicId])}
                     </span>
                     <Switch
@@ -208,13 +181,11 @@ export function AdminAutopilotSettingsCard() {
                 );
               })}
             </div>
-            <p className="mt-2 max-w-[11rem] text-xs leading-snug text-muted-foreground">
-              {appointmentTopicsSummary}
-            </p>
+            <p className="mt-2 text-xs text-muted-foreground">{appointmentTopicsSummary}</p>
           </div>
 
           <div>
-            <p className="mb-2 text-sm font-medium text-foreground">
+            <p className="mb-2 text-xs font-medium text-muted-foreground">
               {t('adminSettings.autopilotChannelsLabel')}
             </p>
             <button
@@ -224,12 +195,7 @@ export function AdminAutopilotSettingsCard() {
               onClick={() =>
                 patch({ channels: { ...config.channels, whatsapp: !config.channels.whatsapp } })
               }
-              className={cn(
-                'inline-flex items-center gap-2 rounded-full border px-3.5 py-2 text-sm font-medium transition-colors',
-                config.channels.whatsapp
-                  ? 'border-teal-600/40 bg-teal-600 text-white shadow-sm dark:border-teal-500/50'
-                  : 'border-border bg-background text-muted-foreground hover:bg-muted/60',
-              )}
+              className={settingsIconToggleClass(config.channels.whatsapp)}
             >
               <MessageCircle className="size-4 shrink-0" aria-hidden />
               {t('adminSettings.autopilotChannelWhatsapp')}
@@ -237,8 +203,8 @@ export function AdminAutopilotSettingsCard() {
           </div>
 
           <div>
-            <p className="mb-2 flex items-center gap-1.5 text-sm font-medium text-foreground">
-              <Clock className="size-4 text-muted-foreground" aria-hidden />
+            <p className="mb-2 flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+              <Clock className="size-3.5" aria-hidden />
               {t('adminSettings.autopilotDaysLabel')}
             </p>
             <div className="flex flex-wrap gap-2">
@@ -249,12 +215,7 @@ export function AdminAutopilotSettingsCard() {
                     key={day}
                     type="button"
                     onClick={() => patch({ days: toggleDay(config.days, day) })}
-                    className={cn(
-                      'min-w-[2.75rem] rounded-lg border px-3 py-2 text-xs font-semibold transition-colors',
-                      on
-                        ? 'border-teal-600/40 bg-teal-600 text-white shadow-sm dark:border-teal-500/50 dark:bg-teal-600'
-                        : 'border-border bg-background text-muted-foreground hover:bg-muted/60',
-                    )}
+                    className={cn(settingsIconToggleClass(on), 'min-w-[2.75rem]')}
                     aria-pressed={on}
                   >
                     {t(WEEKDAY_I18N[day])}
@@ -264,7 +225,7 @@ export function AdminAutopilotSettingsCard() {
             </div>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             <div className="space-y-1.5">
               <Label htmlFor="autopilot-start">{t('adminSettings.autopilotStartLabel')}</Label>
               <Input
@@ -272,7 +233,7 @@ export function AdminAutopilotSettingsCard() {
                 type="time"
                 value={config.startTime}
                 onChange={(e) => patch({ startTime: e.target.value })}
-                className="h-10"
+                className="h-9"
               />
             </div>
             <div className="space-y-1.5">
@@ -282,7 +243,7 @@ export function AdminAutopilotSettingsCard() {
                 type="time"
                 value={config.endTime}
                 onChange={(e) => patch({ endTime: e.target.value })}
-                className="h-10"
+                className="h-9"
               />
             </div>
             <div className="space-y-1.5 sm:col-span-2 lg:col-span-1">
@@ -291,7 +252,7 @@ export function AdminAutopilotSettingsCard() {
                 id="autopilot-tz"
                 value={config.timezone}
                 onChange={(e) => patch({ timezone: e.target.value })}
-                className="border-input bg-background ring-offset-background focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 text-sm shadow-xs outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+                className="border-input bg-background ring-offset-background focus-visible:ring-ring flex h-9 w-full rounded-md border px-3 text-sm shadow-xs outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
               >
                 {AUTOPILOT_TIMEZONE_OPTIONS.map((tz) => (
                   <option key={tz} value={tz}>
@@ -302,7 +263,7 @@ export function AdminAutopilotSettingsCard() {
             </div>
           </div>
 
-          <p className="rounded-lg border border-dashed border-border/90 bg-muted/20 px-3 py-2 text-xs text-muted-foreground">
+          <p className="rounded-lg border border-dashed border-border bg-muted/20 px-3 py-2 text-xs text-muted-foreground">
             {t('adminSettings.autopilotScheduleSummary', {
               days:
                 config.days.length > 0
@@ -327,7 +288,7 @@ export function AdminAutopilotSettingsCard() {
                 step={1}
                 value={config.replyDelaySeconds}
                 onChange={(e) => patch({ replyDelaySeconds: Number(e.target.value) })}
-                className="accent-teal-600 w-full"
+                className="accent-primary w-full"
               />
               <p className="text-xs text-muted-foreground">{t('adminSettings.autopilotDelayHint')}</p>
             </div>
@@ -344,14 +305,14 @@ export function AdminAutopilotSettingsCard() {
                     maxRepliesPerHour: Math.min(200, Math.max(1, Number(e.target.value) || 1)),
                   })
                 }
-                className="h-10"
+                className="h-9"
               />
               <p className="text-xs text-muted-foreground">{t('adminSettings.autopilotMaxRepliesHint')}</p>
             </div>
           </div>
         </fieldset>
 
-        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border/80 pt-4">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border pt-2">
           <p className="text-xs text-muted-foreground">
             {savedFlash ? t('adminSettings.autopilotSaved') : t('adminSettings.autopilotMockNote')}
           </p>
@@ -360,6 +321,6 @@ export function AdminAutopilotSettingsCard() {
           </Button>
         </div>
       </div>
-    </div>
+    </SettingsCollapsibleCard>
   );
 }

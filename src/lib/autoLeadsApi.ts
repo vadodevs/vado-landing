@@ -1,10 +1,25 @@
 import { adminWorkspaceRequest } from '@/lib/userAuthorizedFetch'
-import type { AutoLeadRun } from '@/lib/autoLeadsMock'
+import type { AutoLeadContact, AutoLeadRun } from '@/lib/autoLeadsMock'
 
-export async function fetchAutoLeadRuns(): Promise<AutoLeadRun[] | null> {
-  const res = await adminWorkspaceRequest<{ runs: AutoLeadRun[] }>('/admin/leads/auto')
+export type AutoLeadsSettings = {
+  defaultAutoEnabled: boolean
+}
+
+export async function fetchAutoLeadRuns(): Promise<{
+  runs: AutoLeadRun[]
+  settings: AutoLeadsSettings
+} | null> {
+  const res = await adminWorkspaceRequest<{
+    runs: AutoLeadRun[]
+    settings?: AutoLeadsSettings
+  }>('/admin/leads/auto')
   if (!res.ok) return null
-  return Array.isArray(res.data.runs) ? res.data.runs : []
+  return {
+    runs: Array.isArray(res.data.runs) ? res.data.runs : [],
+    settings: {
+      defaultAutoEnabled: res.data.settings?.defaultAutoEnabled !== false,
+    },
+  }
 }
 
 export async function fetchAutoLeadRun(id: string): Promise<AutoLeadRun | null> {
@@ -13,4 +28,48 @@ export async function fetchAutoLeadRun(id: string): Promise<AutoLeadRun | null> 
   )
   if (!res.ok) return null
   return res.data.run ?? null
+}
+
+export async function patchAutoLeadsSettings(
+  defaultAutoEnabled: boolean,
+): Promise<AutoLeadsSettings | null> {
+  const res = await adminWorkspaceRequest<{ settings: AutoLeadsSettings }>(
+    '/admin/leads/auto/settings',
+    {
+      method: 'PATCH',
+      body: JSON.stringify({ defaultAutoEnabled }),
+    },
+  )
+  if (!res.ok) return null
+  return res.data.settings ?? null
+}
+
+export async function patchAutoLeadRunStatus(
+  id: string,
+  status: 'active' | 'paused',
+): Promise<AutoLeadRun | null> {
+  const res = await adminWorkspaceRequest<{ run: AutoLeadRun }>(
+    `/admin/leads/auto/${encodeURIComponent(id)}`,
+    {
+      method: 'PATCH',
+      body: JSON.stringify({ status }),
+    },
+  )
+  if (!res.ok) return null
+  return res.data.run ?? null
+}
+
+export async function patchAutoLeadContactAuto(
+  id: string,
+  autoEnabled: boolean,
+): Promise<AutoLeadContact | null> {
+  const res = await adminWorkspaceRequest<{ contact: AutoLeadContact }>(
+    `/admin/leads/auto/contacts/${encodeURIComponent(id)}`,
+    {
+      method: 'PATCH',
+      body: JSON.stringify({ autoEnabled }),
+    },
+  )
+  if (!res.ok) return null
+  return res.data.contact ?? null
 }
