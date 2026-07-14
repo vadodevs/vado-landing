@@ -324,7 +324,6 @@ export function AdminAutoLeadsPanel() {
       ) : (
         <RunDetail
           run={selectedRun}
-          locale={locale}
           saving={saving}
           onOpenContact={(c) => setSelectedContact(c)}
           onToggleRun={(enabled) => void onToggleRun(selectedRun.id, enabled)}
@@ -423,14 +422,12 @@ function RunsList({
 
 function RunDetail({
   run,
-  locale,
   saving,
   onOpenContact,
   onToggleRun,
   onToggleContact,
 }: {
   run: AutoLeadRun
-  locale: string
   saving: boolean
   onOpenContact: (c: AutoLeadContact) => void
   onToggleRun: (enabled: boolean) => void
