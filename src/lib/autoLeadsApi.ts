@@ -5,19 +5,35 @@ export type AutoLeadsSettings = {
   defaultAutoEnabled: boolean
 }
 
+export type AutoLeadsOutboundStatus = {
+  gmailConnected: boolean
+  calendarConnected: boolean
+  queuedWaiting: number
+  waitingForGmail: boolean
+}
+
 export async function fetchAutoLeadRuns(): Promise<{
   runs: AutoLeadRun[]
   settings: AutoLeadsSettings
+  outbound: AutoLeadsOutboundStatus
 } | null> {
   const res = await adminWorkspaceRequest<{
     runs: AutoLeadRun[]
     settings?: AutoLeadsSettings
+    outbound?: Partial<AutoLeadsOutboundStatus>
   }>('/admin/leads/auto')
   if (!res.ok) return null
+  const outbound = res.data.outbound
   return {
     runs: Array.isArray(res.data.runs) ? res.data.runs : [],
     settings: {
       defaultAutoEnabled: res.data.settings?.defaultAutoEnabled !== false,
+    },
+    outbound: {
+      gmailConnected: outbound?.gmailConnected === true,
+      calendarConnected: outbound?.calendarConnected === true,
+      queuedWaiting: typeof outbound?.queuedWaiting === 'number' ? outbound.queuedWaiting : 0,
+      waitingForGmail: outbound?.waitingForGmail === true,
     },
   }
 }

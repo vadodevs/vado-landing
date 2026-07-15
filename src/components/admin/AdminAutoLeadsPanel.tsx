@@ -30,6 +30,7 @@ import {
   patchAutoLeadContactAuto,
   patchAutoLeadRunStatus,
   patchAutoLeadsSettings,
+  type AutoLeadsOutboundStatus,
   type AutoLeadsSettings,
 } from '@/lib/autoLeadsApi'
 import {
@@ -128,6 +129,12 @@ export function AdminAutoLeadsPanel() {
   const [selectedContact, setSelectedContact] = useState<AutoLeadContact | null>(null)
   const [runs, setRuns] = useState<AutoLeadRun[]>([])
   const [settings, setSettings] = useState<AutoLeadsSettings>({ defaultAutoEnabled: true })
+  const [outbound, setOutbound] = useState<AutoLeadsOutboundStatus>({
+    gmailConnected: true,
+    calendarConnected: true,
+    queuedWaiting: 0,
+    waitingForGmail: false,
+  })
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -143,6 +150,7 @@ export function AdminAutoLeadsPanel() {
     } else {
       setRuns(data.runs)
       setSettings(data.settings)
+      setOutbound(data.outbound)
       setSelectedContact((prev) => {
         if (!prev) return prev
         for (const run of data.runs) {
@@ -287,6 +295,20 @@ export function AdminAutoLeadsPanel() {
           )}
         </div>
       </div>
+
+      {outbound.waitingForGmail ? (
+        <div
+          role="status"
+          className="rounded-2xl border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-950 dark:text-amber-100"
+        >
+          <p className="font-semibold">{t('adminAutoLeads.gmailDisconnectedTitle')}</p>
+          <p className="mt-1 text-xs opacity-90">
+            {outbound.queuedWaiting > 0
+              ? t('adminAutoLeads.gmailDisconnectedBodyQueued', { count: outbound.queuedWaiting })
+              : t('adminAutoLeads.gmailDisconnectedBody')}
+          </p>
+        </div>
+      ) : null}
 
       {loading && runs.length === 0 ? (
         <div className="flex items-center justify-center gap-2 rounded-2xl border border-dashed border-border/70 px-4 py-16 text-sm text-muted-foreground">
