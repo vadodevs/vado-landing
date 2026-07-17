@@ -128,7 +128,11 @@ export function AdminAutoLeadsPanel() {
   const [selectedRunId, setSelectedRunId] = useState<string | null>(null)
   const [selectedContact, setSelectedContact] = useState<AutoLeadContact | null>(null)
   const [runs, setRuns] = useState<AutoLeadRun[]>([])
-  const [settings, setSettings] = useState<AutoLeadsSettings>({ defaultAutoEnabled: true })
+  const [settings, setSettings] = useState<AutoLeadsSettings>({
+    defaultAutoEnabled: true,
+    coldEmailLlmEnabled: true,
+    coldEmailPromptTemplate: '',
+  })
   const [outbound, setOutbound] = useState<AutoLeadsOutboundStatus>({
     gmailConnected: true,
     calendarConnected: true,
@@ -197,13 +201,13 @@ export function AdminAutoLeadsPanel() {
   const onToggleGlobal = async (next: boolean) => {
     setSaving(true)
     setSaveError(false)
-    const result = await patchAutoLeadsSettings(next)
+    const result = await patchAutoLeadsSettings({ defaultAutoEnabled: next })
     setSaving(false)
     if (!result) {
       setSaveError(true)
       return
     }
-    setSettings(result)
+    setSettings(result.settings)
     await loadRuns()
   }
 

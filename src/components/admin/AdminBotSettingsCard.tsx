@@ -5,7 +5,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
-import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { scheduleInboxAiSettingsSync } from '@/lib/inboxAiSettingsSync';
 import { fetchInboxAiSettings, fetchInboxLlmOptions } from '@/lib/inboxAiSettingsApi';
@@ -184,11 +183,6 @@ export function AdminBotSettingsCard() {
       id="bot-config"
       icon={MessageSquareText}
       title={t('adminSettings.botTitle')}
-      badge={
-        <Badge variant="secondary" className="text-[10px] font-medium uppercase tracking-wide">
-          {t('adminSettings.botMockBadge')}
-        </Badge>
-      }
       description={t('adminSettings.botSubtitle')}
       action={
         <Switch

@@ -5,6 +5,7 @@ import { AppThemeSettingsCard } from '@/components/app/AppThemeSettingsCard';
 import { AdminAutopilotSettingsCard } from '@/components/admin/AdminAutopilotSettingsCard';
 import { AdminBotExclusionsCard } from '@/components/admin/AdminBotExclusionsCard';
 import { AdminBotSettingsCard } from '@/components/admin/AdminBotSettingsCard';
+import { AdminColdEmailSettingsCard } from '@/components/admin/AdminColdEmailSettingsCard';
 import { AdminMessagesSettingsCard } from '@/components/admin/AdminMessagesSettingsCard';
 import { AdminWhatsappLinkCard } from '@/components/admin/AdminWhatsappLinkCard';
 import { SettingsSectionLabel } from '@/components/settings/settings-ui';
@@ -36,6 +37,7 @@ export default function AppAdminSettings() {
         <AdminAutopilotSettingsCard />
         <AdminBotSettingsCard />
         <AdminBotExclusionsCard />
+        <AdminColdEmailSettingsCard />
         <AdminWhatsappLinkCard />
       </div>
     </AppShell>

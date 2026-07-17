@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { MessageSquareText } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -35,11 +34,6 @@ export function AdminMessagesSettingsCard() {
     <SettingsCollapsibleCard
       icon={MessageSquareText}
       title={t('adminSettings.messagesTitle')}
-      badge={
-        <Badge variant="secondary" className="text-[10px] font-medium uppercase tracking-wide">
-          {t('adminSettings.messagesMockBadge')}
-        </Badge>
-      }
       description={t('adminSettings.messagesDescription')}
     >
       <div className="space-y-3">

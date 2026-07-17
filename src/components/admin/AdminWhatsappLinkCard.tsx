@@ -60,6 +60,7 @@ export function AdminWhatsappLinkCard() {
   const [historyImportMessage, setHistoryImportMessage] = useState<string | null>(null);
   const syncInFlightRef = useRef(false);
   const pendingHistoryImportRef = useRef(false);
+  const linkStatusRef = useRef<WhatsappLinkStatusDto | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const managerUrl = String(import.meta.env.VITE_EVOLUTION_MANAGER_URL ?? '').trim();
@@ -68,17 +69,25 @@ export function AdminWhatsappLinkCard() {
     const res = await fetchWhatsappLinkStatus();
     if (res.ok) {
       setLinkStatus(res.data);
+      linkStatusRef.current = res.data;
       const ownerKey = res.data.linked ? (res.data.ownerJid?.trim() || '') : '';
       notifyInboxAccountAvatarChanged(ownerKey);
       return res.data;
     }
-    notifyInboxAccountAvatarChanged('');
     if (res.reason === 'no-auth') {
+      notifyInboxAccountAvatarChanged('');
       setError(t('adminCanales.inboxAuthRequired'));
     } else if (res.reason === 'no-config') {
+      notifyInboxAccountAvatarChanged('');
       setError(t('adminCanales.botErrorNoConfig'));
     } else {
+      // Fallo temporal: conservar el último status conocido si ya estaba vinculado.
       setError(adminInboxErrorMessage(res, t, 'adminSettings.whatsappStatusError'));
+      const prev = linkStatusRef.current;
+      if (prev?.linked) {
+        return prev;
+      }
+      notifyInboxAccountAvatarChanged('');
     }
     return null;
   }, [t]);
@@ -176,11 +185,13 @@ export function AdminWhatsappLinkCard() {
         pairingCode: res.data.pairingCode,
         message: res.data.message,
       });
-      setLinkStatus((prev) =>
-        prev
+      setLinkStatus((prev) => {
+        const next = prev
           ? { ...prev, linked: false, state: res.data.state === 'open' ? 'open' : 'connecting' }
-          : prev,
-      );
+          : prev;
+        linkStatusRef.current = next;
+        return next;
+      });
       await refreshStatus();
     } finally {
       syncInFlightRef.current = false;
