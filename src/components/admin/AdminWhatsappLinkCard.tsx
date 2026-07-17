@@ -185,9 +185,11 @@ export function AdminWhatsappLinkCard() {
         pairingCode: res.data.pairingCode,
         message: res.data.message,
       });
+      const nextState: WhatsappLinkStatusDto['state'] =
+        res.data.state === 'open' ? 'open' : 'connecting';
       setLinkStatus((prev) => {
         const next = prev
-          ? { ...prev, linked: false, state: res.data.state === 'open' ? 'open' : 'connecting' }
+          ? { ...prev, linked: false, state: nextState }
           : prev;
         linkStatusRef.current = next;
         return next;
