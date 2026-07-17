@@ -5,7 +5,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
-import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { scheduleInboxAiSettingsSync } from '@/lib/inboxAiSettingsSync';
 import {
@@ -108,11 +107,6 @@ export function AdminAutopilotSettingsCard() {
       id="autopilot"
       icon={Bot}
       title={t('adminSettings.autopilotTitle')}
-      badge={
-        <Badge variant="secondary" className="text-[10px] font-medium uppercase tracking-wide">
-          {t('adminSettings.autopilotMockBadge')}
-        </Badge>
-      }
       description={t('adminSettings.autopilotSubtitle')}
       action={
         <div className="flex items-center gap-2">

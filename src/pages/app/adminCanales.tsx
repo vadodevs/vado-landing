@@ -1283,15 +1283,22 @@ function ChannelWhatsAppInbox({ channel, chrome, dataSource }: InboxProps) {
       }
       return nextGate;
     }
-    purgeWhatsappInboxUiState(whatsappOwnerJidRef.current);
     if (res.reason === 'no-auth') {
+      purgeWhatsappInboxUiState(whatsappOwnerJidRef.current);
       setWhatsappGate('no-auth');
       return 'no-auth';
     }
     if (res.reason === 'no-config') {
+      purgeWhatsappInboxUiState(whatsappOwnerJidRef.current);
       setWhatsappGate('error');
       return 'error';
     }
+    // Fallo HTTP / red: no desalojar la UI si ya estaba vinculado.
+    if (prevLinkedRef.current === true || whatsappOwnerJidRef.current) {
+      setWhatsappGate('linked');
+      return 'linked';
+    }
+    purgeWhatsappInboxUiState(whatsappOwnerJidRef.current);
     setWhatsappGate('not-linked');
     if (prevLinkedRef.current !== false) {
       prevLinkedRef.current = false;

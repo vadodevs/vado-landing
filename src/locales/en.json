@@ -536,7 +536,7 @@
     "placeholderTitle": "Auto Leads",
     "placeholderBody": "Leads generated and qualified from autosales for outbound contact will appear here.",
     "title": "Auto Leads",
-    "subtitle": "Leads ready from autosales (context + contacts). Email sending comes next.",
+    "subtitle": "Leads ready from autosales. First outbound uses an editable LLM skill (below) or the template if the LLM fails.",
     "mockBadge": "Mock",
     "liveBadge": "Live",
     "autoGlobalLabel": "Automatic",
@@ -587,7 +587,17 @@
       "bot": "Bot",
       "human": "Human",
       "lead": "Lead"
-    }
+    },
+    "coldEmailPromptTitle": "Skill · cold email (first outbound)",
+    "coldEmailPromptHint": "Prompt the LLM uses to draft the first email for each lead. If it fails or is off, the fixed template is used.",
+    "coldEmailLlmLabel": "LLM",
+    "coldEmailLlmOffHint": "LLM off: the deterministic template will be sent.",
+    "coldEmailPlaceholdersLabel": "Placeholders:",
+    "coldEmailPromptPlaceholder": "Write the cold email prompt…",
+    "coldEmailPromptSave": "Save prompt",
+    "coldEmailPromptReset": "Restore default",
+    "coldEmailPromptSaved": "Prompt saved",
+    "coldEmailPromptSaveError": "Could not save the prompt."
   },
   "adminCanales": {
     "mockNotice": "Demo view. A real connection to Meta / WhatsApp / Instagram will come in a later phase.",
