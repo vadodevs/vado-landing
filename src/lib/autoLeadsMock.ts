@@ -30,12 +30,16 @@ export type AutoLeadContact = {
   autoEnabled?: boolean
   /** Resultado de global ∧ run ∧ contacto. */
   autoEffective?: boolean
+  archivedAt?: string | null
+  /** ServiceRequest id si ya se importó a Leads compañía. */
+  promotedCompanyLeadId?: string | null
   lastActivityAt: string
   snippet: string
   score: number
   messages: AutoLeadMessage[]
   meetingAt?: string
   meetingLink?: string
+  domain?: string
 }
 
 export type AutoLeadRun = {
@@ -45,6 +49,7 @@ export type AutoLeadRun = {
   status: AutoLeadRunStatus
   /** true si status === active */
   autoEnabled?: boolean
+  archivedAt?: string | null
   channelMode: 'auto'
   startedAt: string
   lastActivityAt: string

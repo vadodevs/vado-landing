@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
   Copy,
+  Download,
   Eye,
   Heart,
   Key,
@@ -24,6 +25,7 @@ import {
   CompanyLeadDetailPanel,
   type CompanyLeadDetailTab,
 } from '@/components/admin/CompanyLeadDetailPanel';
+import { ImportWorkflowLeadsDialog } from '@/components/admin/ImportWorkflowLeadsDialog';
 import { ADMIN_PAGE_SIZE, slicePage } from '@/lib/adminPagination';
 import { AppShell } from '@/components/layout/app/AppShell';
 import { Button } from '@/components/ui/button';
@@ -339,6 +341,8 @@ export default function AppAdminCompanyPage() {
   const [contacts, setContacts] = useState<CompanyContact[]>([]);
   const [contactsLoad, setContactsLoad] = useState<'idle' | 'loading' | 'done'>('idle');
   const [contactsError, setContactsError] = useState<'none' | 'no-config' | 'fail'>('none');
+  const [contactsRefreshKey, setContactsRefreshKey] = useState(0);
+  const [importWorkflowsOpen, setImportWorkflowsOpen] = useState(false);
   const [assignDirectory, setAssignDirectory] = useState<DeveloperProfile[]>([]);
   const [assignDirectoryLoad, setAssignDirectoryLoad] = useState<'idle' | 'loading' | 'done'>('idle');
   const [assignDirectoryError, setAssignDirectoryError] = useState<'none' | 'no-config' | 'fail'>(
@@ -500,7 +504,7 @@ export default function AppAdminCompanyPage() {
         })
         .finally(() => setContactsLoad('done'));
     });
-  }, []);
+  }, [contactsRefreshKey]);
 
   const now = useMemo(() => new Date(), []);
 
@@ -975,6 +979,17 @@ export default function AppAdminCompanyPage() {
                   aria-hidden
                 />
                 <span className="text-[11px] font-semibold">Favoritos</span>
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="h-8 shrink-0 gap-1.5 rounded-xl border-border/70 text-[11px] font-semibold"
+                title={t('adminCompany.importWorkflowsButton')}
+                onClick={() => setImportWorkflowsOpen(true)}
+              >
+                <Download className="size-3.5 shrink-0" aria-hidden />
+                <span className="text-[11px] font-semibold">{t('adminCompany.importWorkflowsButton')}</span>
               </Button>
               <Button
                 type="button"
@@ -1733,6 +1748,14 @@ export default function AppAdminCompanyPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <ImportWorkflowLeadsDialog
+        open={importWorkflowsOpen}
+        onOpenChange={setImportWorkflowsOpen}
+        onImported={() => {
+          setContactsRefreshKey((k) => k + 1);
+        }}
+      />
       </div>
     </AppShell>
   );
