@@ -553,6 +553,8 @@
     "loadError": "Could not load Auto Leads. Check admin session and adminvado.",
     "emptyTitle": "No published leads yet",
     "emptyBody": "When a workflow finishes extracting contacts (email or phone), they will show up here queued.",
+    "emptyArchivedTitle": "No archived Auto Leads",
+    "emptyArchivedBody": "Runs or contacts you archive will appear here.",
     "backToRuns": "All runs",
     "openRun": "Open",
     "lastActivity": "Last activity: {{time}}",
@@ -566,6 +568,18 @@
     "meetingBooked": "Meeting: {{when}}",
     "conversationEmpty": "No messages in this thread yet.",
     "conversationFailed": "Send failed (bounce or channel error).",
+    "viewMode": "View mode",
+    "viewList": "List",
+    "viewCards": "Cards",
+    "scopeActive": "Active",
+    "scopeArchived": "Archived",
+    "archive": "Archive",
+    "unarchive": "Restore",
+    "delete": "Delete",
+    "deleteRunConfirm": "Delete this run and all its contacts? This cannot be undone.",
+    "deleteContactConfirm": "Permanently delete this contact? This cannot be undone.",
+    "archiveError": "Could not archive.",
+    "deleteError": "Could not delete.",
     "runStatus": {
       "active": "Active",
       "paused": "Paused",
@@ -1834,9 +1848,15 @@
     },
     "leadership": {
       "title": "Business Leadership",
-      "person1": { "name": "Carlos Ballesteros" },
-      "person2": { "name": "Fernanda Casanova" },
-      "person3": { "name": "Luis Montaño" }
+      "person1": {
+        "name": "Carlos Ballesteros"
+      },
+      "person2": {
+        "name": "Fernanda Casanova"
+      },
+      "person3": {
+        "name": "Luis Montaño"
+      }
     },
     "growTalentCta": {
       "titleDark": "Grow your ",
@@ -2399,5 +2419,29 @@
         "button": "Contact"
       }
     }
+  },
+  "adminCompany": {
+    "importWorkflowsTitle": "Import from workflows",
+    "importWorkflowsBody": "Browse Auto Leads runs, expand a workflow, and select contacts with email to pull into Company Leads.",
+    "importWorkflowsSearch": "Search company, email, domain, workflow…",
+    "importWorkflowsLoading": "Loading workflows…",
+    "importWorkflowsLoadError": "Could not load Auto Leads.",
+    "importWorkflowsRetry": "Retry",
+    "importWorkflowsEmpty": "No workflows or contacts match.",
+    "importWorkflowsLeadCount": "{{count}} lead(s)",
+    "importWorkflowsSelectRun": "Select all in run",
+    "importWorkflowsNoContacts": "No contacts in this workflow.",
+    "importWorkflowsAlready": "Already in Leads",
+    "importWorkflowsNoEmail": "No email",
+    "importWorkflowsImportError": "Could not import. Check admin session.",
+    "importWorkflowsImportSummary": "Created: {{created}} · Already linked: {{linked}} · Failed: {{failed}}",
+    "importWorkflowsSelected": "{{count}} ready to import",
+    "importWorkflowsClose": "Close",
+    "importWorkflowsImport": "Import to Leads",
+    "importWorkflowsButton": "From workflows",
+    "sendToCompanyLeads": "Send to Leads",
+    "sendToCompanyLeadsDone": "Already in Leads",
+    "sendToCompanyLeadsError": "Could not send to Leads",
+    "sendToCompanyLeadsNoEmail": "No email"
   }
 }

@@ -553,6 +553,8 @@
     "loadError": "No se pudieron cargar los Auto Leads. Revisa la sesión admin y adminvado.",
     "emptyTitle": "Aún no hay leads publicados",
     "emptyBody": "Cuando un workflow termine de extraer contactos (con email o teléfono), aparecerán aquí en cola.",
+    "emptyArchivedTitle": "No hay Auto Leads archivados",
+    "emptyArchivedBody": "Los runs o contactos que archives aparecerán aquí.",
     "backToRuns": "Todos los runs",
     "openRun": "Abrir",
     "lastActivity": "Última actividad: {{time}}",
@@ -566,6 +568,18 @@
     "meetingBooked": "Reunión: {{when}}",
     "conversationEmpty": "Aún no hay mensajes en este hilo.",
     "conversationFailed": "El envío falló (bounce o error de canal).",
+    "viewMode": "Modo de vista",
+    "viewList": "Lista",
+    "viewCards": "Cards",
+    "scopeActive": "Activos",
+    "scopeArchived": "Archivados",
+    "archive": "Archivar",
+    "unarchive": "Restaurar",
+    "delete": "Eliminar",
+    "deleteRunConfirm": "¿Eliminar este run y todos sus contactos? No se puede deshacer.",
+    "deleteContactConfirm": "¿Eliminar este contacto de forma permanente? No se puede deshacer.",
+    "archiveError": "No se pudo archivar.",
+    "deleteError": "No se pudo eliminar.",
     "runStatus": {
       "active": "Activo",
       "paused": "Pausado",
@@ -1838,9 +1852,15 @@
     },
     "leadership": {
       "title": "Liderazgo Empresarial",
-      "person1": { "name": "Carlos Ballesteros" },
-      "person2": { "name": "Fernanda Casanova" },
-      "person3": { "name": "Luis Montaño" }
+      "person1": {
+        "name": "Carlos Ballesteros"
+      },
+      "person2": {
+        "name": "Fernanda Casanova"
+      },
+      "person3": {
+        "name": "Luis Montaño"
+      }
     },
     "growTalentCta": {
       "titleDark": "Haz crecer ",
@@ -2403,5 +2423,29 @@
         "button": "Contacto"
       }
     }
+  },
+  "adminCompany": {
+    "importWorkflowsTitle": "Importar desde workflows",
+    "importWorkflowsBody": "Explora los runs de Auto Leads, expande un flujo y selecciona contactos con email para traerlos a Leads compañía.",
+    "importWorkflowsSearch": "Buscar empresa, email, dominio, workflow…",
+    "importWorkflowsLoading": "Cargando workflows…",
+    "importWorkflowsLoadError": "No se pudieron cargar los Auto Leads.",
+    "importWorkflowsRetry": "Reintentar",
+    "importWorkflowsEmpty": "No hay workflows o contactos que coincidan.",
+    "importWorkflowsLeadCount": "{{count}} lead(s)",
+    "importWorkflowsSelectRun": "Seleccionar todos del run",
+    "importWorkflowsNoContacts": "Sin contactos en este flujo.",
+    "importWorkflowsAlready": "Ya en Leads",
+    "importWorkflowsNoEmail": "Sin email",
+    "importWorkflowsImportError": "No se pudo importar. Revisa sesión admin.",
+    "importWorkflowsImportSummary": "Creados: {{created}} · Ya existían: {{linked}} · Fallidos: {{failed}}",
+    "importWorkflowsSelected": "{{count}} listo(s) para importar",
+    "importWorkflowsClose": "Cerrar",
+    "importWorkflowsImport": "Importar a Leads",
+    "importWorkflowsButton": "Desde workflows",
+    "sendToCompanyLeads": "Enviar a Leads",
+    "sendToCompanyLeadsDone": "Ya en Leads",
+    "sendToCompanyLeadsError": "No se pudo enviar a Leads",
+    "sendToCompanyLeadsNoEmail": "Sin email"
   }
 }
