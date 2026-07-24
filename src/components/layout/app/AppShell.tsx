@@ -41,6 +41,12 @@ import {
   writeAdminSidebarScrollTop,
   writeAdminUtilitiesNavOpen,
 } from '@/lib/adminSidebarNavState';
+import {
+  ADMIN_SIDEBAR_VISIBILITY_CHANGE_EVENT,
+  isAdminSidebarSectionVisible,
+  readAdminSidebarVisibility,
+  type AdminSidebarVisibility,
+} from '@/lib/adminSidebarVisibility';
 import { ADMIN_AUTH_CHANGE_EVENT, logoutAdmin } from '@/lib/adminAuth';
 import { COMPANY_AUTH_CHANGE_EVENT, logoutCompany } from '@/lib/companyAuth';
 import { DEV_AUTH_CHANGE_EVENT, logoutDeveloper } from '@/lib/devAuth';
@@ -400,6 +406,9 @@ export function AppShell({
       readAdminUtilitiesNavOpen() ||
       normalizePath(pathWithoutLang).startsWith('/app/admin/utileria'),
   );
+  const [adminSidebarVisibility, setAdminSidebarVisibility] = useState<AdminSidebarVisibility>(
+    () => readAdminSidebarVisibility(),
+  );
   const [trabajoOpen, setTrabajoOpen] = useState(false);
   const sidebarContentRef = useRef<HTMLDivElement>(null);
   const [appThemeMode, setAppThemeMode] = useState<AppThemeMode>(() => getStoredAppTheme());
@@ -572,6 +581,12 @@ export function AppShell({
   }, []);
 
   useEffect(() => {
+    const sync = () => setAdminSidebarVisibility(readAdminSidebarVisibility());
+    window.addEventListener(ADMIN_SIDEBAR_VISIBILITY_CHANGE_EVENT, sync);
+    return () => window.removeEventListener(ADMIN_SIDEBAR_VISIBILITY_CHANGE_EVENT, sync);
+  }, []);
+
+  useEffect(() => {
     void (async () => {
       await migrateLegacyWorkspaceStorageOnce();
       await Promise.all([hydrateUserPreferences(), hydrateThemeFromServer()]);
@@ -695,13 +710,16 @@ export function AppShell({
             <nav className="flex flex-col py-3" aria-label={t('sidebarDemo.appAreaNav')}>
               {isAdminSection ? (
                 <>
+                  {isAdminSidebarSectionVisible(adminSidebarVisibility, 'general') ? (
                   <section className={sidebarNavSectionShell} aria-labelledby="nav-admin-general">
                     <h2 id="nav-admin-general" className={sidebarNavSectionTitle}>
                       {t('sidebarDemo.navSectionGeneral')}
                     </h2>
                     {navItem(hrefAdminProjects, t('sidebarDemo.navProjects'), <FolderKanban />, adminProjectsUnread)}
                   </section>
+                  ) : null}
 
+                  {isAdminSidebarSectionVisible(adminSidebarVisibility, 'talent') ? (
                   <section className={sidebarNavSectionShell} aria-labelledby="nav-admin-talent">
                     <h2 id="nav-admin-talent" className={sidebarNavSectionTitle}>
                       {t('sidebarDemo.navSectionTalent')}
@@ -790,7 +808,9 @@ export function AppShell({
                       </div>
                     </SidebarAnimatedCollapse>
                   </section>
+                  ) : null}
 
+                  {isAdminSidebarSectionVisible(adminSidebarVisibility, 'sales') ? (
                   <section className={sidebarNavSectionShell} aria-labelledby="nav-admin-sales">
                     <h2 id="nav-admin-sales" className={sidebarNavSectionTitle}>
                       {t('sidebarDemo.navSectionSales')}
@@ -822,7 +842,9 @@ export function AppShell({
                       <CalendarDays />,
                     )}
                   </section>
+                  ) : null}
 
+                  {isAdminSidebarSectionVisible(adminSidebarVisibility, 'channels') ? (
                   <section className={sidebarNavSectionShell} aria-labelledby="nav-admin-channels">
                     <h2 id="nav-admin-channels" className={sidebarNavSectionTitle}>
                       {t('sidebarDemo.navSectionChannels')}
@@ -890,7 +912,9 @@ export function AppShell({
                       </div>
                     </SidebarAnimatedCollapse>
                   </section>
+                  ) : null}
 
+                  {isAdminSidebarSectionVisible(adminSidebarVisibility, 'utilities') ? (
                   <section className={sidebarNavSectionShell} aria-labelledby="nav-admin-utilities">
                     <h2 id="nav-admin-utilities" className={sidebarNavSectionTitle}>
                       {t('sidebarDemo.navSectionUtilities')}
@@ -934,6 +958,7 @@ export function AppShell({
                       </div>
                     </SidebarAnimatedCollapse>
                   </section>
+                  ) : null}
 
                   <section className={sidebarNavSectionShell} aria-labelledby="nav-admin-account">
                     <h2 id="nav-admin-account" className={sidebarNavSectionTitle}>

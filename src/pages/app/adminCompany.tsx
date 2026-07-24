@@ -3,6 +3,7 @@ import {
   Copy,
   Download,
   Eye,
+  FileSpreadsheet,
   Heart,
   Key,
   KeyRound,
@@ -26,6 +27,7 @@ import {
   type CompanyLeadDetailTab,
 } from '@/components/admin/CompanyLeadDetailPanel';
 import { ImportWorkflowLeadsDialog } from '@/components/admin/ImportWorkflowLeadsDialog';
+import { ExportPipedriveDialog } from '@/components/admin/ExportPipedriveDialog';
 import { ADMIN_PAGE_SIZE, slicePage } from '@/lib/adminPagination';
 import { AppShell } from '@/components/layout/app/AppShell';
 import { Button } from '@/components/ui/button';
@@ -343,6 +345,7 @@ export default function AppAdminCompanyPage() {
   const [contactsError, setContactsError] = useState<'none' | 'no-config' | 'fail'>('none');
   const [contactsRefreshKey, setContactsRefreshKey] = useState(0);
   const [importWorkflowsOpen, setImportWorkflowsOpen] = useState(false);
+  const [exportPipedriveOpen, setExportPipedriveOpen] = useState(false);
   const [assignDirectory, setAssignDirectory] = useState<DeveloperProfile[]>([]);
   const [assignDirectoryLoad, setAssignDirectoryLoad] = useState<'idle' | 'loading' | 'done'>('idle');
   const [assignDirectoryError, setAssignDirectoryError] = useState<'none' | 'no-config' | 'fail'>(
@@ -895,6 +898,30 @@ export default function AppAdminCompanyPage() {
                   aria-label="Orden por fecha"
                   triggerClassName={ADMIN_FILTER_PILL_CLASS}
                 />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className={
+                    favoritesOnly
+                      ? ADMIN_FAVORITES_TOOLBAR_BUTTON_ACTIVE
+                      : ADMIN_FAVORITES_TOOLBAR_BUTTON_INACTIVE
+                  }
+                  aria-pressed={favoritesOnly}
+                  title={favoritesOnly ? 'Mostrar todos los leads' : 'Solo leads marcados como favoritos'}
+                  onClick={() => setFavoritesOnly((v) => !v)}
+                >
+                  <Heart
+                    className={cn(
+                      'shrink-0',
+                      favoritesOnly
+                        ? 'size-4 fill-white text-white'
+                        : 'size-3.5 fill-rose-600 text-rose-600 dark:fill-rose-400 dark:text-rose-400',
+                    )}
+                    aria-hidden
+                  />
+                  <span className="text-[11px] font-semibold">Favoritos</span>
+                </Button>
               </div>
             </div>
 
@@ -960,25 +987,15 @@ export default function AppAdminCompanyPage() {
                 type="button"
                 variant="outline"
                 size="sm"
-                className={
-                  favoritesOnly
-                    ? ADMIN_FAVORITES_TOOLBAR_BUTTON_ACTIVE
-                    : ADMIN_FAVORITES_TOOLBAR_BUTTON_INACTIVE
-                }
-                aria-pressed={favoritesOnly}
-                title={favoritesOnly ? 'Mostrar todos los leads' : 'Solo leads marcados como favoritos'}
-                onClick={() => setFavoritesOnly((v) => !v)}
+                className="h-8 shrink-0 gap-1.5 rounded-xl border-border/70 text-[11px] font-semibold"
+                title={t('adminCompany.pipedriveExportButton')}
+                disabled={filteredContacts.length === 0}
+                onClick={() => setExportPipedriveOpen(true)}
               >
-                <Heart
-                  className={cn(
-                    'shrink-0',
-                    favoritesOnly
-                      ? 'size-4 fill-white text-white'
-                      : 'size-3.5 fill-rose-600 text-rose-600 dark:fill-rose-400 dark:text-rose-400',
-                  )}
-                  aria-hidden
-                />
-                <span className="text-[11px] font-semibold">Favoritos</span>
+                <FileSpreadsheet className="size-3.5 shrink-0" aria-hidden />
+                <span className="text-[11px] font-semibold">
+                  {t('adminCompany.pipedriveExportButton')}
+                </span>
               </Button>
               <Button
                 type="button"
@@ -1755,6 +1772,13 @@ export default function AppAdminCompanyPage() {
         onImported={() => {
           setContactsRefreshKey((k) => k + 1);
         }}
+      />
+
+      <ExportPipedriveDialog
+        open={exportPipedriveOpen}
+        onOpenChange={setExportPipedriveOpen}
+        contacts={filteredContacts}
+        updatesByContactId={leadUpdatesById}
       />
       </div>
     </AppShell>

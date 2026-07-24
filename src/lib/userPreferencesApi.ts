@@ -1,24 +1,30 @@
-import type { AppThemeMode } from '@/lib/appTheme';
-import { userApiRequest } from '@/lib/userAuthorizedFetch';
+import type { AppThemeMode } from '@/lib/appTheme'
+import type { AdminSidebarVisibility } from '@/lib/adminSidebarVisibility'
+import { userApiRequest } from '@/lib/userAuthorizedFetch'
 
 export type NavBadgesPreference = {
-  adminProjectsSeenMax?: number;
-  adminDevelopersSeenMax?: number;
-  adminCompaniesSeenMax?: number;
-  devProjectsSignatureSeen?: string;
-  companyProjectsSignatureSeen?: string;
-};
+  adminProjectsSeenMax?: number
+  adminDevelopersSeenMax?: number
+  adminCompaniesSeenMax?: number
+  devProjectsSignatureSeen?: string
+  companyProjectsSignatureSeen?: string
+}
 
 export type UserPreferencesPayload = {
-  theme: AppThemeMode;
-  navBadges: NavBadgesPreference;
-};
+  theme: AppThemeMode
+  navBadges: NavBadgesPreference
+  sidebarVisibility: Partial<AdminSidebarVisibility>
+}
 
 export async function fetchUserPreferences(): Promise<UserPreferencesPayload | null> {
-  const res = await userApiRequest<UserPreferencesPayload>('/user/preferences');
-  if (!res.ok) return null;
-  const theme = res.data.theme === 'dark' ? 'dark' : 'light';
-  return { theme, navBadges: res.data.navBadges ?? {} };
+  const res = await userApiRequest<UserPreferencesPayload>('/user/preferences')
+  if (!res.ok) return null
+  const theme = res.data.theme === 'dark' ? 'dark' : 'light'
+  return {
+    theme,
+    navBadges: res.data.navBadges ?? {},
+    sidebarVisibility: res.data.sidebarVisibility ?? {},
+  }
 }
 
 export async function patchUserPreferences(
@@ -27,8 +33,12 @@ export async function patchUserPreferences(
   const res = await userApiRequest<UserPreferencesPayload>('/user/preferences', {
     method: 'PATCH',
     body: JSON.stringify(patch),
-  });
-  if (!res.ok) return null;
-  const theme = res.data.theme === 'dark' ? 'dark' : 'light';
-  return { theme, navBadges: res.data.navBadges ?? {} };
+  })
+  if (!res.ok) return null
+  const theme = res.data.theme === 'dark' ? 'dark' : 'light'
+  return {
+    theme,
+    navBadges: res.data.navBadges ?? {},
+    sidebarVisibility: res.data.sidebarVisibility ?? {},
+  }
 }

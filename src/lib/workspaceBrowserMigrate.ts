@@ -71,6 +71,8 @@ export async function migrateLegacyWorkspaceStorageOnce(): Promise<void> {
 
   const themeRaw = localStorage.getItem(THEME_STORAGE_KEY);
   const theme = themeRaw === 'dark' || themeRaw === 'light' ? themeRaw : undefined;
+  const sidebarVisibility =
+    readJson<Record<string, boolean>>('vado.admin.sidebar.sectionVisibility.v1') ?? undefined;
 
   const ok = await migrateBrowserWorkspaceData({
     pipeline: readJson<unknown[]>('vado-opportunities-pipeline') ?? undefined,
@@ -82,6 +84,7 @@ export async function migrateLegacyWorkspaceStorageOnce(): Promise<void> {
     inboxReadState: collectInboxReadState(),
     theme,
     navBadges: collectNavBadges(),
+    sidebarVisibility,
   });
 
   if (ok) {
