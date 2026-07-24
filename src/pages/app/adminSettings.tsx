@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AppShell } from '@/components/layout/app/AppShell';
 import { AppThemeSettingsCard } from '@/components/app/AppThemeSettingsCard';
+import { AdminSidebarVisibilityCard } from '@/components/admin/AdminSidebarVisibilityCard';
 import { AdminAutopilotSettingsCard } from '@/components/admin/AdminAutopilotSettingsCard';
 import { AdminBotExclusionsCard } from '@/components/admin/AdminBotExclusionsCard';
 import { AdminBotSettingsCard } from '@/components/admin/AdminBotSettingsCard';
@@ -29,6 +30,7 @@ export default function AppAdminSettings() {
       <div className="mx-auto w-full max-w-3xl space-y-3 pb-10 pt-0 md:pb-12">
         <SettingsSectionLabel>{t('adminSettings.sectionAppearance')}</SettingsSectionLabel>
         <AppThemeSettingsCard mode={themeMode} onChange={setThemeMode} />
+        <AdminSidebarVisibilityCard />
 
         <SettingsSectionLabel>{t('adminSettings.sectionMessages')}</SettingsSectionLabel>
         <AdminMessagesSettingsCard />

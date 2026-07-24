@@ -141,7 +141,10 @@ export function ImportWorkflowLeadsDialog({ open, onOpenChange, onImported }: Pr
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="flex max-h-[85vh] max-w-2xl flex-col gap-0 overflow-hidden p-0 sm:max-w-2xl">
+      <DialogContent
+        useAppDark
+        className="flex max-h-[85vh] max-w-2xl flex-col gap-0 overflow-hidden p-0 sm:max-w-2xl"
+      >
         <DialogHeader className="space-y-1 border-b border-border/60 px-4 py-3 text-left">
           <DialogTitle>{t('adminCompany.importWorkflowsTitle')}</DialogTitle>
           <DialogDescription>{t('adminCompany.importWorkflowsBody')}</DialogDescription>

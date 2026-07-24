@@ -161,6 +161,7 @@ export type MigrateBrowserPayload = {
   inboxReadState?: Record<string, Record<string, { lastMessageAtMs?: number }>>;
   theme?: string;
   navBadges?: Record<string, unknown>;
+  sidebarVisibility?: Record<string, boolean>;
 };
 
 export async function migrateBrowserWorkspaceData(
