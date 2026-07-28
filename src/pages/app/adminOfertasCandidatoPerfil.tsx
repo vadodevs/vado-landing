@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { useLocale } from '@/hooks/useLocale';
 import { fetchJobApplicants, fetchJobOffers as fetchAdminJobOffers, type JobApplicant, type JobOfferRecord } from '@/lib/adminJobsApi';
 import { fetchRecruiterJobOffers } from '@/lib/recruiterJobsApi';
+import { adminAuthorizedFetch } from '@/lib/adminAuth';
 import { mapApiDeveloperToProfile, type ApiDeveloperPayload } from '@/lib/devDevelopers';
 
 function normalizeEmail(s: string): string {
@@ -68,7 +69,9 @@ export default function AppAdminOfertasCandidatoPerfilPage() {
             ? fetchRecruiterJobOffers(apiBase)
             : fetchAdminJobOffers(apiBase),
           fetchJobApplicants(apiBase, routeMatch.jobId),
-          fetch(`${apiBase}/users/developers`),
+          portalBase === '/app/admin'
+            ? adminAuthorizedFetch(`${apiBase}/users/developers`)
+            : Promise.resolve(null),
         ]);
         if (cancelled) return;
 
@@ -82,7 +85,7 @@ export default function AppAdminOfertasCandidatoPerfilPage() {
           return;
         }
 
-        if (!developersRes.ok) {
+        if (!developersRes?.ok) {
           setDeveloper(null);
           return;
         }

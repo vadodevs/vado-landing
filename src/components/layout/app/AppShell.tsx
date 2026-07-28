@@ -16,6 +16,7 @@ import {
   LayoutDashboard,
   ListChecks,
   LogOut,
+  Megaphone,
   MessagesSquare,
   Plug,
   PlusCircle,
@@ -449,6 +450,7 @@ export function AppShell({
   const hrefAdminLeadsMyEvolve = path('/app/admin/leads/my-evolve');
   const hrefAdminAutoLeads = path('/app/admin/leads/auto');
   const hrefAdminLeadsCalendar = path('/app/admin/leads/calendar');
+  const hrefAdminCampanias = path('/app/admin/campanas');
   const hrefAdminCanalesFacebook = path('/app/admin/canales/facebook');
   const hrefAdminCanalesWhatsApp = path('/app/admin/canales/whatsapp');
   const hrefAdminCanalesInstagram = path('/app/admin/canales/instagram');
@@ -840,6 +842,11 @@ export function AppShell({
                       hrefAdminLeadsCalendar,
                       t('sidebarDemo.navLeadsCalendar'),
                       <CalendarDays />,
+                    )}
+                    {navItem(
+                      hrefAdminCampanias,
+                      t('sidebarDemo.navCampanias'),
+                      <Megaphone />,
                     )}
                   </section>
                   ) : null}

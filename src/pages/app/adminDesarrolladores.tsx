@@ -43,6 +43,7 @@ import {
   type DeveloperProfile,
 } from '@/lib/devDevelopers';
 import { fetchFavoriteIds, toggleFavoriteApi } from '@/lib/adminWorkspaceApi';
+import { adminAuthorizedFetch } from '@/lib/adminAuth';
 import { toggleDeveloperFavoriteId } from '@/lib/developerFavorites';
 import { persistAdminDevelopersSeenMax } from '@/lib/userPreferencesSync';
 import { ADMIN_FILTER_BADGE_CLASS, ADMIN_FILTER_CONTROL_CLASS, ADMIN_FAVORITES_TOOLBAR_BUTTON_ACTIVE, ADMIN_FAVORITES_TOOLBAR_BUTTON_INACTIVE } from '@/lib/adminFilterUi';
@@ -137,12 +138,12 @@ export default function AppAdminDesarrolladoresPage() {
       setApiError('none');
     });
     void Promise.all([
-      fetch(url).then((res) => {
-        if (!res.ok) throw new Error(String(res.status));
+      adminAuthorizedFetch(url).then((res) => {
+        if (!res?.ok) throw new Error(String(res?.status ?? 'no-auth'));
         return res.json() as Promise<unknown>;
       }),
-      fetch(accessUrl).then((res) => {
-        if (!res.ok) throw new Error(String(res.status));
+      adminAuthorizedFetch(accessUrl).then((res) => {
+        if (!res?.ok) throw new Error(String(res?.status ?? 'no-auth'));
         return res.json() as Promise<
           Array<{ developerId: string; accessEnabled: boolean }>
         >;
@@ -425,9 +426,9 @@ export default function AppAdminDesarrolladoresPage() {
     setAccessActionError(null);
     setAccessBusyByDeveloper((prev) => ({ ...prev, [developerId]: true }));
     const url = `${base.replace(/\/$/, '')}/users/developers/${developerId}/${action}`;
-    void fetch(url, { method: 'POST' })
+    void adminAuthorizedFetch(url, { method: 'POST' })
       .then((res) => {
-        if (!res.ok) throw new Error(String(res.status));
+        if (!res?.ok) throw new Error(String(res?.status ?? 'no-auth'));
         return res.json() as Promise<{
           developerId: string;
           email: string;

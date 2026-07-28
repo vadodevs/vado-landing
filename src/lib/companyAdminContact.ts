@@ -1,4 +1,5 @@
 import { getApiBaseUrl } from '@/lib/apiBaseUrl';
+import { adminAuthorizedFetch } from '@/lib/adminAuth';
 import { createManualCompanyLeadApi } from '@/lib/adminWorkspaceApi';
 
 
@@ -75,8 +76,8 @@ export async function fetchCompanySubmissions(): Promise<CompanySubmissionsFetch
   const base = getApiBaseUrl();
   if (!base) return { ok: false, reason: 'no-config' };
   try {
-    const res = await fetch(`${base}/contact/company-submissions`);
-    if (!res.ok) return { ok: false, reason: 'fail' };
+    const res = await adminAuthorizedFetch(`${base}/contact/company-submissions`);
+    if (!res?.ok) return { ok: false, reason: 'fail' };
     const data = (await res.json()) as unknown;
     if (!Array.isArray(data)) return { ok: true, contacts: [] };
     const contacts = data.map((row) => mapApiCompanySubmission(row as ApiCompanySubmissionRow));

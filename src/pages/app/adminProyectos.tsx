@@ -27,6 +27,7 @@ import {
   type CompanyLeadStatus,
 } from '@/lib/companyLeadStatus';
 import { fetchCompanyLeadStatuses, patchCompanyLeadStatusApi } from '@/lib/adminWorkspaceApi';
+import { adminAuthorizedFetch } from '@/lib/adminAuth';
 import { cn } from '@/lib/utils';
 import { persistAdminProjectsSeenMax } from '@/lib/userPreferencesSync';
 import {
@@ -219,9 +220,9 @@ export default function AppAdminProyectosPage() {
         return;
       }
       setAssignDirectoryLoad('loading');
-      void fetch(`${base.replace(/\/$/, '')}/users/developers`)
+      void adminAuthorizedFetch(`${base.replace(/\/$/, '')}/users/developers`)
         .then((res) => {
-          if (!res.ok) throw new Error(String(res.status));
+          if (!res?.ok) throw new Error(String(res?.status ?? 'no-auth'));
           return res.json() as Promise<unknown>;
         })
         .then((data) => {

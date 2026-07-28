@@ -42,6 +42,8 @@ import AppAdminDesarrolladores from '@/pages/app/adminDesarrolladores';
 import AppAdminProyectos from '@/pages/app/adminProyectos';
 import AppAdminCompany from '@/pages/app/adminCompany';
 import AppAdminOportunidades from '@/pages/app/adminOportunidades';
+import AppAdminCampanias from '@/pages/app/adminCampanias';
+import AppAdminCampaniaDetalle from '@/pages/app/adminCampaniaDetalle';
 import AppAdminLeadsMyEvolve from '@/pages/app/adminLeadsMyEvolve';
 import AppAdminLeadsMyEvolveCalendar from '@/pages/app/adminLeadsMyEvolveCalendar';
 import AppAdminAutoLeads from '@/pages/app/adminAutoLeads';
@@ -104,6 +106,21 @@ function AdminOpportunitiesRoute() {
   return (
     <RequireAdmin>
       <AppAdminOportunidades />
+    </RequireAdmin>
+  );
+}
+function AdminCampaignasRoute() {
+  return (
+    <RequireAdmin>
+      <AppAdminCampanias />
+    </RequireAdmin>
+  );
+}
+function AdminCampaignDetailRoute() {
+  const { id } = useParams<{ id: string }>();
+  return (
+    <RequireAdmin>
+      <AppAdminCampaniaDetalle campaignId={id ?? ''} />
     </RequireAdmin>
   );
 }
@@ -339,6 +356,8 @@ const AppAdminDesarrolladoresPage = withLocale(AdminDesarrolladoresRoute);
 const AppAdminProyectosPage = withLocale(AdminProyectosRoute);
 const AppAdminCompanyPage = withLocale(AdminCompanyRoute);
 const AppAdminOpportunitiesPage = withLocale(AdminOpportunitiesRoute);
+const AppAdminCampaignasPage = withLocale(AdminCampaignasRoute);
+const AppAdminCampaignDetailPage = withLocale(AdminCampaignDetailRoute);
 const AppAdminLeadsMyEvolvePage = withLocale(AdminLeadsMyEvolveRoute);
 const AppAdminAutoLeadsPage = withLocale(AdminAutoLeadsRoute);
 const AppAdminLeadsCalendarPage = withLocale(AdminLeadsCalendarRoute);
@@ -494,6 +513,8 @@ export function Router() {
         <Route path="/:lang/app/admin/proyectos" component={AppAdminProyectosPage} />
         <Route path="/:lang/app/admin/company" component={AppAdminCompanyPage} />
         <Route path="/:lang/app/admin/oportunidades" component={AppAdminOpportunitiesPage} />
+        <Route path="/:lang/app/admin/campanas/:id" component={AppAdminCampaignDetailPage} />
+        <Route path="/:lang/app/admin/campanas" component={AppAdminCampaignasPage} />
         <Route path="/:lang/app/admin/leads/my-evolve" component={AppAdminLeadsMyEvolvePage} />
         <Route path="/:lang/app/admin/leads/auto" component={AppAdminAutoLeadsPage} />
         <Route path="/:lang/app/admin/leads/calendar" component={AppAdminLeadsCalendarPage} />

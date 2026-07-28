@@ -11,7 +11,7 @@ import {
 import { useLocation } from 'wouter';
 import { isLocale } from '@/app/i18n';
 import { useAdminAssignedProjects } from '@/contexts/AdminAssignedProjectsContext';
-import { isAdminAuthenticated, ADMIN_AUTH_CHANGE_EVENT } from '@/lib/adminAuth';
+import { adminAuthorizedFetch, isAdminAuthenticated, ADMIN_AUTH_CHANGE_EVENT } from '@/lib/adminAuth';
 import {
   APP_NAV_BADGES_REFRESH_EVENT,
   companyProjectsSignature,
@@ -205,12 +205,12 @@ export function AppNavBadgesProvider({ children }: { children: ReactNode }) {
       return;
     }
     void Promise.all([
-      fetch(`${apiBase}/users/developers`).then((res) => {
-        if (!res.ok) throw new Error(String(res.status));
+      adminAuthorizedFetch(`${apiBase}/users/developers`).then((res) => {
+        if (!res?.ok) throw new Error(String(res?.status ?? 'no-auth'));
         return res.json() as Promise<unknown>;
       }),
-      fetch(`${apiBase}/contact/company-submissions`).then((res) => {
-        if (!res.ok) throw new Error(String(res.status));
+      adminAuthorizedFetch(`${apiBase}/contact/company-submissions`).then((res) => {
+        if (!res?.ok) throw new Error(String(res?.status ?? 'no-auth'));
         return res.json() as Promise<unknown>;
       }),
     ])
