@@ -5,7 +5,6 @@ import {
   Eye,
   FileSpreadsheet,
   Heart,
-  Key,
   KeyRound,
   LayoutGrid,
   List,
@@ -97,7 +96,6 @@ import { consumeOpenCompanyLeadRequest } from '@/lib/companyLeadDeepLink';
 import { ADMIN_FAVORITES_TOOLBAR_BUTTON_ACTIVE, ADMIN_FAVORITES_TOOLBAR_BUTTON_INACTIVE, ADMIN_FILTER_PILL_CLASS, ADMIN_FILTER_VIEW_TOGGLE_CLASS, ADMIN_PRIMARY_TOOLBAR_BUTTON_CLASS } from '@/lib/adminFilterUi';
 import {
   ADMIN_ROW_ACTION_ICON_BUTTON_CLASS,
-  ADMIN_ROW_ACTION_ICON_MUTED_CLASS,
   ADMIN_TABLE_ACTIONS_TH_CLASS,
   adminRowActionHeartIconClass,
 } from '@/lib/adminTableActionsUi';
@@ -611,15 +609,6 @@ export default function AppAdminCompanyPage() {
     setOpen(true);
     setCopied(false);
     setDetailTab(opts?.tab ?? 'cuestionario');
-  };
-
-  const openAssignLead = (contact: CompanyContact) => {
-    setSelected(contact);
-    setFlowStep('prospectos');
-    setSeleccionProspectos({});
-    setAssignDeveloperSearch('');
-    setOpen(true);
-    setCopied(false);
   };
 
   const copyLeadTableEmail = (email: string) => {
@@ -1203,37 +1192,6 @@ export default function AppAdminCompanyPage() {
                       >
                         <Eye className="size-4" strokeWidth={1.5} aria-hidden />
                       </Button>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className={ADMIN_ROW_ACTION_ICON_BUTTON_CLASS}
-                        title="Asignar a proyecto"
-                        aria-label={`Asignar lead ${contact.nombre}`}
-                        onClick={() => openAssignLead(contact)}
-                      >
-                        <UserPlus className="size-4" strokeWidth={1.5} aria-hidden />
-                      </Button>
-                      <span
-                        className="inline-flex size-8 shrink-0 items-center justify-center"
-                        title={
-                          companyAccessById[contact.id] ? 'Acceso habilitado' : 'Sin acceso'
-                        }
-                        aria-label={
-                          companyAccessById[contact.id] ? 'Acceso habilitado' : 'Sin acceso'
-                        }
-                      >
-                        <Key
-                          className={cn(
-                            'size-4',
-                            companyAccessById[contact.id]
-                              ? 'text-emerald-500 dark:text-emerald-400'
-                              : ADMIN_ROW_ACTION_ICON_MUTED_CLASS,
-                          )}
-                          strokeWidth={1.5}
-                          aria-hidden
-                        />
-                      </span>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button
@@ -1318,7 +1276,6 @@ export default function AppAdminCompanyPage() {
                     onView={(lead) => openDetail(lead, { tab: 'actividad' })}
                     onToggleFavorite={toggleLeadFavorite}
                     onCopyEmail={copyLeadTableEmail}
-                    onAssign={openAssignLead}
                     copiedEmail={copiedLeadEmail}
                     leadEstado={leadEstado}
                   />
@@ -1388,10 +1345,6 @@ export default function AppAdminCompanyPage() {
                 emailCopied={copied}
                 assignedMemberCount={selectedAssignedMemberCount}
                 onDiscard={() => updateLeadStatus(selected.id, 'descartado')}
-                onAssignProject={() => {
-                  setAssignDeveloperSearch('');
-                  setFlowStep('prospectos');
-                }}
                 initials={leadInitials(selected.nombre)}
               />
           ) : null}

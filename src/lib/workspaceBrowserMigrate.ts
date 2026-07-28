@@ -60,39 +60,51 @@ function hasLegacyData(): boolean {
   return LOCAL_STORAGE_KEYS.some((key) => localStorage.getItem(key) != null);
 }
 
+let migrateOnceInFlight: Promise<void> | null = null;
+
 export async function migrateLegacyWorkspaceStorageOnce(): Promise<void> {
   if (typeof window === 'undefined') return;
   if (!isAdminAuthenticated()) return;
-  if (sessionStorage.getItem(MIGRATION_FLAG_KEY) === '1') return;
   if (!hasLegacyData()) {
     sessionStorage.setItem(MIGRATION_FLAG_KEY, '1');
     return;
   }
+  // Stale flag from a previous failed attempt must not block retry while legacy keys remain.
+  if (sessionStorage.getItem(MIGRATION_FLAG_KEY) === '1') {
+    sessionStorage.removeItem(MIGRATION_FLAG_KEY);
+  }
+  if (migrateOnceInFlight) return migrateOnceInFlight;
 
-  const themeRaw = localStorage.getItem(THEME_STORAGE_KEY);
-  const theme = themeRaw === 'dark' || themeRaw === 'light' ? themeRaw : undefined;
-  const sidebarVisibility =
-    readJson<Record<string, boolean>>('vado.admin.sidebar.sectionVisibility.v1') ?? undefined;
+  migrateOnceInFlight = (async () => {
+    const themeRaw = localStorage.getItem(THEME_STORAGE_KEY);
+    const theme = themeRaw === 'dark' || themeRaw === 'light' ? themeRaw : undefined;
+    const sidebarVisibility =
+      readJson<Record<string, boolean>>('vado.admin.sidebar.sectionVisibility.v1') ?? undefined;
 
-  const ok = await migrateBrowserWorkspaceData({
-    pipeline: readJson<unknown[]>('vado-opportunities-pipeline') ?? undefined,
-    companyLeadUpdates:
-      readJson<Record<string, unknown[]>>('vado-company-lead-updates') ?? undefined,
-    companyLeadStatuses: undefined,
-    companyLeadFavorites: readJson<string[]>('vado-company-lead-favorites') ?? undefined,
-    developerFavorites: readJson<string[]>('vado-admin-developer-favorites') ?? undefined,
-    inboxReadState: collectInboxReadState(),
-    theme,
-    navBadges: collectNavBadges(),
-    sidebarVisibility,
-  });
+    const ok = await migrateBrowserWorkspaceData({
+      pipeline: readJson<unknown[]>('vado-opportunities-pipeline') ?? undefined,
+      companyLeadUpdates:
+        readJson<Record<string, unknown[]>>('vado-company-lead-updates') ?? undefined,
+      companyLeadStatuses: undefined,
+      companyLeadFavorites: readJson<string[]>('vado-company-lead-favorites') ?? undefined,
+      developerFavorites: readJson<string[]>('vado-admin-developer-favorites') ?? undefined,
+      inboxReadState: collectInboxReadState(),
+      theme,
+      navBadges: collectNavBadges(),
+      sidebarVisibility,
+    });
 
-  if (ok) {
+    if (!ok) return;
+
     for (const key of LOCAL_STORAGE_KEYS) {
       try {
         localStorage.removeItem(key);
       } catch {}
     }
-  }
-  sessionStorage.setItem(MIGRATION_FLAG_KEY, '1');
+    sessionStorage.setItem(MIGRATION_FLAG_KEY, '1');
+  })().finally(() => {
+    migrateOnceInFlight = null;
+  });
+
+  return migrateOnceInFlight;
 }

@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { useLocation } from 'wouter';
 import { useAdminAssignedProjects } from '@/contexts/AdminAssignedProjectsContext';
 import type { AdminSelectOption } from '@/components/app/AdminSelect';
 import {
@@ -28,7 +27,6 @@ import {
 } from '@/lib/adminOpportunitiesPipeline';
 import { chatWidgetDetailForAdmin } from '@/lib/chatWidgetLead';
 import { fetchCompanySubmissions, type CompanyContact } from '@/lib/companyAdminContact';
-import { requestOpenCompanyLead } from '@/lib/companyLeadDeepLink';
 import {
   COMPANY_LEAD_STATUSES,
   COMPANY_LEAD_STATUS_LABELS,
@@ -48,7 +46,6 @@ import {
   type CompanyLeadUpdate,
 } from '@/lib/companyLeadUpdates';
 import { calificacionBadgeClass } from '@/lib/evolveLeadUi';
-import { useLocale } from '@/hooks/useLocale';
 
 type Props = {
   entry: PipelineLeadEntry | null;
@@ -153,8 +150,6 @@ function PipelineAmountBar({
 
 export function PipelineLeadDetailDialog({ entry, open, onOpenChange, onAmountChange }: Props) {
   const { t } = useTranslation();
-  const { path } = useLocale();
-  const [, setLocation] = useLocation();
   const { assignedProjects, removeAssignedProjectByContactId } = useAdminAssignedProjects();
 
   const [loadState, setLoadState] = useState<LoadState>('idle');
@@ -324,13 +319,6 @@ export function PipelineLeadDetailDialog({ entry, open, onOpenChange, onAmountCh
     });
   };
 
-  const goAssignOnLeadsPage = () => {
-    if (!contact) return;
-    requestOpenCompanyLead(contact.id, 'cuestionario');
-    onOpenChange(false);
-    setLocation(path('/app/admin/company'));
-  };
-
   if (!entry) return null;
 
   const amountLabel = formatPipelineAmountUsd(entry.estimatedAmountUsd);
@@ -432,7 +420,6 @@ export function PipelineLeadDetailDialog({ entry, open, onOpenChange, onAmountCh
                 emailCopied={emailCopied}
                 assignedMemberCount={assignedMemberCount}
                 onDiscard={() => updateLeadStatus(contact.id, 'descartado')}
-                onAssignProject={goAssignOnLeadsPage}
                 initials={leadInitials(contact.nombre)}
               />
             </div>

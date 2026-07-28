@@ -1,12 +1,6 @@
-import { Copy, Eye, Heart, MoreVertical } from 'lucide-react';
+import { Copy, Eye, Heart } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import type { CompanyContact } from '@/lib/companyAdminContact';
 import { COMPANY_LEAD_STATUS_DOT_CLASS, COMPANY_LEAD_STATUS_LABELS } from '@/lib/companyLeadStatus';
 import {
@@ -22,7 +16,6 @@ type Props = {
   onView: (lead: CompanyContact) => void;
   onToggleFavorite: (id: string) => void;
   onCopyEmail: (email: string) => void;
-  onAssign: (lead: CompanyContact) => void;
   copiedEmail: string | null;
   leadEstado: string;
 };
@@ -34,7 +27,6 @@ export function CompanyLeadCard({
   onView,
   onToggleFavorite,
   onCopyEmail,
-  onAssign,
   copiedEmail,
   leadEstado,
 }: Props) {
@@ -128,29 +120,10 @@ export function CompanyLeadCard({
         </p>
       </div>
 
-      <div className="mt-3 flex items-center justify-between gap-2 border-t border-border/50 pt-2.5">
+      <div className="mt-3 border-t border-border/50 pt-2.5">
         <span className="truncate text-[10px] text-muted-foreground" title={lead.mensaje}>
           {lead.mensaje.length > 0 ? lead.mensaje.substring(0, 40) + '...' : '(sin mensaje)'}
         </span>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className={ADMIN_ROW_ACTION_ICON_BUTTON_CLASS}
-              title="Más acciones"
-              aria-label={`Acciones para ${lead.nombre}`}
-            >
-              <MoreVertical className="size-4" strokeWidth={1.5} aria-hidden />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onSelect={() => onAssign(lead)}>
-              Asignar a proyecto
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
       </div>
 
       <span className="mt-2 text-[10px] text-muted-foreground">{lead.fechaSolicitud}</span>
