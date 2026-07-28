@@ -247,13 +247,19 @@ export function AppNavBadgesProvider({ children }: { children: ReactNode }) {
     refreshAdminNav();
     const onLead = () => refreshAdminNav();
     const onAuth = () => refreshAdminNav();
+    const onFocus = () => refreshAdminNav();
+    const onVisibility = () => {
+      if (document.visibilityState === 'visible') refreshAdminNav();
+    };
     window.addEventListener(LEAD_STATUS_CHANGED_EVENT, onLead);
     window.addEventListener(ADMIN_AUTH_CHANGE_EVENT, onAuth);
-    const timer = window.setInterval(refreshAdminNav, 60000);
+    window.addEventListener('focus', onFocus);
+    document.addEventListener('visibilitychange', onVisibility);
     return () => {
       window.removeEventListener(LEAD_STATUS_CHANGED_EVENT, onLead);
       window.removeEventListener(ADMIN_AUTH_CHANGE_EVENT, onAuth);
-      window.clearInterval(timer);
+      window.removeEventListener('focus', onFocus);
+      document.removeEventListener('visibilitychange', onVisibility);
     };
   }, [isAdminSection, refreshAdminNav, location]);
 

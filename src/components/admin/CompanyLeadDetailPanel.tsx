@@ -1,5 +1,4 @@
 import {
-  ArrowRight,
   Building2,
   CalendarClock,
   CalendarDays,
@@ -66,7 +65,6 @@ type Props = {
   emailCopied: boolean;
   assignedMemberCount: number;
   onDiscard: () => void;
-  onAssignProject: () => void;
   initials: string;
 };
 
@@ -319,7 +317,6 @@ export function CompanyLeadDetailPanel({
   emailCopied,
   assignedMemberCount,
   onDiscard,
-  onAssignProject,
   initials,
 }: Props) {
   const locationLabel =
@@ -641,18 +638,6 @@ export function CompanyLeadDetailPanel({
         <div className="flex shrink-0 items-center gap-2">
           <Button type="button" variant="outline" size="sm" className="h-9 px-4" onClick={onDiscard}>
             Descartar
-          </Button>
-          <Button
-            type="button"
-            size="sm"
-            className={cn(
-              ADMIN_PRIMARY_BTN_CLASS,
-              'h-9 gap-1.5 rounded-full px-5 text-sm',
-            )}
-            onClick={onAssignProject}
-          >
-            Asignar proyecto
-            <ArrowRight className="size-4" aria-hidden />
           </Button>
         </div>
       </footer>
