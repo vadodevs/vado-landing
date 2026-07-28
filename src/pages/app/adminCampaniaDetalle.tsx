@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   Area,
   AreaChart,
@@ -12,7 +12,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
-import { ArrowLeft, Megaphone, MousePointerClick, Reply, Users, Eye } from 'lucide-react'
+import { ArrowLeft, Loader2, Megaphone, MousePointerClick, Reply, Users, Eye } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Link, useParams } from 'wouter'
 import { AppShell } from '@/components/layout/app/AppShell'
@@ -33,11 +33,14 @@ import {
   type ChartConfig,
 } from '@/components/ui/chart'
 import { useLocale } from '@/hooks/useLocale'
+import { fetchCampaign, type CampaignDetail } from '@/lib/campaignsApi'
 import {
   campaignClickRate,
   campaignOpenRate,
   getCampaignAudience,
   getCampaignById,
+  type Campaign,
+  type CampaignAudienceLead,
   type CampaignStatus,
 } from '@/lib/campaignsMock'
 import { cn } from '@/lib/utils'
@@ -87,9 +90,46 @@ export default function AppAdminCampaniaDetalle({ campaignId }: { campaignId?: s
   const { path } = useLocale()
   const params = useParams<{ id?: string }>()
   const id = campaignId || params.id || ''
-  const campaign = id ? getCampaignById(id) : undefined
+  const [campaign, setCampaign] = useState<Campaign | CampaignDetail | null>(null)
+  const [audience, setAudience] = useState<CampaignAudienceLead[]>([])
+  const [loading, setLoading] = useState(true)
   const dateLocale = i18n.language?.startsWith('en') ? 'en-US' : 'es-ES'
   const listHref = path('/app/admin/campanas')
+
+  useEffect(() => {
+    if (!id) {
+      setCampaign(null)
+      setAudience([])
+      setLoading(false)
+      return
+    }
+    let cancelled = false
+    setLoading(true)
+    void fetchCampaign(id)
+      .then((detail) => {
+        if (cancelled) return
+        if (detail) {
+          setCampaign(detail)
+          setAudience(detail.audience)
+          return
+        }
+        const local = getCampaignById(id)
+        setCampaign(local ?? null)
+        setAudience(local ? getCampaignAudience(local) : [])
+      })
+      .catch(() => {
+        if (cancelled) return
+        const local = getCampaignById(id)
+        setCampaign(local ?? null)
+        setAudience(local ? getCampaignAudience(local) : [])
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [id])
 
   const activityConfig = useMemo(
     () =>
@@ -197,10 +237,24 @@ export default function AppAdminCampaniaDetalle({ campaignId }: { campaignId?: s
 
   const mixTotal = useMemo(() => mixData.reduce((sum, r) => sum + r.value, 0), [mixData])
 
-  const audience = campaign ? getCampaignAudience(campaign) : []
   const openRate = campaign ? campaignOpenRate(campaign) : null
   const clickRate = campaign ? campaignClickRate(campaign) : null
   const hasMetrics = chartData.length > 0
+
+  if (loading) {
+    return (
+      <AppShell
+        pathWithoutLang="/app/admin/campanas"
+        title={t('sidebarDemo.navCampanias')}
+        description={t('seo.appAdminCampaigns')}
+      >
+        <div className="flex items-center gap-2 px-1 py-10 text-sm text-muted-foreground">
+          <Loader2 className="size-4 animate-spin" aria-hidden />
+          {t('campaigns.loadingDetail')}
+        </div>
+      </AppShell>
+    )
+  }
 
   if (!campaign) {
     return (

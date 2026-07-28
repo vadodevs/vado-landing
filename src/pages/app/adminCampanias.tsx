@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { ChevronRight, LayoutGrid, LayoutList, Megaphone, Plus } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { ChevronRight, LayoutGrid, LayoutList, Loader2, Megaphone, Plus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import { Link, useLocation } from 'wouter';
@@ -8,8 +8,9 @@ import { AppShell } from '@/components/layout/app/AppShell';
 import { Button } from '@/components/ui/button';
 import { useLocale } from '@/hooks/useLocale';
 import { ADMIN_PRIMARY_TOOLBAR_BUTTON_CLASS } from '@/lib/adminFilterUi';
+import { fetchCampaigns } from '@/lib/campaignsApi';
 import {
-  addCampaign,
+  INITIAL_MOCK_CAMPAIGNS,
   listCampaigns,
   type Campaign,
   type CampaignStatus,
@@ -89,9 +90,40 @@ export default function AppAdminCampanias() {
   const { path } = useLocale();
   const [, setLocation] = useLocation();
   const [view, setView] = useState<CampaignView>('list');
-  const [campaigns, setCampaigns] = useState<Campaign[]>(() => listCampaigns());
+  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [usingMock, setUsingMock] = useState(false);
   const [wizardOpen, setWizardOpen] = useState(false);
   const dateLocale = i18n.language?.startsWith('en') ? 'en-US' : 'es-ES';
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    void fetchCampaigns()
+      .then((rows) => {
+        if (cancelled) return;
+        if (rows) {
+          setCampaigns(rows);
+          setUsingMock(false);
+          return;
+        }
+        const local = listCampaigns();
+        setCampaigns(local.length > 0 ? local : INITIAL_MOCK_CAMPAIGNS);
+        setUsingMock(true);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        const local = listCampaigns();
+        setCampaigns(local.length > 0 ? local : INITIAL_MOCK_CAMPAIGNS);
+        setUsingMock(true);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const totalContacts = campaigns.reduce((sum, c) => sum + c.contacts, 0);
   const totalOpens = campaigns.reduce((sum, c) => sum + c.opens, 0);
@@ -115,6 +147,11 @@ export default function AppAdminCampanias() {
             <div className="min-w-0">
               <h2 className="text-base font-semibold text-foreground">{t('campaigns.title')}</h2>
               <p className="mt-0.5 text-xs text-muted-foreground">{t('campaigns.subtitle')}</p>
+              {usingMock ? (
+                <p className="mt-1 text-[11px] text-amber-700 dark:text-amber-300">
+                  {t('campaigns.usingMockData')}
+                </p>
+              ) : null}
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-2">
@@ -165,7 +202,16 @@ export default function AppAdminCampanias() {
           </div>
         </div>
 
-        {view === 'list' ? (
+        {loading ? (
+          <div className="flex items-center gap-2 rounded-lg border border-border/50 px-4 py-10 text-sm text-muted-foreground">
+            <Loader2 className="size-4 animate-spin" aria-hidden />
+            {t('campaigns.loadingList')}
+          </div>
+        ) : campaigns.length === 0 ? (
+          <p className="rounded-lg border border-dashed border-border/70 px-4 py-10 text-center text-sm text-muted-foreground">
+            {t('campaigns.emptyList')}
+          </p>
+        ) : view === 'list' ? (
           <div className="overflow-hidden rounded-lg border border-border/50">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
@@ -356,8 +402,7 @@ export default function AppAdminCampanias() {
         open={wizardOpen}
         onOpenChange={setWizardOpen}
         onCreated={(campaign) => {
-          addCampaign(campaign);
-          setCampaigns(listCampaigns());
+          setCampaigns((prev) => [campaign, ...prev.filter((c) => c.id !== campaign.id)]);
         }}
       />
     </AppShell>

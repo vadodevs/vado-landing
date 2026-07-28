@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Check, Loader2, Mail, MessageCircle, Instagram } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -17,7 +18,9 @@ import {
   type AutoLeadRun,
   type AutoLeadRunStatus,
 } from '@/lib/autoLeadsMock'
+import { createCampaign } from '@/lib/campaignsApi'
 import {
+  addCampaign,
   audienceFromAutoLeadRun,
   createCampaignId,
   type Campaign,
@@ -57,6 +60,7 @@ export function CreateCampaignFromWorkflowDialog({ open, onOpenChange, onCreated
   const [runs, setRuns] = useState<AutoLeadRun[]>([])
   const [usingDemoRuns, setUsingDemoRuns] = useState(false)
   const [loadingRuns, setLoadingRuns] = useState(false)
+  const [creating, setCreating] = useState(false)
   const [selectedRunId, setSelectedRunId] = useState<string | null>(null)
   const [channel, setChannel] = useState<CampaignChannel>('email')
   const [name, setName] = useState('')
@@ -67,6 +71,7 @@ export function CreateCampaignFromWorkflowDialog({ open, onOpenChange, onCreated
     setSelectedRunId(null)
     setChannel('email')
     setName('')
+    setCreating(false)
     setLoadingRuns(true)
     void fetchAutoLeadRuns()
       .then((data) => {
@@ -98,24 +103,51 @@ export function CreateCampaignFromWorkflowDialog({ open, onOpenChange, onCreated
   const canGoNext =
     (step === 1 && selectedRunId !== null) ||
     (step === 2 && audience.length > 0) ||
-    (step === 3 && name.trim().length > 0)
+    (step === 3 && name.trim().length > 0 && !creating)
 
-  const handleCreate = () => {
-    if (!selectedRun || !name.trim()) return
-    const today = new Date().toISOString().slice(0, 10)
-    onCreated({
-      id: createCampaignId(),
-      name: name.trim(),
-      status: 'draft',
-      createdAt: today,
-      contacts: audience.length,
-      opens: 0,
-      clicks: 0,
-      autoLeadRunId: selectedRun.id,
-      autoLeadRunName: selectedRun.name,
-      channel,
-    })
-    onOpenChange(false)
+  const handleCreate = async () => {
+    if (!selectedRun || !name.trim() || creating) return
+    setCreating(true)
+    try {
+      if (!usingDemoRuns) {
+        const created = await createCampaign({
+          name: name.trim(),
+          autoLeadRunId: selectedRun.id,
+          channel,
+          status: 'draft',
+        })
+        if (created) {
+          onCreated(created)
+          onOpenChange(false)
+          toast.success(t('campaigns.wizardCreateSuccess'))
+          return
+        }
+        toast.error(t('campaigns.wizardCreateError'))
+        return
+      }
+
+      const today = new Date().toISOString().slice(0, 10)
+      const local: Campaign = {
+        id: createCampaignId(),
+        name: name.trim(),
+        status: 'draft',
+        createdAt: today,
+        contacts: audience.length,
+        opens: 0,
+        clicks: 0,
+        replies: 0,
+        autoLeadRunId: selectedRun.id,
+        autoLeadRunName: selectedRun.name,
+        channel,
+        metricsByDay: [],
+      }
+      addCampaign(local)
+      onCreated(local)
+      onOpenChange(false)
+      toast.success(t('campaigns.wizardCreateLocalSuccess'))
+    } finally {
+      setCreating(false)
+    }
   }
 
   return (
@@ -324,6 +356,7 @@ export function CreateCampaignFromWorkflowDialog({ open, onOpenChange, onCreated
             type="button"
             variant="ghost"
             size="sm"
+            disabled={creating}
             onClick={() => {
               if (step === 1) onOpenChange(false)
               else setStep((s) => (s - 1) as WizardStep)
@@ -357,9 +390,16 @@ export function CreateCampaignFromWorkflowDialog({ open, onOpenChange, onCreated
                 size="sm"
                 className={ADMIN_PRIMARY_BTN_CLASS}
                 disabled={!canGoNext}
-                onClick={handleCreate}
+                onClick={() => void handleCreate()}
               >
-                {t('campaigns.wizardCreate')}
+                {creating ? (
+                  <>
+                    <Loader2 className="size-3.5 animate-spin" aria-hidden />
+                    {t('campaigns.wizardCreating')}
+                  </>
+                ) : (
+                  t('campaigns.wizardCreate')
+                )}
               </Button>
             )}
           </div>

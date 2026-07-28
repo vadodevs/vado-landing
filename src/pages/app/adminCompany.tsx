@@ -102,6 +102,7 @@ import {
   adminRowActionHeartIconClass,
 } from '@/lib/adminTableActionsUi';
 import { ADMIN_PRIMARY_BTN_CLASS } from '@/lib/adminVadoUi';
+import { adminAuthorizedFetch } from '@/lib/adminAuth';
 import { cn } from '@/lib/utils';
 
 type TimeFilter = 'todos' | 'hoy' | 'semana' | 'mes';
@@ -415,9 +416,9 @@ export default function AppAdminCompanyPage() {
       const url = `${base.replace(/\/$/, '')}/users/developers`;
       setAssignDirectoryLoad('loading');
       setAssignDirectoryError('none');
-      void fetch(url)
+      void adminAuthorizedFetch(url)
         .then((res) => {
-          if (!res.ok) throw new Error(String(res.status));
+          if (!res?.ok) throw new Error(String(res?.status ?? 'no-auth'));
           return res.json() as Promise<unknown>;
         })
         .then((data: unknown) => {
@@ -474,12 +475,12 @@ export default function AppAdminCompanyPage() {
       setContactsLoad('loading');
       setContactsError('none');
       void Promise.all([
-        fetch(url).then((res) => {
-          if (!res.ok) throw new Error(String(res.status));
+        adminAuthorizedFetch(url).then((res) => {
+          if (!res?.ok) throw new Error(String(res?.status ?? 'no-auth'));
           return res.json() as Promise<unknown>;
         }),
-        fetch(accessUrl).then((res) => {
-          if (!res.ok) throw new Error(String(res.status));
+        adminAuthorizedFetch(accessUrl).then((res) => {
+          if (!res?.ok) throw new Error(String(res?.status ?? 'no-auth'));
           return res.json() as Promise<
             Array<{ companySubmissionId: string; accessEnabled: boolean }>
           >;
@@ -769,9 +770,9 @@ export default function AppAdminCompanyPage() {
     setCompanyAccessError(null);
     setCompanyAccessBusyById((prev) => ({ ...prev, [id]: true }));
     const url = `${base.replace(/\/$/, '')}/contact/company-submissions/${id}/${action}`;
-    void fetch(url, { method: 'POST' })
+    void adminAuthorizedFetch(url, { method: 'POST' })
       .then((res) => {
-        if (!res.ok) throw new Error(String(res.status));
+        if (!res?.ok) throw new Error(String(res?.status ?? 'no-auth'));
         return res.json() as Promise<{
           companySubmissionId: string;
           email: string;
