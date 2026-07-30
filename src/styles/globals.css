@@ -370,3 +370,39 @@
     @apply bg-background text-foreground overflow-x-hidden font-sans;
   }
 }
+
+/* Lead Engine V2 (Auto Search) — animations from autosales */
+@keyframes v2-hunter-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 1px rgba(51, 144, 255, 0.3),
+      0 0 18px rgba(51, 144, 255, 0.16);
+  }
+  50% {
+    box-shadow:
+      0 0 0 1px rgba(51, 144, 255, 0.55),
+      0 0 28px rgba(51, 144, 255, 0.28);
+  }
+}
+
+@keyframes tavily-scan {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh);
+    opacity: 0;
+  }
+}
+
+.scrollbar-thin {
+  scrollbar-width: thin;
+}

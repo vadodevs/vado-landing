@@ -10,11 +10,12 @@ export type CompanyContact = {
   correo: string;
   empresa: string;
   telefono: string;
+  linkedinUrl: string;
   mensaje: string;
   sector: string;
   ciudad: string;
   fechaSolicitud: string;
-  
+
   createdAtMs: number;
 };
 
@@ -24,6 +25,7 @@ export type ApiCompanySubmissionRow = {
   firstName: string;
   email: string;
   phone?: string | null;
+  linkedinUrl?: string | null;
   company: string;
   campaignID?: string;
   subject?: string | null;
@@ -57,6 +59,7 @@ export function mapApiCompanySubmission(row: ApiCompanySubmissionRow): CompanyCo
     correo: (row.email ?? '').trim(),
     empresa: (row.company ?? '').trim() || '—',
     telefono: (row.phone ?? '').trim() || '—',
+    linkedinUrl: (row.linkedinUrl ?? '').trim(),
     mensaje: (row.message ?? '').trim(),
     sector: '',
     ciudad: '',
@@ -72,16 +75,79 @@ export type CompanySubmissionsFetchResult =
   | { ok: false; reason: 'no-config' | 'fail' };
 
 
-export async function fetchCompanySubmissions(): Promise<CompanySubmissionsFetchResult> {
+export async function fetchCompanySubmissions(opts?: {
+  archived?: boolean
+}): Promise<CompanySubmissionsFetchResult> {
   const base = getApiBaseUrl();
   if (!base) return { ok: false, reason: 'no-config' };
   try {
-    const res = await adminAuthorizedFetch(`${base}/contact/company-submissions`);
+    const q = opts?.archived ? '?archived=1' : '';
+    const res = await adminAuthorizedFetch(`${base}/contact/company-submissions${q}`);
     if (!res?.ok) return { ok: false, reason: 'fail' };
     const data = (await res.json()) as unknown;
     if (!Array.isArray(data)) return { ok: true, contacts: [] };
     const contacts = data.map((row) => mapApiCompanySubmission(row as ApiCompanySubmissionRow));
     return { ok: true, contacts };
+  } catch {
+    return { ok: false, reason: 'fail' };
+  }
+}
+
+export async function setCompanySubmissionArchived(
+  id: string,
+  archived: boolean,
+): Promise<boolean> {
+  const base = getApiBaseUrl();
+  if (!base) return false;
+  try {
+    const res = await adminAuthorizedFetch(`${base}/contact/company-submissions/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ archived }),
+    });
+    return res?.ok === true;
+  } catch {
+    return false;
+  }
+}
+
+export async function deleteCompanySubmission(id: string): Promise<boolean> {
+  const base = getApiBaseUrl();
+  if (!base) return false;
+  try {
+    const res = await adminAuthorizedFetch(`${base}/contact/company-submissions/${id}`, {
+      method: 'DELETE',
+    });
+    return res?.ok === true;
+  } catch {
+    return false;
+  }
+}
+
+export type PatchCompanySubmissionFieldsInput = {
+  phone?: string | null;
+  linkedinUrl?: string | null;
+};
+
+export type PatchCompanySubmissionFieldsResult =
+  | { ok: true; contact: CompanyContact }
+  | { ok: false; reason: 'no-config' | 'fail' };
+
+export async function patchCompanySubmissionFields(
+  id: string,
+  fields: PatchCompanySubmissionFieldsInput,
+): Promise<PatchCompanySubmissionFieldsResult> {
+  const base = getApiBaseUrl();
+  if (!base) return { ok: false, reason: 'no-config' };
+  try {
+    const res = await adminAuthorizedFetch(`${base}/contact/company-submissions/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(fields),
+    });
+    if (!res?.ok) return { ok: false, reason: 'fail' };
+    const data = (await res.json()) as ApiCompanySubmissionRow;
+    return { ok: true, contact: mapApiCompanySubmission(data) };
   } catch {
     return { ok: false, reason: 'fail' };
   }

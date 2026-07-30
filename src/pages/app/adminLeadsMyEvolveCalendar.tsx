@@ -253,9 +253,9 @@ export default function AppAdminLeadsMyEvolveCalendar() {
 
   return (
     <AppShell
-      pathWithoutLang="/app/admin/leads/calendar"
-      title={t('sidebarDemo.navLeadsCalendar')}
-      description={t('seo.appAdminLeadsCalendar')}
+      pathWithoutLang="/app/admin/utileria/calendario"
+      title={t('sidebarDemo.navUtilitiesCalendar')}
+      description={t('seo.appAdminUtilitiesCalendar')}
       contentOverflow="hidden"
     >
       <div className="flex h-0 min-h-0 min-w-0 flex-1 flex-col overflow-hidden">

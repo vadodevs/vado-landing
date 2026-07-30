@@ -1,0 +1,102 @@
+type SubdivisionOption = { value: string; label: string };
+
+const ANY: SubdivisionOption = { value: "", label: "Todo el país" };
+
+/** Estados de México (nombre usado en búsqueda / APIs en español). */
+const MEXICO_STATES: SubdivisionOption[] = [
+  { value: "Aguascalientes", label: "Aguascalientes" },
+  { value: "Baja California", label: "Baja California" },
+  { value: "Baja California Sur", label: "Baja California Sur" },
+  { value: "Campeche", label: "Campeche" },
+  { value: "Chiapas", label: "Chiapas" },
+  { value: "Chihuahua", label: "Chihuahua" },
+  { value: "Ciudad de México", label: "Ciudad de México" },
+  { value: "Coahuila", label: "Coahuila" },
+  { value: "Colima", label: "Colima" },
+  { value: "Durango", label: "Durango" },
+  { value: "Estado de México", label: "Estado de México" },
+  { value: "Guanajuato", label: "Guanajuato" },
+  { value: "Guerrero", label: "Guerrero" },
+  { value: "Hidalgo", label: "Hidalgo" },
+  { value: "Jalisco", label: "Jalisco" },
+  { value: "Michoacán", label: "Michoacán" },
+  { value: "Morelos", label: "Morelos" },
+  { value: "Nayarit", label: "Nayarit" },
+  { value: "Nuevo León", label: "Nuevo León" },
+  { value: "Oaxaca", label: "Oaxaca" },
+  { value: "Puebla", label: "Puebla" },
+  { value: "Querétaro", label: "Querétaro" },
+  { value: "Quintana Roo", label: "Quintana Roo" },
+  { value: "San Luis Potosí", label: "San Luis Potosí" },
+  { value: "Sinaloa", label: "Sinaloa" },
+  { value: "Sonora", label: "Sonora" },
+  { value: "Tabasco", label: "Tabasco" },
+  { value: "Tamaulipas", label: "Tamaulipas" },
+  { value: "Tlaxcala", label: "Tlaxcala" },
+  { value: "Veracruz", label: "Veracruz" },
+  { value: "Yucatán", label: "Yucatán" },
+  { value: "Zacatecas", label: "Zacatecas" },
+].sort((a, b) => a.label.localeCompare(b.label, "es"));
+
+/**
+ * Estados de EE. UU. + DC. `value` en inglés (mejor para Apollo / Hunter en inglés);
+ * `label` en español para la UI.
+ */
+const US_STATES: SubdivisionOption[] = [
+  { value: "Alabama", label: "Alabama" },
+  { value: "Alaska", label: "Alaska" },
+  { value: "Arizona", label: "Arizona" },
+  { value: "Arkansas", label: "Arkansas" },
+  { value: "California", label: "California" },
+  { value: "Colorado", label: "Colorado" },
+  { value: "Connecticut", label: "Connecticut" },
+  { value: "Delaware", label: "Delaware" },
+  { value: "District of Columbia", label: "Distrito de Columbia" },
+  { value: "Florida", label: "Florida" },
+  { value: "Georgia", label: "Georgia" },
+  { value: "Hawaii", label: "Hawái" },
+  { value: "Idaho", label: "Idaho" },
+  { value: "Illinois", label: "Illinois" },
+  { value: "Indiana", label: "Indiana" },
+  { value: "Iowa", label: "Iowa" },
+  { value: "Kansas", label: "Kansas" },
+  { value: "Kentucky", label: "Kentucky" },
+  { value: "Louisiana", label: "Luisiana" },
+  { value: "Maine", label: "Maine" },
+  { value: "Maryland", label: "Maryland" },
+  { value: "Massachusetts", label: "Massachusetts" },
+  { value: "Michigan", label: "Míchigan" },
+  { value: "Minnesota", label: "Minnesota" },
+  { value: "Mississippi", label: "Misisipi" },
+  { value: "Missouri", label: "Misuri" },
+  { value: "Montana", label: "Montana" },
+  { value: "Nebraska", label: "Nebraska" },
+  { value: "Nevada", label: "Nevada" },
+  { value: "New Hampshire", label: "Nuevo Hampshire" },
+  { value: "New Jersey", label: "Nueva Jersey" },
+  { value: "New Mexico", label: "Nuevo México" },
+  { value: "New York", label: "Nueva York" },
+  { value: "North Carolina", label: "Carolina del Norte" },
+  { value: "North Dakota", label: "Dakota del Norte" },
+  { value: "Ohio", label: "Ohio" },
+  { value: "Oklahoma", label: "Oklahoma" },
+  { value: "Oregon", label: "Oregón" },
+  { value: "Pennsylvania", label: "Pensilvania" },
+  { value: "Rhode Island", label: "Rhode Island" },
+  { value: "South Carolina", label: "Carolina del Sur" },
+  { value: "South Dakota", label: "Dakota del Sur" },
+  { value: "Tennessee", label: "Tennessee" },
+  { value: "Texas", label: "Texas" },
+  { value: "Utah", label: "Utah" },
+  { value: "Vermont", label: "Vermont" },
+  { value: "Virginia", label: "Virginia" },
+  { value: "Washington", label: "Washington" },
+  { value: "West Virginia", label: "Virginia Occidental" },
+  { value: "Wisconsin", label: "Wisconsin" },
+  { value: "Wyoming", label: "Wyoming" },
+].sort((a, b) => a.label.localeCompare(b.label, "es"));
+
+/** Opciones para `<select>`: primero “Todo el país”, luego estados ordenados por etiqueta en español. */
+export function getLeadEngineSubdivisionOptions(country: "MX" | "US"): SubdivisionOption[] {
+  return [ANY, ...(country === "US" ? US_STATES : MEXICO_STATES)];
+}

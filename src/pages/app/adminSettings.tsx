@@ -9,6 +9,7 @@ import { AdminBotSettingsCard } from '@/components/admin/AdminBotSettingsCard';
 import { AdminColdEmailSettingsCard } from '@/components/admin/AdminColdEmailSettingsCard';
 import { AdminMessagesSettingsCard } from '@/components/admin/AdminMessagesSettingsCard';
 import { AdminWhatsappLinkCard } from '@/components/admin/AdminWhatsappLinkCard';
+import { AdminSessionsCard } from '@/components/admin/AdminSessionsCard';
 import { SettingsSectionLabel } from '@/components/settings/settings-ui';
 import { getStoredAppTheme, type AppThemeMode } from '@/lib/appTheme';
 import { hydrateInboxAiSettingsFromApi } from '@/lib/inboxAiSettingsApi';
@@ -31,6 +32,9 @@ export default function AppAdminSettings() {
         <SettingsSectionLabel>{t('adminSettings.sectionAppearance')}</SettingsSectionLabel>
         <AppThemeSettingsCard mode={themeMode} onChange={setThemeMode} />
         <AdminSidebarVisibilityCard />
+
+        <SettingsSectionLabel>{t('adminSettings.sectionSecurity')}</SettingsSectionLabel>
+        <AdminSessionsCard />
 
         <SettingsSectionLabel>{t('adminSettings.sectionMessages')}</SettingsSectionLabel>
         <AdminMessagesSettingsCard />

@@ -139,7 +139,7 @@ export function buildCompanyLeadActivityEvents(
         source: 'Panel admin',
         campaign: update.reminderCode ?? 'Recordatorio',
         detail: update.body,
-        path: '/es/app/admin/leads/calendar',
+        path: '/es/app/admin/utileria/calendario',
       });
       continue;
     }

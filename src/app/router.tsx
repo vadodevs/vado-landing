@@ -47,6 +47,7 @@ import AppAdminCampaniaDetalle from '@/pages/app/adminCampaniaDetalle';
 import AppAdminLeadsMyEvolve from '@/pages/app/adminLeadsMyEvolve';
 import AppAdminLeadsMyEvolveCalendar from '@/pages/app/adminLeadsMyEvolveCalendar';
 import AppAdminAutoLeads from '@/pages/app/adminAutoLeads';
+import AppAdminAutoSearch from '@/pages/app/adminAutoSearch';
 import AppAdminCanales from '@/pages/app/adminCanales';
 import AppAdminReclutadores from '@/pages/app/adminReclutadores';
 import AppAdminOfertas from '@/pages/app/adminOfertas';
@@ -92,6 +93,13 @@ function AdminAutoLeadsRoute() {
   return (
     <RequireAdmin>
       <AppAdminAutoLeads />
+    </RequireAdmin>
+  );
+}
+function AdminAutoSearchRoute() {
+  return (
+    <RequireAdmin>
+      <AppAdminAutoSearch />
     </RequireAdmin>
   );
 }
@@ -163,6 +171,11 @@ function AdminOfertasCandidatoPerfilRoute() {
 function RedirectAdminJobsToActive({ params }: { params: { lang: string } }) {
   const lang = isLocale(params.lang) ? params.lang : getPreferredLocaleFromBrowser();
   return <Redirect to={`/${lang}/app/admin/ofertas/activas`} />;
+}
+
+function RedirectAdminLeadsCalendarToUtilities({ params }: { params: { lang: string } }) {
+  const lang = isLocale(params.lang) ? params.lang : getPreferredLocaleFromBrowser();
+  return <Redirect to={`/${lang}/app/admin/utileria/calendario`} />;
 }
 
 function DevProfileRoute({ params }: { params: { lang: string } }) {
@@ -360,6 +373,7 @@ const AppAdminCampaignasPage = withLocale(AdminCampaignasRoute);
 const AppAdminCampaignDetailPage = withLocale(AdminCampaignDetailRoute);
 const AppAdminLeadsMyEvolvePage = withLocale(AdminLeadsMyEvolveRoute);
 const AppAdminAutoLeadsPage = withLocale(AdminAutoLeadsRoute);
+const AppAdminAutoSearchPage = withLocale(AdminAutoSearchRoute);
 const AppAdminLeadsCalendarPage = withLocale(AdminLeadsCalendarRoute);
 const AppAdminReclutadoresPage = withLocale(AdminReclutadoresRoute);
 const AppAdminOfertasPage = withLocale(AdminOfertasRoute);
@@ -517,12 +531,20 @@ export function Router() {
         <Route path="/:lang/app/admin/campanas" component={AppAdminCampaignasPage} />
         <Route path="/:lang/app/admin/leads/my-evolve" component={AppAdminLeadsMyEvolvePage} />
         <Route path="/:lang/app/admin/leads/auto" component={AppAdminAutoLeadsPage} />
-        <Route path="/:lang/app/admin/leads/calendar" component={AppAdminLeadsCalendarPage} />
+        <Route path="/:lang/app/admin/leads/auto-search" component={AppAdminAutoSearchPage} />
         <Route path="/:lang/app/admin/canales/:canal" component={AppAdminCanalesPage} />
         <Route path="/:lang/app/admin/utileria/tareas" component={AppAdminUtileriaTareasPage} />
         <Route
           path="/:lang/app/admin/utileria/recordatorios"
           component={AppAdminUtileriaRecordatoriosPage}
+        />
+        <Route
+          path="/:lang/app/admin/utileria/calendario"
+          component={AppAdminLeadsCalendarPage}
+        />
+        <Route
+          path="/:lang/app/admin/leads/calendar"
+          component={RedirectAdminLeadsCalendarToUtilities}
         />
         <Route
           path="/:lang/app/admin/settings/integraciones"

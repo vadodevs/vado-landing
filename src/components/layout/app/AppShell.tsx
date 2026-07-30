@@ -20,6 +20,7 @@ import {
   MessagesSquare,
   Plug,
   PlusCircle,
+  Search,
   Settings,
   Settings2,
   Sparkles,
@@ -403,9 +404,14 @@ export function AppShell({
       normalizePath(pathWithoutLang).startsWith('/app/admin/settings'),
   );
   const [utilitiesOpen, setUtilitiesOpen] = useState(
-    () =>
-      readAdminUtilitiesNavOpen() ||
-      normalizePath(pathWithoutLang).startsWith('/app/admin/utileria'),
+    () => {
+      const p = normalizePath(pathWithoutLang);
+      return (
+        readAdminUtilitiesNavOpen() ||
+        p === '/app/admin/utileria/tareas' ||
+        p === '/app/admin/utileria/recordatorios'
+      );
+    },
   );
   const [adminSidebarVisibility, setAdminSidebarVisibility] = useState<AdminSidebarVisibility>(
     () => readAdminSidebarVisibility(),
@@ -449,7 +455,7 @@ export function AppShell({
   const hrefAdminOpportunities = path('/app/admin/oportunidades');
   const hrefAdminLeadsMyEvolve = path('/app/admin/leads/my-evolve');
   const hrefAdminAutoLeads = path('/app/admin/leads/auto');
-  const hrefAdminLeadsCalendar = path('/app/admin/leads/calendar');
+  const hrefAdminAutoSearch = path('/app/admin/leads/auto-search');
   const hrefAdminCampanias = path('/app/admin/campanas');
   const hrefAdminCanalesFacebook = path('/app/admin/canales/facebook');
   const hrefAdminCanalesWhatsApp = path('/app/admin/canales/whatsapp');
@@ -460,6 +466,7 @@ export function AppShell({
   const hrefAdminSettingsCuestionario = path('/app/admin/settings/cuestionario');
   const hrefAdminUtileriaTareas = path('/app/admin/utileria/tareas');
   const hrefAdminUtileriaRecordatorios = path('/app/admin/utileria/recordatorios');
+  const hrefAdminUtileriaCalendario = path('/app/admin/utileria/calendario');
   const hrefCompanyProfile = path('/app/company/profile');
   const hrefCompanyProjects = path('/app/company/proyectos');
   const hrefCompanySettings = path('/app/company/settings');
@@ -495,7 +502,8 @@ export function AppShell({
 
   const settingsActive = currentAppPath.startsWith('/app/admin/settings');
 
-  const utilitiesActive = currentAppPath.startsWith('/app/admin/utileria');
+  const utilitiesActive =
+    isActive(hrefAdminUtileriaTareas) || isActive(hrefAdminUtileriaRecordatorios);
 
   const nuevasAperturasActive = isActive(hrefDevDashboard) || isActive(hrefDevOverview);
   const empleosOfertasActive = isActive(hrefEmpleosOfertas);
@@ -834,14 +842,14 @@ export function AppShell({
                       <Bot />,
                     )}
                     {navItem(
+                      hrefAdminAutoSearch,
+                      t('sidebarDemo.navAutoSearch'),
+                      <Search />,
+                    )}
+                    {navItem(
                       hrefAdminOpportunities,
                       t('sidebarDemo.navOpportunities'),
                       <Target />,
-                    )}
-                    {navItem(
-                      hrefAdminLeadsCalendar,
-                      t('sidebarDemo.navLeadsCalendar'),
-                      <CalendarDays />,
                     )}
                     {navItem(
                       hrefAdminCampanias,
@@ -964,6 +972,11 @@ export function AppShell({
                         </Link>
                       </div>
                     </SidebarAnimatedCollapse>
+                    {navItem(
+                      hrefAdminUtileriaCalendario,
+                      t('sidebarDemo.navUtilitiesCalendar'),
+                      <CalendarDays />,
+                    )}
                   </section>
                   ) : null}
 

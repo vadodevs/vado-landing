@@ -155,6 +155,14 @@ export function isAdminAuthenticated(): boolean {
 }
 
 export function logoutAdmin(): void {
+  const base = getApiBaseUrl();
+  const token = getAdminAccessToken();
+  if (base && token) {
+    void fetch(`${base}/auth/logout`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+    }).catch(() => {});
+  }
   sessionStorage.removeItem(STORAGE_KEY);
   window.dispatchEvent(new CustomEvent(ADMIN_AUTH_CHANGE_EVENT));
 }

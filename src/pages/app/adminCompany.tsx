@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
+  Archive,
   Copy,
   Download,
   Eye,
@@ -11,11 +12,13 @@ import {
   Loader2,
   MoreVertical,
   Search,
+  Trash2,
   UserCheck,
   UserPlus,
   UserX,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 import { useLocation } from 'wouter';
 import { useAdminAssignedProjects } from '@/contexts/AdminAssignedProjectsContext';
 import { AdminSelect, type AdminSelectOption } from '@/components/app/AdminSelect';
@@ -26,7 +29,7 @@ import {
   type CompanyLeadDetailTab,
 } from '@/components/admin/CompanyLeadDetailPanel';
 import { ImportWorkflowLeadsDialog } from '@/components/admin/ImportWorkflowLeadsDialog';
-import { ExportPipedriveDialog } from '@/components/admin/ExportPipedriveDialog';
+import { CompanyLeadsExcelDialog } from '@/components/admin/CompanyLeadsExcelDialog';
 import { ADMIN_PAGE_SIZE, slicePage } from '@/lib/adminPagination';
 import { AppShell } from '@/components/layout/app/AppShell';
 import { Button } from '@/components/ui/button';
@@ -43,13 +46,16 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Label } from '@/components/ui/label';
 import type { AdminProspecto } from '@/lib/adminProspectos';
 import {
   createCompanySubmission,
+  deleteCompanySubmission,
   mapApiCompanySubmission,
+  setCompanySubmissionArchived,
   type ApiCompanySubmissionRow,
   type CompanyContact,
 } from '@/lib/companyAdminContact';
@@ -280,6 +286,7 @@ function buildDemoContacts(): CompanyContact[] {
     {
       id: '1',
       ...demoPrincipal,
+      linkedinUrl: '',
       createdAtMs: fechaSolicitudToMs(f1),
     },
     {
@@ -289,6 +296,7 @@ function buildDemoContacts(): CompanyContact[] {
       correo: 'luis@ejemplo.com',
       empresa: 'Nova Labs',
       telefono: '555 123 9988',
+      linkedinUrl: 'https://www.linkedin.com/company/nova-labs',
       mensaje: 'Hola, buscamos un equipo para un MVP en 8 semanas.',
       sector: '',
       ciudad: '',
@@ -302,6 +310,7 @@ function buildDemoContacts(): CompanyContact[] {
       correo: 'm.ortiz@ejemplo.com',
       empresa: 'Delta Tech',
       telefono: '555 000 1122',
+      linkedinUrl: '',
       mensaje: 'Necesitamos ampliar el equipo de backend.',
       sector: '',
       ciudad: '',
@@ -343,8 +352,10 @@ export default function AppAdminCompanyPage() {
   const [contactsLoad, setContactsLoad] = useState<'idle' | 'loading' | 'done'>('idle');
   const [contactsError, setContactsError] = useState<'none' | 'no-config' | 'fail'>('none');
   const [contactsRefreshKey, setContactsRefreshKey] = useState(0);
+  const [leadScope, setLeadScope] = useState<'active' | 'archived'>('active');
+  const [leadActionBusyId, setLeadActionBusyId] = useState<string | null>(null);
   const [importWorkflowsOpen, setImportWorkflowsOpen] = useState(false);
-  const [exportPipedriveOpen, setExportPipedriveOpen] = useState(false);
+  const [excelDialogOpen, setExcelDialogOpen] = useState(false);
   const [assignDirectory, setAssignDirectory] = useState<DeveloperProfile[]>([]);
   const [assignDirectoryLoad, setAssignDirectoryLoad] = useState<'idle' | 'loading' | 'done'>('idle');
   const [assignDirectoryError, setAssignDirectoryError] = useState<'none' | 'no-config' | 'fail'>(
@@ -468,7 +479,8 @@ export default function AppAdminCompanyPage() {
         return;
       }
       const baseUrl = base.replace(/\/$/, '');
-      const url = `${baseUrl}/contact/company-submissions`;
+      const archivedQ = leadScope === 'archived' ? '?archived=1' : '';
+      const url = `${baseUrl}/contact/company-submissions${archivedQ}`;
       const accessUrl = `${baseUrl}/contact/company-submissions/access-status`;
       setContactsLoad('loading');
       setContactsError('none');
@@ -506,7 +518,7 @@ export default function AppAdminCompanyPage() {
         })
         .finally(() => setContactsLoad('done'));
     });
-  }, [contactsRefreshKey]);
+  }, [contactsRefreshKey, leadScope]);
 
   const now = useMemo(() => new Date(), []);
 
@@ -792,6 +804,57 @@ export default function AppAdminCompanyPage() {
       });
   };
 
+  const removeContactFromUi = (id: string) => {
+    setContacts((prev) => prev.filter((c) => c.id !== id));
+    if (selected?.id === id) {
+      setOpen(false);
+      setSelected(null);
+    }
+  };
+
+  const archiveOrRestoreLead = (contact: CompanyContact, archived: boolean) => {
+    setLeadActionBusyId(contact.id);
+    void setCompanySubmissionArchived(contact.id, archived)
+      .then((ok) => {
+        if (!ok) {
+          toast.error(
+            archived
+              ? `No se pudo archivar a ${contact.nombre}.`
+              : `No se pudo restaurar a ${contact.nombre}.`,
+          );
+          return;
+        }
+        removeContactFromUi(contact.id);
+        toast.success(
+          archived
+            ? `${contact.nombre} archivado.`
+            : `${contact.nombre} restaurado.`,
+        );
+      })
+      .finally(() => setLeadActionBusyId(null));
+  };
+
+  const deleteLead = (contact: CompanyContact) => {
+    if (
+      !window.confirm(
+        `¿Borrar permanentemente a ${contact.nombre}? Esta acción no se puede deshacer.`,
+      )
+    ) {
+      return;
+    }
+    setLeadActionBusyId(contact.id);
+    void deleteCompanySubmission(contact.id)
+      .then((ok) => {
+        if (!ok) {
+          toast.error(`No se pudo borrar a ${contact.nombre}.`);
+          return;
+        }
+        removeContactFromUi(contact.id);
+        toast.success(`${contact.nombre} eliminado.`);
+      })
+      .finally(() => setLeadActionBusyId(null));
+  };
+
   const leadDetailWidget = useMemo(
     () =>
       selected
@@ -912,6 +975,34 @@ export default function AppAdminCompanyPage() {
                   />
                   <span className="text-[11px] font-semibold">Favoritos</span>
                 </Button>
+                <div className={ADMIN_FILTER_VIEW_TOGGLE_CLASS}>
+                  <Button
+                    type="button"
+                    variant={leadScope === 'active' ? 'secondary' : 'ghost'}
+                    size="sm"
+                    className="h-8 rounded-lg px-2.5 text-[11px] font-semibold"
+                    aria-pressed={leadScope === 'active'}
+                    onClick={() => {
+                      setLeadScope('active');
+                      setCompanyPage(1);
+                    }}
+                  >
+                    Activos
+                  </Button>
+                  <Button
+                    type="button"
+                    variant={leadScope === 'archived' ? 'secondary' : 'ghost'}
+                    size="sm"
+                    className="h-8 rounded-lg px-2.5 text-[11px] font-semibold"
+                    aria-pressed={leadScope === 'archived'}
+                    onClick={() => {
+                      setLeadScope('archived');
+                      setCompanyPage(1);
+                    }}
+                  >
+                    Archivados
+                  </Button>
+                </div>
               </div>
             </div>
 
@@ -978,13 +1069,12 @@ export default function AppAdminCompanyPage() {
                 variant="outline"
                 size="sm"
                 className="h-8 shrink-0 gap-1.5 rounded-xl border-border/70 text-[11px] font-semibold"
-                title={t('adminCompany.pipedriveExportButton')}
-                disabled={filteredContacts.length === 0}
-                onClick={() => setExportPipedriveOpen(true)}
+                title={t('adminCompany.excelButton')}
+                onClick={() => setExcelDialogOpen(true)}
               >
                 <FileSpreadsheet className="size-3.5 shrink-0" aria-hidden />
                 <span className="text-[11px] font-semibold">
-                  {t('adminCompany.pipedriveExportButton')}
+                  {t('adminCompany.excelButton')}
                 </span>
               </Button>
               <Button
@@ -1199,11 +1289,15 @@ export default function AppAdminCompanyPage() {
                             variant="ghost"
                             size="icon"
                             className={ADMIN_ROW_ACTION_ICON_BUTTON_CLASS}
-                            disabled={companyAccessBusyById[contact.id] === true}
-                            title="Más acciones de acceso"
-                            aria-label={`Acceso para ${contact.nombre}`}
+                            disabled={
+                              companyAccessBusyById[contact.id] === true ||
+                              leadActionBusyId === contact.id
+                            }
+                            title="Más acciones"
+                            aria-label={`Más acciones para ${contact.nombre}`}
                           >
-                            {companyAccessBusyById[contact.id] === true ? (
+                            {companyAccessBusyById[contact.id] === true ||
+                            leadActionBusyId === contact.id ? (
                               <Loader2 className="size-4 animate-spin" aria-hidden />
                             ) : (
                               <MoreVertical className="size-4" strokeWidth={1.5} aria-hidden />
@@ -1244,6 +1338,38 @@ export default function AppAdminCompanyPage() {
                               Habilitar acceso
                             </DropdownMenuItem>
                           )}
+                          <DropdownMenuSeparator />
+                          {leadScope === 'archived' ? (
+                            <DropdownMenuItem
+                              onSelect={(event) => {
+                                event.preventDefault();
+                                archiveOrRestoreLead(contact, false);
+                              }}
+                            >
+                              <Archive className="size-4" />
+                              Restaurar
+                            </DropdownMenuItem>
+                          ) : (
+                            <DropdownMenuItem
+                              onSelect={(event) => {
+                                event.preventDefault();
+                                archiveOrRestoreLead(contact, true);
+                              }}
+                            >
+                              <Archive className="size-4" />
+                              Archivar
+                            </DropdownMenuItem>
+                          )}
+                          <DropdownMenuItem
+                            variant="destructive"
+                            onSelect={(event) => {
+                              event.preventDefault();
+                              deleteLead(contact);
+                            }}
+                          >
+                            <Trash2 className="size-4" />
+                            Borrar
+                          </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </div>
@@ -1345,6 +1471,14 @@ export default function AppAdminCompanyPage() {
                 emailCopied={copied}
                 assignedMemberCount={selectedAssignedMemberCount}
                 onDiscard={() => updateLeadStatus(selected.id, 'descartado')}
+                onContactPatched={(updated) => {
+                  setContacts((prev) =>
+                    prev.map((c) => (c.id === updated.id ? { ...c, ...updated } : c)),
+                  );
+                  setSelected((prev) =>
+                    prev && prev.id === updated.id ? { ...prev, ...updated } : prev,
+                  );
+                }}
                 initials={leadInitials(selected.nombre)}
               />
           ) : null}
@@ -1728,11 +1862,13 @@ export default function AppAdminCompanyPage() {
         }}
       />
 
-      <ExportPipedriveDialog
-        open={exportPipedriveOpen}
-        onOpenChange={setExportPipedriveOpen}
+      <CompanyLeadsExcelDialog
+        open={excelDialogOpen}
+        onOpenChange={setExcelDialogOpen}
         contacts={filteredContacts}
-        updatesByContactId={leadUpdatesById}
+        onImported={() => {
+          setContactsRefreshKey((k) => k + 1);
+        }}
       />
       </div>
     </AppShell>
