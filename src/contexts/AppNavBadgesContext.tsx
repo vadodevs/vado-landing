@@ -11,7 +11,7 @@ import {
 import { useLocation } from 'wouter';
 import { isLocale } from '@/app/i18n';
 import { useAdminAssignedProjects } from '@/contexts/AdminAssignedProjectsContext';
-import { adminAuthorizedFetch, isAdminAuthenticated, ADMIN_AUTH_CHANGE_EVENT } from '@/lib/adminAuth';
+import { adminAuthorizedFetch, isAdminAuthenticated, getAdminAccessToken, ADMIN_AUTH_CHANGE_EVENT } from '@/lib/adminAuth';
 import {
   APP_NAV_BADGES_REFRESH_EVENT,
   companyProjectsSignature,
@@ -199,7 +199,7 @@ export function AppNavBadgesProvider({ children }: { children: ReactNode }) {
   }, [isCompanySection, companySigCurrent, storageTick]);
 
   const refreshAdminNav = useCallback(() => {
-    if (!apiBase || !isAdminAuthenticated()) {
+    if (!apiBase || !isAdminAuthenticated() || !getAdminAccessToken()) {
       setAdminDevelopersMaxTs(0);
       setAdminCompaniesMaxTs(0);
       return;

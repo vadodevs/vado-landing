@@ -38,6 +38,8 @@ import {
   type CompanyLeadUpdate,
 } from '@/lib/companyLeadUpdates';
 import { CompanyLeadActivityTimeline } from '@/components/admin/CompanyLeadActivityTimeline';
+import { CompanyLeadChannelActionButtons } from '@/components/admin/CompanyLeadChannelActionButtons';
+import { CompanyLeadManualFeedDialog } from '@/components/admin/CompanyLeadManualFeedDialog';
 import { ADMIN_PRIMARY_BTN_CLASS } from '@/lib/adminVadoUi';
 import { cn } from '@/lib/utils';
 
@@ -65,6 +67,7 @@ type Props = {
   emailCopied: boolean;
   assignedMemberCount: number;
   onDiscard: () => void;
+  onContactPatched: (contact: CompanyContact) => void;
   initials: string;
 };
 
@@ -317,6 +320,7 @@ export function CompanyLeadDetailPanel({
   emailCopied,
   assignedMemberCount,
   onDiscard,
+  onContactPatched,
   initials,
 }: Props) {
   const locationLabel =
@@ -635,7 +639,13 @@ export function CompanyLeadDetailPanel({
           </span>
         </div>
 
-        <div className="flex shrink-0 items-center gap-2">
+        <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
+          <CompanyLeadManualFeedDialog
+            contact={contact}
+            triggerClassName="h-9"
+            onApplied={onContactPatched}
+          />
+          <CompanyLeadChannelActionButtons contact={contact} />
           <Button type="button" variant="outline" size="sm" className="h-9 px-4" onClick={onDiscard}>
             Descartar
           </Button>

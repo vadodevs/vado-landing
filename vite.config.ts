@@ -103,6 +103,8 @@ Sitemap: ${baseUrl}/sitemap.xml
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
+      'next/image': path.resolve(__dirname, 'src/shims/next-image.tsx'),
+      'next/link': path.resolve(__dirname, 'src/shims/next-link.tsx'),
     },
   },
 })

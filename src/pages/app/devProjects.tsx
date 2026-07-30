@@ -29,33 +29,6 @@ export default function AppDevProjectsPage() {
   const apiBase = String(import.meta.env.VITE_API_BASE_URL ?? '').trim().replace(/\/$/, '');
   const token = getDevAccessToken() ?? '';
 
-  const enrichWithClientMessage = async (
-    rows: DevAssignedProject[],
-    base: string,
-  ): Promise<DevAssignedProject[]> => {
-    const needsMessage = rows.some((r) => !r.descripcion?.trim() && r.contactId?.trim());
-    if (!needsMessage) return rows;
-    try {
-      const res = await fetch(`${base}/contact/company-submissions`);
-      if (!res.ok) return rows;
-      const submissions = (await res.json()) as Array<{ id?: unknown; message?: unknown }>;
-      const byId = new Map<string, string>();
-      for (const s of submissions) {
-        const id = typeof s.id === 'string' ? s.id.trim() : '';
-        const msg = typeof s.message === 'string' ? s.message.trim() : '';
-        if (id && msg) byId.set(id, msg);
-      }
-      return rows.map((r) => {
-        if (r.descripcion?.trim()) return r;
-        const cid = r.contactId?.trim() ?? '';
-        const message = cid ? byId.get(cid) : undefined;
-        return message ? { ...r, descripcion: message } : r;
-      });
-    } catch {
-      return rows;
-    }
-  };
-
   useEffect(() => {
     let cancelled = false;
     const load = () => {
@@ -79,7 +52,7 @@ export default function AppDevProjectsPage() {
         })
         .then(async (rows) => {
           if (!Array.isArray(rows)) return [];
-          return await enrichWithClientMessage(rows, apiBase);
+          return rows;
         })
         .then((rows) => {
           if (!cancelled) setProjects(Array.isArray(rows) ? rows : []);

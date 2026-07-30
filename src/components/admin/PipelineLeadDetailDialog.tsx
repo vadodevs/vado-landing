@@ -68,6 +68,7 @@ function pipelineEntryToFallbackContact(entry: PipelineLeadEntry): CompanyContac
     correo: entry.email,
     empresa: entry.empresa,
     telefono: entry.telefono?.trim() || '—',
+    linkedinUrl: '',
     servicio: entry.servicio?.trim() || 'Selecciona uno...',
     mensaje: '',
     sector: '',
@@ -420,6 +421,7 @@ export function PipelineLeadDetailDialog({ entry, open, onOpenChange, onAmountCh
                 emailCopied={emailCopied}
                 assignedMemberCount={assignedMemberCount}
                 onDiscard={() => updateLeadStatus(contact.id, 'descartado')}
+                onContactPatched={(updated) => setContact(updated)}
                 initials={leadInitials(contact.nombre)}
               />
             </div>
